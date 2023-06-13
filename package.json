@@ -1,0 +1,41 @@
+{
+  "dependencies": {
+    "@andrey-allyson/escalas-automaticas": "^1.0.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "express": "^4.18.2",
+    "xlsx": "^0.18.5",
+    "zod": "^3.21.4"
+  },
+  "name": "gerador-de-escalas",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "dev": "electron .",
+    "dev:bundle": "esbuild src/renderer/index.ts --bundle --target=es2020 --watch --sourcemap --outfile=public/bundle.js",
+    "prod:bundle": "esbuild src/renderer/index.ts --bundle --target=es2020 --minify --outfile=public/bundle.js",
+    "build": "tsc -p src/app"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@electron-forge/cli": "^6.1.1",
+    "@electron-forge/maker-deb": "^6.1.1",
+    "@electron-forge/maker-rpm": "^6.1.1",
+    "@electron-forge/maker-squirrel": "^6.1.1",
+    "@electron-forge/maker-zip": "^6.1.1",
+    "@types/electron": "^1.6.10",
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.3.0",
+    "electron": "^25.1.0",
+    "electron-packager": "^17.1.1",
+    "electron-winstaller": "^5.1.0",
+    "esbuild": "^0.18.1",
+    "typescript": "^5.1.3"
+  }
+}
