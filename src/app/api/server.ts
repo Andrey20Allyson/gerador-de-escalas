@@ -1,10 +1,29 @@
-import express, { Express } from 'express';
-import { io, ExtraDutyTableV2 } from '@andrey-allyson/escalas-automaticas';
-import xlsx from 'xlsx';
-import { getSheetNamesOptionsSchema, scheduleGeneratorOptionsSchema } from './schemas';
+import { generate, io } from '@andrey-allyson/escalas-automaticas';
+import express, { Express, Response } from 'express';
+import fs from 'fs/promises';
 import { Routes } from './routes';
+import { getSheetNamesOptionsSchema, scheduleGeneratorOptionsSchema } from './schemas';
 
-export function loadApi(server: Express) {
+function handleError(err: unknown, response: Response, dev = false): void {
+  if (dev) console.log(err);
+
+  if (err instanceof Error) {
+    response.status(500).send({
+      errorName: err.name,
+      message: err.message,
+      ...(dev && {
+        stack: err.stack,
+        cause: err.cause,
+      }),
+    });
+    return;
+  }
+
+  response.status(500).send(String(err));
+}
+
+export function loadApi(server: Express, dev = false) {
+
   server.use('/api', express.json());
 
   server.get(Routes.GET_SHEET_NAMES, async (req, res) => {
@@ -14,12 +33,11 @@ export function loadApi(server: Express) {
 
       const { filePath } = result.data;
 
-      const book = await io.loadBook(filePath);
+      const sheetNames = await io.loadSheetNames(filePath);
 
-      res.json(book.SheetNames);
-    } catch (e) {
-      console.error(e);
-      res.status(500).send(String(e));
+      res.json(sheetNames);
+    } catch (err) {
+      handleError(err, res, dev);
     }
   });
 
@@ -30,23 +48,16 @@ export function loadApi(server: Express) {
 
       const { filePath, month, sheetName } = result.data;
 
-      const workers = await io.loadWorkers(filePath, sheetName);
-      const table = new ExtraDutyTableV2({ month: +month });
+      const input = await fs.readFile(filePath);
+      const output = generate(input, {
+        month: +month,
+        inputSheetName: sheetName,
+        outputSheetName: 'Main',
+      });
 
-      table.tryAssignArrayMultipleTimes(workers, 400);
-
-      const body = io.toSheetBody(Array.from(table.entries()));
-      const book = xlsx.utils.book_new();
-      const sheet = xlsx.utils.aoa_to_sheet(body);
-
-      xlsx.utils.book_append_sheet(book, sheet, 'Main');
-
-      const data = xlsx.write(book, { type: 'buffer' });
-
-      res.send(data);
-    } catch (e) {
-      console.error(e);
-      res.status(500).send(String(e));
+      res.send(output);
+    } catch (err) {
+      handleError(err, res, dev);
     }
   });
 
