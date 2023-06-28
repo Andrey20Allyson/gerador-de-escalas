@@ -6,28 +6,10 @@
   <title>Gerador de escalas</title>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <link rel="shortcut icon" href="assets/images/brasao.png" type="image/x-icon">
-  <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+  <link rel='stylesheet' type='text/css' media='screen' href='bundle.css'>
   <script defer src='./bundle.js'></script>
 </head>
 <body>
-  <main class="main-body">
-    <div class="inner-main">
-      <div class="title-div">
-        <img src="./assets/images/brasao.png" alt="">
-        <h1>Gerador de Escalas</h1>
-      </div>
-      <div class="screen-body">
-        <div class="form-body" id="entrada">
-          <label class="mandatory">Escala do Mês</label>
-          <input type="file" id="file-input">
-          <label class="mandatory">Nome da Aba</label>
-          <select id="sheet-name-select"></select>
-          <label class="mandatory">Mês</label>
-          <input type="month" id="month-input">
-        </div>
-        <input type="submit" id="submit-file" class="submit-button" value="Salvar">
-      </div>
-    </div>
-  </main>
+  <div id="root"></div>
 </body>
 </html>

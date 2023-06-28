@@ -14,7 +14,7 @@ const baseConfig = {
 function exec(command) {
   return new Promise((resolve, reject) => {
     cp.exec(command, (err, stdout, stderr) => {
-      if (err) return reject(reject);
+      if (err) return reject(err);
       if (stderr) return reject(stderr);
 
       resolve(stdout);
@@ -51,7 +51,7 @@ module.exports = {
   hooks: {
     prePackage: async () => {
       const buildPromise = exec('npm run build');
-      const bundlePromise = exec('npm run prod:bundle');
+      const bundlePromise = exec('npm run prod:bundle').catch(e => String(e));
 
       await Promise.all([buildPromise, bundlePromise]);
     }
