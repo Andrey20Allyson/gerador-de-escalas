@@ -10,7 +10,7 @@ export default function App() {
   const stages: React.ReactElement[] = [];
 
   stages[0] = <DataCollectStage onSuccess={() => setStage(1)} />;
-  stages[1] = <WorkerEditionStage onSuccess={() => { }} />;
+  stages[1] = <WorkerEditionStage onSuccess={() => { }} onGoBack={() => setStage(0)} />;
 
   return (
     <main className='main-body'>

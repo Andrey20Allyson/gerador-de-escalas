@@ -28,6 +28,14 @@ function createRendererAPI(): AppAPI {
       return invokeIPC('getWorkerInfo');
     },
 
+    saveWorkersDaysOfWork(workers) {
+      return invokeIPC('saveWorkersDaysOfWork', workers);
+    },
+
+    getLoadedData() {
+      return invokeIPC('getLoadedData');
+    },
+
     loadData(filePath, sheetName, month) {
       return invokeIPC('loadData', filePath, sheetName, month);
     },

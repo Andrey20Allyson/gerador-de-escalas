@@ -67,6 +67,16 @@ export async function loadAPI() {
     }
   });
 
+  handleIPC('getLoadedData', async () => {
+    if (!loadedData) return;
+    
+    return {
+      month: loadedData.month,
+      workers: loadedData.workers,
+      sheetName: loadedData.sheetName,
+    };
+  });
+
   handleIPC('generate', async (ev, filePath, sheetName, month) => {
     const input = await fs.readFile(filePath);
     const output = await generate(input, {

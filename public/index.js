@@ -27514,70 +27514,8 @@ To continue using the deprecated object syntax, you'll need to wrap your compone
   var import_iteration = __toESM(require_iteration());
   var import_month = __toESM(require_month());
   var import_react3 = __toESM(require_react());
-  function getFirstSundayOfMonth(year, month) {
-    const firstDayOfMonth = new Date(year, month, 1);
-    const dayOfWeek = firstDayOfMonth.getDay();
-    const daysUntilSunday = (7 - dayOfWeek) % 7;
-    const firstSundayOfMonth = new Date(year, month, 1 + daysUntilSunday);
-    return firstSundayOfMonth;
-  }
-  function useRerender() {
-    const [rerenderState, setRerenderState] = (0, import_react3.useState)(false);
-    function rerender() {
-      setRerenderState(!rerenderState);
-    }
-    return rerender;
-  }
-  function WorkerEditionStage(props) {
-    const [workers, setWorkers] = (0, import_react3.useState)();
-    const [currentWorkerIndex, setCurrentWorkerIndex] = (0, import_react3.useState)(0);
-    const rerender = useRerender();
-    (0, import_react3.useEffect)(() => {
-      async function loadWorkers() {
-        const workers2 = await window.api.getWorkerInfo();
-        if (!workers2)
-          return;
-        for (const worker of workers2) {
-          Object.setPrototypeOf(worker, import_worker_info.WorkerInfo.prototype);
-          Object.setPrototypeOf(worker.daysOfWork, import_days_of_work.DaysOfWork.prototype);
-          Object.setPrototypeOf(worker.workTime, import_work_time.WorkTime.prototype);
-        }
-        ;
-        setWorkers(workers2);
-      }
-      loadWorkers();
-    }, []);
-    function handleChangeWorker(ev) {
-      const index3 = +ev.currentTarget.value;
-      if (isNaN(index3))
-        return;
-      setCurrentWorkerIndex(index3);
-    }
-    function handleChangeWorkDay(daysOfWork2, day) {
-      if (daysOfWork2.workOn(day)) {
-        daysOfWork2.notWork(day);
-      } else {
-        daysOfWork2.work(day);
-      }
-      rerender();
-    }
-    const daysOfWork = workers?.at(currentWorkerIndex)?.daysOfWork;
-    let pastMonthDayCells;
-    let workDayCells;
-    if (daysOfWork) {
-      const month = 5;
-      const firstSunday = getFirstSundayOfMonth(2023, month).getDate();
-      pastMonthDayCells = Array.from(
-        (0, import_iteration.iterRange)(0, firstSunday),
-        (day) => /* @__PURE__ */ import_react3.default.createElement(DayCell, null, day + (0, import_month.getNumOfDaysInMonth)(month < 1 ? 11 : month - 1) - firstSunday + 1)
-      );
-      workDayCells = Array.from(
-        (0, import_iteration.iterRange)(0, daysOfWork.length),
-        (day) => /* @__PURE__ */ import_react3.default.createElement(WorkDayCell, { key: day, onClick: handleChangeWorkDay.bind(void 0, daysOfWork, day), isWorkDay: daysOfWork.workOn(day) }, day + 1)
-      );
-    }
-    return /* @__PURE__ */ import_react3.default.createElement(StageBody, null, /* @__PURE__ */ import_react3.default.createElement(StageHeader, null, /* @__PURE__ */ import_react3.default.createElement("label", null, "Alterar dias de servi\xE7o"), /* @__PURE__ */ import_react3.default.createElement(HelpIcon, null, /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement("p", null, /* @__PURE__ */ import_react3.default.createElement(ColoredText, { color: "#06be00" }, "Verde"), ": livre para extra;")))), /* @__PURE__ */ import_react3.default.createElement("select", { onChange: handleChangeWorker }, workers && workers.map((worker, i) => /* @__PURE__ */ import_react3.default.createElement("option", { key: i, value: i }, worker.config.name))), /* @__PURE__ */ import_react3.default.createElement(DayGrid, null, pastMonthDayCells, workDayCells), /* @__PURE__ */ import_react3.default.createElement(Footer, null, /* @__PURE__ */ import_react3.default.createElement("input", { type: "button", value: "Salvar" }), /* @__PURE__ */ import_react3.default.createElement("input", { type: "button", value: "Finalizar" })));
-  }
+
+  // src/renderer/components/WorkerEditionStage.styles.ts
   var StageHeader = styled_components_browser_esm_default.header`
   display: flex;
   gap: 1rem;
@@ -27632,13 +27570,6 @@ To continue using the deprecated object syntax, you'll need to wrap your compone
   display: flex;
   gap: 1rem;
 `;
-  var Button = styled_components_browser_esm_default.div`
-  background-image: linear-gradient(40deg, #023807, #047204);
-  color: #fff;
-  padding: .2rem;
-  border-radius: .3rem;
-  
-`;
   var DayGrid = styled_components_browser_esm_default.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -27684,13 +27615,80 @@ To continue using the deprecated object syntax, you'll need to wrap your compone
   }
 `;
 
+  // src/renderer/components/WorkerEditionStage.tsx
+  function getFirstSundayOfMonth(year, month) {
+    const firstDayOfMonth = new Date(year, month, 1);
+    const dayOfWeek = firstDayOfMonth.getDay();
+    const daysUntilSunday = (7 - dayOfWeek) % 7;
+    const firstSundayOfMonth = new Date(year, month, 1 + daysUntilSunday);
+    return firstSundayOfMonth;
+  }
+  function useRerender() {
+    const [rerenderState, setRerenderState] = (0, import_react3.useState)(false);
+    function rerender() {
+      setRerenderState(!rerenderState);
+    }
+    return rerender;
+  }
+  function WorkerEditionStage(props) {
+    const [data, setData] = (0, import_react3.useState)();
+    const [currentWorkerIndex, setCurrentWorkerIndex] = (0, import_react3.useState)(0);
+    const rerender = useRerender();
+    (0, import_react3.useEffect)(() => {
+      async function loadWorkers() {
+        const data2 = await window.api.getLoadedData();
+        if (!data2)
+          return;
+        const { workers } = data2;
+        for (const worker of workers) {
+          Object.setPrototypeOf(worker, import_worker_info.WorkerInfo.prototype);
+          Object.setPrototypeOf(worker.daysOfWork, import_days_of_work.DaysOfWork.prototype);
+          Object.setPrototypeOf(worker.workTime, import_work_time.WorkTime.prototype);
+        }
+        ;
+        setData(data2);
+      }
+      loadWorkers();
+    }, []);
+    function handleChangeWorker(ev) {
+      const index3 = +ev.currentTarget.value;
+      if (isNaN(index3))
+        return;
+      setCurrentWorkerIndex(index3);
+    }
+    function handleChangeWorkDay(daysOfWork2, day) {
+      if (daysOfWork2.workOn(day)) {
+        daysOfWork2.notWork(day);
+      } else {
+        daysOfWork2.work(day);
+      }
+      rerender();
+    }
+    let pastMonthDayCells;
+    let workDayCells;
+    const daysOfWork = data?.workers.at(currentWorkerIndex)?.daysOfWork;
+    if (data && daysOfWork) {
+      const month = data.month;
+      const firstSunday = getFirstSundayOfMonth(2023, month).getDate();
+      pastMonthDayCells = Array.from(
+        (0, import_iteration.iterRange)(0, firstSunday),
+        (day) => /* @__PURE__ */ import_react3.default.createElement(DayCell, null, day + (0, import_month.getNumOfDaysInMonth)(month < 1 ? 11 : month - 1) - firstSunday + 1)
+      );
+      workDayCells = Array.from(
+        (0, import_iteration.iterRange)(0, daysOfWork.length),
+        (day) => /* @__PURE__ */ import_react3.default.createElement(WorkDayCell, { key: day, onClick: handleChangeWorkDay.bind(void 0, daysOfWork, day), isWorkDay: daysOfWork.workOn(day) }, day + 1)
+      );
+    }
+    return /* @__PURE__ */ import_react3.default.createElement(StageBody, null, /* @__PURE__ */ import_react3.default.createElement(StageHeader, null, /* @__PURE__ */ import_react3.default.createElement("label", null, "Alterar dias de servi\xE7o"), /* @__PURE__ */ import_react3.default.createElement(HelpIcon, null, /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement("p", null, /* @__PURE__ */ import_react3.default.createElement(ColoredText, { color: "#06be00" }, "Verde"), ": livre para extra;")))), /* @__PURE__ */ import_react3.default.createElement("select", { onChange: handleChangeWorker }, data && data.workers.map((worker, i) => /* @__PURE__ */ import_react3.default.createElement("option", { key: i, value: i }, worker.config.name))), /* @__PURE__ */ import_react3.default.createElement(DayGrid, null, pastMonthDayCells, workDayCells), /* @__PURE__ */ import_react3.default.createElement(Footer, null, /* @__PURE__ */ import_react3.default.createElement("input", { type: "button", value: "Voltar", onClick: props.onGoBack }), /* @__PURE__ */ import_react3.default.createElement("input", { type: "button", value: "Salvar" }), /* @__PURE__ */ import_react3.default.createElement("input", { type: "button", value: "Finalizar" })));
+  }
+
   // src/renderer/App.tsx
   function App() {
     const [stage, setStage] = (0, import_react4.useState)(1);
     const stages = [];
     stages[0] = /* @__PURE__ */ import_react4.default.createElement(DataCollectStage, { onSuccess: () => setStage(1) });
     stages[1] = /* @__PURE__ */ import_react4.default.createElement(WorkerEditionStage, { onSuccess: () => {
-    } });
+    }, onGoBack: () => setStage(0) });
     return /* @__PURE__ */ import_react4.default.createElement("main", { className: "main-body" }, /* @__PURE__ */ import_react4.default.createElement("div", { className: "inner-main" }, /* @__PURE__ */ import_react4.default.createElement("div", { className: "title-div" }, /* @__PURE__ */ import_react4.default.createElement("img", { src: "./assets/images/brasao.png", alt: "" }), /* @__PURE__ */ import_react4.default.createElement("h1", null, "Gerador de Escalas")), /* @__PURE__ */ import_react4.default.createElement("div", { className: "screen-body" }, stages.at(stage) ?? "Erro 404 - est\xE1gio inv\xE1lido!", /* @__PURE__ */ import_react4.default.createElement(LoadBar, { steps: stages.length, actual: stage + 1 }))));
   }
 

@@ -2,9 +2,10 @@ import { DaysOfWork } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-
 import { WorkTime } from '@andrey-allyson/escalas-automaticas/dist/extra-duty-table/parsers/work-time';
 import { WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-table/worker-info";
 import { iterRange } from "@andrey-allyson/escalas-automaticas/dist/utils/iteration";
-import { getNumOfDaysInMonth, numOfDaysInThisMonth } from '@andrey-allyson/escalas-automaticas/dist/utils/month';
+import { getNumOfDaysInMonth } from '@andrey-allyson/escalas-automaticas/dist/utils/month';
 import React, { useEffect, useState } from "react";
-import styled, { css } from "styled-components";
+import { LoadedData } from "../../app/api/channels";
+import { ColoredText, DayCell, DayGrid, Footer, HelpIcon, StageBody, StageHeader, WorkDayCell } from "./WorkerEditionStage.styles";
 
 function getFirstSundayOfMonth(year: number, month: number): Date {
   const firstDayOfMonth = new Date(year, month, 1);
@@ -16,6 +17,7 @@ function getFirstSundayOfMonth(year: number, month: number): Date {
 
 export interface WorkerEditionStageProps {
   onSuccess?: () => void;
+  onGoBack?: () => void;
 }
 
 function useRerender() {
@@ -29,15 +31,16 @@ function useRerender() {
 }
 
 export function WorkerEditionStage(props: WorkerEditionStageProps) {
-  const [workers, setWorkers] = useState<readonly WorkerInfo[]>();
+  const [data, setData] = useState<LoadedData>();
   const [currentWorkerIndex, setCurrentWorkerIndex] = useState(0);
-  const rerender = useRerender();  
+  const rerender = useRerender();
 
   useEffect(() => {
     async function loadWorkers() {
-      const workers = await window.api.getWorkerInfo();
+      const data = await window.api.getLoadedData();
 
-      if (!workers) return;
+      if (!data) return;
+      const { workers } = data;
 
       for (const worker of workers) {
         Object.setPrototypeOf(worker, WorkerInfo.prototype);
@@ -45,7 +48,7 @@ export function WorkerEditionStage(props: WorkerEditionStageProps) {
         Object.setPrototypeOf(worker.workTime, WorkTime.prototype);
       };
 
-      setWorkers(workers);
+      setData(data);
     }
 
     loadWorkers();
@@ -69,13 +72,13 @@ export function WorkerEditionStage(props: WorkerEditionStageProps) {
     rerender();
   }
 
-  const daysOfWork = workers?.at(currentWorkerIndex)?.daysOfWork;
-
   let pastMonthDayCells: React.JSX.Element[] | undefined;
   let workDayCells: React.JSX.Element[] | undefined;
   
-  if (daysOfWork) {
-    const month = 5;
+  const daysOfWork = data?.workers.at(currentWorkerIndex)?.daysOfWork;
+
+  if (data && daysOfWork) {
+    const month = data.month;
 
     const firstSunday = getFirstSundayOfMonth(2023, month).getDate();
 
@@ -103,142 +106,17 @@ export function WorkerEditionStage(props: WorkerEditionStageProps) {
         </HelpIcon>
       </StageHeader>
       <select onChange={handleChangeWorker}>
-        {workers && workers.map((worker, i) => <option key={i} value={i}>{worker.config.name}</option>)}
+        {data && data.workers.map((worker, i) => <option key={i} value={i}>{worker.config.name}</option>)}
       </select>
       <DayGrid>
         {pastMonthDayCells}
         {workDayCells}
       </DayGrid>
       <Footer>
+        <input type="button" value='Voltar' onClick={props.onGoBack} />
         <input type="button" value='Salvar' />
         <input type="button" value='Finalizar' />
       </Footer>
     </StageBody>
   );
 }
-
-const StageHeader = styled.header`
-  display: flex;
-  gap: 1rem;
-`;
-
-interface ColoredTextProps {
-  color: string;
-}
-
-const ColoredText = styled.label<ColoredTextProps>`
-  color: ${(props) => props.color};
-  font-weight: bold;
-`;
-
-const HelpIcon = styled.label`
-  border-radius: 50%;
-  border-width: 1px;
-  border-color: #0004;
-  border-style: solid;
-  width: 1rem;
-  height: 1rem;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  position: relative;
-  cursor: pointer;
-
-  &::before {
-    content: '?';
-  }
-
-  &>* {
-    position: absolute;
-    background-color: #ebebeb;
-    padding: .5rem;
-    visibility: hidden;
-    border-style: solid;
-    width: max-content;
-    border-width: 1px;
-    border-color: #0004;
-    box-shadow: -.2rem .2rem .4rem #0004;
-    z-index: 2;
-  }
-
-  &:hover>* {
-    visibility: visible;
-    top: 70%;
-    right: 70%;
-  }
-`;
-
-const StageBody = styled.div`
-  display: flex;
-  gap: 1rem;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const Footer = styled.footer`
-  display: flex;
-  gap: 1rem;
-`;
-
-const Button = styled.div`
-  background-image: linear-gradient(40deg, #023807, #047204);
-  color: #fff;
-  padding: .2rem;
-  border-radius: .3rem;
-  
-`;
-
-const DayGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: .4rem;
-  background-color: #cecece;
-  padding: .4rem;
-
-`;
-
-interface DayCellProps {
-  isWorkDay?: boolean;
-}
-
-function normalBackgroundColorFunction(props: DayCellProps) {
-  return props.isWorkDay ? '#aaaaaa' : '#06bb00';
-}
-
-function hovererBackgroundColorFunction(props: DayCellProps) {
-  return props.isWorkDay ? '#8a8a8a' : '#015200';
-}
-
-const shadowStyles = css`
-  box-shadow: -.2rem .2rem .4rem #0003;
-`;
-
-const dayCellStyles = css`
-  ${shadowStyles}
-  width: 1.5rem;
-  height: 1.5rem;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-  border-color: #0002;
-  border-width: 1px;
-  border-style: solid;
-`;
-
-const DayCell = styled.div`
-  ${dayCellStyles}
-  background-color: #3d3d3d;
-  opacity: .2;
-`;
-
-const WorkDayCell = styled.div<DayCellProps>`
-  ${dayCellStyles}
-  background-color: ${normalBackgroundColorFunction};
-  cursor: pointer;
-
-  &:hover {
-    background-color: ${hovererBackgroundColorFunction};
-  }
-`;
