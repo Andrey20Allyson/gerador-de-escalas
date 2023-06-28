@@ -25119,18 +25119,18 @@
       exports.getNumOfDaysInMonth = exports.getMonth = exports.numOfDaysInThisMonth = exports.thisMonth = exports.DAYS_IN_MONTH = void 0;
       exports.DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
       exports.thisMonth = getMonth();
-      exports.numOfDaysInThisMonth = getNumOfDaysInMonth(exports.thisMonth);
+      exports.numOfDaysInThisMonth = getNumOfDaysInMonth2(exports.thisMonth);
       function getMonth() {
         return (/* @__PURE__ */ new Date()).getMonth();
       }
       exports.getMonth = getMonth;
-      function getNumOfDaysInMonth(month) {
+      function getNumOfDaysInMonth2(month) {
         const numOfDays = exports.DAYS_IN_MONTH.at(month);
         if (!numOfDays)
           throw new Error(`Can't find the number of days in this month!`);
         return numOfDays;
       }
-      exports.getNumOfDaysInMonth = getNumOfDaysInMonth;
+      exports.getNumOfDaysInMonth = getNumOfDaysInMonth2;
     }
   });
 
@@ -25230,12 +25230,12 @@
       Object.defineProperty(exports, "__esModule", { value: true });
       exports.iterRandom = exports.iterRandomInRange = exports.enumerate = exports.iterRange = void 0;
       var random_1 = require_random();
-      function* iterRange(start, end) {
+      function* iterRange2(start, end) {
         for (let i = start; i < end; i++) {
           yield i;
         }
       }
-      exports.iterRange = iterRange;
+      exports.iterRange = iterRange2;
       function* enumerate(iter) {
         let i = 0;
         for (const entry of iter) {
@@ -25244,7 +25244,7 @@
       }
       exports.enumerate = enumerate;
       function iterRandomInRange(start, end) {
-        const array = Array.from(iterRange(start, end));
+        const array = Array.from(iterRange2(start, end));
         return (0, random_1.randomizeArray)(array, true)[Symbol.iterator]();
       }
       exports.iterRandomInRange = iterRandomInRange;
@@ -27511,9 +27511,27 @@ To continue using the deprecated object syntax, you'll need to wrap your compone
   var import_days_of_work = __toESM(require_days_of_work());
   var import_work_time = __toESM(require_work_time());
   var import_worker_info = __toESM(require_worker_info());
+  var import_iteration = __toESM(require_iteration());
+  var import_month = __toESM(require_month());
   var import_react3 = __toESM(require_react());
+  function getFirstSundayOfMonth(year, month) {
+    const firstDayOfMonth = new Date(year, month, 1);
+    const dayOfWeek = firstDayOfMonth.getDay();
+    const daysUntilSunday = (7 - dayOfWeek) % 7;
+    const firstSundayOfMonth = new Date(year, month, 1 + daysUntilSunday);
+    return firstSundayOfMonth;
+  }
+  function useRerender() {
+    const [rerenderState, setRerenderState] = (0, import_react3.useState)(false);
+    function rerender() {
+      setRerenderState(!rerenderState);
+    }
+    return rerender;
+  }
   function WorkerEditionStage(props) {
     const [workers, setWorkers] = (0, import_react3.useState)();
+    const [currentWorkerIndex, setCurrentWorkerIndex] = (0, import_react3.useState)(0);
+    const rerender = useRerender();
     (0, import_react3.useEffect)(() => {
       async function loadWorkers() {
         const workers2 = await window.api.getWorkerInfo();
@@ -27529,12 +27547,146 @@ To continue using the deprecated object syntax, you'll need to wrap your compone
       }
       loadWorkers();
     }, []);
-    return /* @__PURE__ */ import_react3.default.createElement(import_react3.default.Fragment, null, /* @__PURE__ */ import_react3.default.createElement("select", null, workers && workers.map((worker, i) => /* @__PURE__ */ import_react3.default.createElement("option", { key: i, value: i }, worker.config.name))));
+    function handleChangeWorker(ev) {
+      const index3 = +ev.currentTarget.value;
+      if (isNaN(index3))
+        return;
+      setCurrentWorkerIndex(index3);
+    }
+    function handleChangeWorkDay(daysOfWork2, day) {
+      if (daysOfWork2.workOn(day)) {
+        daysOfWork2.notWork(day);
+      } else {
+        daysOfWork2.work(day);
+      }
+      rerender();
+    }
+    const daysOfWork = workers?.at(currentWorkerIndex)?.daysOfWork;
+    let pastMonthDayCells;
+    let workDayCells;
+    if (daysOfWork) {
+      const month = 5;
+      const firstSunday = getFirstSundayOfMonth(2023, month).getDate();
+      pastMonthDayCells = Array.from(
+        (0, import_iteration.iterRange)(0, firstSunday),
+        (day) => /* @__PURE__ */ import_react3.default.createElement(DayCell, null, day + (0, import_month.getNumOfDaysInMonth)(month < 1 ? 11 : month - 1) - firstSunday + 1)
+      );
+      workDayCells = Array.from(
+        (0, import_iteration.iterRange)(0, daysOfWork.length),
+        (day) => /* @__PURE__ */ import_react3.default.createElement(WorkDayCell, { key: day, onClick: handleChangeWorkDay.bind(void 0, daysOfWork, day), isWorkDay: daysOfWork.workOn(day) }, day + 1)
+      );
+    }
+    return /* @__PURE__ */ import_react3.default.createElement(StageBody, null, /* @__PURE__ */ import_react3.default.createElement(StageHeader, null, /* @__PURE__ */ import_react3.default.createElement("label", null, "Alterar dias de servi\xE7o"), /* @__PURE__ */ import_react3.default.createElement(HelpIcon, null, /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement("p", null, /* @__PURE__ */ import_react3.default.createElement(ColoredText, { color: "#06be00" }, "Verde"), ": livre para extra;")))), /* @__PURE__ */ import_react3.default.createElement("select", { onChange: handleChangeWorker }, workers && workers.map((worker, i) => /* @__PURE__ */ import_react3.default.createElement("option", { key: i, value: i }, worker.config.name))), /* @__PURE__ */ import_react3.default.createElement(DayGrid, null, pastMonthDayCells, workDayCells), /* @__PURE__ */ import_react3.default.createElement(Footer, null, /* @__PURE__ */ import_react3.default.createElement("input", { type: "button", value: "Salvar" }), /* @__PURE__ */ import_react3.default.createElement("input", { type: "button", value: "Finalizar" })));
   }
+  var StageHeader = styled_components_browser_esm_default.header`
+  display: flex;
+  gap: 1rem;
+`;
+  var ColoredText = styled_components_browser_esm_default.label`
+  color: ${(props) => props.color};
+  font-weight: bold;
+`;
+  var HelpIcon = styled_components_browser_esm_default.label`
+  border-radius: 50%;
+  border-width: 1px;
+  border-color: #0004;
+  border-style: solid;
+  width: 1rem;
+  height: 1rem;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  position: relative;
+  cursor: pointer;
+
+  &::before {
+    content: '?';
+  }
+
+  &>* {
+    position: absolute;
+    background-color: #ebebeb;
+    padding: .5rem;
+    visibility: hidden;
+    border-style: solid;
+    width: max-content;
+    border-width: 1px;
+    border-color: #0004;
+    box-shadow: -.2rem .2rem .4rem #0004;
+    z-index: 2;
+  }
+
+  &:hover>* {
+    visibility: visible;
+    top: 70%;
+    right: 70%;
+  }
+`;
+  var StageBody = styled_components_browser_esm_default.div`
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  align-items: center;
+`;
+  var Footer = styled_components_browser_esm_default.footer`
+  display: flex;
+  gap: 1rem;
+`;
+  var Button = styled_components_browser_esm_default.div`
+  background-image: linear-gradient(40deg, #023807, #047204);
+  color: #fff;
+  padding: .2rem;
+  border-radius: .3rem;
+  
+`;
+  var DayGrid = styled_components_browser_esm_default.div`
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: .4rem;
+  background-color: #cecece;
+  padding: .4rem;
+
+`;
+  function normalBackgroundColorFunction(props) {
+    return props.isWorkDay ? "#aaaaaa" : "#06bb00";
+  }
+  function hovererBackgroundColorFunction(props) {
+    return props.isWorkDay ? "#8a8a8a" : "#015200";
+  }
+  var shadowStyles = css`
+  box-shadow: -.2rem .2rem .4rem #0003;
+`;
+  var dayCellStyles = css`
+  ${shadowStyles}
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  border-color: #0002;
+  border-width: 1px;
+  border-style: solid;
+`;
+  var DayCell = styled_components_browser_esm_default.div`
+  ${dayCellStyles}
+  background-color: #3d3d3d;
+  opacity: .2;
+`;
+  var WorkDayCell = styled_components_browser_esm_default.div`
+  ${dayCellStyles}
+  background-color: ${normalBackgroundColorFunction};
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${hovererBackgroundColorFunction};
+  }
+`;
 
   // src/renderer/App.tsx
   function App() {
-    const [stage, setStage] = (0, import_react4.useState)(0);
+    const [stage, setStage] = (0, import_react4.useState)(1);
     const stages = [];
     stages[0] = /* @__PURE__ */ import_react4.default.createElement(DataCollectStage, { onSuccess: () => setStage(1) });
     stages[1] = /* @__PURE__ */ import_react4.default.createElement(WorkerEditionStage, { onSuccess: () => {

@@ -5,7 +5,7 @@ import './App.css';
 import { WorkerEditionStage } from './components/WorkerEditionStage';
 
 export default function App() {
-  const [stage, setStage] = useState(0);
+  const [stage, setStage] = useState(1);
 
   const stages: React.ReactElement[] = [];
 
