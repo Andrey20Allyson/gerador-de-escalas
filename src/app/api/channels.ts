@@ -11,5 +11,12 @@ export type AppChannelReturn<C extends keyof AppChannels> = AppChannels[C]['retu
 export interface AppChannels {
   generate: Channel<[filePath: string, sheetName: string, month: number], Uint8Array>;
   getSheetNames: Channel<[filePath: string], string[]>;
-  getWorkerInfos: Channel<[], WorkerInfo>;
+  changeWorkerInfo: Channel<[index: number, newState: WorkerInfo], void>;
+  loadData: Channel<[filePath: string, sheetName: string, month: number], Error | undefined>;
+  changeWorkerDayOfWork: Channel<[workerIndex: number, day: number, value: boolean], void>;
+  getWorkerInfo: Channel<[], WorkerInfo[] | undefined>;
+}
+
+export type AppAPI = {
+  [Channel in keyof AppChannels]: (...args: AppChannelParams<Channel>) => Promise<AppChannelReturn<Channel>>;
 }
