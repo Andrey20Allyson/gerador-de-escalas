@@ -1,122 +1,71 @@
-import { DaysOfWork } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-table/parsers/days-of-work";
-import { WorkTime } from '@andrey-allyson/escalas-automaticas/dist/extra-duty-table/parsers/work-time';
-import { WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-table/worker-info";
-import { iterRange } from "@andrey-allyson/escalas-automaticas/dist/utils/iteration";
-import { getNumOfDaysInMonth } from '@andrey-allyson/escalas-automaticas/dist/utils/month';
-import React, { useEffect, useState } from "react";
-import { LoadedData } from "../../app/api/channels";
-import { ColoredText, DayCell, DayGrid, Footer, HelpIcon, StageBody, StageHeader, WorkDayCell } from "./WorkerEditionStage.styles";
-
-function getFirstSundayOfMonth(year: number, month: number): Date {
-  const firstDayOfMonth = new Date(year, month, 1);
-  const dayOfWeek = firstDayOfMonth.getDay();
-  const daysUntilSunday = (7 - dayOfWeek) % 7;
-  const firstSundayOfMonth = new Date(year, month, 1 + daysUntilSunday);
-  return firstSundayOfMonth;
-}
+import React, { useState } from "react";
+import { DaysOfWork, WorkerInfo, toggleWorkDay } from "../extra-duty-lib";
+import { ColoredText, Footer, HeaderLabel, HelpIcon, StageBody, StageHeader } from "./WorkerEditionStage.styles";
+import { SaveWorkersDaysOfWorkStatus } from "../../app/api/status";
+import { useLoadedData, useRerender } from "../hooks";
+import { WorkDayGrid } from "./WorkDayGrid";
 
 export interface WorkerEditionStageProps {
-  onSuccess?: () => void;
+  onFinish?: () => void;
   onGoBack?: () => void;
 }
 
-function useRerender() {
-  const [rerenderState, setRerenderState] = useState(false);
-
-  function rerender() {
-    setRerenderState(!rerenderState);
-  }
-
-  return rerender;
+function toNumber(value: string) {
+  const number = +value;
+  return isNaN(number) ? undefined : number;
 }
 
 export function WorkerEditionStage(props: WorkerEditionStageProps) {
-  const [data, setData] = useState<LoadedData>();
   const [currentWorkerIndex, setCurrentWorkerIndex] = useState(0);
+  const { data, saveData } = useLoadedData();
   const rerender = useRerender();
 
-  useEffect(() => {
-    async function loadWorkers() {
-      const data = await window.api.getLoadedData();
-
-      if (!data) return;
-      const { workers } = data;
-
-      for (const worker of workers) {
-        Object.setPrototypeOf(worker, WorkerInfo.prototype);
-        Object.setPrototypeOf(worker.daysOfWork, DaysOfWork.prototype);
-        Object.setPrototypeOf(worker.workTime, WorkTime.prototype);
-      };
-
-      setData(data);
-    }
-
-    loadWorkers();
-  }, []);
+  const worker = data?.workers.at(currentWorkerIndex);
+  const daysOfWork = worker?.daysOfWork;
 
   function handleChangeWorker(ev: React.ChangeEvent<HTMLSelectElement>) {
-    const index = +ev.currentTarget.value;
-
-    if (isNaN(index)) return;
+    const index = toNumber(ev.currentTarget.value);
+    if (!index) return alert(`Valor '${ev.currentTarget.value}' não pode ser convertido para número!`);
 
     setCurrentWorkerIndex(index);
   }
 
   function handleChangeWorkDay(daysOfWork: DaysOfWork, day: number) {
-    if (daysOfWork.workOn(day)) {
-      daysOfWork.notWork(day);
-    } else {
-      daysOfWork.work(day);
-    }
+    toggleWorkDay(daysOfWork, day);
 
     rerender();
   }
 
-  let pastMonthDayCells: React.JSX.Element[] | undefined;
-  let workDayCells: React.JSX.Element[] | undefined;
-  
-  const daysOfWork = data?.workers.at(currentWorkerIndex)?.daysOfWork;
+  async function handleFinish() {
+    const code = await saveData();
+    if (code !== SaveWorkersDaysOfWorkStatus.OK) return alert(`Erro ao salvar alterações, código ${code}`);
 
-  if (data && daysOfWork) {
-    const month = data.month;
-
-    const firstSunday = getFirstSundayOfMonth(2023, month).getDate();
-
-    pastMonthDayCells = Array.from(
-      iterRange(0, firstSunday),
-      (day) => <DayCell>{(day + getNumOfDaysInMonth(month < 1 ? 11 : month - 1)) - firstSunday + 1}</DayCell>
-    );
-
-    workDayCells = Array.from(
-      iterRange(0, daysOfWork.length),
-      (day) => <WorkDayCell key={day} onClick={handleChangeWorkDay.bind(undefined, daysOfWork, day)} isWorkDay={daysOfWork.workOn(day)}>{day + 1}</WorkDayCell>
-    );
+    props.onFinish?.();
   }
 
   return (
     <StageBody>
       <StageHeader>
-        <label>Alterar dias de serviço</label>
+        <HeaderLabel>Alterar dias de serviço</HeaderLabel>
         <HelpIcon>
           <div>
-            <p>
-              <ColoredText color="#06be00">Verde</ColoredText>: livre para extra;
-            </p>
+            <p><ColoredText color="#06be00">Verde</ColoredText> = Dias de extra</p>
           </div>
         </HelpIcon>
       </StageHeader>
       <select onChange={handleChangeWorker}>
-        {data && data.workers.map((worker, i) => <option key={i} value={i}>{worker.config.name}</option>)}
+        {data && data.workers.map(createWorkerOption)}
       </select>
-      <DayGrid>
-        {pastMonthDayCells}
-        {workDayCells}
-      </DayGrid>
+      {data && daysOfWork && <WorkDayGrid month={data.month} daysOfWork={daysOfWork} onToggleDay={handleChangeWorkDay} />}
       <Footer>
         <input type="button" value='Voltar' onClick={props.onGoBack} />
-        <input type="button" value='Salvar' />
-        <input type="button" value='Finalizar' />
+        <input type="button" value='Salvar' onClick={saveData} />
+        <input type="button" value='Proximo' onClick={handleFinish} />
       </Footer>
     </StageBody>
   );
+}
+
+export function createWorkerOption(worker: WorkerInfo, index: number) {
+  return <option key={index} value={index}>{worker.config.name}</option>;
 }

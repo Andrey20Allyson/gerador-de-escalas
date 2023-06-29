@@ -1,4 +1,6 @@
 import { WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-table/worker-info";
+import type { IpcMainInvokeEvent } from "electron";
+import { GeneratorStatus, SaveWorkersDaysOfWorkStatus } from "./status";
 
 export type Channel<Params extends unknown[], Return> = {
   params: Params,
@@ -14,12 +16,6 @@ export interface LoadedData {
   readonly month: number;
 }
 
-export enum SaveWorkersDaysOfWorkStatus {
-  OK,
-  ARRAY_LENGTH_ERROR,
-  UNKNOWN_ERROR,
-};
-
 export interface AppChannels {
   generate: Channel<[filePath: string, sheetName: string, month: number], Uint8Array>;
   getSheetNames: Channel<[filePath: string], string[]>;
@@ -29,8 +25,14 @@ export interface AppChannels {
   saveWorkersDaysOfWork: Channel<[workers: readonly WorkerInfo[]], SaveWorkersDaysOfWorkStatus>
   getWorkerInfo: Channel<[], WorkerInfo[] | undefined>;
   getLoadedData: Channel<[], LoadedData | undefined>;
+  generateWithLoaded: Channel<[], GeneratorStatus>;
+  getGeneratedArrayBuffer: Channel<[], ArrayBuffer | undefined>;
 }
 
 export type AppAPI = {
   [Channel in keyof AppChannels]: (...args: AppChannelParams<Channel>) => Promise<AppChannelReturn<Channel>>;
+}
+
+export type AppHandlerObject = {
+  [Channel in keyof AppChannels]: (ev: IpcMainInvokeEvent, ...args: AppChannelParams<Channel>) => Promise<AppChannelReturn<Channel>>
 }

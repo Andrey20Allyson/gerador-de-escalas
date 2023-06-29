@@ -12,7 +12,7 @@ function createSheetNameOption(sheetName: string, key: number) {
 }
 
 export interface DataCollectStageProps {
-  onSuccess?: () => void;
+  onFinish?: () => void;
   onError?: (error: Error) => void;
 }
 
@@ -44,7 +44,7 @@ export function DataCollectStage(props: DataCollectStageProps) {
       Object.setPrototypeOf(error, Error.prototype);
       props.onError?.(error);
     } else {
-      props.onSuccess?.();
+      props.onFinish?.();
     }
   }
 

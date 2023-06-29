@@ -69,7 +69,9 @@ export const DayGrid = styled.div`
   gap: .4rem;
   background-color: #cecece;
   padding: .4rem;
-
+  border-width: 1px;
+  border-color: #0002;
+  border-style: solid;
 `;
 
 export interface DayCellProps {
@@ -116,4 +118,12 @@ export const WorkDayCell = styled.div<DayCellProps>`
   &:hover {
     background-color: ${hovererBackgroundColorFunction};
   }
+
+  color: ${(props) => props.isWorkDay ? '#eee' : '#000'};
+  ${(props) => props.isWorkDay ? '' : css`font-weight: bolder;`}
+`;
+
+export const HeaderLabel = styled.label`
+font-weight: bolder;
+font-size: 1.2rem;
 `;
