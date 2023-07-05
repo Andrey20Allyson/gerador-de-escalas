@@ -4,8 +4,8 @@ import { loadAPI } from './api';
 
 async function createWindow() {
   const window = new BrowserWindow({
-    width: 900,
-    height: 500,
+    width: 1100,
+    height: 700,
     autoHideMenuBar: true,
     icon: fromRoot('./public/assets/images/brasao.png'),
     resizable: false,

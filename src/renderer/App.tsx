@@ -69,7 +69,7 @@ interface StyledNavButtonProps {
 
 const StyledNavButton = styled.span<StyledNavButtonProps>`
   padding: .4rem .7rem;
-  background-color: ${(props) => props.selected ? '#96cf8e' : '#65be5a'};
+  background-color: ${(props) => props.selected ? '#57964f' : '#afafaf'};
   transition: background-color 200ms;
   font-weight: bold;
   cursor: pointer;

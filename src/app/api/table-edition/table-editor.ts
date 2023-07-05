@@ -63,6 +63,18 @@ export class TableEditor {
     };
   }
 
+  get() {
+
+  }
+
+  save() {
+
+  }
+
+  serialize() {
+
+  }
+
   private static extractYearAndMonthFromBook(sheet: SheetHandler): InputMonth {
     return {
       month: sheet.at('c', 7).as('number').value,
