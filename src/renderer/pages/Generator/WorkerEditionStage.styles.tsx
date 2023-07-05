@@ -124,6 +124,6 @@ export const WorkDayCell = styled.div<DayCellProps>`
 `;
 
 export const HeaderLabel = styled.label`
-font-weight: bolder;
-font-size: 1.2rem;
+  font-weight: bolder;
+  font-size: 1.2rem;
 `;

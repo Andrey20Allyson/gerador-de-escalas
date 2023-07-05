@@ -16,10 +16,6 @@ function createRendererAPI(): AppAPI {
       return invokeIPC('changeWorkerInfo', index, newState);
     },
 
-    generate(filePath, sheetName, month) {
-      return invokeIPC('generate', filePath, sheetName, month);
-    },
-
     getSheetNames(filePath) {
       return invokeIPC('getSheetNames', filePath);
     },
@@ -36,8 +32,8 @@ function createRendererAPI(): AppAPI {
       return invokeIPC('getLoadedData');
     },
 
-    loadData(filePath, sheetName, month) {
-      return invokeIPC('loadData', filePath, sheetName, month);
+    loadData(filePath, sheetName, year, month) {
+      return invokeIPC('loadData', filePath, sheetName, year, month);
     },
 
     generateWithLoaded() {

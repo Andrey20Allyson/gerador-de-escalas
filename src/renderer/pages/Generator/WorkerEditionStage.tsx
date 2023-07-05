@@ -1,21 +1,19 @@
 import React, { useState } from "react";
-import { DaysOfWork, WorkerInfo, toggleWorkDay } from "../extra-duty-lib";
 import { ColoredText, Footer, HeaderLabel, HelpIcon, StageBody, StageHeader } from "./WorkerEditionStage.styles";
-import { SaveWorkersDaysOfWorkStatus } from "../../app/api/status";
-import { useLoadedData, useRerender } from "../hooks";
-import { WorkDayGrid } from "./WorkDayGrid";
-
-export interface WorkerEditionStageProps {
-  onFinish?: () => void;
-  onGoBack?: () => void;
-}
+import { DaysOfWork, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import { SaveWorkersDaysOfWorkStatus } from "../../../app/api/status";
+import { WorkDayGrid } from "../../components/WorkDayGrid";
+import { useStage } from "../../contexts/stages";
+import { toggleWorkDay } from "../../extra-duty-lib";
+import { useLoadedData, useRerender } from "../../hooks";
 
 function toNumber(value: string) {
   const number = +value;
   return isNaN(number) ? undefined : number;
 }
 
-export function WorkerEditionStage(props: WorkerEditionStageProps) {
+export function WorkerEditionStage() {
+  const { next, prev } = useStage();
   const [currentWorkerIndex, setCurrentWorkerIndex] = useState(0);
   const { data, saveData } = useLoadedData();
   const rerender = useRerender();
@@ -40,7 +38,7 @@ export function WorkerEditionStage(props: WorkerEditionStageProps) {
     const code = await saveData();
     if (code !== SaveWorkersDaysOfWorkStatus.OK) return alert(`Erro ao salvar alterações, código ${code}`);
 
-    props.onFinish?.();
+    next();
   }
 
   return (
@@ -56,9 +54,9 @@ export function WorkerEditionStage(props: WorkerEditionStageProps) {
       <select onChange={handleChangeWorker}>
         {data && data.workers.map(createWorkerOption)}
       </select>
-      {data && daysOfWork && <WorkDayGrid month={data.month} daysOfWork={daysOfWork} onToggleDay={handleChangeWorkDay} />}
+      {data && daysOfWork && <WorkDayGrid year={data.year} month={data.month} daysOfWork={daysOfWork} onToggleDay={handleChangeWorkDay} />}
       <Footer>
-        <input type="button" value='Voltar' onClick={props.onGoBack} />
+        <input type="button" value='Voltar' onClick={prev} />
         <input type="button" value='Salvar' onClick={saveData} />
         <input type="button" value='Proximo' onClick={handleFinish} />
       </Footer>

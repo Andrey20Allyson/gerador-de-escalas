@@ -1,6 +1,5 @@
-import { WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-table/worker-info";
+import { WorkerInfo, DaysOfWork, WorkTime } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import { LoadedData } from "./channels";
-import { DaysOfWork, WorkTime } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-table";
 
 export function setPrototypesOfLoadedData(data: LoadedData | undefined) {
   if (!data) return;

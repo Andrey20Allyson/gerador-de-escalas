@@ -14,13 +14,13 @@ export interface LoadedData {
   readonly workers: readonly WorkerInfo[];
   readonly sheetName: string;
   readonly month: number;
+  readonly year: number;
 }
 
 export interface AppChannels {
-  generate: Channel<[filePath: string, sheetName: string, month: number], Uint8Array>;
   getSheetNames: Channel<[filePath: string], string[]>;
   changeWorkerInfo: Channel<[index: number, newState: WorkerInfo], void>;
-  loadData: Channel<[filePath: string, sheetName: string, month: number], Error | undefined>;
+  loadData: Channel<[filePath: string, sheetName: string, year: number, month: number], Error | undefined>;
   changeWorkerDayOfWork: Channel<[workerIndex: number, day: number, value: boolean], void>;
   saveWorkersDaysOfWork: Channel<[workers: readonly WorkerInfo[]], SaveWorkersDaysOfWorkStatus>
   getWorkerInfo: Channel<[], WorkerInfo[] | undefined>;

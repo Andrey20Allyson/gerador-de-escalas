@@ -1,50 +1,51 @@
 import React, { useState } from "react";
+import { parseNumberOrThrow } from "../../utils";
+import { useStage } from "../../contexts/stages";
 
 export interface DataCollectStageState {
   filePath?: string;
   sheetName?: string;
   sheetNames?: string[];
   month?: number;
+  year?: number;
 }
 
 function createSheetNameOption(sheetName: string, key: number) {
   return <option key={key} value={sheetName}>{sheetName}</option>;
 }
 
-export interface DataCollectStageProps {
-  onFinish?: () => void;
-  onError?: (error: Error) => void;
-}
-
 export interface DataCollectStageErrorState {
   filePath?: string;
   sheetName?: string;
   month?: string;
+  year?: string;
 }
 
-export function DataCollectStage(props: DataCollectStageProps) {
+export function DataCollectStage() {
+  const { next } = useStage();
   const [state, setState] = useState<DataCollectStageState>({});
   const [errorState, setErrorState] = useState<DataCollectStageErrorState>({});
 
   async function handleSubmit() {
-    const { filePath, sheetName, month } = state;
+    const { filePath, sheetName, month, year } = state;
     const newErrorState: DataCollectStageErrorState = {};
 
-    if (!filePath || !sheetName || !month) {
+    if (!filePath || !sheetName || !month || !year) {
       if (!filePath) newErrorState.filePath = 'Escala do Mês é um campo obrigatório';
       if (!sheetName) newErrorState.sheetName = 'Nome da Aba é um Campo obrigatório';
       if (!month) newErrorState.month = 'Mês é um Campo obrigatório';
+      if (!year) newErrorState.year = 'Mês é um Campo obrigatório';
 
       return setErrorState(newErrorState);
     }
 
-    const error = await window.api.loadData(filePath, sheetName, month);
+    const error = await window.api.loadData(filePath, sheetName, year, month);
 
     if (error) {
       Object.setPrototypeOf(error, Error.prototype);
-      props.onError?.(error);
+      alert(error);
     } else {
-      props.onFinish?.();
+      next();
     }
   }
 
@@ -66,18 +67,21 @@ export function DataCollectStage(props: DataCollectStageProps) {
   }
 
   function handleMonthChange(ev: React.ChangeEvent<HTMLInputElement>) {
-    const stringMonth = ev.currentTarget.value.split('-').at(1);
+    const [stringYear, stringMonth]: (string | undefined)[] = ev.currentTarget.value.split('-');
+    if (!stringYear) return;
     if (!stringMonth) return;
 
-    const month = +stringMonth - 1;
+    const year = parseNumberOrThrow(stringYear);
+    const month = parseNumberOrThrow(stringMonth) - 1;
 
-    setState({ ...state, month });
+    setState({ ...state, month, year });
   }
 
   const message = errorState.filePath ?? errorState.sheetName ?? errorState.month;
 
   if (message) {
     alert(message);
+    setErrorState({});
   }
 
   return (

@@ -1,4 +1,4 @@
-import type { DaysOfWork } from '@andrey-allyson/escalas-automaticas/dist/extra-duty-table/parsers';
+import type { DaysOfWork } from '@andrey-allyson/escalas-automaticas/dist/extra-duty-lib';
 
 export function toggleWorkDay(daysOfWork: DaysOfWork, day: number) {
   if (daysOfWork.workOn(day)) {
@@ -8,6 +8,4 @@ export function toggleWorkDay(daysOfWork: DaysOfWork, day: number) {
   }
 }
 
-export * from '@andrey-allyson/escalas-automaticas/dist/extra-duty-table';
-export * from '@andrey-allyson/escalas-automaticas/dist/extra-duty-table/worker-info';
-export * from '@andrey-allyson/escalas-automaticas/dist/extra-duty-table/v2';
+export * from '@andrey-allyson/escalas-automaticas/dist/extra-duty-lib';

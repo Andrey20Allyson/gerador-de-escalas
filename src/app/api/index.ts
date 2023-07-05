@@ -1,9 +1,7 @@
-import { ExtraDutyTableV2, Holidays, generate, io, utils } from '@andrey-allyson/escalas-automaticas';
-import { parseWorkers } from '@andrey-allyson/escalas-automaticas/dist/auto-schedule/io';
-import { MainTableFactory } from '@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories/main-factory';
-import { WorkerInfo } from '@andrey-allyson/escalas-automaticas/dist/extra-duty-table/worker-info';
-import { WorkerRegistriesMap } from '@andrey-allyson/escalas-automaticas/dist/extra-duty-table/worker-registries';
-import { analyseResult } from '@andrey-allyson/escalas-automaticas/dist/utils/analyser';
+import { io, utils } from '@andrey-allyson/escalas-automaticas';
+import { MainTableFactory } from '@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories';
+import { ExtraDutyTableV2, Holidays, WorkerInfo, WorkerRegistriesMap } from '@andrey-allyson/escalas-automaticas/dist/extra-duty-lib';
+import { analyseResult } from '@andrey-allyson/escalas-automaticas/dist/utils';
 import fs from 'fs/promises';
 import { fromRoot } from '../root-path';
 import { handleIPC } from './app-ipc';
@@ -11,11 +9,14 @@ import { AppHandlerObject } from './channels';
 import { setPrototypesOfWorkers } from './ipc-utils';
 import { GeneratorStatus, SaveWorkersDaysOfWorkStatus } from './status';
 
+io.setFileSystem(fs);
+
 interface GeneratorData {
   workers: WorkerInfo[];
   sheetName: string;
   buffer: Buffer;
   month: number;
+  year: number;
 }
 
 function* keys<O extends {}>(object: O): Iterable<keyof O> {
@@ -59,20 +60,6 @@ export async function loadAPI(debug = false) {
 
     },
 
-    async generate(ev, filePath, sheetName, month) {
-      const input = await fs.readFile(filePath);
-      const output = await generate(input, {
-        inputSheetName: sheetName,
-        outputSheetName: 'DADOS',
-        month: +month,
-        workerRegistryMap,
-        patternBuffer,
-        holidays,
-      });
-
-      return output;
-    },
-
     async generateWithLoaded(ev) {
       try {
         if (!loadedData) return GeneratorStatus.DATA_NOT_LOADED_ERROR;
@@ -113,6 +100,7 @@ export async function loadAPI(debug = false) {
 
       return {
         month: loadedData.month,
+        year: loadedData.year,
         workers: loadedData.workers,
         sheetName: loadedData.sheetName,
       };
@@ -126,15 +114,16 @@ export async function loadAPI(debug = false) {
       return loadedData?.workers;
     },
 
-    async loadData(ev, filePath, sheetName, month) {
+    async loadData(ev, filePath, sheetName, year, month) {
       try {
         const buffer = await fs.readFile(filePath);
 
-        const workers = parseWorkers(buffer, {
+        const workers = io.parseWorkers(buffer, {
           workerRegistryMap,
           sheetName,
           holidays,
           month,
+          year,
         });
 
         loadedData = {
@@ -142,6 +131,7 @@ export async function loadAPI(debug = false) {
           workers,
           buffer,
           month,
+          year,
         };
       } catch (e) {
         if (e instanceof Error) return e;
