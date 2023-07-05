@@ -45,6 +45,10 @@ export async function loadAPI(debug = false) {
   const tableFactory = new MainTableFactory(patternBuffer);
 
   handleAppIPCChannels({
+    async clearData(ev) {
+      loadedData = undefined;
+    },
+
     async changeWorkerDayOfWork(ev, workerIndex, day, value) {
       const worker = loadedData?.workers.at(workerIndex);
       if (!worker) return;
@@ -114,7 +118,7 @@ export async function loadAPI(debug = false) {
       return loadedData?.workers;
     },
 
-    async loadData(ev, filePath, sheetName, year, month) {
+    async loadData(ev, { filePath, sheetName, year, month }) {
       try {
         const buffer = await fs.readFile(filePath);
 

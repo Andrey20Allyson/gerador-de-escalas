@@ -7,8 +7,8 @@ export default function Editor() {
     <StageProvider>
       <StageRouter stages={[
         LoadTableStage
-      ]}/>
-      <StageLoadBar/>
+      ]} />
+      <StageLoadBar />
     </StageProvider>
   )
 }

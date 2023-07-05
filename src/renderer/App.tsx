@@ -17,14 +17,10 @@ type RoutesType = {
 function useRoutes<R extends RoutesType, IR extends keyof R>(routes: R, initialRoute: IR) {
   const [route, setRoute] = useState<keyof R>(initialRoute);
 
-  const Component = routes[route] ?? NotFound;
+  const Router = routes[route] ?? NotFound;
 
   function navigate<K extends keyof R>(route: K) {
     setRoute(route);
-  }
-
-  function Router() {
-    return <Component />;
   }
 
   return {

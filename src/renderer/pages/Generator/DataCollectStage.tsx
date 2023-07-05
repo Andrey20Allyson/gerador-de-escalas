@@ -39,7 +39,12 @@ export function DataCollectStage() {
       return setErrorState(newErrorState);
     }
 
-    const error = await window.api.loadData(filePath, sheetName, year, month);
+    const error = await window.api.loadData({
+      sheetName,
+      filePath,
+      month,
+      year,
+    });
 
     if (error) {
       Object.setPrototypeOf(error, Error.prototype);

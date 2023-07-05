@@ -8,6 +8,10 @@ async function invokeIPC<C extends keyof AppChannels>(channel: C, ...args: AppCh
 
 function createRendererAPI(): AppAPI {
   return {
+    clearData() {
+      return invokeIPC('clearData');
+    },
+
     changeWorkerDayOfWork(workerIndex, day, value) {
       return invokeIPC('changeWorkerDayOfWork', workerIndex, day, value);
     },
@@ -32,8 +36,8 @@ function createRendererAPI(): AppAPI {
       return invokeIPC('getLoadedData');
     },
 
-    loadData(filePath, sheetName, year, month) {
-      return invokeIPC('loadData', filePath, sheetName, year, month);
+    loadData(data) {
+      return invokeIPC('loadData', data);
     },
 
     generateWithLoaded() {
