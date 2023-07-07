@@ -23,7 +23,7 @@ export function WorkerEditionStage() {
 
   function handleChangeWorker(ev: React.ChangeEvent<HTMLSelectElement>) {
     const index = toNumber(ev.currentTarget.value);
-    if (!index) return alert(`Valor '${ev.currentTarget.value}' não pode ser convertido para número!`);
+    if (index === undefined) return alert(`Valor '${ev.currentTarget.value}' não pode ser convertido para número!`);
 
     setCurrentWorkerIndex(index);
   }

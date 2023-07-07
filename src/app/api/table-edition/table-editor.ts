@@ -1,7 +1,9 @@
 import { io } from "@andrey-allyson/escalas-automaticas";
 import { parseTable } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/io";
+import { MainTableFactory } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories";
 import { ExtraDutyTableV2, Holidays, WorkerInfo, WorkerRegistriesMap } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import { BookHandler, SheetHandler } from "@andrey-allyson/escalas-automaticas/dist/xlsx-handlers";
+import { EditableDutyTable, TableSlotMap } from "./editable-table";
 
 export interface InputTable {
   buffer: Buffer;
@@ -14,6 +16,7 @@ export interface EditorInput {
 }
 
 export interface TableEditorLoadedData {
+  outputSheetName: string;
   table: ExtraDutyTableV2;
   workers: WorkerInfo[];
 }
@@ -29,6 +32,7 @@ export class TableEditor {
   constructor(
     readonly workerRegistryMap: WorkerRegistriesMap,
     readonly holidays: Holidays,
+    readonly serializer: MainTableFactory,
   ) { }
 
   load(payload: EditorInput) {
@@ -58,27 +62,51 @@ export class TableEditor {
     });
 
     this.loadedData = {
+      outputSheetName: tableToEdit.sheetName,
       workers,
       table,
     };
   }
 
-  get() {
+  getLoadedData() {
+    const data = this.loadedData;
+    if (!data) throw new Error(`Data hasn't loaded yet`);
 
+    return data;
   }
 
-  save() {
+  createEditable() {
+    const data = this.getLoadedData();
 
+    return EditableDutyTable.load(data);
   }
 
-  serialize() {
+  save(changes: TableSlotMap) {
+    const data = this.getLoadedData();
 
+    EditableDutyTable.applyChanges(changes, data.table, new Map(data.workers.map(mapWorkerFromName)));
+  }
+
+  async createSerializerCache() {
+    return this.serializer.createCache();
+  }
+
+  async serialize() {
+    const data = this.getLoadedData();
+
+    return this.serializer.generate(data.table, {
+      sheetName: data.outputSheetName,
+    });
   }
 
   private static extractYearAndMonthFromBook(sheet: SheetHandler): InputMonth {
     return {
       month: sheet.at('c', 7).as('number').value,
       year: sheet.at('c', 6).as('number').value,
-    } 
+    }
   }
+}
+
+function mapWorkerFromName(worker: WorkerInfo): [string, WorkerInfo] {
+  return [worker.name, worker];
 }

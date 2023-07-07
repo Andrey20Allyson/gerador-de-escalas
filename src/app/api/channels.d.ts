@@ -1,6 +1,8 @@
 import { WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-table/worker-info";
 import type { IpcMainInvokeEvent } from "electron";
 import { GeneratorStatus, SaveWorkersDaysOfWorkStatus } from "./status";
+import { EditableDutyTable, TableSlotMap } from "./table-edition/editable-table";
+import { LoadEditorPayload } from ".";
 
 export type AppChannelParams<C extends keyof AppChannels> = Parameters<AppChannels[C]>;
 export type AppChannelReturn<C extends keyof AppChannels> = ReturnType<AppChannels[C]>;
@@ -19,6 +21,12 @@ interface GeneratorData {
   year: number;
 }
 
+export interface AppError {
+  type: 'app-error';
+  message: string;
+  callstack?: string;
+}
+
 export interface AppChannels {
   getSheetNames(filePath: string): string[];
   changeWorkerInfo(index: number, newState: WorkerInfo): void;
@@ -30,6 +38,10 @@ export interface AppChannels {
   getLoadedData(): LoadedData | undefined;
   generateWithLoaded(): GeneratorStatus;
   getGeneratedArrayBuffer(): ArrayBuffer | undefined;
+  loadEditor(payload: LoadEditorPayload): AppError | void;
+  getEditableMap(): AppError | TableSlotMap;
+  saveEditorChanges(changes: TableSlotMap): AppError | void;
+  serializeEditedTable(): ArrayBuffer | AppError;
 }
 
 export type AppAPI = {

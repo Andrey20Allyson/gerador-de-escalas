@@ -16,6 +16,22 @@ function createRendererAPI(): AppAPI {
       return invokeIPC('changeWorkerDayOfWork', workerIndex, day, value);
     },
 
+    getEditableMap() {
+      return invokeIPC('getEditableMap');
+    },
+
+    serializeEditedTable() {
+      return invokeIPC('serializeEditedTable');
+    },
+
+    loadEditor(payload) {
+      return invokeIPC('loadEditor', payload);
+    },
+
+    saveEditorChanges(changes) {
+      return invokeIPC('saveEditorChanges', changes);
+    },
+
     changeWorkerInfo(index, newState) {
       return invokeIPC('changeWorkerInfo', index, newState);
     },

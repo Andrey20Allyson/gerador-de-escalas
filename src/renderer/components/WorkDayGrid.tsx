@@ -15,14 +15,15 @@ export function WorkDayGrid(props: WorkDayGridProps) {
   const { daysOfWork, month, year } = props;
 
   const firstSunday = getFirstSundayOfMonth(2023, month).getDate();
+  const pastMonthNumOfDays = getNumOfDaysInMonth(month < 1 ? 11 : month - 1, year);
 
-  const pastMonthDayCells = Array.from(iterRange(0, firstSunday), createDayCell);
+  const pastMonthDayCells = Array.from(iterRange(0, 8 - firstSunday), createDayCell);
   const workDayCells = Array.from(iterRange(0, daysOfWork.length), createWorkDayCell);
 
   function createDayCell(day: number, index: number) {
     return (
       <DayCell key={index}>
-        {(day + getNumOfDaysInMonth(month < 1 ? 11 : month - 1, year)) - firstSunday + 1}
+        {day + pastMonthNumOfDays - 7 + firstSunday}
       </DayCell>
     );
   }

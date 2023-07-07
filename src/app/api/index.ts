@@ -5,18 +5,29 @@ import { analyseResult } from '@andrey-allyson/escalas-automaticas/dist/utils';
 import fs from 'fs/promises';
 import { fromRoot } from '../root-path';
 import { handleIPC } from './app-ipc';
-import { AppHandlerObject } from './channels';
+import { AppError, AppHandlerObject } from './channels';
 import { setPrototypesOfWorkers } from './ipc-utils';
 import { GeneratorStatus, SaveWorkersDaysOfWorkStatus } from './status';
+import { TableEditor } from './table-edition/table-editor';
 
 io.setFileSystem(fs);
 
-interface GeneratorData {
+export interface GeneratorData {
   workers: WorkerInfo[];
   sheetName: string;
   buffer: Buffer;
   month: number;
   year: number;
+}
+
+export interface LoadTablePayload {
+  sheetName: string;
+  filePath: string;
+}
+
+export interface LoadEditorPayload {
+  ordinaryTable: LoadTablePayload;
+  tableToEdit: LoadTablePayload;
 }
 
 function* keys<O extends {}>(object: O): Iterable<keyof O> {
@@ -31,6 +42,21 @@ function handleAppIPCChannels(handler: AppHandlerObject) {
   }
 }
 
+function createAppError(error: unknown): AppError {
+  if (error instanceof Error) {
+    return {
+      message: error.message,
+      callstack: error.stack,
+      type: 'app-error',
+    };
+  }
+
+  return {
+    type: 'app-error',
+    message: JSON.stringify(error),
+  };
+}
+
 export async function loadAPI(debug = false) {
   const holidaysBuffer = await fs.readFile(fromRoot('./assets/holidays.json'));
   const patternBuffer = await fs.readFile(fromRoot('./assets/output-pattern.xlsx'));
@@ -43,6 +69,7 @@ export async function loadAPI(debug = false) {
   let outputBuffer: ArrayBuffer | undefined;
 
   const tableFactory = new MainTableFactory(patternBuffer);
+  const tableEditor = new TableEditor(workerRegistryMap, holidays, tableFactory);
 
   handleAppIPCChannels({
     async clearData(ev) {
@@ -60,6 +87,54 @@ export async function loadAPI(debug = false) {
       }
     },
 
+    async getEditableMap(ev) {
+      try {
+        return tableEditor.createEditable().tableMap;
+      } catch (e) {
+        return createAppError(e);
+      }
+    },
+
+    async serializeEditedTable(ev) {
+      try {
+        const buffer = await tableEditor.serialize();
+  
+        return new Uint8Array(buffer).buffer;
+      } catch (e) {
+        return createAppError(e);
+      }
+    },
+
+    async loadEditor(ev, payload) {
+      try {
+        const { ordinaryTable, tableToEdit } = payload;
+        
+        const ordinaryTableBuffer = await fs.readFile(ordinaryTable.filePath);
+        const tableToEditBuffer = await fs.readFile(tableToEdit.filePath);
+
+        tableEditor.load({
+          ordinaryTable: {
+            buffer: ordinaryTableBuffer,
+            sheetName: ordinaryTable.sheetName,
+          },
+          tableToEdit: {
+            buffer: tableToEditBuffer,
+            sheetName: tableToEdit.sheetName,
+          },
+        });
+      } catch (e) {
+        return createAppError(e);
+      }
+    },
+
+    async saveEditorChanges(ev, changes) {
+      try {
+        tableEditor.save(changes);
+      } catch (e) {
+        return createAppError(e);
+      }
+    },
+
     async changeWorkerInfo(ev, index, newState) {
 
     },
@@ -71,8 +146,8 @@ export async function loadAPI(debug = false) {
 
         const table = new ExtraDutyTableV2({ month });
 
-        const success = table.tryAssignArrayMultipleTimes(workers, 500);
-        if (!success) return GeneratorStatus.ASSIGN_ERROR;
+        table.tryAssignArrayMultipleTimes(workers, 2000);
+        // if (!success) return GeneratorStatus.ASSIGN_ERROR;
 
         if (debug) {
           console.log(analyseResult(table, workers));

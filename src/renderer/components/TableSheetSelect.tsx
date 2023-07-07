@@ -19,6 +19,8 @@ function createSheetNameOption(sheetName: string, key: number) {
 
 export function TableSheetSelect(props: TableSheetSelectProps) {
   const [state, setState] = useState<TableSheetSelectState>();
+  
+  props.onChange?.(state);
 
   async function handleFileChange(ev: React.ChangeEvent<HTMLInputElement>) {
     const filePath = ev.currentTarget.files?.item(0)?.path;

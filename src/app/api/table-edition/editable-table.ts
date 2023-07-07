@@ -1,4 +1,4 @@
-import { ExtraDutyTable, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import type { ExtraDutyTable, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import type { TableEditorLoadedData } from "./table-editor";
 import { enumerate } from "@andrey-allyson/escalas-automaticas/dist/utils";
 
@@ -31,6 +31,7 @@ export class EditableTableSlot {
 
   *iter(): Iterable<TableSlotEntry> {
     for (const [day, duties] of enumerate(this.slot)) {
+      if (!duties) continue;
       for (const [dutyIndex, state] of enumerate(duties)) {
         yield {
           dutyIndex,
@@ -98,10 +99,10 @@ export class EditableDutyTable {
 
   static *iterTableMap(map: TableSlotMap): Iterable<[string, EditableTableSlot]> {
     for (const key in map) {
-      const slot = map[key]
+      const slot = map[key];
       if (!slot) continue;
 
-      return [key, new EditableTableSlot(slot)];
+      yield [key, new EditableTableSlot(slot)];
     }
   }
 
