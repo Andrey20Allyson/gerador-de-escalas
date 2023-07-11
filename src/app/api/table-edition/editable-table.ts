@@ -67,6 +67,8 @@ export class EditableDutyTable {
   constructor(
     public tableMap: TableSlotMap,
     public names: readonly string[],
+    public year: number,
+    public month: number,
   ) {
     this.changes = {};
   }
@@ -128,19 +130,24 @@ export class EditableDutyTable {
     }
   }
 
-  static from(map: TableSlotMap) {
+  static from(map: TableSlotMap, year: number, month: number) {
     const names = Object.keys(map);
 
     return new EditableDutyTable(
       map,
       names,
+      year,
+      month,
     );
   }
 
   static load(payload: TableEditorLoadedData) {
+    const { month, year } = payload.table.config;
     return new EditableDutyTable(
       EditableDutyTable.mapTable(payload.table),
       EditableDutyTable.getNamesFrom(payload.workers),
+      year,
+      month,
     );
   }
 

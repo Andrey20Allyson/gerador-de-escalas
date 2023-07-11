@@ -1,9 +1,19 @@
 import React, { useRef } from 'react';
-import { useStage } from '../../contexts/stages';
-import { HeaderLabel } from '../Generator/WorkerEditionStage.styles';
-import { TableSheetSelect, TableSheetSelectState } from '../../components/TableSheetSelect';
+import { useStage } from '../contexts/stages';
+import { HeaderLabel } from '../pages/Generator/WorkerEditionStage.styles';
+import { TableSheetSelect, TableSheetSelectState } from './TableSheetSelect';
 
-export function LoadTableStage() {
+export interface LoadTableFormData {
+  ordinaryTable: TableSheetSelectState;
+  tableToEdit: TableSheetSelectState;
+}
+
+export interface LoadTableStageProps {
+  title: string;
+  onSubmit?: (data: LoadTableFormData) => boolean | Promise<boolean>;
+}
+
+export function LoadTableStage(props: LoadTableStageProps) {
   const tableToEditStateRef = useRef<TableSheetSelectState>();
   const ordinaryTableStateRef = useRef<TableSheetSelectState>();
   const { next } = useStage();
@@ -14,28 +24,19 @@ export function LoadTableStage() {
 
     if (!tableToEditState || !ordinaryTableState) return alert('Algum(s) dos campos obrigatórios não foram preenchidos');
 
-    const result = await window.api.loadEditor({
-      ordinaryTable: {
-        filePath: ordinaryTableState.filePath,
-        sheetName: ordinaryTableState.sheetName,
-      },
-      tableToEdit: {
-        filePath: tableToEditState.filePath,
-        sheetName: tableToEditState.sheetName,
-      },
-    });
+    const result = props.onSubmit?.({
+      ordinaryTable: ordinaryTableState,
+      tableToEdit: tableToEditState,
+    }) ?? true;
 
-    if (result) {
-      console.error(result);
-      alert(result.message);
-    } else {
-      next();
-    }
+    const success = result instanceof Promise ? await result : result;
+
+    if (success) next();
   }
 
   return (
     <>
-      <HeaderLabel>Escolha uma escala para editar</HeaderLabel>
+      <HeaderLabel>{props.title}</HeaderLabel>
       <div className="form-body">
         <TableSheetSelect
           fileInputTitle='Escala Ordinária'

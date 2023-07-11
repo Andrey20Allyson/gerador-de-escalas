@@ -67,11 +67,9 @@ export const DayGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: .4rem;
-  background-color: #cecece;
+  background-color: #49494942;
+  border-radius: .2rem;
   padding: .4rem;
-  border-width: 1px;
-  border-color: #0002;
-  border-style: solid;
 `;
 
 export interface DayCellProps {
@@ -79,29 +77,31 @@ export interface DayCellProps {
 }
 
 export function normalBackgroundColorFunction(props: DayCellProps) {
-  return props.isWorkDay ? '#aaaaaa' : '#06bb00';
+  return props.isWorkDay ? '#d3d3d3' : '#297a29';
 }
 
 export function hovererBackgroundColorFunction(props: DayCellProps) {
-  return props.isWorkDay ? '#8a8a8a' : '#015200';
+  return props.isWorkDay ? '#8a8a8a' : '#025a00';
 }
 
 export const shadowStyles = css`
-  box-shadow: -.2rem .2rem .4rem #0003;
+  box-shadow: -.1rem .1rem .4rem #0002;
 `;
 
 export const dayCellStyles = css`
   ${shadowStyles}
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 2rem;
+  height: 1.7rem;
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   user-select: none;
-  border-color: #0002;
+  border-color: #0001;
+  border-radius: .2rem;
   border-width: 1px;
   border-style: solid;
+  transition: background-color 100ms, color 100ms;
 `;
 
 export const DayCell = styled.div`
@@ -119,7 +119,7 @@ export const WorkDayCell = styled.div<DayCellProps>`
     background-color: ${hovererBackgroundColorFunction};
   }
 
-  color: ${(props) => props.isWorkDay ? '#eee' : '#000'};
+  color: ${(props) => props.isWorkDay ? '#000' : '#eee'};
   ${(props) => props.isWorkDay ? '' : css`font-weight: bolder;`}
 `;
 

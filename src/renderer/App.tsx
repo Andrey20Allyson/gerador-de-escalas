@@ -72,6 +72,7 @@ const StyledNavButton = styled.span<StyledNavButtonProps>`
   background-color: ${(props) => props.selected ? '#57964f' : '#afafaf'};
   transition: background-color 200ms;
   font-weight: bold;
+  user-select: none;
   cursor: pointer;
   margin: 0;
   border-top-right-radius: .4rem;

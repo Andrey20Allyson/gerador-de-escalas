@@ -1,4 +1,4 @@
-import { WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-table/worker-info";
+import type { WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib/structs/worker-info";
 import type { IpcMainInvokeEvent } from "electron";
 import { GeneratorStatus, SaveWorkersDaysOfWorkStatus } from "./status";
 import { EditableDutyTable, TableSlotMap } from "./table-edition/editable-table";
@@ -39,7 +39,7 @@ export interface AppChannels {
   generateWithLoaded(): GeneratorStatus;
   getGeneratedArrayBuffer(): ArrayBuffer | undefined;
   loadEditor(payload: LoadEditorPayload): AppError | void;
-  getEditableMap(): AppError | TableSlotMap;
+  getEditableMap(): AppError | EditableDutyTable;
   saveEditorChanges(changes: TableSlotMap): AppError | void;
   serializeEditedTable(): ArrayBuffer | AppError;
 }

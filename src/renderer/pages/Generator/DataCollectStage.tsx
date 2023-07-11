@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { parseNumberOrThrow } from "../../utils";
 import { useStage } from "../../contexts/stages";
+import { parseNumberOrThrow } from "../../utils";
 
 export interface DataCollectStageState {
   filePath?: string;

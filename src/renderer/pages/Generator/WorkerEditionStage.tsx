@@ -1,11 +1,13 @@
-import React, { useState } from "react";
-import { ColoredText, Footer, HeaderLabel, HelpIcon, StageBody, StageHeader } from "./WorkerEditionStage.styles";
 import { DaysOfWork, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
-import { SaveWorkersDaysOfWorkStatus } from "../../../app/api/status";
+import React, { useState } from "react";
+import { GeneratorStatus, SaveWorkersDaysOfWorkStatus } from "../../../app/api/status";
+import { LoadSpinner } from "../../components/LoadSpinner";
 import { WorkDayGrid } from "../../components/WorkDayGrid";
 import { useStage } from "../../contexts/stages";
 import { toggleWorkDay } from "../../extra-duty-lib";
 import { useLoadedData, useRerender } from "../../hooks";
+import { saveFile, sleep } from "../../utils";
+import { ColoredText, Footer, HeaderLabel, HelpIcon, StageBody, StageHeader } from "./WorkerEditionStage.styles";
 
 function toNumber(value: string) {
   const number = +value;
@@ -13,8 +15,9 @@ function toNumber(value: string) {
 }
 
 export function WorkerEditionStage() {
-  const { next, prev } = useStage();
+  const { prev } = useStage();
   const [currentWorkerIndex, setCurrentWorkerIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
   const { data, saveData } = useLoadedData();
   const rerender = useRerender();
 
@@ -35,10 +38,30 @@ export function WorkerEditionStage() {
   }
 
   async function handleFinish() {
-    const code = await saveData();
-    if (code !== SaveWorkersDaysOfWorkStatus.OK) return alert(`Erro ao salvar alterações, código ${code}`);
+    setLoading(true);
 
-    next();
+    await sleep();
+
+    const saveStatus = await saveData();
+    if (saveStatus !== SaveWorkersDaysOfWorkStatus.OK) {
+      setLoading(false);
+      return alert(`Erro ao salvar alterações, '${SaveWorkersDaysOfWorkStatus[saveStatus]}'`);
+    }
+
+    const generationStatus = await window.api.generateWithLoaded();
+    if (generationStatus !== GeneratorStatus.OK) {
+      setLoading(false);
+      return alert(`Erro ao gerar escala, '${GeneratorStatus[generationStatus]}'`);
+    }
+
+    const buffer = await window.api.getGeneratedArrayBuffer();
+    if (!buffer) {
+      return setLoading(false);
+    }
+
+    setLoading(false);
+
+    saveFile('Escala.xlsx', buffer);
   }
 
   return (
@@ -57,9 +80,9 @@ export function WorkerEditionStage() {
       {data && daysOfWork && <WorkDayGrid year={data.year} month={data.month} daysOfWork={daysOfWork} onToggleDay={handleChangeWorkDay} />}
       <Footer>
         <input type="button" value='Voltar' onClick={prev} />
-        <input type="button" value='Salvar' onClick={saveData} />
-        <input type="button" value='Proximo' onClick={handleFinish} />
+        <input type="button" value='Gerar' onClick={handleFinish} />
       </Footer>
+      <LoadSpinner color="#00992e" visible={loading} spinnerWidth={3} size={15} />
     </StageBody>
   );
 }

@@ -89,7 +89,7 @@ export async function loadAPI(debug = false) {
 
     async getEditableMap(ev) {
       try {
-        return tableEditor.createEditable().tableMap;
+        return tableEditor.createEditable();
       } catch (e) {
         return createAppError(e);
       }
