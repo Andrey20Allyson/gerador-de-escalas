@@ -9,6 +9,7 @@ import { AppError, AppHandlerObject } from './channels';
 import { setPrototypesOfWorkers } from './ipc-utils';
 import { GeneratorStatus, SaveWorkersDaysOfWorkStatus } from './status';
 import { TableEditor } from './table-edition/table-editor';
+import { TableViewer } from './table-visualization/table-viewer';
 
 io.setFileSystem(fs);
 
@@ -20,14 +21,14 @@ export interface GeneratorData {
   year: number;
 }
 
-export interface LoadTablePayload {
+export interface LoadSheetPayload {
   sheetName: string;
   filePath: string;
 }
 
-export interface LoadEditorPayload {
-  ordinaryTable: LoadTablePayload;
-  tableToEdit: LoadTablePayload;
+export interface LoadDutyTablePayload {
+  ordinaryTable: LoadSheetPayload;
+  extraDutyTable: LoadSheetPayload;
 }
 
 function* keys<O extends {}>(object: O): Iterable<keyof O> {
@@ -67,6 +68,7 @@ export async function loadAPI(debug = false) {
 
   let loadedData: GeneratorData | undefined;
   let outputBuffer: ArrayBuffer | undefined;
+  let loadedViewer: TableViewer | undefined;
 
   const tableFactory = new MainTableFactory(patternBuffer);
   const tableEditor = new TableEditor(workerRegistryMap, holidays, tableFactory);
@@ -74,6 +76,36 @@ export async function loadAPI(debug = false) {
   handleAppIPCChannels({
     async clearData(ev) {
       loadedData = undefined;
+    },
+
+    async getLoadedTableViewerData(ev) {
+      return loadedViewer?.data;
+    },
+
+    async loadViewer(ev, payload) {
+      const {
+        ordinaryTable,
+        extraDutyTable,
+      } = payload;
+
+      try {
+        loadedViewer = TableViewer.parse({
+          holidays,
+          workerRegistryMap,
+          tables: {
+            ordinaryTable: {
+              buffer: await fs.readFile(ordinaryTable.filePath),
+              sheetName: ordinaryTable.sheetName,
+            },
+            extraDutyTable: {
+              buffer: await fs.readFile(extraDutyTable.filePath),
+              sheetName: extraDutyTable.sheetName,
+            },
+          },
+        });
+      } catch (e) {
+        return createAppError(e);
+      }
     },
 
     async changeWorkerDayOfWork(ev, workerIndex, day, value) {
@@ -98,7 +130,7 @@ export async function loadAPI(debug = false) {
     async serializeEditedTable(ev) {
       try {
         const buffer = await tableEditor.serialize();
-  
+
         return new Uint8Array(buffer).buffer;
       } catch (e) {
         return createAppError(e);
@@ -107,8 +139,8 @@ export async function loadAPI(debug = false) {
 
     async loadEditor(ev, payload) {
       try {
-        const { ordinaryTable, tableToEdit } = payload;
-        
+        const { ordinaryTable, extraDutyTable: tableToEdit } = payload;
+
         const ordinaryTableBuffer = await fs.readFile(ordinaryTable.filePath);
         const tableToEditBuffer = await fs.readFile(tableToEdit.filePath);
 
@@ -117,7 +149,7 @@ export async function loadAPI(debug = false) {
             buffer: ordinaryTableBuffer,
             sheetName: ordinaryTable.sheetName,
           },
-          tableToEdit: {
+          extraDutyTable: {
             buffer: tableToEditBuffer,
             sheetName: tableToEdit.sheetName,
           },

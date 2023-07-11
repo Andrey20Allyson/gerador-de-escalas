@@ -2,7 +2,8 @@ import type { WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-
 import type { IpcMainInvokeEvent } from "electron";
 import { GeneratorStatus, SaveWorkersDaysOfWorkStatus } from "./status";
 import { EditableDutyTable, TableSlotMap } from "./table-edition/editable-table";
-import { LoadEditorPayload } from ".";
+import { LoadDutyTablePayload } from ".";
+import { TableViewerData } from "./table-visualization/table-viewer";
 
 export type AppChannelParams<C extends keyof AppChannels> = Parameters<AppChannels[C]>;
 export type AppChannelReturn<C extends keyof AppChannels> = ReturnType<AppChannels[C]>;
@@ -31,14 +32,16 @@ export interface AppChannels {
   getSheetNames(filePath: string): string[];
   changeWorkerInfo(index: number, newState: WorkerInfo): void;
   loadData(data: GeneratorData): Error | undefined;
+  loadViewer(payload: LoadDutyTablePayload): AppError | undefined;
   clearData(): void;
   changeWorkerDayOfWork(workerIndex: number, day: number, value: boolean): void;
   saveWorkersDaysOfWork(workers: readonly WorkerInfo[]): SaveWorkersDaysOfWorkStatus;
   getWorkerInfo(): WorkerInfo[] | undefined;
   getLoadedData(): LoadedData | undefined;
+  getLoadedTableViewerData(): TableViewerData | undefined;
   generateWithLoaded(): GeneratorStatus;
   getGeneratedArrayBuffer(): ArrayBuffer | undefined;
-  loadEditor(payload: LoadEditorPayload): AppError | void;
+  loadEditor(payload: LoadDutyTablePayload): AppError | void;
   getEditableMap(): AppError | EditableDutyTable;
   saveEditorChanges(changes: TableSlotMap): AppError | void;
   serializeEditedTable(): ArrayBuffer | AppError;

@@ -20,6 +20,14 @@ function createRendererAPI(): AppAPI {
       return invokeIPC('getEditableMap');
     },
 
+    getLoadedTableViewerData() {
+      return invokeIPC('getLoadedTableViewerData');
+    },
+
+    loadViewer(payload) {
+      return invokeIPC('loadViewer', payload);
+    },
+
     serializeEditedTable() {
       return invokeIPC('serializeEditedTable');
     },
