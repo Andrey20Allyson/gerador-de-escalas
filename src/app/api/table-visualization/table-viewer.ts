@@ -1,110 +1,57 @@
-import { Gender, Graduation, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import { ExtraDutyTableV2, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import { getNumOfDaysInMonth } from "@andrey-allyson/escalas-automaticas/dist/utils";
 import { ParseTablePayload, parseTable } from "../utils/table";
-
-export interface WorkerViewerData {
-  graduation: Graduation;
-  duties: DutyViewerData[];
-  gender: Gender;
-  name: string;
-}
-
-export interface DutyViewerData {
-  workers: WorkerViewerData[];
-  startsAt: number;
-  endsAt: number;
-  index: number;
-}
-
-export interface DayViewerData {
-  duties: DutyViewerData[];
-  index: number;
-}
+import { DayViewer, DayViewerData } from "./day-viewer";
+import { normalizeIndex } from "./index.utils";
+import { WorkerViewer, WorkerViewerData } from "./worker-viewer";
 
 export interface TableViewerData {
-  year: number;
-  month: number;
-  days: DayViewerData[];
   workers: WorkerViewerData[];
+  days: DayViewerData[];
+  dutiesPerDay: number;
+  nunOfDays: number;
+  month: number;
+  year: number;
 }
 
-export class WorkerViewer {
-  constructor(readonly parent: TableViewer, readonly data: WorkerViewerData) { }
-
-  addDuty(duty: DutyViewerData) {
-    this.data.duties.push(duty);
-  }
-
-  static create(parent: TableViewer) {
-    return new WorkerViewer(parent, { duties: [], gender: Gender.UNDEFINED, graduation: Graduation.GCM, name: 'N/A' });
-  }
-}
-
-export class DutyViewer {
-  constructor(readonly parent: DayViewer, readonly data: DutyViewerData) { }
-
-  *iterWorkers(): Iterable<WorkerViewer> {
-    for (const worker of this.data.workers) {
-      if (worker) yield new WorkerViewer(this.parent.parent, worker);
-    }
-  }
-
-  setTime(startsAt: number, endsAt: number) {
-    this.data.startsAt = startsAt;
-    this.data.endsAt = endsAt;
-  }
-
-  workers() {
-    return this.data.workers;
-  }
-
-  addWorker(worker: WorkerViewerData) {
-    this.data.workers.push(worker);
-  }
-
-  createMap() {
-
-  }
-
-  static create(parent: DayViewer, index: number) {
-    return new DutyViewer(parent, { endsAt: 0, index, startsAt: 0, workers: [] });
-  }
-}
-
-export class DayViewer {
-  constructor(readonly parent: TableViewer, readonly data: DayViewerData) { }
-
-  *iterDuties(): Iterable<DutyViewer> {
-    for (const duty of this.data.duties) {
-      if (duty) yield new DutyViewer(this, duty);
-    }
-  }
-
-  getDuty(index: number) {
-    let duty = this.data.duties.at(index);
-    if (duty) return new DutyViewer(this, duty);
-
-    const viewer = DutyViewer.create(this, index);
-
-    this.data.duties[index] = viewer.data;
-
-    return viewer;
-  }
-
-  static create(parent: TableViewer, index: number) {
-    return new DayViewer(parent, { duties: [], index });
-  }
+export interface CreateTableViewerOptions {
+  dutiesPerDay: number;
+  year?: number;
+  month?: number;
 }
 
 export class TableViewer {
   constructor(readonly data: TableViewerData) { }
 
+  *iterDays(): Iterable<DayViewer> {
+    for (let i = 0; i < this.data.nunOfDays; i++) {
+      yield this.getDay(i);
+    }
+  }
+
+  *iterWorkers(): Iterable<WorkerViewer> {
+    for (const worker of this.data.workers) {
+      yield new WorkerViewer(this, worker);
+    }
+  }
+
+  numOfDays() {
+    return this.data.nunOfDays;
+  }
+
+  numOfWorkers() {
+    return this.data.workers.length;
+  }
+
   getDay(index: number) {
-    let day = this.data.days.at(index);
+    const normalizedIndex = normalizeIndex(index, this.numOfDays());
+
+    let day = this.data.days.at(normalizedIndex);
     if (day) return new DayViewer(this, day);
 
-    const viewer = DayViewer.create(this, index);
+    const viewer = DayViewer.create(this, normalizedIndex);
 
-    this.data.days[index] = viewer.data;
+    this.data.days[normalizedIndex] = viewer.data;
 
     return viewer;
   }
@@ -113,13 +60,15 @@ export class TableViewer {
     this.data.workers.push(worker);
   }
 
-  static parse(payload: ParseTablePayload) {
-    const { table, workers } = parseTable(payload);
+  static load(table: ExtraDutyTableV2) {
     const { year, month } = table.config;
 
-    console.log(workers.map(worker => worker.gender));
+    const viewer = TableViewer.create({
+      dutiesPerDay: table.getDay(0).size,
+      month,
+      year,
+    });
 
-    const viewer = TableViewer.create(year, month);
     const workerMap = new Map<WorkerInfo, WorkerViewer>();
 
     for (const entry of table.entries()) {
@@ -140,6 +89,8 @@ export class TableViewer {
         worker.data.gender = gender;
         worker.data.graduation = graduation;
 
+        viewer.addWorker(worker.data);
+
         workerMap.set(entry.worker, worker);
       }
 
@@ -147,14 +98,19 @@ export class TableViewer {
       duty.addWorker(worker.data);
     }
 
-    for (const [_, worker] of workerMap) {
-      viewer.addWorker(worker.data);
-    }
-
     return viewer;
   }
 
-  static create(year = 0, month = 0) {
-    return new TableViewer({ days: [], workers: [], month, year });
+  static parse(payload: ParseTablePayload) {
+    const { table } = parseTable(payload);
+
+    return TableViewer.load(table);
+  }
+
+  static create(options: CreateTableViewerOptions) {
+    const { dutiesPerDay, month = 0, year = 0 } = options;
+    const nunOfDays = getNumOfDaysInMonth(month, year);
+
+    return new TableViewer({ days: [], workers: [], month, year, nunOfDays, dutiesPerDay });
   }
 }
