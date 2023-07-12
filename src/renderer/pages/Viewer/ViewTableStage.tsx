@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { AiOutlineCloseCircle } from 'react-icons/ai';
+import { BsFillArrowLeftCircleFill, BsFillArrowRightCircleFill } from 'react-icons/bs';
+import { GrStatusUnknown } from 'react-icons/gr';
+import { HiOutlineArrowsExpand } from 'react-icons/hi';
+import { PiGenderFemaleBold, PiGenderMaleBold } from 'react-icons/pi';
 import styled, { css } from "styled-components";
-import { DayViewer, TableViewer } from "../../../app/api/table-visualization/table-viewer";
+import { DayViewer, DutyViewer, TableViewer, WorkerViewer } from "../../../app/api/table-visualization";
 import { Gender, Graduation } from "../../extra-duty-lib";
 import { iterRange } from "../../utils";
-import { AiOutlineCloseCircle, AiOutlineExpandAlt } from 'react-icons/ai';
+import { ColoredText } from "../Generator/WorkerEditionStage.styles";
+import { useStage } from "../../contexts/stages";
 
 export function useTableViewer() {
   const [viewer, setViewer] = useState<TableViewer>();
@@ -23,11 +29,13 @@ export function useTableViewer() {
 }
 
 export function ViewTableStage() {
+  const { prev } = useStage();
   const table = useTableViewer();
 
   return (
     <>
       {table && <DayViewGrid table={table} />}
+      <input type='button' onClick={prev} value='Voltar'/>
     </>
   );
 }
@@ -41,64 +49,154 @@ const dutyTitles = [
   '19 as 7h',
 ];
 
+export function createEmpityDutySlot() {
+  return <StyledEmpityDutySlot />;
+}
+
+export function* iterWithProps<T, P extends {}>(iter: Iterable<T>, props: P): Iterable<IterProps<T, P>> {
+  for (const entry of iter) {
+    yield { ...props, entry };
+  }
+}
+
+export type IterProps<T, P extends {}> = P & { entry: T };
+
+export interface DayProps {
+  onSelect: (day: DayViewer) => void;
+}
+
+export function createWorker(worker: WorkerViewer) {
+  return <StyledDutySlot gender={worker.data.gender} graduation={worker.data.graduation} />
+}
+
+export function createDuty(duty: DutyViewer) {
+  const dutySlots = Array.from(duty.iterWorkers(), createWorker);
+  const empitySlots = Array.from(iterRange(0, 3 - dutySlots.length), createEmpityDutySlot);
+
+  return (
+    <StyledDuty key={duty.data.index}>
+      {dutySlots}
+      {empitySlots}
+      <StyledDutyTitle>{dutyTitles.at(duty.data.index) ?? 'N/A'}</StyledDutyTitle>
+    </StyledDuty>
+  )
+}
+
+export function createDay(props: IterProps<DayViewer, DayProps>) {
+  const day = props.entry;
+
+  return (
+    <StyledDay key={day.data.index}>
+      <StyledDutyHeader>
+        <StyledDayTitle>Dia {day.data.index + 1}</StyledDayTitle>
+        <StyledExpandDayButton onClick={() => props.onSelect(day)}>
+          <HiOutlineArrowsExpand color='#6d6d6d' />
+        </StyledExpandDayButton>
+      </StyledDutyHeader>
+      <StyledDutiesContainer>
+        {Array.from(day.iterDuties(), createDuty)}
+      </StyledDutiesContainer>
+    </StyledDay>
+  )
+}
+
+const StyledExpandDayButton = styled.button`
+  background-color: #ffffff22;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.4rem;
+  padding: 0;
+  width: 1.8rem;
+  border-radius: .2rem;
+  transition: opacity 100ms;
+  box-shadow:
+    .1rem -.1rem .5rem #0002 inset,
+    -.1rem .1rem .5rem #ffffff58 inset;
+
+  &>svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  &:hover {
+    opacity: .7;
+  }
+`;
+
 export function DayViewGrid(props: DayViewGridProps) {
   const { table } = props;
-  const [selectedDay, setSelectedDay] = useState<DayViewer | undefined>(table.getDay(0));
+  const [selectedDay, setSelectedDay] = useState<DayViewer>();
 
-  function createDay(dayIndex: number) {
-    const day = table.getDay(dayIndex);
+  function handleNextDayView() {
+    if (!selectedDay) return;
 
-    function createDuty(dutyIndex: number) {
-      const duty = day.getDuty(dutyIndex);
+    const nextIndex = (selectedDay.data.index + 1) % table.numOfDays();
 
-      function createWorker(workerIndex: number) {
-        const worker = duty.data.workers.at(workerIndex);
+    const nextDay = table.getDay(nextIndex);
 
-        return worker
-          ? <StyledDutySlot gender={worker.gender} graduation={worker.graduation} />
-          : <StyledEmpityDutySlot />;
-      }
-
-      return (
-        <StyledDuty key={dutyIndex}>
-          {(Array.from(iterRange(0, 3), createWorker))}
-          <StyledDutyTitle>{dutyTitles.at(dutyIndex) ?? 'N/A'}</StyledDutyTitle>
-        </StyledDuty>
-      )
-    }
-
-    function handleSelectDay() {
-      setSelectedDay(day);
-    }
-
-    return (
-      <StyledDay key={dayIndex}>
-        <StyledDutyHeader>
-          <StyledDayTitle>Dia {dayIndex + 1}</StyledDayTitle>
-          <AiOutlineExpandAlt onClick={handleSelectDay} />
-        </StyledDutyHeader>
-        <StyledDutiesContainer>
-          {Array.from(iterRange(0, 2), createDuty)}
-        </StyledDutiesContainer>
-      </StyledDay>
-    )
+    setSelectedDay(nextDay);
   }
+
+  function handlePrevDayView() {
+    if (!selectedDay) return;
+
+    const prevIndex = selectedDay.data.index - 1;
+    const normalizedPrevIndex = (prevIndex < 0 ? table.numOfDays() + prevIndex : prevIndex) % table.numOfDays();
+
+    const prevDay = table.getDay(normalizedPrevIndex);
+
+    setSelectedDay(prevDay);
+  }
+
+  function handleCloseDayView() {
+    setSelectedDay(undefined);
+  }
+
+  const daysProps: DayProps = {
+    onSelect: day => setSelectedDay(day),
+  };
+
+  const days = Array.from(iterWithProps(table.iterDays(), daysProps), createDay);
 
   return (
     <StyledDayViewGrid>
-      {Array.from(iterRange(0, 31), createDay)}
-      {selectedDay && <DayViewModal onClose={() => setSelectedDay(undefined)} day={selectedDay} />}
+      {days}
+      {selectedDay && (
+        <DayViewModal
+          onNext={handleNextDayView}
+          onPrev={handlePrevDayView}
+          onClose={handleCloseDayView}
+          day={selectedDay} />
+      )}
     </StyledDayViewGrid>
   )
 }
 
-interface DayViewModalProps {
-  day: DayViewer;
-  onClose?: () => void;
+const genderComponentMap: Record<Gender, () => React.JSX.Element> = {
+  [Gender.FEMALE]: () => <PiGenderFemaleBold color='#de63e2' />,
+  [Gender.MALE]: () => <PiGenderMaleBold color='#5b4af5' />,
+  [Gender.UNDEFINED]: () => <GrStatusUnknown />,
+};
+
+const graduationTextColorMap: Record<Graduation, string> = {
+  [Graduation.INSP]: '#047400',
+  [Graduation.GCM]: '#000000',
+  [Graduation.SI]: '#a7aa00',
 }
 
-function DayViewModal(props: DayViewModalProps) {
-  const { day, onClose } = props;
+export interface DayViewModalProps {
+  day: DayViewer;
+  onClose?: () => void;
+  onNext?: () => void;
+  onPrev?: () => void;
+}
+
+export function DayViewModal(props: DayViewModalProps) {
+  const { day, onClose, onNext, onPrev } = props;
 
   const [closing, setClosing] = useState(false);
   const [dutyIndex, setDutyIndex] = useState(0);
@@ -116,33 +214,108 @@ function DayViewModal(props: DayViewModalProps) {
   return (
     <StyledDayViewModal closing={closing} onAnimationEnd={handleAnimationEnd}>
       <StyledModalHeader>
-        <StyledModalTitle>Dia {day.data.index + 1}</StyledModalTitle>
-        <AiOutlineCloseCircle onClick={handleClose} size={15} />
+        <div></div>
+        <StyledDayViewNavigation>
+          <BsFillArrowLeftCircleFill onClick={onPrev} />
+          <StyledModalTitle>
+            Dia {day.data.index + 1}
+          </StyledModalTitle>
+          <BsFillArrowRightCircleFill onClick={onNext} />
+        </StyledDayViewNavigation>
+        <AiOutlineCloseCircle onClick={handleClose} size={25} color="#cc0000" />
       </StyledModalHeader>
       <StyledModalBody>
-        <h4>Turno {dutyIndex + 1}</h4>
         <StyledDutyViewBody>
-          {Array.from(duty.iterWorkers(), worker => (
-            <StyledWorkerViewBody>
-              {worker.data.name}
-            </StyledWorkerViewBody>
-          ))}
+          <StyledDutyViewNavigation>
+            {Array.from(day.iterDuties(), duty => {
+              const thisDutyIndex = duty.data.index;
+
+              return <StyledDutyViewNavButton selected={dutyIndex === thisDutyIndex} onClick={() => setDutyIndex(thisDutyIndex)}>{dutyTitles.at(thisDutyIndex)}</StyledDutyViewNavButton>;
+            })}
+          </StyledDutyViewNavigation>
+          <StyledModalTitle2>
+            Turno das {dutyTitles.at(dutyIndex)}
+          </StyledModalTitle2>
+          <StyledDutyViewSlotSection>
+            {duty.numOfWorkers() > 0 ? Array.from(duty.iterWorkers(), worker => {
+              const Gender = genderComponentMap[worker.data.gender];
+              const gradutationColor = graduationTextColorMap[worker.data.graduation];
+
+              return (
+                <StyledWorkerViewBody>
+                  {worker.data.name}
+                  <StyledWorkerInfoSection>
+                    [<ColoredText color={gradutationColor}>{worker.data.graduation.toUpperCase()}</ColoredText>]
+                    <Gender />
+                  </StyledWorkerInfoSection>
+                </StyledWorkerViewBody>
+              );
+            }) : <StyledEmpityDutyMessage>Esse turno não possui componentes.</StyledEmpityDutyMessage>}
+          </StyledDutyViewSlotSection>
         </StyledDutyViewBody>
       </StyledModalBody>
     </StyledDayViewModal>
   );
 }
 
+const StyledEmpityDutyMessage = styled.h3`
+  color: #00000067;
+  text-align: center;
+`;
+
+interface StyledDutyViewNavButtonProps {
+  selected?: boolean;
+}
+
+const StyledDutyViewNavButton = styled.button<StyledDutyViewNavButtonProps>`
+  cursor: pointer;
+  outline: none;
+  border: none;
+  border-top-right-radius: .4rem;
+  background-color: ${({ selected }) => selected ? '#9e9e9e' : '#e0e0e0'};
+  transition: background-color 200ms;
+
+  &:hover {
+    background-color: ${({ selected }) => selected ? '#9e9e9e' : '#b3b3b3'};
+  }
+`;
+
+const StyledDutyViewNavigation = styled.nav`
+  display: flex;
+  gap: .2rem;
+  border-bottom: 1px solid #0003;
+`;
+
+const StyledDutyViewSlotSection = styled.section`
+  flex-direction: column;
+  display: flex;
+  gap: .3rem;
+`;
+
+const StyledWorkerInfoSection = styled.section`
+  height: 100%;
+  display: flex;
+  gap: .3rem;
+  align-items: center;
+`;
+
 const StyledWorkerViewBody = styled.span`
-  background-color: #e2e2e2;
-  padding: .3rem;
-  border-radius: .3rem;
   box-shadow: -.2rem .2rem .2rem #0002;
+  justify-content: space-between;
+  background-color: #e2e2e2;
+  border-radius: .3rem;
+  align-items: center;
+  padding: .3rem;
+  display: flex;
+
+  &, & * {
+    user-select: none;
+  }
 `;
 
 const StyledDutyViewBody = styled.section`
   padding: .5rem;
-  gap: .2rem;
+  gap: .4rem;
   display: flex;
   flex-direction: column;
 `;
@@ -153,20 +326,55 @@ const StyledModalBody = styled.div`
 
 const StyledModalHeader = styled.div`
   display: flex;
-  height: 20px;
+  height: 30px;
   padding: 0 .4rem;
   justify-content: space-between;
   align-items: center;
-  background-color: #c0c0c0;
+  background-color: #dddddd;
+  border-bottom: 1px solid #6d6d6d5a;
 
   &>svg {
     cursor: pointer;
   }
 `;
 
+const StyledModalTitle2 = styled.h2`
+  width: 100%;
+  font-size: .9rem;
+`;
+
+const StyledDayViewNavigation = styled.nav`
+  width: 20%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  align-self: center;
+
+  & * {
+    user-select: none;
+  }
+
+  &>svg {
+    cursor: pointer;
+    transition: fill 200ms, transform 200ms;
+  }
+
+  &>svg:hover {
+    fill: #0008;
+  }
+
+  &>svg:active {
+    transform: scale(.9);
+  }
+`;
+
 const StyledModalTitle = styled.h1`
+  gap: .4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   user-select: none;
-  font-size: 14px;
+  font-size: 1rem;
   flex: 1;
 `;
 
@@ -213,7 +421,7 @@ const StyledDayViewModal = styled.span<StyledDayViewModalProps>`
 
 const StyledDayViewGrid = styled.div`
   display: grid;
-  gap: .2rem;
+  gap: .3rem;
   grid-template-columns: repeat(7, 1fr);
   position: relative;
 `;
@@ -249,7 +457,7 @@ const StyledDuty = styled.div`
   flex-direction: column-reverse;
   box-shadow: -.1rem .1rem .2rem #0004 inset;
   justify-content: end;
-  gap: .2rem;
+  gap: 2px;
   padding: .2rem;
   border-radius: .2rem;
 `;
@@ -272,8 +480,9 @@ const StyledDutyTitle = styled.h4`
 `;
 
 const dutySlotStyles = css`
-  height: 3px;
+  height: 5px;
   width: 100%;
+  overflow: hidden;
   border-radius: .1rem;
 `;
 
@@ -302,11 +511,11 @@ const StyledDutySlot = styled.span<StyledDutySlotProps>`
   &::before {
     content: '';
     background-color: ${({ gender }) => genderColorMap[gender]};
-    width: 6px;
+    width: 20%;
     height: 100%;
     border-width: 1px;
     border-right-style: solid;
-    border-color: #0004;
+    border-color: #ffffff97;
   }
 `;
 

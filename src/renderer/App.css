@@ -60,6 +60,10 @@ select {
   height: 100%;
 }
 
+button {
+  font-family: 'Montserrat', sans-serif;
+}
+
 input {
   border: none;
   border-bottom: 1px solid #0004;
