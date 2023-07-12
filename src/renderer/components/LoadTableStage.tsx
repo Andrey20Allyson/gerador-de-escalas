@@ -44,7 +44,7 @@ export function LoadTableStage(props: LoadTableStageProps) {
           onChange={state => ordinaryTableStateRef.current = state}
         />
         <TableSheetSelect
-          fileInputTitle='Escala Para Editar'
+          fileInputTitle='Escala Da Extra'
           selectTitle='Nome da Aba'
           onChange={state => tableToEditStateRef.current = state}
         />

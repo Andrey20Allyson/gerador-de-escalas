@@ -1,12 +1,11 @@
 import React from "react";
-import { StageLoadBar, StageProvider, StageRouter } from "../../contexts/stages";
 import { LoadTableFormData, LoadTableStage } from "../../components/LoadTableStage";
-import { EditTableStage } from "./EditTableStage";
 import { isAppError, showAppError } from "../../utils/errors";
 
-function EditorLoadTableStage() {
+
+export function LoadTableViewerStage() {
   async function handleSubmit(data: LoadTableFormData) {
-    const result = await window.api.loadEditor({
+    const result = await window.api.loadViewer({
       ordinaryTable: {
         filePath: data.ordinaryTable.filePath,
         sheetName: data.ordinaryTable.sheetName,
@@ -25,17 +24,5 @@ function EditorLoadTableStage() {
     return true;
   }
 
-  return <LoadTableStage title="Escolha uma escala para editar" onSubmit={handleSubmit} />
-}
-
-export default function Editor() {
-  return (
-    <StageProvider>
-      <StageRouter stages={[
-        EditorLoadTableStage,
-        EditTableStage,
-      ]} />
-      <StageLoadBar />
-    </StageProvider>
-  )
+  return <LoadTableStage title="Escolha uma escala para visualizar" onSubmit={handleSubmit} />;
 }

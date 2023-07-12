@@ -21,6 +21,8 @@ export interface DayViewerData {
 }
 
 export interface TableViewerData {
+  year: number;
+  month: number;
   days: DayViewerData[];
   workers: WorkerViewerData[];
 }
@@ -40,9 +42,9 @@ export class WorkerViewer {
 export class DutyViewer {
   constructor(readonly parent: DayViewer, readonly data: DutyViewerData) { }
 
-  *iterWorkers() {
+  *iterWorkers(): Iterable<WorkerViewer> {
     for (const worker of this.data.workers) {
-      yield worker;
+      if (worker) yield new WorkerViewer(this.parent.parent, worker);
     }
   }
 
@@ -73,7 +75,7 @@ export class DayViewer {
 
   *iterDuties(): Iterable<DutyViewer> {
     for (const duty of this.data.duties) {
-      yield new DutyViewer(this, duty);
+      if (duty) yield new DutyViewer(this, duty);
     }
   }
 
@@ -113,10 +115,11 @@ export class TableViewer {
 
   static parse(payload: ParseTablePayload) {
     const { table, workers } = parseTable(payload);
+    const { year, month } = table.config;
 
     console.log(workers.map(worker => worker.gender));
 
-    const viewer = TableViewer.create();
+    const viewer = TableViewer.create(year, month);
     const workerMap = new Map<WorkerInfo, WorkerViewer>();
 
     for (const entry of table.entries()) {
@@ -132,7 +135,7 @@ export class TableViewer {
 
       if (!worker) {
         worker = WorkerViewer.create(viewer);
-      
+
         worker.data.name = name;
         worker.data.gender = gender;
         worker.data.graduation = graduation;
@@ -151,7 +154,7 @@ export class TableViewer {
     return viewer;
   }
 
-  static create() {
-    return new TableViewer({ days: [], workers: [] });
+  static create(year = 0, month = 0) {
+    return new TableViewer({ days: [], workers: [], month, year });
   }
 }
