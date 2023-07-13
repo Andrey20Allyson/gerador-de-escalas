@@ -7,8 +7,8 @@ export default function Viewer() {
   return (
     <StageProvider>
       <StageRouter stages={[
-        ViewTableStage,
         LoadTableViewerStage,
+        ViewTableStage,
       ]} />
       <StageLoadBar />
     </StageProvider>
