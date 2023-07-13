@@ -13,3 +13,7 @@ body {
   background-color: #001f04;
   padding: 2rem;
 }
+
+.clickable {
+  cursor: pointer;
+}

@@ -1,10 +1,12 @@
 import { Graduation, Gender } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import { DutyViewerData, DutyViewer } from "./duty-viewer";
 import { TableViewer } from "./table-viewer";
+import { removeFromArray } from "./index.utils";
 
 export interface WorkerViewerData {
   duties: DutyViewerData[];
   graduation: Graduation;
+  maxDuties: number;
   gender: Gender;
   name: string;
 }
@@ -18,6 +20,18 @@ export class WorkerViewer {
       if (!duty) continue;
       yield duty;
     }
+  }
+
+  getName() {
+    return this.data.name;
+  }
+
+  getGender() {
+    return this.data.gender;
+  }
+
+  getGraduation() {
+    return this.data.graduation;
   }
 
   numOfDuties() {
@@ -39,11 +53,19 @@ export class WorkerViewer {
     return duty;
   }
 
+  removeDuty(duty: DutyViewerData) {
+    return !!removeFromArray(this.data.duties, duty);
+  }
+
   addDuty(duty: DutyViewerData) {
+    if (this.data.duties.includes(duty) || this.numOfDuties() >= this.data.maxDuties) return false;
+
     this.data.duties.push(duty);
+
+    return true;
   }
 
   static create(parent: TableViewer) {
-    return new WorkerViewer(parent, { duties: [], gender: Gender.UNDEFINED, graduation: Graduation.GCM, name: 'N/A' });
+    return new WorkerViewer(parent, { duties: [], maxDuties: 5, gender: Gender.UNDEFINED, graduation: Graduation.GCM, name: 'N/A' });
   }
 }

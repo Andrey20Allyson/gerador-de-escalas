@@ -8,11 +8,16 @@ export function ViewTableStage() {
   const { prev } = useStage();
   const table = useTableViewer();
 
+  function handleSave() {
+
+  }
+
   return (
     <>
       {table && <DutyTableGrid table={table} />}
       <Footer>
         <input type='button' onClick={prev} value='Voltar' />
+        <input type='button' onClick={handleSave} value='Salvar' />
       </Footer>
     </>
   );

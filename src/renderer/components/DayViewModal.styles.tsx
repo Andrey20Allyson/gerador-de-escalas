@@ -10,8 +10,8 @@ export const StyledDayViewModal = styled.span<StyledDayViewModalProps>`
   flex-direction: column;
   position: absolute;
   display: flex;
-  width: 90%;
-  height: 90%;
+  width: 80%;
+  height: 80%;
   right: 50%;
   top: 50%;
   transform: translate(50%, -50%);
@@ -91,13 +91,20 @@ export const StyledModalTitle = styled.h1`
 `;
 
 export const StyledModalBody = styled.div`
-
+  flex-direction: column;
+  padding: .3rem;
+  display: flex;
+  flex: 1;
 `;
 
 export const StyledDutyViewBody = styled.section`
-  padding: .5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1.2fr;
+  justify-content: stretch;
+  align-items: stretch;
   gap: .4rem;
-  display: flex;
+  flex: 1;
   flex-direction: column;
 `;
 
@@ -114,6 +121,7 @@ export const StyledModalTitle2 = styled.h2`
 
 export const StyledDutyViewSlotSection = styled.section`
   flex-direction: column;
+  align-items: stretch;
   display: flex;
   gap: .3rem;
 `;

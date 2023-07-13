@@ -32,7 +32,7 @@ export const StyledDayViewGrid = styled.div`
   display: grid;
   gap: .3rem;
   grid-template-columns: repeat(7, 1fr);
-  position: relative;
+  /* position: relative; */
 `;
 
 export const StyledDay = styled.div`

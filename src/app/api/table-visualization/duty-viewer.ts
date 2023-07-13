@@ -1,4 +1,5 @@
 import { DayViewer } from "./day-viewer";
+import { removeFromArray } from "./index.utils";
 import { WorkerViewerData, WorkerViewer } from "./worker-viewer";
 
 export interface DutyViewerData {
@@ -31,8 +32,16 @@ export class DutyViewer {
     return this.data.workers;
   }
 
+  removeWorker(worker: WorkerViewerData) {
+    return !!removeFromArray(this.data.workers, worker);
+  }
+
   addWorker(worker: WorkerViewerData) {
+    if (this.data.workers.includes(worker)) return false;
+
     this.data.workers.push(worker);
+
+    return true;
   }
 
   createMap() {
