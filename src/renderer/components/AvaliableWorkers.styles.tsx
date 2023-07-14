@@ -48,7 +48,7 @@ export const StyledAvaliableWorkersScrollable = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: #007900;
+    background-color: #007900ab;
     border-radius: 4px;
   }
 
