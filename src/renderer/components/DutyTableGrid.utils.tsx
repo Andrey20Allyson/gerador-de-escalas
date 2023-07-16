@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { HiOutlineArrowsExpand } from "react-icons/hi";
 import { DayViewer, DutyViewer, WorkerViewer } from "../../app/api/table-visualization";

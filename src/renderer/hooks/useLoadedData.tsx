@@ -1,6 +1,6 @@
+// @ts-nocheck
 import { useEffect, useState } from "react";
 import { LoadedData } from "../../app/api/channels";
-import { setPrototypesOfLoadedData } from "../../app/api/ipc-utils";
 import { SaveWorkersDaysOfWorkStatus } from "../../app/api/status";
 
 export default function useLoadedData() {
@@ -8,13 +8,11 @@ export default function useLoadedData() {
 
   useEffect(() => {
     window.api.getLoadedData()
-      .then(setPrototypesOfLoadedData)
       .then(setData);
   }, []);
 
   function reloadData() {
     return window.api.getLoadedData()
-      .then(setPrototypesOfLoadedData)
       .then(setData);
   }
 

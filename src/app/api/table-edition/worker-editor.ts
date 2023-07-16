@@ -1,20 +1,22 @@
 import { Graduation, Gender } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
-import { DutyViewerData, DutyViewer } from "./duty-viewer";
-import { TableViewer } from "./table-viewer";
+import { DutyEditorData, DutyEditor } from "./duty-editor";
+import { TableEditor } from "./table-editor";
 import { removeFromArray } from "./index.utils";
 
-export interface WorkerViewerData {
-  duties: DutyViewerData[];
+export interface WorkerEditorData {
+  readonly workerID: number;
+  
+  duties: DutyEditorData[];
   graduation: Graduation;
   maxDuties: number;
   gender: Gender;
   name: string;
 }
 
-export class WorkerViewer {
-  constructor(readonly parent: TableViewer, readonly data: WorkerViewerData) { }
+export class WorkerEditor {
+  constructor(readonly parent: TableEditor, readonly data: WorkerEditorData) { }
 
-  *iterDuties(): Iterable<DutyViewer> {
+  *iterDuties(): Iterable<DutyEditor> {
     for (let i = 0; i < this.numOfDuties(); i++) {
       const duty = this.dutyAt(i);
       if (!duty) continue;
@@ -22,15 +24,19 @@ export class WorkerViewer {
     }
   }
 
-  getName() {
+  id() {
+    return this.data.workerID;
+  }
+
+  name() {
     return this.data.name;
   }
 
-  getGender() {
+  gender() {
     return this.data.gender;
   }
 
-  getGraduation() {
+  graduation() {
     return this.data.graduation;
   }
 
@@ -53,11 +59,11 @@ export class WorkerViewer {
     return duty;
   }
 
-  removeDuty(duty: DutyViewerData) {
+  removeDuty(duty: DutyEditorData) {
     return !!removeFromArray(this.data.duties, duty);
   }
 
-  addDuty(duty: DutyViewerData) {
+  addDuty(duty: DutyEditorData) {
     if (this.data.duties.includes(duty) || this.numOfDuties() >= this.data.maxDuties) return false;
 
     this.data.duties.push(duty);
@@ -65,7 +71,14 @@ export class WorkerViewer {
     return true;
   }
 
-  static create(parent: TableViewer) {
-    return new WorkerViewer(parent, { duties: [], maxDuties: 5, gender: Gender.UNDEFINED, graduation: Graduation.GCM, name: 'N/A' });
+  static create(parent: TableEditor, workerID: number) {
+    return new WorkerEditor(parent, {
+      graduation: Graduation.GCM,
+      gender: Gender.UNDEFINED,
+      maxDuties: 5,
+      name: 'N/A', 
+      duties: [],
+      workerID,
+    });
   }
 }

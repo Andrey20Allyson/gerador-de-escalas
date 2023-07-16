@@ -48,12 +48,14 @@ export function WorkerEditionStage() {
       return alert(`Erro ao salvar alterações, '${SaveWorkersDaysOfWorkStatus[saveStatus]}'`);
     }
 
+    // @ts-ignore
     const generationStatus = await window.api.generateWithLoaded();
     if (generationStatus !== GeneratorStatus.OK) {
       setLoading(false);
       return alert(`Erro ao gerar escala, '${GeneratorStatus[generationStatus]}'`);
     }
 
+    // @ts-ignore
     const buffer = await window.api.getGeneratedArrayBuffer();
     if (!buffer) {
       return setLoading(false);

@@ -6,6 +6,7 @@ import { isAppError, showAppError } from "../../utils/errors";
 
 function EditorLoadTableStage() {
   async function handleSubmit(data: LoadTableFormData) {
+    // @ts-ignore
     const result = await window.api.loadEditor({
       ordinaryTable: {
         filePath: data.ordinaryTable.filePath,

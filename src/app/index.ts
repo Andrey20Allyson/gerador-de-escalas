@@ -1,5 +1,5 @@
-import { app, BrowserWindow } from 'electron';
-import { fromRoot } from './root-path';
+import { app, BrowserWindow, ipcMain } from 'electron';
+import { fromRoot } from './path.utils';
 import { loadAPI } from './api';
 
 async function createWindow() {
@@ -25,7 +25,7 @@ async function main() {
       createWindow();
     }
   });
-  
+
   await loadAPI();
   await createWindow();
 }

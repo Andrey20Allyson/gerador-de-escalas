@@ -4,6 +4,7 @@ import { isAppError, showAppError } from "../../utils/errors";
 
 export function LoadTableViewerStage() {
   async function handleSubmit(data: LoadTableFormData) {
+    // @ts-ignore
     const result = await window.api.loadViewer({
       ordinaryTable: {
         filePath: data.ordinaryTable.filePath,

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { DayViewer, TableViewer } from '../../app/api/table-visualization';
 import { ElementList } from '../utils/react-iteration';

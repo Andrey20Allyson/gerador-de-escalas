@@ -16,6 +16,7 @@ function useLoadedTable() {
 
   useEffect(() => {
     async function load() {
+      // @ts-ignore
       const result = await window.api.getEditableMap();
 
       if (isAppError(result)) {
@@ -42,6 +43,7 @@ function useLoadedTable() {
 
     const changes = table.getChanges();
 
+    // @ts-ignore
     const error = await window.api.saveEditorChanges(changes);
 
     if (error) {
@@ -50,6 +52,7 @@ function useLoadedTable() {
       return alert(error.message);
     }
 
+    // @ts-ignore
     const result = await window.api.serializeEditedTable();
 
     if (isAppError(result)) {

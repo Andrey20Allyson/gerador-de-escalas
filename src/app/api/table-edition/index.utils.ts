@@ -1,5 +1,5 @@
-import { DutyViewerData } from "./duty-viewer";
-import { WorkerViewerData } from "./worker-viewer";
+import { DutyEditorData } from "./duty-editor";
+import { WorkerEditorData } from "./worker-editor";
 
 export class IndexError extends Error {
   constructor(index: number, size: number) {
@@ -14,7 +14,7 @@ export function normalizeIndex(index: number, size: number) {
   return index;
 }
 
-export function removeWorkerFromDuty(workerData: WorkerViewerData, dutyData: DutyViewerData) {
+export function removeWorkerFromDuty(workerData: WorkerEditorData, dutyData: DutyEditorData) {
   const removedWorkerData = removeFromArray(dutyData.workers, workerData);
   if (!removedWorkerData) return false;
 

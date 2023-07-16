@@ -38,7 +38,7 @@ export function DataCollectStage() {
 
       return setErrorState(newErrorState);
     }
-
+// @ts-ignore
     const error = await window.api.loadData({
       sheetName,
       filePath,
@@ -57,7 +57,7 @@ export function DataCollectStage() {
   async function handleFileChange(ev: React.ChangeEvent<HTMLInputElement>) {
     const filePath = ev.currentTarget.files?.item(0)?.path;
     if (!filePath) return;
-
+// @ts-ignore
     const sheetNames = await window.api.getSheetNames(filePath);
     const sheetName = sheetNames.at(0);
 

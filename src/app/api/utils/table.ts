@@ -1,6 +1,7 @@
 import { io } from "@andrey-allyson/escalas-automaticas";
 import { Holidays, WorkerRegistriesMap } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import { BookHandler, SheetHandler } from "@andrey-allyson/escalas-automaticas/dist/xlsx-handlers";
+import fs from 'fs/promises';
 
 export interface InputTable {
   buffer: Buffer;
@@ -18,7 +19,55 @@ export interface ParseTablePayload {
   holidays: Holidays;
 }
 
-export function parseTable(payload: ParseTablePayload) {
+export interface ParseOrdinaryPayload {
+  workerRegistryMap: WorkerRegistriesMap;
+  holidays: Holidays;
+  table: InputTable;
+  month: number;
+  year: number;
+}
+
+export function parseOrdinary(payload: ParseOrdinaryPayload) {
+  const { holidays, month, table, workerRegistryMap, year } = payload;
+  const { buffer, sheetName } = table;
+
+  return io.parseWorkers(buffer, {
+    workerRegistryMap,
+    sheetName,
+    holidays,
+    month,
+    year,
+  });
+}
+
+export interface ReadTableConfig {
+  sheetName: string,
+  path: string
+}
+
+export interface ReadTablePayload {
+  ordinaryTable: ReadTableConfig;
+  extraDutyTable: ReadTableConfig;
+}
+
+export interface FileSystemLike extends Pick<typeof fs, 'readFile'> { }
+
+export async function readTables(payload: ReadTablePayload, fs: FileSystemLike): Promise<LoadTableInput> {
+  const { extraDutyTable, ordinaryTable } = payload;
+  
+  return {
+    extraDutyTable: {
+      buffer: await fs.readFile(extraDutyTable.path),
+      sheetName: extraDutyTable.sheetName,
+    },
+    ordinaryTable: {
+      buffer: await fs.readFile(ordinaryTable.path),
+      sheetName: ordinaryTable.sheetName,
+    },
+  };
+}
+
+export function parseExtraTable(payload: ParseTablePayload) {
   const { holidays, workerRegistryMap, tables } = payload;
   const { ordinaryTable, extraDutyTable: tableToEdit } = tables;
 
