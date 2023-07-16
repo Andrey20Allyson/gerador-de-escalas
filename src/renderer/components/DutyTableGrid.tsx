@@ -1,18 +1,18 @@
 
 import React, { useState } from 'react';
-import { DayViewer, TableViewer } from '../../app/api/table-visualization';
+import { TableEditor, DayEditor } from '../../app/api/table-edition';
 import { ElementList } from '../utils/react-iteration';
-import { DayViewModal } from './DayViewModal';
-import { StyledDayViewGrid } from './DutyTableGrid.styles';
+import { DayEditionModal } from './DayEditionModal';
+import { StyledDayEditionGrid } from './DutyTableGrid.styles';
 import { DayView } from './DutyTableGrid.utils';
 
 export interface DutyTableGridProps {
-  table: TableViewer;
+  table: TableEditor;
 }
 
 export function DutyTableGrid(props: DutyTableGridProps) {
   const { table } = props;
-  const [selectedDay, setSelectedDay] = useState<DayViewer | undefined>(table.getDay(0));
+  const [selectedDay, setSelectedDay] = useState<DayEditor | undefined>(table.getDay(0));
 
   function handleNextDayView() {
     if (!selectedDay) return;
@@ -40,7 +40,7 @@ export function DutyTableGrid(props: DutyTableGridProps) {
   }
 
   return (
-    <StyledDayViewGrid>
+    <StyledDayEditionGrid>
       <ElementList
         Component={DayView}
         iter={table.iterDays()}
@@ -48,12 +48,12 @@ export function DutyTableGrid(props: DutyTableGridProps) {
           onSelect: day => setSelectedDay(day),
         }} />
       {selectedDay && (
-        <DayViewModal
+        <DayEditionModal
           onNext={handleNextDayView}
           onPrev={handlePrevDayView}
           onClose={handleCloseDayView}
           day={selectedDay} />
       )}
-    </StyledDayViewGrid>
+    </StyledDayEditionGrid>
   );
 }

@@ -95,7 +95,7 @@ export class TableEditor {
     return table;
   }
 
-  static load(table: ExtraDutyTable) {
+  static from(table: ExtraDutyTable) {
     const { year, month } = table.config;
 
     const viewer = TableEditor.create({
@@ -139,7 +139,7 @@ export class TableEditor {
   static parse(payload: ParseTablePayload) {
     const { table } = parseExtraTable(payload);
 
-    return TableEditor.load(table);
+    return TableEditor.from(table);
   }
 
   static create(options: CreateTableEditorOptions) {

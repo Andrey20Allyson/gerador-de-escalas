@@ -28,7 +28,7 @@ export const StyledExpandDayButton = styled.button`
   }
 `;
 
-export const StyledDayViewGrid = styled.div`
+export const StyledDayEditionGrid = styled.div`
   display: grid;
   gap: .3rem;
   grid-template-columns: repeat(7, 1fr);

@@ -21,7 +21,7 @@ export class EditionHandler {
     const { data } = this;
     if (!data) return ErrorCode.DATA_NOT_LOADED;
 
-    return TableEditor.load(data.table);
+    return TableEditor.from(data.table);
   }
 
   save(data: TableEditorData) {

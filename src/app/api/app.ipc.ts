@@ -1,3 +1,4 @@
+import { IpcMain } from "electron";
 import { AppError, AppResponse } from "./app.base";
 import { separator } from "./channels/utils";
 
@@ -6,14 +7,26 @@ export type Fn<P extends any[] = any[], R = any> = (...args: P) => R;
 export type HandlerType = { [K in string]: Fn | HandlerType };
 export type IPCHandlerMap = Map<string, Fn<unknown[], unknown>>;
 
-export class IPCHandler<H extends HandlerType> {
+export type IPCReciver = Pick<IpcMain, 'handle'>;
+
+export class IPCHandlerConsumer<H extends HandlerType> {
   handlers: IPCHandlerMap;
+  recivers: Set<IPCReciver>;
 
   constructor(handler: H) {
-    this.handlers = IPCHandler.map(handler);
+    this.recivers = new Set();
+    this.handlers = IPCHandlerConsumer.map(handler);
   }
 
-  async handle(name: unknown, ...args: unknown[]) {
+  listen(ipc: IPCReciver) {
+    if (this.recivers.has(ipc)) return;
+
+    this.recivers.add(ipc);
+
+    ipc.handle('resource', (ev, name, ...args) => this.consume(name, ev, ...args));
+  }
+
+  async consume(name: unknown, ...args: unknown[]) {
     if (typeof name !== 'string') throw new Error();
     const handler = this.handlers.get(name);
     if (!handler) throw new Error(`Unknow`);
@@ -41,7 +54,7 @@ export class IPCHandler<H extends HandlerType> {
       if (value instanceof Function) {
         handlerMap.set(prefix + key, value);
       } else {
-        IPCHandler._map(value, prefix + key + separator, handlerMap);
+        IPCHandlerConsumer._map(value, prefix + key + separator, handlerMap);
       }
     }
 
@@ -49,6 +62,6 @@ export class IPCHandler<H extends HandlerType> {
   }
 
   static map<H extends HandlerType>(handler: H): IPCHandlerMap {
-    return IPCHandler._map(handler)
+    return IPCHandlerConsumer._map(handler)
   }
 }

@@ -4,7 +4,7 @@ import { useStage } from "../../contexts/stages";
 import useTableViewer from "../../hooks/useTableViewer";
 import { Footer } from "../Generator/WorkerEditionStage.styles";
 
-export function ViewTableStage() {
+export function EditTableStage() {
   const { prev } = useStage();
   const table = useTableViewer();
 

@@ -3,6 +3,7 @@ import { AppResponseType, ErrorCode, FSErrorCode } from "../app.base";
 import { TableEditorData } from "../table-edition/table-editor";
 import { ReadTablePayload } from "../utils/table";
 import { ChannelsFrom, IPCHandler, IPCInvoker, NameChannels } from "./utils";
+import { PreGenerateEditorDTO } from "../table-generation/pre-generate-editor";
 
 export interface LoadedData {
   readonly workers: readonly WorkerInfo[];
@@ -43,11 +44,16 @@ export namespace AppAPI.Generator {
     year: number;
   }
 
+  export interface PreGenerateEditorChannel {
+    save(data: PreGenerateEditorDTO): AppResponseType<void, ErrorCode.DATA_NOT_LOADED | ErrorCode.INVALID_INPUT>;
+    getEditor(): AppResponseType<PreGenerateEditorDTO, ErrorCode.DATA_NOT_LOADED>;
+  }
+
   export interface Channels {
+    preGenerateEditor: PreGenerateEditorChannel;
     load(payload: LoadPayload): AppResponseType<void, ErrorCode.INVALID_INPUT>;
-    getWorkerInfo(): AppResponseType<WorkerInfo[]>;
+    serialize(): AppResponseType<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>;
     generate(): AppResponseType<void, ErrorCode.DATA_NOT_LOADED>;
-    serialize(): AppResponseType<ArrayBuffer>;
     clear(): void;
   }
 }

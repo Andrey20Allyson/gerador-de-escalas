@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { AppError, api } from "../api";
 
 export interface TableSheetSelectState {
   sheetNames: string[];
@@ -27,10 +28,12 @@ export function TableSheetSelect(props: TableSheetSelectProps) {
     const filePath = ev.currentTarget.files?.item(0)?.path;
     if (!filePath) return;
 
-    const sheetNames = await window.api.getSheetNames(filePath);
+    const response = await api.utils.getSheetNames(filePath);
+    if (!response.ok) return AppError.log(response.error);
 
+    const sheetNames = response.data;
     const sheetName = sheetNames.at(0);
-    if (!sheetName) return alert(`O arquivo selecionado não é um Excel válido!`);
+    if (!sheetName) return alert(`O arquivo em '${filePath}' não é um arquivo excel válido!`);
 
     setState({ ...state, filePath, sheetNames, sheetName });
   }

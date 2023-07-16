@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useStage } from "../../contexts/stages";
 import { parseNumberOrThrow } from "../../utils";
+import { AppError, api } from "../../api";
 
 export interface DataCollectStageState {
   filePath?: string;
@@ -39,7 +40,7 @@ export function DataCollectStage() {
       return setErrorState(newErrorState);
     }
 
-    const error = await window.api.loadData({
+    const error = await api.generator.load({
       sheetName,
       filePath,
       month,
@@ -58,8 +59,13 @@ export function DataCollectStage() {
     const filePath = ev.currentTarget.files?.item(0)?.path;
     if (!filePath) return;
 
-    const sheetNames = await window.api.getSheetNames(filePath);
+    const response = await api.utils.getSheetNames(filePath);
+    if (!response.ok) return AppError.log(response.error);
+    
+    const sheetNames = response.data;
+
     const sheetName = sheetNames.at(0);
+    if (!sheetName) return alert(`O arquivo em '${filePath}' não é um arquivo excel válido!`);
 
     setState({ ...state, filePath, sheetNames, sheetName });
   }

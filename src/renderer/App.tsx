@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 import './App.css';
-import Editor from './pages/Editor';
 import Generator from './pages/Generator';
-import Viewer from './pages/Viewer';
+import Editor from './pages/Editor';
 
 type RouteCallback = () => React.JSX.Element;
 
@@ -37,19 +36,17 @@ function createRoutes<R extends RoutesType>(routes: R): R {
 
 const AppRoutes = createRoutes({
   Generator,
-  Viewer,
   Editor,
 });
 
 export default function App() {
-  const { Router, navigate, route } = useRoutes(AppRoutes, 'Viewer');
+  const { Router, navigate, route } = useRoutes(AppRoutes, 'Generator');
 
   return (
     <AppBody>
       <TopNav>
         <StyledNavButton selected={route === 'Generator'} onClick={() => navigate('Generator')}>Gerador</StyledNavButton>
         <StyledNavButton selected={route === 'Editor'} onClick={() => navigate('Editor')}>Editor</StyledNavButton>
-        <StyledNavButton selected={route === 'Viewer'} onClick={() => navigate('Viewer')}>Visualizador</StyledNavButton>
       </TopNav>
       <BodyCard>
         <div className="inner-main">

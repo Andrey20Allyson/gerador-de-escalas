@@ -40,7 +40,7 @@ export class AppError {
 
   static log(error: AppErrorType<unknown>) {
     const message = `Error code [${error.code}]: ${error.message}`;
-    
+
     console.error(message, `\n${error.callstack}`);
 
     if ('alert' in global) {
@@ -67,7 +67,11 @@ export class AppResponse {
     };
   }
 
-  static error<TData, TCode>(message: string, code: TCode, callstack?: string): AppResponseType<TData, TCode> {
+  static error<TData, TCode = ErrorCode.UNKNOW>(
+    message: string,
+    code: TCode | ErrorCode.UNKNOW = ErrorCode.UNKNOW,
+    callstack?: string
+  ): AppResponseType<TData, TCode> {
     return {
       ok: false,
       error: AppError.create(message, code, callstack),

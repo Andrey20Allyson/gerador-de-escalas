@@ -6,8 +6,8 @@ import { DutyEditor, WorkerEditor } from "../../app/api/table-edition";
 import { ColoredText } from "../pages/Generator/WorkerEditionStage.styles";
 import { ElementList } from "../utils/react-iteration";
 import { StyledAvaliableWorker, StyledAvaliableWorkerBody, StyledAvaliableWorkerSearchBody, StyledAvaliableWorkersScrollable, StyledAvaliableWorkersSection } from "./AvaliableWorkers.styles";
-import { StyledWorkerInfoSection } from "./DayViewModal.styles";
-import { genderComponentMap, graduationTextColorMap } from "./DayViewModal.utils";
+import { StyledWorkerInfoSection } from "./DayEditionModal.styles";
+import { genderComponentMap, graduationTextColorMap } from "./DayEditionModal.utils";
 
 export interface AvaliableWorkers {
   onUpdate?: () => void;

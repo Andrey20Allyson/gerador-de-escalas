@@ -1,42 +1,20 @@
 import { io } from '@andrey-allyson/escalas-automaticas';
-import { WorkerInfo } from '@andrey-allyson/escalas-automaticas/dist/extra-duty-lib';
 import { ipcMain } from 'electron';
 import fs from 'fs/promises';
-import { IPCHandler } from './app.ipc';
-import { AppHandler } from './channels';
-import { createEditorHandler, createGeneratorHandler, createUtilsHandler } from './ipc-handlers';
+import { IPCHandlerConsumer } from './app.ipc';
 import { loadAssets } from './assets';
+import { createAPIHandler } from './ipc-handlers';
 
 io.setFileSystem(fs);
-
-export interface GeneratorData {
-  workers: WorkerInfo[];
-  sheetName: string;
-  buffer: Buffer;
-  month: number;
-  year: number;
-}
-
-export interface LoadSheetPayload {
-  sheetName: string;
-  filePath: string;
-}
-
-export interface LoadDutyTablePayload {
-  ordinaryTable: LoadSheetPayload;
-  extraDutyTable: LoadSheetPayload;
-}
 
 export async function loadAPI(debug = false) {
   const assets = await loadAssets();
 
-  const ipcHandler = new IPCHandler<AppHandler>({
-    editor: createEditorHandler(assets),
-    generator: createGeneratorHandler(assets),
-    utils: createUtilsHandler(),
-  });
+  const handlerObject = createAPIHandler(assets);
 
-  ipcMain.handle('resource', (ev, name, ...args) => ipcHandler.handle(name, ev, ...args));
+  const ipcHandler = new IPCHandlerConsumer(handlerObject);
+
+  ipcHandler.listen(ipcMain);
 }
 
   // handleAppIPCChannels({

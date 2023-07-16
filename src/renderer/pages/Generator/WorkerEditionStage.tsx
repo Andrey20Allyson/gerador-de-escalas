@@ -1,14 +1,12 @@
-import { DaysOfWork, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
-import React, { useState } from "react";
-import { GeneratorStatus, SaveWorkersDaysOfWorkStatus } from "../../../app/api/status";
+import React, { useMemo, useState } from "react";
+import { WorkerEditor } from "../../../app/api/table-generation/pre-generate-editor";
+import { AppError, api } from "../../api";
 import { LoadSpinner } from "../../components/LoadSpinner";
 import { WorkDayGrid } from "../../components/WorkDayGrid";
 import { useStage } from "../../contexts/stages";
-import { toggleWorkDay } from "../../extra-duty-lib";
-import { useLoadedData, useRerender } from "../../hooks";
+import { usePreGenerateEditor, useRerender } from "../../hooks";
 import { saveFile, sleep } from "../../utils";
 import { ColoredText, Footer, HeaderLabel, HelpIcon, StageBody, StageHeader } from "./WorkerEditionStage.styles";
-import { AppError, api } from "../../api";
 
 function toNumber(value: string) {
   const number = +value;
@@ -17,36 +15,33 @@ function toNumber(value: string) {
 
 export function WorkerEditionStage() {
   const { prev } = useStage();
-  const [currentWorkerIndex, setCurrentWorkerIndex] = useState(0);
+  const [currentWorkerID, setCurrentWorkerID] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { data, saveData } = useLoadedData();
+  const editor = usePreGenerateEditor();
   const rerender = useRerender();
+  const workers = useMemo(() => {
+    return editor ? Array.from(editor.workers()) : [];
+  }, [editor]);
 
-  const worker = data?.workers.at(currentWorkerIndex);
-  const daysOfWork = worker?.daysOfWork;
+  const worker = workers.at(currentWorkerID);
 
   function handleChangeWorker(ev: React.ChangeEvent<HTMLSelectElement>) {
     const index = toNumber(ev.currentTarget.value);
     if (index === undefined) return alert(`Valor '${ev.currentTarget.value}' não pode ser convertido para número!`);
 
-    setCurrentWorkerIndex(index);
-  }
-
-  function handleChangeWorkDay(daysOfWork: DaysOfWork, day: number) {
-    toggleWorkDay(daysOfWork, day);
-
-    rerender();
+    setCurrentWorkerID(index);
   }
 
   async function handleFinish() {
+    if (!editor) return;
     setLoading(true);
 
     await sleep();
 
-    const saveStatus = await saveData();
-    if (saveStatus !== SaveWorkersDaysOfWorkStatus.OK) {
+    const saveResponse = await api.generator.preGenerateEditor.save(editor.data);
+    if (!saveResponse.ok) {
       setLoading(false);
-      return alert(`Erro ao salvar alterações, '${SaveWorkersDaysOfWorkStatus[saveStatus]}'`);
+      return AppError.log(saveResponse.error);
     }
 
     const generateResponse = await api.generator.generate();
@@ -76,9 +71,9 @@ export function WorkerEditionStage() {
         </HelpIcon>
       </StageHeader>
       <select onChange={handleChangeWorker}>
-        {data && data.workers.map(createWorkerOption)}
+        {workers && workers.map(createWorkerOption)}
       </select>
-      {data && daysOfWork && <WorkDayGrid year={data.year} month={data.month} daysOfWork={daysOfWork} onToggleDay={handleChangeWorkDay} />}
+      {worker && <WorkDayGrid worker={worker} />}
       <Footer>
         <input type="button" value='Voltar' onClick={prev} />
         <input type="button" value='Gerar' onClick={handleFinish} />
@@ -88,6 +83,6 @@ export function WorkerEditionStage() {
   );
 }
 
-export function createWorkerOption(worker: WorkerInfo, index: number) {
-  return <option key={index} value={index}>{worker.config.name}</option>;
+export function createWorkerOption(worker: WorkerEditor, index: number) {
+  return <option key={index} value={index}>{worker.name()}</option>;
 }

@@ -1,10 +1,8 @@
-
 import React, { useState } from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { BsFillArrowLeftCircleFill, BsFillArrowRightCircleFill } from "react-icons/bs";
 import { HiUserRemove } from "react-icons/hi";
 import { SlOptionsVertical } from 'react-icons/sl';
-import { DayViewer, DutyViewer, WorkerViewer } from "../../app/api/table-visualization";
 import { useRerender } from "../hooks";
 import { ColoredText } from "../pages/Generator/WorkerEditionStage.styles";
 import { ElementList, IterProps } from "../utils/react-iteration";
@@ -23,18 +21,19 @@ import {
   StyledModalTitle2,
   StyledWorkerInfoSection,
   StyledWorkerViewBody,
-} from "./DayViewModal.styles";
-import { genderComponentMap, graduationTextColorMap } from "./DayViewModal.utils";
+} from "./DayEditionModal.styles";
+import { DayEditor, WorkerEditor, DutyEditor } from "../../app/api/table-edition";
+import { genderComponentMap, graduationTextColorMap } from "./DayEditionModal.utils";
 import { dutyTitles } from "./DutyTableGrid.utils";
 
 export interface DayViewModalProps {
-  day: DayViewer;
+  day: DayEditor;
   onClose?: () => void;
   onNext?: () => void;
   onPrev?: () => void;
 }
 
-export function DayViewModal(props: DayViewModalProps) {
+export function DayEditionModal(props: DayViewModalProps) {
   const { day, onClose, onNext, onPrev } = props;
   const rerender = useRerender();
 
@@ -52,7 +51,7 @@ export function DayViewModal(props: DayViewModalProps) {
   }
 
   const dutyViewContent = duty.numOfWorkers() > 0
-    ? <ElementList communProps={{ duty, onUpdate: rerender }} iter={duty.iterWorkers()} Component={WorkerView} />
+    ? <ElementList communProps={{ duty, onUpdate: rerender }} iter={duty.iterWorkers()} Component={WorkerCard} />
     : <StyledEmpityDutyMessage>Esse turno não possui componentes.</StyledEmpityDutyMessage>;
 
   return (
@@ -69,7 +68,7 @@ export function DayViewModal(props: DayViewModalProps) {
         <AiOutlineCloseCircle onClick={handleClose} size={25} color="#cc0000" />
       </StyledModalHeader>
       <StyledModalBody>
-        <DutyViewNavation day={day} duty={duty} onNavate={setDutyIndex} />
+        <DutyEditionNavation day={day} duty={duty} onNavate={setDutyIndex} />
         <StyledModalTitle2>
           Turno das {dutyTitles.at(dutyIndex)}
         </StyledModalTitle2>
@@ -85,12 +84,12 @@ export function DayViewModal(props: DayViewModalProps) {
 }
 
 export interface DutyViewNavationProps {
-  duty: DutyViewer;
-  day: DayViewer;
+  duty: DutyEditor;
+  day: DayEditor;
   onNavate?: (newIndex: number) => void;
 }
 
-export function DutyViewNavation(props: DutyViewNavationProps) {
+export function DutyEditionNavation(props: DutyViewNavationProps) {
   const { day, duty, onNavate } = props;
 
   const dutyIndex = duty.data.index;
@@ -114,10 +113,10 @@ export function DutyViewNavation(props: DutyViewNavationProps) {
 
 export interface WorkerViewProps {
   onUpdate?: () => void;
-  duty: DutyViewer;
+  duty: DutyEditor;
 }
 
-export function WorkerView(props: IterProps<WorkerViewer, WorkerViewProps>) {
+export function WorkerCard(props: IterProps<WorkerEditor, WorkerViewProps>) {
   const { entry: worker, duty, onUpdate } = props;
   const Gender = genderComponentMap[worker.data.gender];
   const gradutationColor = graduationTextColorMap[worker.data.graduation];

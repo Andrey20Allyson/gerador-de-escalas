@@ -1,7 +1,7 @@
-import useLoadedData from "./useLoadedData";
+import usePreGenerateEditor from "./usePreGenerateEditor";
 import useRerender from "./useRerender";
 
 export {
-  useLoadedData,
+  usePreGenerateEditor,
   useRerender,
 };

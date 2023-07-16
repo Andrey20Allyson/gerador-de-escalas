@@ -1,13 +1,12 @@
+// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { AppError } from '../../../app/api/channels';
 import {  } from '../../../app/api/table-edition';
 import { useStage } from '../../contexts/stages';
 import { useRerender } from '../../hooks';
 import { getNumOfDaysInMonth, iterRange, saveFile, sleep } from '../../utils';
 import { Footer, HeaderLabel } from '../Generator/WorkerEditionStage.styles';
 import { LoadSpinner } from '../../components/LoadSpinner';
-import { isAppError } from '../../utils/errors';
 import { api } from '../../api';
 
 function useLoadedTable() {
