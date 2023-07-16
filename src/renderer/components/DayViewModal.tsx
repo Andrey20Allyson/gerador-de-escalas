@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import React, { useState } from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { BsFillArrowLeftCircleFill, BsFillArrowRightCircleFill } from "react-icons/bs";

@@ -1,11 +1,12 @@
 import React from "react";
 import { LoadTableFormData, LoadTableStage } from "../../components/LoadTableStage";
-import { isAppError, showAppError } from "../../utils/errors";
+import { api } from "../../api";
+import { AppError } from "../../../app/api/app.base";
 
 export function LoadTableViewerStage() {
   async function handleSubmit(data: LoadTableFormData) {
-    // @ts-ignore
-    const result = await window.api.loadViewer({
+    
+    const result = await api.editor.load({
       ordinaryTable: {
         filePath: data.ordinaryTable.filePath,
         sheetName: data.ordinaryTable.sheetName,
@@ -16,8 +17,8 @@ export function LoadTableViewerStage() {
       },
     });
 
-    if (isAppError(result)) {
-      showAppError(result);
+    if (!result.ok) {
+      AppError.log(result.error);
       return false;
     }
 

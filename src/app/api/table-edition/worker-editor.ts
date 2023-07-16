@@ -1,7 +1,7 @@
 import { Graduation, Gender } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import { DutyEditorData, DutyEditor } from "./duty-editor";
 import { TableEditor } from "./table-editor";
-import { removeFromArray } from "./index.utils";
+import { removeFromArray } from "./utils";
 
 export interface WorkerEditorData {
   readonly workerID: number;

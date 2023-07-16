@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { useEffect, useState } from "react";
 import { LoadedData } from "../../app/api/channels";
 import { SaveWorkersDaysOfWorkStatus } from "../../app/api/status";

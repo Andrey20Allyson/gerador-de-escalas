@@ -1,5 +1,5 @@
 import { DayEditor } from "./day-editor";
-import { removeFromArray } from "./index.utils";
+import { removeFromArray } from "./utils";
 import { WorkerEditorData, WorkerEditor } from "./worker-editor";
 
 export interface DutyEditorData {

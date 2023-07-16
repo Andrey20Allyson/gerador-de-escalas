@@ -2,7 +2,7 @@ import type { WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-
 import { AppResponseType, ErrorCode, FSErrorCode } from "../app.base";
 import { TableEditorData } from "../table-edition/table-editor";
 import { ReadTablePayload } from "../utils/table";
-import { ChannelsFrom, IPCHandler, IPCInvoker, NameChannels } from "./index.utils";
+import { ChannelsFrom, IPCHandler, IPCInvoker, NameChannels } from "./utils";
 
 export interface LoadedData {
   readonly workers: readonly WorkerInfo[];

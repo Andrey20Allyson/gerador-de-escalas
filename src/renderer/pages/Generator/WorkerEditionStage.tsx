@@ -8,6 +8,7 @@ import { toggleWorkDay } from "../../extra-duty-lib";
 import { useLoadedData, useRerender } from "../../hooks";
 import { saveFile, sleep } from "../../utils";
 import { ColoredText, Footer, HeaderLabel, HelpIcon, StageBody, StageHeader } from "./WorkerEditionStage.styles";
+import { AppError, api } from "../../api";
 
 function toNumber(value: string) {
   const number = +value;
@@ -48,22 +49,20 @@ export function WorkerEditionStage() {
       return alert(`Erro ao salvar alterações, '${SaveWorkersDaysOfWorkStatus[saveStatus]}'`);
     }
 
-    // @ts-ignore
-    const generationStatus = await window.api.generateWithLoaded();
-    if (generationStatus !== GeneratorStatus.OK) {
+    const generateResponse = await api.generator.generate();
+    if (!generateResponse.ok) {
       setLoading(false);
-      return alert(`Erro ao gerar escala, '${GeneratorStatus[generationStatus]}'`);
+      return AppError.log(generateResponse.error);
     }
-
-    // @ts-ignore
-    const buffer = await window.api.getGeneratedArrayBuffer();
-    if (!buffer) {
+    
+    const serializeResponse = await api.generator.serialize();
+    if (!serializeResponse.ok) {
       return setLoading(false);
     }
 
     setLoading(false);
 
-    saveFile('Escala.xlsx', buffer);
+    saveFile('Escala.xlsx', serializeResponse.data);
   }
 
   return (

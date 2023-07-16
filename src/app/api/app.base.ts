@@ -1,5 +1,3 @@
-import { never } from "zod";
-
 export enum ErrorCode {
   DATA_NOT_LOADED = 'app:data-not-loaded-error',
   INVALID_INPUT = 'app:invalid-input-error',
@@ -38,6 +36,16 @@ export class AppError {
     }
 
     return AppError.create(JSON.stringify(error));
+  }
+
+  static log(error: AppErrorType<unknown>) {
+    const message = `Error code [${error.code}]: ${error.message}`;
+    
+    console.error(message, `\n${error.callstack}`);
+
+    if ('alert' in global) {
+      alert(message);
+    }
   }
 }
 

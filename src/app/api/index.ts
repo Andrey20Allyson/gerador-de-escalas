@@ -1,13 +1,11 @@
-import { io, utils } from '@andrey-allyson/escalas-automaticas';
-import { MainTableFactory } from '@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories';
-import { Holidays, WorkerInfo, WorkerRegistriesMap } from '@andrey-allyson/escalas-automaticas/dist/extra-duty-lib';
+import { io } from '@andrey-allyson/escalas-automaticas';
+import { WorkerInfo } from '@andrey-allyson/escalas-automaticas/dist/extra-duty-lib';
+import { ipcMain } from 'electron';
 import fs from 'fs/promises';
-import { fromRoot } from '../path.utils';
-import { AppResponse, ErrorCode } from './app.base';
+import { IPCHandler } from './app.ipc';
 import { AppHandler } from './channels';
-import { EditionHandler } from './table-edition/edition-handler';
-import { TableGenerator } from './table-generation/table-generator';
-import { readTables } from './utils/table';
+import { createEditorHandler, createGeneratorHandler, createUtilsHandler } from './ipc-handlers';
+import { loadAssets } from './assets';
 
 io.setFileSystem(fs);
 
@@ -29,97 +27,16 @@ export interface LoadDutyTablePayload {
   extraDutyTable: LoadSheetPayload;
 }
 
-export interface AppAssets {
-  workerRegistryMap: WorkerRegistriesMap;
-  serializer: MainTableFactory;
-  holidays: Holidays;
-}
-
-async function loadAssets(): Promise<AppAssets> {
-  const holidaysBuffer = await fs.readFile(fromRoot('./assets/holidays.json'));
-  const patternBuffer = await fs.readFile(fromRoot('./assets/output-pattern.xlsx'));
-  const registriesBuffer = await fs.readFile(fromRoot('./assets/registries.json'));
-  
-  const holidays = utils.Result.unwrap(Holidays.safeParse(holidaysBuffer));
-  const workerRegistryMap = utils.Result.unwrap(WorkerRegistriesMap.parseJSON(registriesBuffer));
-  
-  const serializer = new MainTableFactory(patternBuffer);
-
-  return { holidays, workerRegistryMap, serializer };
-}
-
-function createEditorHandler(assets: AppAssets): AppHandler['editor'] {
-  const { holidays, serializer, workerRegistryMap } = assets;
-  const editor = new EditionHandler();
-
-  return {
-    async clear() {
-      delete editor.data;
-    },
-
-    async getEditor() {
-      const result = editor.createEditor();
-      if (result === ErrorCode.DATA_NOT_LOADED) return AppResponse.error('Shold load data before get editor!', result);
-
-      return AppResponse.ok(result.data);
-    },
-
-    async load(_, payload) {
-      const tables = await readTables(payload, fs);
-      
-      editor.load({ holidays, tables, workerRegistryMap });
-
-      return AppResponse.ok();
-    },
-
-    async save(_, data) {
-      return editor.save(data)
-      ? AppResponse.ok()
-      : AppResponse.error('Shold load data before save!', ErrorCode.DATA_NOT_LOADED);
-    },
-
-    async serialize() {
-      const table = editor.data?.table;
-      if (!table) return AppResponse.error('Shold load data before serialize!', ErrorCode.DATA_NOT_LOADED);
-
-      const buffer = await serializer.generate(table, { sheetName: 'DADOS' });
-
-      return AppResponse.ok(buffer.buffer);
-    },
-  };
-}
-
-function createGeneratorHandler(assets: AppAssets): AppHandler['generator'] {
-  const { holidays, serializer, workerRegistryMap } = assets;
-  const generator = new TableGenerator();
-
-  return {
-    async clear(ev) {
-      throw new Error('Method not implemented');
-    },
-    
-    async generate(ev) {
-      throw new Error('Method not implemented');
-    },
-    
-    async getWorkerInfo(ev) {
-      throw new Error('Method not implemented');
-    },
-    
-    async load(ev, payload) {
-      throw new Error('Method not implemented');
-    },
-
-    async serialize(ev) {
-      throw new Error('Method not implemented');
-    },
-  }
-}
-
 export async function loadAPI(debug = false) {
   const assets = await loadAssets();
 
-  
+  const ipcHandler = new IPCHandler<AppHandler>({
+    editor: createEditorHandler(assets),
+    generator: createGeneratorHandler(assets),
+    utils: createUtilsHandler(),
+  });
+
+  ipcMain.handle('resource', (ev, name, ...args) => ipcHandler.handle(name, ev, ...args));
 }
 
   // handleAppIPCChannels({

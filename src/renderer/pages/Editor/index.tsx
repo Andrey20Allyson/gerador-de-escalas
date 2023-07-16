@@ -2,12 +2,12 @@ import React from "react";
 import { StageLoadBar, StageProvider, StageRouter } from "../../contexts/stages";
 import { LoadTableFormData, LoadTableStage } from "../../components/LoadTableStage";
 import { EditTableStage } from "./EditTableStage";
-import { isAppError, showAppError } from "../../utils/errors";
+import { AppError, api } from "../../api";
 
 function EditorLoadTableStage() {
   async function handleSubmit(data: LoadTableFormData) {
-    // @ts-ignore
-    const result = await window.api.loadEditor({
+    
+    const result = await api.editor.load({
       ordinaryTable: {
         filePath: data.ordinaryTable.filePath,
         sheetName: data.ordinaryTable.sheetName,
@@ -18,8 +18,8 @@ function EditorLoadTableStage() {
       },
     });
 
-    if (isAppError(result)) {
-      showAppError(result);
+    if (!result.ok) {
+      AppError.log(result.error);
       return false;
     }
 

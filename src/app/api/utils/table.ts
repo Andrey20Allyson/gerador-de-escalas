@@ -42,7 +42,7 @@ export function parseOrdinary(payload: ParseOrdinaryPayload) {
 
 export interface ReadTableConfig {
   sheetName: string,
-  path: string
+  filePath: string
 }
 
 export interface ReadTablePayload {
@@ -57,11 +57,11 @@ export async function readTables(payload: ReadTablePayload, fs: FileSystemLike):
   
   return {
     extraDutyTable: {
-      buffer: await fs.readFile(extraDutyTable.path),
+      buffer: await fs.readFile(extraDutyTable.filePath),
       sheetName: extraDutyTable.sheetName,
     },
     ordinaryTable: {
-      buffer: await fs.readFile(ordinaryTable.path),
+      buffer: await fs.readFile(ordinaryTable.filePath),
       sheetName: ordinaryTable.sheetName,
     },
   };

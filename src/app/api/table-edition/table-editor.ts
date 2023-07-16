@@ -2,7 +2,7 @@ import { ExtraDutyTable, WorkerInfo } from "@andrey-allyson/escalas-automaticas/
 import { getNumOfDaysInMonth } from "@andrey-allyson/escalas-automaticas/dist/utils";
 import { ParseTablePayload, parseExtraTable } from "../utils/table";
 import { DayEditor, DayEditorData } from "./day-editor";
-import { normalizeIndex } from "./index.utils";
+import { normalizeIndex } from "./utils";
 import { WorkerEditor, WorkerEditorData } from "./worker-editor";
 
 export interface TableEditorData {

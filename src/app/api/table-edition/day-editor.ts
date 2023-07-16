@@ -1,5 +1,5 @@
 import { DutyEditorData, DutyEditor } from "./duty-editor";
-import { normalizeIndex } from "./index.utils";
+import { normalizeIndex } from "./utils";
 import { TableEditor } from "./table-editor";
 
 export interface DayEditorData {

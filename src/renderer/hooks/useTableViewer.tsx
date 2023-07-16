@@ -6,7 +6,7 @@ export default function useTableViewer(alert = true) {
 
   useEffect(() => {
     async function load() {
-      // @ts-ignore
+      
       const viewerData = await window.api.getLoadedTableViewerData();
       if (!viewerData) {
         if (alert) window.alert(`a tabela ainda não foi carretada corretamente, tente recarregar o visualizador!`);

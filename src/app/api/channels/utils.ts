@@ -1,4 +1,3 @@
-import { enumerate } from "@andrey-allyson/escalas-automaticas/dist/utils/iteration";
 import type { IpcMainInvokeEvent } from "electron";
 
 const CHANNEL_PARAMS = Symbol();
@@ -48,54 +47,3 @@ export type IPCInvoker<C> = {
   ? (...args: P) => Promise<R>
   : IPCInvoker<C[K]>;
 };
-
-export type Fn<P extends any[] = any[], R = any> = (...args: P) => R;
-
-export type HandlerType = { [K in string]: Fn | HandlerType };
-
-export function mapHandler<H extends HandlerType>(handler: H, prefix = '', handlerMap: Map<string, Fn> = new Map()) {
-  for (let key in handler) {
-    const value = handler[key];
-    if (value === undefined) continue;
-
-    if (value instanceof Function) {
-      handlerMap.set(prefix + key, value);
-    } else {
-      mapHandler(value, prefix + key + separator, handlerMap);
-    }
-  }
-
-  return handlerMap;
-}
-
-export function createAPI<C>(declaration: { [K in keyof C]: 0 }) {
-  const channels = Object.keys(declaration);
-  const api: HandlerType = {};
-
-  for (const channel of channels) {
-    if (typeof channel !== 'string') continue;
-
-    const path = channel.split('.');
-
-    let actual = api;
-    for (const [index, key] of enumerate(path)) {
-      if (index === path.length - 1) {
-        actual[key] = (...args) => console.log(channel, ...args);
-
-        break;
-      }
-
-      let prop = actual[key];
-
-      if (!prop || prop instanceof Function) {
-        prop = {};
-
-        actual[key] = prop;
-      }
-
-      actual = prop;
-    }
-  }
-
-  return api;
-}

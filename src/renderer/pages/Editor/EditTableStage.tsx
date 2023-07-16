@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { AppError } from '../../../app/api/channels';
-import { DutyState, EditableDutyTable, TableSlotMap } from '../../../app/api/table-edition/editable-table';
+import {  } from '../../../app/api/table-edition';
 import { useStage } from '../../contexts/stages';
 import { useRerender } from '../../hooks';
 import { getNumOfDaysInMonth, iterRange, saveFile, sleep } from '../../utils';
 import { Footer, HeaderLabel } from '../Generator/WorkerEditionStage.styles';
 import { LoadSpinner } from '../../components/LoadSpinner';
 import { isAppError } from '../../utils/errors';
+import { api } from '../../api';
 
 function useLoadedTable() {
   const [table, setTable] = useState<EditableDutyTable>();
@@ -16,18 +17,17 @@ function useLoadedTable() {
 
   useEffect(() => {
     async function load() {
-      // @ts-ignore
-      const result = await window.api.getEditableMap();
+      const result = await api.editor.getEditor();
 
-      if (isAppError(result)) {
-        console.error(result);
-        console.error(result.callstack);
-        return alert(result.message);
-      } else {
+      if (result.ok) {
         Object.setPrototypeOf(result, EditableDutyTable.prototype);
 
         setTable(result);
         setIsTableLoading(false);
+      } else {
+        console.error(result);
+        console.error(result.callstack);
+        return alert(result.message);
       }
     }
 
