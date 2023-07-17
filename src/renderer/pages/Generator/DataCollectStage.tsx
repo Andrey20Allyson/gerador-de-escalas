@@ -40,19 +40,15 @@ export function DataCollectStage() {
       return setErrorState(newErrorState);
     }
 
-    const error = await api.generator.load({
+    const response = await api.generator.load({
       sheetName,
       filePath,
       month,
       year,
     });
-
-    if (error) {
-      Object.setPrototypeOf(error, Error.prototype);
-      alert(error);
-    } else {
-      next();
-    }
+    if (!response.ok) return AppError.log(response.error);
+    
+    next();
   }
 
   async function handleFileChange(ev: React.ChangeEvent<HTMLInputElement>) {

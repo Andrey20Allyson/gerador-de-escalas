@@ -30,9 +30,7 @@ export function createEditorHandler(assets: AppAssets): AppHandler['editor'] {
     },
 
     async save(_, data) {
-      return editor.save(data)
-        ? AppResponse.ok()
-        : AppResponse.error('Shold load data before save!', ErrorCode.DATA_NOT_LOADED);
+      return editor.save(data);
     },
 
     async serialize() {

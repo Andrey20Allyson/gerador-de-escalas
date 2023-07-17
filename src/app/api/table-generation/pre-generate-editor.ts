@@ -40,7 +40,7 @@ export class WorkerEditor {
 
   ordinaryAt(index: number) {
     const day = this.data.ordinaryDays.get(index);
-    if (!day) throw new Error(`Invalid day index at ${index}!`);
+    if (day === undefined) throw new Error(`Invalid day index at ${index}!`);
     return day;
   }
 

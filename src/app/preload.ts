@@ -1,6 +1,8 @@
 /// <reference path="./globals.ts"/>
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, contextBridge } from 'electron';
 
-console.log(__dirname);
+function createResourceAPI(): Window['resource'] {
+  return (name, ...args) => ipcRenderer.invoke('resource', name, ...args);
+}
 
-window.resource = (name, ...args) => ipcRenderer.invoke('resource', name, ...args);
+contextBridge.exposeInMainWorld('resource', createResourceAPI());

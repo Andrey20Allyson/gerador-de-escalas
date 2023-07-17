@@ -3,7 +3,7 @@ import { LoadTableFormData, LoadTableStage } from "../../components/LoadTableSta
 import { api } from "../../api";
 import { AppError } from "../../../app/api/app.base";
 
-export function LoadTableViewerStage() {
+export function LoadTableEditorStage() {
   async function handleSubmit(data: LoadTableFormData) {
     
     const result = await api.editor.load({

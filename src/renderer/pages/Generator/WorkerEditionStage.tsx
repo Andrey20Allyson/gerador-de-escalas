@@ -32,32 +32,29 @@ export function WorkerEditionStage() {
     setCurrentWorkerID(index);
   }
 
-  async function handleFinish() {
+  async function generate() {
     if (!editor) return;
-    setLoading(true);
-
-    await sleep();
-
+  
     const saveResponse = await api.generator.preGenerateEditor.save(editor.data);
-    if (!saveResponse.ok) {
-      setLoading(false);
-      return AppError.log(saveResponse.error);
-    }
-
+    if (!saveResponse.ok) return AppError.log(saveResponse.error);
+  
     const generateResponse = await api.generator.generate();
-    if (!generateResponse.ok) {
-      setLoading(false);
-      return AppError.log(generateResponse.error);
-    }
+    if (!generateResponse.ok) AppError.log(generateResponse.error);
     
     const serializeResponse = await api.generator.serialize();
-    if (!serializeResponse.ok) {
-      return setLoading(false);
-    }
+    if (!serializeResponse.ok) return AppError.log(serializeResponse.error);
+  
+    saveFile('Escala.xlsx', serializeResponse.data);
+  }
+
+  async function handleFinish() {
+    setLoading(true);
+    
+    await sleep(0);
+
+    await generate();
 
     setLoading(false);
-
-    saveFile('Escala.xlsx', serializeResponse.data);
   }
 
   return (

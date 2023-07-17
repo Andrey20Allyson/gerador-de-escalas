@@ -27,9 +27,9 @@ export class IPCHandlerConsumer<H extends HandlerType> {
   }
 
   async consume(name: unknown, ...args: unknown[]) {
-    if (typeof name !== 'string') throw new Error();
+    if (typeof name !== 'string') throw new Error(`Resource name must be a string!`);
     const handler = this.handlers.get(name);
-    if (!handler) throw new Error(`Unknow`);
+    if (!handler) throw new Error(`Unknow resource named '${name}'`);
 
     try {
       const result = handler(...args);

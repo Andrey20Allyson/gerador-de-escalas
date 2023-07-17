@@ -1,12 +1,12 @@
-import { Graduation, Gender } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
-import { DutyEditorData, DutyEditor } from "./duty-editor";
+import { Gender, Graduation } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import { DutyEditor } from "./duty-editor";
 import { TableEditor } from "./table-editor";
-import { removeFromArray } from "./utils";
+import { DutyAddress, DutyAddressData } from "./duty-address";
 
 export interface WorkerEditorData {
   readonly workerID: number;
-  
-  duties: DutyEditorData[];
+
+  dutyAddresses: Map<string, DutyAddressData>;
   graduation: Graduation;
   maxDuties: number;
   gender: Gender;
@@ -14,13 +14,19 @@ export interface WorkerEditorData {
 }
 
 export class WorkerEditor {
-  constructor(readonly parent: TableEditor, readonly data: WorkerEditorData) { }
+  constructor(readonly table: TableEditor, readonly data: WorkerEditorData) { }
 
   *iterDuties(): Iterable<DutyEditor> {
-    for (let i = 0; i < this.numOfDuties(); i++) {
-      const duty = this.dutyAt(i);
-      if (!duty) continue;
-      yield duty;
+    for (const [_, addressData] of this.data.dutyAddresses) {
+      return this.table
+        .getDay(addressData.dayIndex)
+        .getDuty(addressData.dutyIndex);
+    }
+  }
+
+  *filterDuties(filter: (duty: DutyEditor) => boolean): Iterable<DutyEditor> {
+    for (const duty of this.iterDuties()) {
+      if (filter(duty)) yield duty;
     }
   }
 
@@ -41,32 +47,21 @@ export class WorkerEditor {
   }
 
   numOfDuties() {
-    return this.data.duties.length;
+    return this.data.dutyAddresses.size;
   }
 
-  dutyAt(index: number) {
-    const dutyData = this.data.duties.at(index);
-    if (!dutyData) return;
-
-    const { dayIndex, index: dutyIndex } = dutyData;
-
-    const duty = this.parent
-      .getDay(dayIndex)
-      .getDuty(dutyIndex);
-
-    if (duty.data !== dutyData) throw new Error(`DutyViewerData don't match at index ${index}!`);
-
-    return duty;
+  deleteDuty(address: DutyAddress) {
+    const key = address.key();
+    return this.data.dutyAddresses.delete(key);
   }
 
-  removeDuty(duty: DutyEditorData) {
-    return !!removeFromArray(this.data.duties, duty);
-  }
+  addDuty(address: DutyAddress) {
+    const { dutyAddresses } = this.data;
+    const key = address.key();
 
-  addDuty(duty: DutyEditorData) {
-    if (this.data.duties.includes(duty) || this.numOfDuties() >= this.data.maxDuties) return false;
+    if (dutyAddresses.has(key)) return false;
 
-    this.data.duties.push(duty);
+    dutyAddresses.set(key, address.data);
 
     return true;
   }
@@ -76,8 +71,8 @@ export class WorkerEditor {
       graduation: Graduation.GCM,
       gender: Gender.UNDEFINED,
       maxDuties: 5,
-      name: 'N/A', 
-      duties: [],
+      name: 'N/A',
+      dutyAddresses: new Map(),
       workerID,
     });
   }

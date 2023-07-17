@@ -20,7 +20,7 @@ export function AvaliableWorkers(props: AvaliableWorkers) {
 
   const day = duty.parent;
   const isDutyFull = duty.numOfWorkers() >= 3;
-  const workers = iterFilteredWorkers(day.parent.iterWorkers(), search);
+  const workers = iterFilteredWorkers(day.table.iterWorkers(), search);
 
   function handleSearchChange(ev: React.ChangeEvent<HTMLInputElement>) {
     const { value } = ev.currentTarget;
@@ -45,8 +45,8 @@ export function AvaliableWorkers(props: AvaliableWorkers) {
             function handleAddWorker() {
               if (isDutyFull) return;
 
-              duty.addWorker(worker.data);
-              worker.addDuty(duty.data);
+              duty.addWorker(worker.id());
+              worker.addDuty(duty.address());
 
               onUpdate?.();
             }

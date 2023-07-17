@@ -43,7 +43,9 @@ export class AppError {
 
     console.error(message, `\n${error.callstack}`);
 
-    if ('alert' in global) {
+    console.log('ola');
+
+    if ('alert' in globalThis) {
       alert(message);
     }
   }

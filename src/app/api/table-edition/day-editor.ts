@@ -9,7 +9,7 @@ export interface DayEditorData {
 }
 
 export class DayEditor {
-  constructor(readonly parent: TableEditor, readonly data: DayEditorData) { }
+  constructor(readonly table: TableEditor, readonly data: DayEditorData) { }
 
   index() {
     return this.data.index;
@@ -22,7 +22,7 @@ export class DayEditor {
   }
 
   numOfDuties() {
-    return this.parent.data.dutiesPerDay;
+    return this.table.data.dutiesPerDay;
   }
 
   getDuty(index: number) {

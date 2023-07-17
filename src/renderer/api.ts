@@ -6,5 +6,6 @@ const factory = new IPCInvokerProxyFactory((path, ...args) => {
 });
 
 export const api = factory.create<AppInvoker>();
+export const { editor, generator } = api;
 
 export * from '../app/api/app.base';

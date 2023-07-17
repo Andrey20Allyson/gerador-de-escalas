@@ -98,16 +98,14 @@ export class TableEditor {
   static from(table: ExtraDutyTable) {
     const { year, month } = table.config;
 
-    const viewer = TableEditor.create({
+    const editor = TableEditor.create({
       dutiesPerDay: table.getDay(0).size,
       month,
       year,
     });
 
-    const workerMap = new Map<WorkerInfo, WorkerEditor>();
-
     for (const entry of table.entries()) {
-      const duty = viewer
+      const duty = editor
         .getDay(entry.day.day)
         .getDuty(entry.duty.index);
 
@@ -115,25 +113,23 @@ export class TableEditor {
 
       const { name, gender, graduation, fullWorkerID } = entry.worker;
 
-      let worker = workerMap.get(entry.worker);
+      let worker = editor.getWorker(fullWorkerID);
 
       if (!worker) {
-        worker = WorkerEditor.create(viewer, fullWorkerID);
+        worker = WorkerEditor.create(editor, fullWorkerID);
 
         worker.data.name = name;
         worker.data.gender = gender;
         worker.data.graduation = graduation;
 
-        viewer.addWorker(worker.data);
-
-        workerMap.set(entry.worker, worker);
+        editor.addWorker(worker.data);
       }
 
-      worker.addDuty(duty.data);
-      duty.addWorker(worker.data);
+      worker.addDuty(duty.address());
+      duty.addWorker(worker.id());
     }
 
-    return viewer;
+    return editor;
   }
 
   static parse(payload: ParseTablePayload) {
