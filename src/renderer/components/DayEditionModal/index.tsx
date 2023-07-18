@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { AiOutlineCloseCircle } from "react-icons/ai";
-import { BsFillArrowLeftCircleFill, BsFillArrowRightCircleFill } from "react-icons/bs";
+import { AiOutlineCloseCircle, AiOutlineDoubleLeft, AiOutlineDoubleRight, AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 import { HiUserRemove } from "react-icons/hi";
 import { SlOptionsVertical } from 'react-icons/sl';
+import { DayEditor, DutyEditor, WorkerEditor } from "../../../app/api/table-edition";
 import { useRerender } from "../../hooks";
 import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
 import { ElementList, IterProps } from "../../utils/react-iteration";
 import { AvaliableWorkers } from "../AvaliableWorkers";
+import { dutyTitles } from "../DutyTableGrid/utils";
 import {
   StyledDayViewModal,
   StyledDayViewNavigation,
@@ -22,9 +23,7 @@ import {
   StyledWorkerInfoSection,
   StyledWorkerViewBody,
 } from "./styles";
-import { DayEditor, WorkerEditor, DutyEditor } from "../../../app/api/table-edition";
 import { genderComponentMap, graduationTextColorMap } from "./utils";
-import { dutyTitles } from "../DutyTableGrid/utils";
 
 export interface DayViewModalProps {
   day: DayEditor;
@@ -46,8 +45,32 @@ export function DayEditionModal(props: DayViewModalProps) {
     if (ev.animationName === 'close') onClose?.();
   }
 
-  async function handleClose() {
+  function handleClose() {
     setClosing(true);
+  }
+
+  function handleNextDuty() {
+    const limit = day.numOfDuties();
+    let nextDutyIndex = dutyIndex + 1;
+
+    if (nextDutyIndex >= limit) {
+      onNext?.()
+      nextDutyIndex = 0;
+    }
+
+    setDutyIndex(nextDutyIndex);
+  }
+  
+  function handlePrevDuty() {
+    let last = day.numOfDuties() - 1;
+    let prevDutyIndex = dutyIndex - 1;
+  
+    if (prevDutyIndex < 0) {
+      onPrev?.()
+      prevDutyIndex = last;
+    }
+
+    setDutyIndex(prevDutyIndex);
   }
 
   const dutyViewContent = duty.numOfWorkers() > 0
@@ -59,11 +82,13 @@ export function DayEditionModal(props: DayViewModalProps) {
       <StyledModalHeader>
         <div />
         <StyledDayViewNavigation>
-          <BsFillArrowLeftCircleFill onClick={onPrev} />
+          <AiOutlineDoubleLeft onClick={onPrev}/>
+          <AiOutlineLeft onClick={handlePrevDuty} />
           <StyledModalTitle>
             Dia {day.data.index + 1}
           </StyledModalTitle>
-          <BsFillArrowRightCircleFill onClick={onNext} />
+          <AiOutlineRight onClick={handleNextDuty} />
+          <AiOutlineDoubleRight onClick={onNext} />
         </StyledDayViewNavigation>
         <AiOutlineCloseCircle onClick={handleClose} size={25} color="#cc0000" />
       </StyledModalHeader>

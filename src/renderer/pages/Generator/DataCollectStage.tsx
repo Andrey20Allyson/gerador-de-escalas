@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import { AppError, api } from "../../api";
 import { useStage } from "../../contexts/stages";
 import { parseNumberOrThrow } from "../../utils";
-import { AppError, api } from "../../api";
+import { StyledLinedBorder } from "./DataCollectStage.styles";
 
 export interface DataCollectStageState {
   filePath?: string;
@@ -92,7 +93,7 @@ export function DataCollectStage() {
   }
 
   return (
-    <>
+    <StyledLinedBorder>
       <div className="form-body">
         <label className="mandatory">Escala do Mês</label>
         <input type="file" onChange={handleFileChange} />
@@ -104,6 +105,6 @@ export function DataCollectStage() {
         <input onChange={handleMonthChange} type="month" />
       </div>
       <input type="submit" onClick={handleSubmit} className="submit-button" value="Proximo" />
-    </>
+    </StyledLinedBorder>
   )
 }

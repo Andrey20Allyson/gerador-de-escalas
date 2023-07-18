@@ -10,7 +10,6 @@ export default function Generator() {
         DataCollectStage,
         WorkerEditionStage,
       ]} />
-      <StageLoadBar />
     </StageProvider>
   );
 }

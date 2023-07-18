@@ -4,17 +4,23 @@ import { api } from "../../api";
 import { AppError } from "../../../app/api/app.base";
 import useTableEditor from "../../hooks/useTableEditor";
 import { useStage } from "../../contexts/stages";
+import { StyledLinedBorder } from "../Generator/DataCollectStage.styles";
+import { LoadSpinner } from "../../components/LoadSpinner";
+import { useLoading } from "../../hooks";
+import { sleep } from "../../utils";
 
 export function LoadTableEditorStage() {
   const { next } = useStage();
+  const { listen, loading } = useLoading();
   const tableResponse = useTableEditor();
 
   if (tableResponse.status === 'success') {
     next();
   }
 
-  async function handleSubmit(data: LoadTableFormData) {
-    
+  async function loadPreGenerateEditor(data: LoadTableFormData) {
+    await sleep();
+
     const result = await api.editor.load({
       ordinaryTable: {
         filePath: data.ordinaryTable.filePath,
@@ -25,14 +31,25 @@ export function LoadTableEditorStage() {
         sheetName: data.tableToEdit.sheetName,
       },
     });
-
+  
     if (!result.ok) {
       AppError.log(result.error);
       return false;
     }
-
+  
     return true;
   }
 
-  return <LoadTableStage title="Escolha uma escala para visualizar" onSubmit={handleSubmit} />;
+  async function handleSubmit(data: LoadTableFormData) {
+    const loadPreGenerateEditorPromise = loadPreGenerateEditor(data);
+    
+    return listen(loadPreGenerateEditorPromise);
+  }
+
+  return (
+    <StyledLinedBorder>
+      <LoadTableStage title="Escolha uma escala para editar" onSubmit={handleSubmit} />
+      <LoadSpinner color="#00992e" visible={loading} spinnerWidth={3} size={15} />
+    </StyledLinedBorder>
+  );
 }

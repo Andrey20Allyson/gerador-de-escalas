@@ -1,37 +1,12 @@
 import React, { useState } from "react";
+import Skeleton from "react-loading-skeleton";
 import { AppError, editor } from "../../api";
 import { DutyTableGrid } from "../../components/DutyTableGrid";
+import { LoadSpinner } from "../../components/LoadSpinner";
 import { useStage } from "../../contexts/stages";
-import useTableEditor from "../../hooks/useTableEditor";
 import { saveFile, sleep } from "../../utils";
 import { Footer, StageBody } from "../Generator/WorkerEditionStage.styles";
-import { LoadSpinner } from "../../components/LoadSpinner";
-import { TableEditor } from "../../../app/api/table-edition";
-import Skeleton from "react-loading-skeleton";
-
-function useLoading() {
-  const [loading, setLoading] = useState(false);
-
-  async function listen<T>(promise: Promise<T>): Promise<T> {
-    setLoading(true);
-
-    await sleep(0);
-
-    let result: Promise<T>;
-
-    try {
-      result = Promise.resolve(await promise);
-    } catch (e) {
-      result = Promise.reject(e);
-    } finally {
-      setLoading(false);
-    }
-
-    return result;
-  }
-
-  return { loading, listen };
-}
+import { useLoading, useTableEditor } from "../../hooks";
 
 export function EditTableStage() {
   const { loading, listen } = useLoading();
@@ -59,6 +34,12 @@ export function EditTableStage() {
     listen(createFilePromise);
   }
 
+  async function handlePrev() {
+    await editor.clear();
+
+    prev();
+  }
+
   return (
     <StageBody>
       {tableResponse.status === 'loading'
@@ -67,7 +48,7 @@ export function EditTableStage() {
           ? <DutyTableGrid table={tableResponse.editor} />
           : <p>{tableResponse.error.message}</p>}
       <Footer>
-        <input type='button' onClick={prev} value='Voltar' />
+        <input type='button' onClick={handlePrev} value='Voltar' />
         <input type='button' onClick={handleSave} value='Salvar' />
       </Footer>
       <LoadSpinner color="#00992e" visible={loading} spinnerWidth={3} size={15} />

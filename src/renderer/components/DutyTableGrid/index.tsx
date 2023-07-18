@@ -12,7 +12,7 @@ export interface DutyTableGridProps {
 
 export function DutyTableGrid(props: DutyTableGridProps) {
   const { table } = props;
-  const [selectedDay, setSelectedDay] = useState<DayEditor | undefined>(table.getDay(0));
+  const [selectedDay, setSelectedDay] = useState<DayEditor>();
 
   function handleNextDayView() {
     if (!selectedDay) return;

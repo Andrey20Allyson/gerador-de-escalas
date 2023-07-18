@@ -63,7 +63,7 @@ export function WorkerEditionStage() {
         <HeaderLabel>Alterar dias de serviço</HeaderLabel>
         <HelpIcon>
           <div>
-            <p><ColoredText color="#06be00">Verde</ColoredText> = Dias de extra</p>
+            <p><ColoredText color="#06be00">Verde</ColoredText>: Dias disponíveis para trabalhar na extra.</p>
           </div>
         </HelpIcon>
       </StageHeader>

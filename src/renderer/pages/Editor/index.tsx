@@ -10,7 +10,6 @@ export default function Editor() {
         LoadTableEditorStage,
         EditTableStage,
       ]} />
-      <StageLoadBar />
     </StageProvider>
   );
 }
