@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { BiSearch } from "react-icons/bi";
 import { HiUserAdd } from "react-icons/hi";
 import { SlOptionsVertical } from "react-icons/sl";
-import { DutyEditor, WorkerEditor } from "../../app/api/table-edition";
-import { ColoredText } from "../pages/Generator/WorkerEditionStage.styles";
-import { ElementList } from "../utils/react-iteration";
-import { StyledAvaliableWorker, StyledAvaliableWorkerBody, StyledAvaliableWorkerSearchBody, StyledAvaliableWorkersScrollable, StyledAvaliableWorkersSection } from "./AvaliableWorkers.styles";
-import { StyledWorkerInfoSection } from "./DayEditionModal.styles";
-import { genderComponentMap, graduationTextColorMap } from "./DayEditionModal.utils";
+import { DutyEditor, WorkerEditor } from "../../../app/api/table-edition";
+import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
+import { ElementList } from "../../utils/react-iteration";
+import { StyledAvaliableWorker, StyledAvaliableWorkerBody, StyledAvaliableWorkerSearchBody, StyledAvaliableWorkersScrollable, StyledAvaliableWorkersSection } from "./styles";
+import { StyledWorkerInfoSection } from "../DayEditionModal/styles";
+import { genderComponentMap, graduationTextColorMap } from "../DayEditionModal/utils";
 
 export interface AvaliableWorkers {
   onUpdate?: () => void;

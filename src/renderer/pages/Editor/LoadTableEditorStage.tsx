@@ -2,8 +2,17 @@ import React from "react";
 import { LoadTableFormData, LoadTableStage } from "../../components/LoadTableStage";
 import { api } from "../../api";
 import { AppError } from "../../../app/api/app.base";
+import useTableEditor from "../../hooks/useTableEditor";
+import { useStage } from "../../contexts/stages";
 
 export function LoadTableEditorStage() {
+  const { next } = useStage();
+  const tableResponse = useTableEditor();
+
+  if (tableResponse.status === 'success') {
+    next();
+  }
+
   async function handleSubmit(data: LoadTableFormData) {
     
     const result = await api.editor.load({

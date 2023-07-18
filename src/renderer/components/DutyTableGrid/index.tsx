@@ -1,10 +1,10 @@
 
 import React, { useState } from 'react';
-import { TableEditor, DayEditor } from '../../app/api/table-edition';
-import { ElementList } from '../utils/react-iteration';
-import { DayEditionModal } from './DayEditionModal';
-import { StyledDayEditionGrid } from './DutyTableGrid.styles';
-import { DayView } from './DutyTableGrid.utils';
+import { TableEditor, DayEditor } from '../../../app/api/table-edition';
+import { ElementList } from '../../utils/react-iteration';
+import { DayEditionModal } from '../DayEditionModal';
+import { StyledDayEditionGrid } from './styles';
+import { DayView } from './utils';
 
 export interface DutyTableGridProps {
   table: TableEditor;

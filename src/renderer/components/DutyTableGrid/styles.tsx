@@ -1,19 +1,19 @@
 import styled, { css } from "styled-components";
-import { Graduation, Gender } from "../extra-duty-lib";
+import { Graduation, Gender } from "../../extra-duty-lib";
 
 export const StyledExpandDayButton = styled.button`
   background-color: #ffffff22;
-  cursor: pointer;
-  outline: none;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 1.4rem;
-  padding: 0;
-  width: 1.8rem;
-  border-radius: .2rem;
   transition: opacity 100ms;
+  justify-content: center;
+  border-radius: .2rem;
+  align-items: center;
+  cursor: pointer;
+  height: 1.4rem;
+  outline: none;
+  display: flex;
+  width: 1.8rem;
+  border: none;
+  padding: 0;
   box-shadow:
     .1rem -.1rem .5rem #0002 inset,
     -.1rem .1rem .5rem #ffffff58 inset;

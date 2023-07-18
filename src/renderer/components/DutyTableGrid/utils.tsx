@@ -1,10 +1,9 @@
-
 import React from "react";
 import { HiOutlineArrowsExpand } from "react-icons/hi";
-import { WorkerEditor, DayEditor, DutyEditor } from "../../app/api/table-edition";
-import { iterRange } from "../utils";
-import { ElementList, IterProps } from "../utils/react-iteration";
-import { StyledDay, StyledDayTitle, StyledDutiesContainer, StyledDuty, StyledDutyHeader, StyledDutySlot, StyledDutyTitle, StyledEmpityDutySlot, StyledExpandDayButton } from "./DutyTableGrid.styles";
+import { WorkerEditor, DayEditor, DutyEditor } from "../../../app/api/table-edition";
+import { iterRange } from "../../utils";
+import { ElementList, IterProps } from "../../utils/react-iteration";
+import { StyledDay, StyledDayTitle, StyledDutiesContainer, StyledDuty, StyledDutyHeader, StyledDutySlot, StyledDutyTitle, StyledEmpityDutySlot, StyledExpandDayButton } from "./styles";
 
 export const dutyTitles = [
   '7 as 19h',

@@ -1,6 +1,6 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
-import { fromRoot } from './path.utils';
+import { app, BrowserWindow } from 'electron';
 import { loadAPI } from './api';
+import { fromRoot } from './path.utils';
 
 async function createWindow() {
   const window = new BrowserWindow({

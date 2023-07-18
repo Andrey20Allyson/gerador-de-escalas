@@ -3,10 +3,10 @@ import { AiOutlineCloseCircle } from "react-icons/ai";
 import { BsFillArrowLeftCircleFill, BsFillArrowRightCircleFill } from "react-icons/bs";
 import { HiUserRemove } from "react-icons/hi";
 import { SlOptionsVertical } from 'react-icons/sl';
-import { useRerender } from "../hooks";
-import { ColoredText } from "../pages/Generator/WorkerEditionStage.styles";
-import { ElementList, IterProps } from "../utils/react-iteration";
-import { AvaliableWorkers } from "./AvaliableWorkers";
+import { useRerender } from "../../hooks";
+import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
+import { ElementList, IterProps } from "../../utils/react-iteration";
+import { AvaliableWorkers } from "../AvaliableWorkers";
 import {
   StyledDayViewModal,
   StyledDayViewNavigation,
@@ -21,10 +21,10 @@ import {
   StyledModalTitle2,
   StyledWorkerInfoSection,
   StyledWorkerViewBody,
-} from "./DayEditionModal.styles";
-import { DayEditor, WorkerEditor, DutyEditor } from "../../app/api/table-edition";
-import { genderComponentMap, graduationTextColorMap } from "./DayEditionModal.utils";
-import { dutyTitles } from "./DutyTableGrid.utils";
+} from "./styles";
+import { DayEditor, WorkerEditor, DutyEditor } from "../../../app/api/table-edition";
+import { genderComponentMap, graduationTextColorMap } from "./utils";
+import { dutyTitles } from "../DutyTableGrid/utils";
 
 export interface DayViewModalProps {
   day: DayEditor;

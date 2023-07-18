@@ -27,7 +27,7 @@ export function useStageControllerCreator(): StageController {
   const [index, setIndex] = useState(0);
 
   const controller: StageController = {
-    index: index,
+    index,
     stages,
     setStages,
     navigate,
