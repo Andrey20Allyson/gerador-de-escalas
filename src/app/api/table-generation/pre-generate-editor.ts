@@ -1,4 +1,4 @@
-import { DayOfWork, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import type { DayOfWork, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 
 export interface WorkerEditorDTO {
   readonly workerID: number;

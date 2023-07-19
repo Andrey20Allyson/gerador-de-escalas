@@ -121,15 +121,16 @@ h2 {
   align-items: center;
   margin-bottom: .5rem;
   gap: .4rem;
+  height: max-content;
 
   &>img {
-    width: 2rem;
+    width: 3rem;
     box-shadow: -.2rem .2rem .5rem #0006;
     border-radius: 50%;
   }
 
   &>h1 {
-    font-size: 1rem;
+    font-size: 1.5rem;
     color: #d3d3d3;
   }
 }

@@ -1,4 +1,4 @@
-import { Gender, Graduation } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import type { Gender, Graduation } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import { DutyEditor } from "./duty-editor";
 import { TableEditor } from "./table-editor";
 import { DutyAddress, DutyAddressData } from "./duty-address";
@@ -18,7 +18,7 @@ export class WorkerEditor {
 
   *iterDuties(): Iterable<DutyEditor> {
     for (const [_, addressData] of this.data.dutyAddresses) {
-      return this.table
+      yield this.table
         .getDay(addressData.dayIndex)
         .getDuty(addressData.dutyIndex);
     }
@@ -68,8 +68,8 @@ export class WorkerEditor {
 
   static create(parent: TableEditor, workerID: number) {
     return new WorkerEditor(parent, {
-      graduation: Graduation.GCM,
-      gender: Gender.UNDEFINED,
+      graduation: 'gcm',
+      gender: 'N/A',
       maxDuties: 5,
       name: 'N/A',
       dutyAddresses: new Map(),

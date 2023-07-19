@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import Skeleton from "react-loading-skeleton";
 import { AppError, editor } from "../../api";
 import { DutyTableGrid } from "../../components/DutyTableGrid";
 import { LoadSpinner } from "../../components/LoadSpinner";
 import { useStage } from "../../contexts/stages";
-import { saveFile, sleep } from "../../utils";
-import { Footer, StageBody } from "../Generator/WorkerEditionStage.styles";
 import { useLoading, useTableEditor } from "../../hooks";
+import { saveFile } from "../../utils";
+import { Footer, StageBody } from "../Generator/WorkerEditionStage.styles";
 
 export function EditTableStage() {
   const { loading, listen } = useLoading();

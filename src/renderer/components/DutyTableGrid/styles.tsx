@@ -101,15 +101,15 @@ export interface StyledDutySlotProps {
 }
 
 export const graduationColorMap: Record<Graduation, string> = {
-  [Graduation.INSP]: '#71eb8a',
-  [Graduation.GCM]: '#313131',
-  [Graduation.SI]: '#f0d35e',
+  'sub-insp': '#f0d35e',
+  'insp': '#71eb8a',
+  'gcm': '#313131',
 };
 
 export const genderColorMap: Record<Gender, string> = {
-  [Gender.UNDEFINED]: '#727272',
-  [Gender.FEMALE]: '#de63e2',
-  [Gender.MALE]: '#5b4af5',
+  'female': '#de63e2',
+  'male': '#5b4af5',
+  'N/A': '#727272',
 }
 
 export const StyledDutySlot = styled.span<StyledDutySlotProps>`

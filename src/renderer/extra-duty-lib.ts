@@ -1,1 +1,1 @@
-export * from '@andrey-allyson/escalas-automaticas/dist/extra-duty-lib/structs/worker-info';
+export type * from '@andrey-allyson/escalas-automaticas/dist/extra-duty-lib/structs/worker-info';

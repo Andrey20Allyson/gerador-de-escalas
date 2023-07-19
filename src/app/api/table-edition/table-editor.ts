@@ -1,6 +1,5 @@
-import { ExtraDutyTable, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import type { ExtraDutyTable, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import { getNumOfDaysInMonth } from "@andrey-allyson/escalas-automaticas/dist/utils";
-import { ParseTablePayload, parseExtraTable } from "../utils/table";
 import { DayEditor, DayEditorData } from "./day-editor";
 import { normalizeIndex } from "./utils";
 import { WorkerEditor, WorkerEditorData } from "./worker-editor";
@@ -9,7 +8,7 @@ export interface TableEditorData {
   readonly nunOfDays: number;
   readonly month: number;
   readonly year: number;
-  
+
   workers: Map<number, WorkerEditorData>;
   days: DayEditorData[];
   dutiesPerDay: number;
@@ -79,23 +78,23 @@ export class TableEditor {
   save(table: ExtraDutyTable, workerMap: ReadonlyMap<number, WorkerInfo>) {
     table.clear();
 
-    for (const [id, worker] of workerMap) {
-      const workerEditor = this.getWorker(id);
-      if (!workerEditor) throw new Error(`Can't find worker data with id #${id}!`);
+    for (const workerEditor of this.iterWorkers()) {
+      const workerInfo = workerMap.get(workerEditor.id());
+      if (!workerInfo) throw new Error(`Can't find worker data with id #${workerEditor.id()}!`);
 
       for (const dutyEditor of workerEditor.iterDuties()) {
         const duty = table
           .getDay(dutyEditor.parent.index())
-          .getDuty(dutyEditor.index());
+          .getDuty(dutyEditor.index())
 
-        duty.add(worker, true);
+        duty.add(workerInfo, true);
       }
     }
 
     return table;
   }
 
-  static from(table: ExtraDutyTable) {
+  static from(table: ExtraDutyTable, workers: WorkerInfo[]) {
     const { year, month } = table.config;
 
     const editor = TableEditor.create({
@@ -104,6 +103,18 @@ export class TableEditor {
       year,
     });
 
+    for (const workerInfo of workers) {
+      const { fullWorkerID, name, gender, graduation } = workerInfo;
+
+      const worker = WorkerEditor.create(editor, fullWorkerID);
+
+      worker.data.name = name;
+      worker.data.gender = gender;
+      worker.data.graduation = graduation;
+
+      editor.addWorker(worker.data);
+    }
+
     for (const entry of table.entries()) {
       const duty = editor
         .getDay(entry.day.day)
@@ -111,31 +122,16 @@ export class TableEditor {
 
       duty.setTime(entry.duty.start, entry.duty.end);
 
-      const { name, gender, graduation, fullWorkerID } = entry.worker;
+      const { fullWorkerID } = entry.worker;
 
-      let worker = editor.getWorker(fullWorkerID);
-
-      if (!worker) {
-        worker = WorkerEditor.create(editor, fullWorkerID);
-
-        worker.data.name = name;
-        worker.data.gender = gender;
-        worker.data.graduation = graduation;
-
-        editor.addWorker(worker.data);
-      }
+      const worker = editor.getWorker(fullWorkerID);
+      if (!worker) throw new Error(`Can't find worker data with id #${fullWorkerID}!`);
 
       worker.addDuty(duty.address());
       duty.addWorker(worker.id());
     }
 
     return editor;
-  }
-
-  static parse(payload: ParseTablePayload) {
-    const { table } = parseExtraTable(payload);
-
-    return TableEditor.from(table);
   }
 
   static create(options: CreateTableEditorOptions) {

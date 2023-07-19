@@ -3,6 +3,7 @@ import { AppError, api } from "../../api";
 import { useStage } from "../../contexts/stages";
 import { parseNumberOrThrow } from "../../utils";
 import { StyledLinedBorder } from "./DataCollectStage.styles";
+import { HeaderLabel } from "./WorkerEditionStage.styles";
 
 export interface DataCollectStageState {
   filePath?: string;
@@ -94,8 +95,9 @@ export function DataCollectStage() {
 
   return (
     <StyledLinedBorder>
+      <HeaderLabel>Inserir a Escala Ordinária:</HeaderLabel>
       <div className="form-body">
-        <label className="mandatory">Escala do Mês</label>
+        <label className="mandatory">Escala do ordinária</label>
         <input type="file" onChange={handleFileChange} />
         <label className="mandatory">Nome da Aba</label>
         <select onChange={handleSheetNameChange}>{

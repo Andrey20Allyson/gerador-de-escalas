@@ -1,15 +1,10 @@
-import { loadWorkers } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/io";
+import fs from 'fs/promises';
+import { AppGeneratorHandler, AppPreGenerateEditorHandler } from ".";
 import { AppResponse } from "../app.base";
 import { AppAssets } from "../assets";
-import { AppHandler } from "../channels";
 import { TableGenerator } from "../table-generation/table-generator";
-import { parseOrdinary } from "../utils/table";
-import fs from 'fs/promises';
 
-export type GeneratorHandler = AppHandler['generator'];
-export type PreGenerateEditorHandler = GeneratorHandler['preGenerateEditor'];
-
-export function createPreGenerateEditorHandler(generator: TableGenerator): PreGenerateEditorHandler {
+export function createPreGenerateEditorHandler(generator: TableGenerator): AppPreGenerateEditorHandler {
   return {
     async getEditor(_) {
       return generator.createPreGenerateEditor();
@@ -21,7 +16,7 @@ export function createPreGenerateEditorHandler(generator: TableGenerator): PreGe
   };
 }
 
-export function createGeneratorHandler(assets: AppAssets): GeneratorHandler {
+export function createGeneratorHandler(assets: AppAssets): AppGeneratorHandler {
   const { holidays, serializer, workerRegistryMap } = assets;
   const generator = new TableGenerator();
 

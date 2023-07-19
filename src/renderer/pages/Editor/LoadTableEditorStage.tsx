@@ -48,8 +48,8 @@ export function LoadTableEditorStage() {
 
   return (
     <StyledLinedBorder>
-      <LoadTableStage title="Escolha uma escala para editar" onSubmit={handleSubmit} />
-      <LoadSpinner color="#00992e" visible={loading} spinnerWidth={3} size={15} />
+      <LoadTableStage title="Escolha Escala à Editar" onSubmit={handleSubmit} />
+      <LoadSpinner color="#00e7e7" visible={loading} spinnerWidth={5} size={20} />
     </StyledLinedBorder>
   );
 }

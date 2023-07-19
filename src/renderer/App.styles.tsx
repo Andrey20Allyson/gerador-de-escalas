@@ -4,9 +4,19 @@ export interface StyledNavButtonProps {
   selected?: boolean;
 }
 
+export const selectedBackground = css`
+  background-image: linear-gradient(40deg, #067411, #099209);
+  background-color: #098809;
+  color: #c5c5c5;
+`;
+
+export const normalBackground = css`
+  background-color: #afafaf;
+`;
+
 export const StyledNavButton = styled.span<StyledNavButtonProps>`
+  ${(props) => props.selected ? selectedBackground : normalBackground}
   padding: .1rem .7rem;
-  background-color: ${(props) => props.selected ? '#2e9c1f' : '#afafaf'};
   transition: background-color 200ms;
   font-weight: bold;
   user-select: none;
@@ -16,7 +26,7 @@ export const StyledNavButton = styled.span<StyledNavButtonProps>`
   ${lineBorder('#a3a3a3')}
 
   &:hover {
-    background-color: ${(props) => props.selected ? '#2e9c1f' : '#8db189'};
+    ${(props) => props.selected ? selectedBackground : 'background-color: #8db189;'}
   }
 `;
 
@@ -34,7 +44,7 @@ export const BodyCard = styled.main`
   min-width: 70%;
   flex-direction: column;
   justify-content: center;
-  background-color: #e4e4e4;
+  background-color: #a1a1a1;
   border-radius: 0 0 1rem 1rem;
   padding: 10px;
   box-shadow: -.2rem .2rem .5rem #0004;
@@ -58,7 +68,7 @@ export const TopNav = styled.nav`
   display: flex;
   padding: 0 1rem;
   border-radius: 1rem 1rem 0 0;
-  background-color: #d6d6d6;
+  background-color: #494949;
   color: #000000;
   gap: .2rem;
 `;

@@ -4,13 +4,13 @@ import { Gender, Graduation } from "../../extra-duty-lib";
 import React from "react";
 
 export const genderComponentMap: Record<Gender, () => React.JSX.Element> = {
-  [Gender.FEMALE]: () => <PiGenderFemaleBold color='#de63e2' />,
-  [Gender.MALE]: () => <PiGenderMaleBold color='#5b4af5' />,
-  [Gender.UNDEFINED]: () => <GrStatusUnknown />,
+  'female': () => <PiGenderFemaleBold color='#de63e2' />,
+  'male': () => <PiGenderMaleBold color='#5b4af5' />,
+  'N/A': () => <GrStatusUnknown />,
 };
 
 export const graduationTextColorMap: Record<Graduation, string> = {
-  [Graduation.INSP]: '#047400',
-  [Graduation.GCM]: '#000000',
-  [Graduation.SI]: '#a7aa00',
+  'sub-insp': '#a7aa00',
+  'insp': '#047400',
+  'gcm': '#000000',
 }

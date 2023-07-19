@@ -7,6 +7,7 @@ import { useStage } from "../../contexts/stages";
 import { usePreGenerateEditor, useRerender } from "../../hooks";
 import { saveFile, sleep } from "../../utils";
 import { ColoredText, Footer, HeaderLabel, HelpIcon, StageBody, StageHeader } from "./WorkerEditionStage.styles";
+import { StyledLinedBorder } from "./DataCollectStage.styles";
 
 function toNumber(value: string) {
   const number = +value;
@@ -34,22 +35,22 @@ export function WorkerEditionStage() {
 
   async function generate() {
     if (!editor) return;
-  
+
     const saveResponse = await api.generator.preGenerateEditor.save(editor.data);
     if (!saveResponse.ok) return AppError.log(saveResponse.error);
-  
+
     const generateResponse = await api.generator.generate();
     if (!generateResponse.ok) AppError.log(generateResponse.error);
-    
+
     const serializeResponse = await api.generator.serialize();
     if (!serializeResponse.ok) return AppError.log(serializeResponse.error);
-  
+
     saveFile('Escala.xlsx', serializeResponse.data);
   }
 
   async function handleFinish() {
     setLoading(true);
-    
+
     await sleep(0);
 
     await generate();
@@ -58,25 +59,27 @@ export function WorkerEditionStage() {
   }
 
   return (
-    <StageBody>
-      <StageHeader>
-        <HeaderLabel>Alterar dias de serviço</HeaderLabel>
-        <HelpIcon>
-          <div>
-            <p><ColoredText color="#06be00">Verde</ColoredText>: Dias disponíveis para trabalhar na extra.</p>
-          </div>
-        </HelpIcon>
-      </StageHeader>
-      <select onChange={handleChangeWorker}>
-        {workers && workers.map(createWorkerOption)}
-      </select>
-      {worker && <WorkDayGrid worker={worker} />}
-      <Footer>
-        <input type="button" value='Voltar' onClick={prev} />
-        <input type="button" value='Gerar' onClick={handleFinish} />
-      </Footer>
-      <LoadSpinner color="#00992e" visible={loading} spinnerWidth={3} size={15} />
-    </StageBody>
+    <StyledLinedBorder>
+      <StageBody>
+        <StageHeader>
+          <HeaderLabel>Alterar Dias de Serviço</HeaderLabel>
+          <HelpIcon>
+            <div>
+              <p><ColoredText color="#06be00">Verde</ColoredText>: Dias disponíveis para trabalhar na extra.</p>
+            </div>
+          </HelpIcon>
+        </StageHeader>
+        <select onChange={handleChangeWorker}>
+          {workers && workers.map(createWorkerOption)}
+        </select>
+        {worker && <WorkDayGrid worker={worker} />}
+        <Footer>
+          <input type="button" value='Voltar' onClick={prev} />
+          <input type="button" value='Gerar' onClick={handleFinish} />
+        </Footer>
+        <LoadSpinner color="#00992e" visible={loading} spinnerWidth={3} size={15} />
+      </StageBody>
+    </StyledLinedBorder>
   );
 }
 
