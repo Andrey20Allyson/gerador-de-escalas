@@ -14,19 +14,24 @@ export const normalBackground = css`
   background-color: #afafaf;
 `;
 
+export const hoveredBackground = css`
+  background-color: #8db189;
+`;
+
 export const StyledNavButton = styled.span<StyledNavButtonProps>`
   ${(props) => props.selected ? selectedBackground : normalBackground}
   padding: .1rem .7rem;
-  transition: background-color 200ms;
+  transition: background-color 200ms, color 200ms;
   font-weight: bold;
   user-select: none;
   cursor: pointer;
   margin: 0;
   border-top-right-radius: .4rem;
   ${lineBorder('#a3a3a3')}
+  border-bottom: none;
 
   &:hover {
-    ${(props) => props.selected ? selectedBackground : 'background-color: #8db189;'}
+    ${(props) => props.selected ? selectedBackground : hoveredBackground}
   }
 `;
 

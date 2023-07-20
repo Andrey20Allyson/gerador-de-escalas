@@ -1,32 +1,56 @@
-import React, { createContext, useState, JSX, useContext, Component, PropsWithChildren } from "react";
+import React, { JSX, PropsWithChildren, createContext, useContext, useState } from "react";
 
-interface RouterContext<TRoutes extends RoutesLike> {
-  setCurrentRoute: (route: RouteState<TRoutes, keyof TRoutes>) => void;
-  currentRoute: RouteState<TRoutes, keyof TRoutes>;
+export interface RouterInnerContext<TRoutes extends RoutesLike> {
+  setCurrentRoute: (route: RouteState<TRoutes>) => void;
+  currentRoute: RouteState<TRoutes>;
   routes: TRoutes;
 }
 
 export type RoutesLike = {
-  [K in string | symbol]: () => JSX.Element;
+  [K in string | symbol]: ((props: any) => JSX.Element) | (() => JSX.Element);
 };
 
-export type InferProps<T> = T extends (props: infer P) => JSX.Element ? P : never;
+export type InferProps<T> = T extends (props: infer P) => JSX.Element ? P extends object ? P : {} : {};
 
-export type RouteState<R extends RoutesLike, K extends keyof R> = {
-  name: K,
-  props: InferProps<R[K]>;
+export interface RouteState<R extends RoutesLike, N extends keyof R = keyof R> {
+  is<TRoute extends N>(name: TRoute): this is RouteState<R, TRoute>;
+  props: InferProps<R[N]>;
+  name: N;
 }
+
+export interface RouterContext<TRoutes extends RoutesLike> {
+  useNavigate(): <TRoute extends keyof TRoutes>(route: TRoute, props: InferProps<TRoutes[TRoute]>) => void;
+  RouterProvider(props: PropsWithChildren): JSX.Element;
+  Router(): JSX.Element;
+  useRoute(): RouteState<TRoutes>;
+}
+
+export function createRouteState<R extends RoutesLike, K extends keyof R = keyof R>(name: K, props: InferProps<R[K]>): RouteState<R, K> {
+  const thisName = name;
+  
+  return {
+    props,
+    name,
+
+    is(name) {
+      return thisName === name;
+    },
+  };
+}
+
+export type InferRouteNames<T extends RouterContext<any>> = T extends RouterContext<infer R> ? keyof R : never;
+export type InferRoutes<T extends RouterContext<any>> = T extends RouterContext<infer R> ? R : never;
 
 export function createRouterContext<TRoutes extends RoutesLike, TIRoute extends keyof TRoutes>(
   routes: TRoutes,
   initialRoute: TIRoute,
   initialProps: InferProps<TRoutes[TIRoute]>,
-) {
-  const context = createContext<RouterContext<TRoutes> | null>(null);
+): RouterContext<TRoutes> {
+  const context = createContext<RouterInnerContext<TRoutes> | null>(null);
   const { Provider } = context;
 
   function RouterProvider(props: PropsWithChildren) {
-    const [currentRoute, setCurrentRoute] = useState<RouteState<TRoutes, keyof TRoutes>>({ name: initialRoute, props: initialProps});
+    const [currentRoute, setCurrentRoute] = useState<RouteState<TRoutes>>(createRouteState(initialRoute, initialProps));
 
     return (
       <Provider value={{ routes, currentRoute, setCurrentRoute }}>
@@ -37,27 +61,31 @@ export function createRouterContext<TRoutes extends RoutesLike, TIRoute extends 
 
   function Router() {
     const { currentRoute, routes } = useRoutes();
+    const { props, name: route } = currentRoute;
 
-    const Route: () => JSX.Element = routes[currentRoute.name];
+    const Route = routes[route];
 
-    return <Route {...currentRoute.props as {}} />
+    return <Route {...props} />
   }
 
   function useRoutes() {
     const routerContext = useContext(context);
-    if (!routerContext) throw new Error(`to access RouterContex the element shold be child of RouterProvider!`);
+    if (!routerContext) throw new Error(`to access RouterInnerContex the element shold be child of RouterProvider!`);
 
     return routerContext;
   }
 
-  function navigate<TRoute extends keyof TRoutes>(route: TRoute, props: TRoutes[TRoute]) {
+  function useNavigate() {
+    const { setCurrentRoute } = useRoutes();
 
+    return <TRoute extends keyof TRoutes>(route: TRoute, props: InferProps<TRoutes[TRoute]>) => setCurrentRoute(createRouteState(route, props));
   }
 
-  return { RouterProvider, Router, navigate };
-}
+  function useRoute() {
+    const { currentRoute } = useRoutes();
 
-const { Router, RouterProvider, navigate } = createRouterContext({
-  oi: () => <></>,
-  tchau: () => <></>,
-}, 'oi', {})
+    return currentRoute;
+  }
+
+  return { RouterProvider, Router, useNavigate, useRoute };
+}

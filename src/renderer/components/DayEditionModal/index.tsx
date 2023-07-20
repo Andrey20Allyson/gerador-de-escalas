@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { AiOutlineCloseCircle, AiOutlineDoubleLeft, AiOutlineDoubleRight, AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 import { HiUserRemove } from "react-icons/hi";
 import { SlOptionsVertical } from 'react-icons/sl';
-import { DayEditor, DutyEditor, WorkerEditor } from "../../../app/api/table-edition";
+import { DayEditor, DutyEditor, TableEditor, WorkerEditor } from "../../../app/api/table-edition";
 import { useRerender } from "../../hooks";
 import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
 import { ElementList, IterProps } from "../../utils/react-iteration";
@@ -24,49 +24,72 @@ import {
   StyledWorkerViewBody,
 } from "./styles";
 import { genderComponentMap, graduationTextColorMap } from "./utils";
+import { useEditionModal } from "../../contexts/duty-edition-modal";
 
 export interface DayViewModalProps {
-  day: DayEditor;
-  onClose?: () => void;
-  onNext?: () => void;
-  onPrev?: () => void;
+  startDutyIndex?: number;
+  startDayIndex?: number;
+  table: TableEditor;
+  onUpdate?: () => void;
 }
 
 export function DayEditionModal(props: DayViewModalProps) {
-  const { day, onClose, onNext, onPrev } = props;
+  const modal = useEditionModal();
+  const { startDutyIndex = 0, startDayIndex = 0, table, onUpdate } = props;
+
+  const [dutyIndex, setDutyIndex] = useState(startDutyIndex);
+  const [dayIndex, setDayIndex] = useState(startDayIndex);
+  const [closing, setClosing] = useState(false);
+
   const rerender = useRerender();
 
-  const [closing, setClosing] = useState(false);
-  const [dutyIndex, setDutyIndex] = useState(0);
-
+  function handleUpdate() {
+    onUpdate?.();
+    rerender();
+  }
+  
+  const day = table.getDay(dayIndex);
   const duty = day.getDuty(dutyIndex);
 
   function handleAnimationEnd(ev: React.AnimationEvent<HTMLSpanElement>) {
-    if (ev.animationName === 'close') onClose?.();
+    if (ev.animationName === 'close') modal.close();
   }
 
   function handleClose() {
     setClosing(true);
   }
 
-  function handleNextDuty() {
+  function nextDay() {
+    const nextDayIndex = (dayIndex + 1) % table.numOfDays();
+
+    setDayIndex(nextDayIndex);
+  }
+
+  function prevDay() {
+    const prevDayIndex = dayIndex - 1;
+    const normalizedPrevDayIndex = (prevDayIndex < 0 ? table.numOfDays() + prevDayIndex : prevDayIndex) % table.numOfDays();
+
+    setDayIndex(normalizedPrevDayIndex);
+  }
+
+  function nextDuty() {
     const limit = day.numOfDuties();
     let nextDutyIndex = dutyIndex + 1;
 
     if (nextDutyIndex >= limit) {
-      onNext?.()
+      nextDay();
       nextDutyIndex = 0;
     }
 
     setDutyIndex(nextDutyIndex);
   }
-  
-  function handlePrevDuty() {
+
+  function prevDuty() {
     let last = day.numOfDuties() - 1;
     let prevDutyIndex = dutyIndex - 1;
-  
+
     if (prevDutyIndex < 0) {
-      onPrev?.()
+      prevDay();
       prevDutyIndex = last;
     }
 
@@ -74,7 +97,7 @@ export function DayEditionModal(props: DayViewModalProps) {
   }
 
   const dutyViewContent = duty.numOfWorkers() > 0
-    ? <ElementList communProps={{ duty, onUpdate: rerender }} iter={duty.iterWorkers()} Component={WorkerCard} />
+    ? <ElementList communProps={{ duty, onUpdate: handleUpdate }} iter={duty.iterWorkers()} Component={WorkerCard} />
     : <StyledEmpityDutyMessage>Esse turno não possui componentes.</StyledEmpityDutyMessage>;
 
   return (
@@ -82,13 +105,13 @@ export function DayEditionModal(props: DayViewModalProps) {
       <StyledModalHeader>
         <div />
         <StyledDayViewNavigation>
-          <AiOutlineDoubleLeft onClick={onPrev}/>
-          <AiOutlineLeft onClick={handlePrevDuty} />
+          <AiOutlineDoubleLeft onClick={prevDay} />
+          <AiOutlineLeft onClick={prevDuty} />
           <StyledModalTitle>
             Dia {day.data.index + 1}
           </StyledModalTitle>
-          <AiOutlineRight onClick={handleNextDuty} />
-          <AiOutlineDoubleRight onClick={onNext} />
+          <AiOutlineRight onClick={nextDuty} />
+          <AiOutlineDoubleRight onClick={nextDay} />
         </StyledDayViewNavigation>
         <AiOutlineCloseCircle onClick={handleClose} size={25} color="#cc0000" />
       </StyledModalHeader>
@@ -101,7 +124,7 @@ export function DayEditionModal(props: DayViewModalProps) {
           <StyledDutyViewSlotSection>
             {dutyViewContent}
           </StyledDutyViewSlotSection>
-          <AvaliableWorkers duty={duty} onUpdate={rerender} />
+          <AvaliableWorkers duty={duty} onUpdate={handleUpdate} />
         </StyledDutyViewBody>
       </StyledModalBody>
     </StyledDayViewModal>

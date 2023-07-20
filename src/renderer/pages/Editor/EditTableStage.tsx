@@ -7,6 +7,8 @@ import { useStage } from "../../contexts/stages";
 import { useLoading, useTableEditor } from "../../hooks";
 import { saveFile } from "../../utils";
 import { Footer, StageBody } from "../Generator/WorkerEditionStage.styles";
+import { EditorTypeSelect } from "../../components/EditorTypeSelect";
+import { DutyEditionModalProvider } from "../../contexts/duty-edition-modal";
 
 export function EditTableStage() {
   const { loading, listen } = useLoading();
@@ -41,17 +43,15 @@ export function EditTableStage() {
   }
 
   return (
-    <StageBody>
-      {tableResponse.status === 'loading'
-        ? <Skeleton width={768} height={387}></Skeleton>
-        : tableResponse.status === 'success'
-          ? <DutyTableGrid table={tableResponse.editor} />
-          : <p>{tableResponse.error.message}</p>}
-      <Footer>
-        <input type='button' onClick={handlePrev} value='Voltar' />
-        <input type='button' onClick={handleSave} value='Salvar' />
-      </Footer>
-      <LoadSpinner color="#00992e" visible={loading} spinnerWidth={3} size={15} />
-    </StageBody>
+    <DutyEditionModalProvider>
+      <StageBody>
+        <EditorTypeSelect />
+        <Footer>
+          <input type='button' onClick={handlePrev} value='Voltar' />
+          <input type='button' onClick={handleSave} value='Salvar' />
+        </Footer>
+        <LoadSpinner color="#00992e" visible={loading} spinnerWidth={3} size={15} />
+      </StageBody>
+    </DutyEditionModalProvider>
   );
 }
