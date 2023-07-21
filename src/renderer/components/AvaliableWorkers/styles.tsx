@@ -18,21 +18,6 @@ export const StyledAvaliableWorkerSearchBody = styled.span`
   background-color: #00000006;
 `;
 
-export const StyledAvaliableWorker = styled.span`
-  justify-content: space-between;
-  background-color: #dbdbdb;
-  box-shadow: -.2rem .2rem .3rem #0003;
-  border-radius: .3rem;
-  align-items: center;
-  width: 95%;
-  padding: .3rem;
-  display: flex;
-
-  & * {
-    user-select: none;
-  }
-`;
-
 export const StyledAvaliableWorkersScrollable = styled.div`
   flex-direction: column;
   align-items: center;

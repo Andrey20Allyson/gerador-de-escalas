@@ -27,6 +27,10 @@ export class DutyEditor {
     return this.data.index;
   }
 
+  rules() {
+    return this.table.rules();
+  }
+
   *iterWorkers(): Iterable<WorkerEditor> {
     for (const id of this.data.workerIDs) {
       const worker = this.getWorker(id);
@@ -65,18 +69,28 @@ export class DutyEditor {
 
   deleteWorker(worker: WorkerEditor): boolean {
     if (!this.data.workerIDs.delete(worker.id())) return false;
-    
+
     this.decrementQuantity(worker);
 
     return true;
   }
 
   incrementQuantity(worker: WorkerEditor) {
-
+    this.data.genderQuantity[worker.gender()]++;
+    this.data.graduationQuantity[worker.graduation()]++;
   }
 
   decrementQuantity(worker: WorkerEditor) {
+    this.data.genderQuantity[worker.gender()]--;
+    this.data.graduationQuantity[worker.graduation()]--;
+  }
 
+  gerderQuantityOf(gender: Gender): number {
+    return this.data.genderQuantity[gender];
+  }
+
+  graduationQuantityOf(graduation: Graduation): number {
+    return this.data.graduationQuantity[graduation];
   }
 
   addWorker(worker: WorkerEditor): boolean {
@@ -90,24 +104,70 @@ export class DutyEditor {
     return true;
   }
 
-  breaksOrdinaryRule(worker: WorkerEditor) {
-
+  isNightly() {
+    return this.index() === 1;
   }
 
-  breaksInspRule(worker: WorkerEditor) {
+  prevDuty(): DutyEditor | undefined {
+    const { table, day } = this;
 
+    if (this.index() > 0) {
+      return day.getDuty(this.index() - 1);
+    } else if (day.index() > 0) {
+      return table.getDay(day.index() - 1).getDuty(-1);
+    }
   }
 
-  breaksGenderRule(worker: WorkerEditor) {
+  nextDuty(): DutyEditor | undefined {
+    const { table, day } = this;
 
+    const lastDayIndex = table.numOfDays() - 1;
+    const lastDutyIndex = day.numOfDuties() - 1;
+
+    if (this.index() < lastDutyIndex) {
+      return day.getDuty(this.index() + 1);
+    } else if (day.index() < lastDayIndex) {
+      return table.getDay(day.index() + 1).getDuty(0)
+    }
+  }
+
+  breaksTimeOffRule(worker: WorkerEditor): boolean {
+    const workerID = worker.id();
+
+    return this.table.rules().timeOffRule
+      && ((this.prevDuty()?.includes(workerID) ?? false) || (this.nextDuty()?.includes(workerID) ?? false));
+  }
+
+  breaksOrdinaryRule(worker: WorkerEditor): boolean {
+    return this.rules().ordinaryRule && worker.ordinary.collidesWithDuty(this);
+  }
+
+  breaksInspRule(worker: WorkerEditor): boolean {
+    return this.rules().inspRule
+      && this.graduationQuantityOf('insp') > 0
+      && worker.graduation() === 'insp';
+  }
+
+  breaksGenderRule(worker: WorkerEditor): boolean {
+    return this.rules().femaleRule
+      && this.numOfWorkers() <= 1
+      && worker.gender() === 'female'
+      && this.gerderQuantityOf('male') === 0;
   }
 
   canAddWorker(worker: WorkerEditor) {
-    const { table, day } = this;
-    
-    if (!table.isRulesActived()) return true;
+    const breaksSomeRule = this.isFull()
+      || this.includes(worker.id())
+      || this.breaksInspRule(worker)
+      || this.breaksGenderRule(worker)
+      || this.breaksTimeOffRule(worker)
+      || this.breaksOrdinaryRule(worker);
 
+    return !breaksSomeRule;
+  }
 
+  includes(workerID: number): boolean {
+    return this.data.workerIDs.has(workerID);
   }
 
   isFull() {

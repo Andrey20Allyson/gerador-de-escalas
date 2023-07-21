@@ -109,13 +109,13 @@ export const StyledWorkerViewBody = styled.span`
   &, & * {
     user-select: none;
   }
-`;
 
-export const StyledWorkerInfoSection = styled.section`
-  height: 100%;
-  display: flex;
-  gap: .3rem;
-  align-items: center;
+  &>.info {
+    height: 100%;
+    display: flex;
+    gap: .3rem;
+    align-items: center;
+  }
 `;
 
 export interface StyledDutyViewNavButtonProps {

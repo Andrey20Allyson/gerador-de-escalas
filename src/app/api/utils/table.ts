@@ -99,7 +99,7 @@ export interface InputMonth {
 
 export function extractYearAndMonthFromBook(sheet: SheetHandler): InputMonth {
   return {
-    month: sheet.at('c', 7).as('number').value,
+    month: sheet.at('c', 7).as('number').value - 1,
     year: sheet.at('c', 6).as('number').value,
   }
 }

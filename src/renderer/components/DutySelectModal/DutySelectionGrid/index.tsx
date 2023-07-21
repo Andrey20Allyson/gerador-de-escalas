@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { DayEditor, DutyEditor, WorkerEditor } from '../../../../app/api/table-edition';
 import { ElementList, IterProps } from '../../../utils/react-iteration';
 import { dutyTitles } from '../../DutyTableGrid/utils';
+import { BsPeopleFill } from 'react-icons/bs';
 
 export interface DutySelectionGridProps {
   worker: WorkerEditor;
@@ -50,45 +51,18 @@ export const StyledDayCard = styled.span`
   border: 1px solid #0005;
   border-radius: .5rem;
   padding: .25rem;
-  box-shadow: -.1rem .1rem .2rem #0004 inset;
-  background-color: #00000007;
+  box-shadow: -.1rem .1rem .2rem #0004;
+  background-color: #ffffff14;
+  font-size: .8rem;
   display: flex;
+  font-weight: bold;
   flex-direction: column;
   align-items: stretch;
+  text-align: center;
 
   &>.duty-row {
     display: flex;
     gap: .3rem;
-
-    &>.duty {
-      border-radius: .3rem;
-      font-size: .6rem;
-      padding: .3rem;
-      flex: 1;
-      border: 1px solid #0004;
-      text-align: center;
-      user-select: none;
-      transition: all 300ms;
-      background-color: #0000;
-      
-      &.selectable {
-        background-color: #4fca632d;
-        cursor: pointer;
-
-        &:hover {
-          background-color: #4fca6367;
-        }
-      }
-      
-      &.selected {
-        background-color: #4fca63;
-        cursor: pointer;
-
-        &:hover {
-          background-color: #4fca6394
-        }
-      }
-    }
   }
 `;
 
@@ -101,20 +75,66 @@ export function DutySelectButton(props: IterProps<DutyEditor, DutySelectButtonPr
   const { onDutySelected, worker } = props;
   const duty = props.entry;
 
+  const text = dutyTitles.at(duty.index());
+  const selected = worker.hasDuty(duty.address());
+
+  const canSelect = duty.canAddWorker(worker);
+
   function handleSelectDuty() {
-    if (onDutySelected) {
-      onDutySelected(duty);
+    if (selected || canSelect) {
+      onDutySelected?.(duty);
     }
   }
 
-  const text = dutyTitles.at(duty.index());
-  const workerHasDuty = worker.hasDuty(duty.address());
-
-  const canSelect = !duty.isFull() && !worker.isFull();
-
   return (
-    <button className={`duty${canSelect ? ' selectable' : ''}${workerHasDuty ? ' selected' : ''}`} onClick={handleSelectDuty}>
+    <StyledDutySelectButton className={`${canSelect ? ' selectable' : ''}${selected ? ' selected' : ''}`} onClick={handleSelectDuty}>
       {text}
-    </button>
+      <span className='worker-quantity-display'>
+        {duty.numOfWorkers()}
+        <BsPeopleFill />
+      </span>
+    </StyledDutySelectButton>
   );
 }
+
+const StyledDutySelectButton = styled.button`
+  border-radius: .3rem;
+  font-size: .6rem;
+  padding: .15rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: .2rem;
+  flex: 1;
+  border: 1px solid #0004;
+  text-align: center;
+  user-select: none;
+  transition: all 300ms;
+  background-color: #0000;
+  font-weight: bold;
+
+  &>.worker-quantity-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: .2rem;
+  }
+  
+  &.selectable {
+    background-color: #4fca632d;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #4fca6367;
+    }
+  }
+  
+  &.selected {
+    background-color: #4fca63;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #4fca6394
+    }
+  }
+`;

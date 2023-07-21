@@ -5,14 +5,21 @@ import { normalizeIndex } from "./utils";
 import { WorkerEditor, WorkerEditorData } from "./worker-editor";
 import { DutyEditor } from "./duty-editor";
 
+export interface WorkerInsertionRulesState {
+  ordinaryRule: boolean;
+  timeOffRule: boolean;
+  femaleRule: boolean;
+  inspRule: boolean;
+}
+
 export interface TableEditorData {
+  readonly workers: Map<number, WorkerEditorData>;
+  readonly rules: WorkerInsertionRulesState;
+  readonly days: DayEditorData[];
   readonly nunOfDays: number;
   readonly month: number;
   readonly year: number;
-  readonly workers: Map<number, WorkerEditorData>;
-  readonly days: DayEditorData[];
 
-  rulesActived: boolean;
   dutiesPerDay: number;
 }
 
@@ -51,12 +58,12 @@ export class TableEditor {
     }
   }
 
-  setRulesActived(value: boolean) {
-    this.data.rulesActived = value;
+  rules() {
+    return this.data.rules;
   }
 
-  isRulesActived() {
-    return this.data.rulesActived;
+  isRuleActived(rule: keyof WorkerInsertionRulesState) {
+    return this.data.rules[rule];
   }
 
   numOfDays() {
@@ -122,7 +129,7 @@ export class TableEditor {
     });
 
     for (const workerInfo of workers) {
-      const { fullWorkerID, name, gender, graduation, daysOfWork } = workerInfo;
+      const { fullWorkerID, name, gender, graduation, daysOfWork, workTime } = workerInfo;
 
       const worker = WorkerEditor.create(editor, fullWorkerID);
 
@@ -132,8 +139,11 @@ export class TableEditor {
       worker.data.isDailyWorker = daysOfWork.isDailyWorker;
 
       for (const { day, work } of daysOfWork.entries()) {
-        if (work) worker.data.daysOfOrdinary.add(day);
+        if (work) worker.ordinary.add(day);
       }
+
+      worker.ordinary.data.startsAt = workTime.startTime;
+      worker.ordinary.data.duration = workTime.totalTime;
 
       editor.addWorker(worker.data);
     }
@@ -161,6 +171,23 @@ export class TableEditor {
     const { dutiesPerDay, month = 0, year = 0 } = options;
     const nunOfDays = getNumOfDaysInMonth(month, year);
 
-    return new TableEditor({ days: [], workers: new Map(), month, year, nunOfDays, dutiesPerDay, rulesActived: true });
+    return new TableEditor({
+      rules: TableEditor.createRules(),
+      workers: new Map(),
+      dutiesPerDay,
+      nunOfDays,
+      days: [],
+      month,
+      year,
+    });
+  }
+
+  static createRules(): WorkerInsertionRulesState {
+    return {
+      ordinaryRule: true,
+      timeOffRule: true,
+      femaleRule: true,
+      inspRule: true,
+    }
   }
 }

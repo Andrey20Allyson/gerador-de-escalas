@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { BiSearch } from "react-icons/bi";
 import { HiUserAdd } from "react-icons/hi";
 import { SlOptionsVertical } from "react-icons/sl";
+import styled from "styled-components";
 import { DutyEditor, WorkerEditor } from "../../../app/api/table-edition";
 import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
-import { ElementList } from "../../utils/react-iteration";
-import { StyledAvaliableWorker, StyledAvaliableWorkerBody, StyledAvaliableWorkerSearchBody, StyledAvaliableWorkersScrollable, StyledAvaliableWorkersSection } from "./styles";
-import { StyledWorkerInfoSection } from "../DayEditionModal/styles";
+import { ElementList, IterProps } from "../../utils/react-iteration";
 import { genderComponentMap, graduationTextColorMap } from "../DayEditionModal/utils";
+import { StyledAvaliableWorkerBody, StyledAvaliableWorkerSearchBody, StyledAvaliableWorkersScrollable, StyledAvaliableWorkersSection } from "./styles";
+import { useDutySelectModal } from "../DutySelectModal";
+import { FaCalendarAlt } from "react-icons/fa";
 
 export interface AvaliableWorkers {
   onUpdate?: () => void;
@@ -17,10 +19,11 @@ export interface AvaliableWorkers {
 export function AvaliableWorkers(props: AvaliableWorkers) {
   const [search, setSearch] = useState<string>();
   const { duty, onUpdate } = props;
-
   const { day } = duty;
+  const { table } = day;
+
   const isDutyFull = duty.numOfWorkers() >= 3;
-  const workers = iterFilteredWorkers(day.table.iterWorkers(), search);
+  const workers = iterFilteredWorkers(duty, table.iterWorkers(), search);
 
   function handleSearchChange(ev: React.ChangeEvent<HTMLInputElement>) {
     const { value } = ev.currentTarget;
@@ -36,32 +39,37 @@ export function AvaliableWorkers(props: AvaliableWorkers) {
       </StyledAvaliableWorkerSearchBody>
       <StyledAvaliableWorkersSection>
         <StyledAvaliableWorkersScrollable>
-          <ElementList iter={workers} Component={(props) => {
-            const { entry: worker } = props;
+          <ElementList iter={workers} communProps={{ duty }} Component={(props: IterProps<WorkerEditor, { duty: DutyEditor }>) => {
+            const { duty } = props;
+            const worker = props.entry;
+            const selectionModal = useDutySelectModal();
 
             const Gender = genderComponentMap[worker.gender()];
             const gradutationColor = graduationTextColorMap[worker.graduation()];
+            const dutyLimit = worker.data.maxDuties;
 
             function handleAddWorker() {
-              if (isDutyFull) return;
+              if (worker.isFull()) return;
 
               duty.bindWorker(worker);
 
               onUpdate?.();
             }
 
-            const dutyLimit = worker.data.maxDuties;
+            function handleOpenModal() {
+              selectionModal.open({ table: worker.table, worker });
+            }
 
             return (
               <StyledAvaliableWorker>
                 {worker.name()}
-                <StyledWorkerInfoSection>
-                  [<ColoredText color='#303100'>{dutyLimit - worker.numOfDuties()} / {dutyLimit}</ColoredText>]
+                <section className='info'>
+                  [<ColoredText color='#303100'>{worker.numOfDuties()} / {dutyLimit}</ColoredText>]
                   [<ColoredText color={gradutationColor}>{worker.data.graduation.toUpperCase()}</ColoredText>]
                   <Gender />
-                  <HiUserAdd className={isDutyFull ? undefined : 'clickable'} color={isDutyFull ? '#2055274b' : '#078118'} onClick={handleAddWorker} />
-                  <SlOptionsVertical />
-                </StyledWorkerInfoSection>
+                  <HiUserAdd className={`add-worker ${worker.isFull() ? ' unclickable' : ''}`} onClick={handleAddWorker} />
+                  <FaCalendarAlt className='open-selection-modal' onClick={handleOpenModal} />
+                </section>
               </StyledAvaliableWorker>
             );
           }} />
@@ -71,9 +79,46 @@ export function AvaliableWorkers(props: AvaliableWorkers) {
   );
 }
 
-export function* iterFilteredWorkers(workers: Iterable<WorkerEditor>, search: string | undefined): Iterable<WorkerEditor> {
+export const StyledAvaliableWorker = styled.span`
+  justify-content: space-between;
+  background-color: #dbdbdb;
+  box-shadow: -.2rem .2rem .3rem #0003;
+  border-radius: .3rem;
+  align-items: center;
+  width: 95%;
+  padding: .3rem;
+  display: flex;
+
+  & * {
+    user-select: none;
+  }
+
+  &>.info {
+    height: 100%;
+    display: flex;
+    gap: .3rem;
+    align-items: center;
+
+    &>.add-worker {
+      color: #0f9c0a;
+      cursor: pointer;
+      
+      &.unclickable {
+        color: #0f9c0a67;
+        cursor: default;
+      }
+    }
+
+    &>.open-selection-modal {
+      cursor: pointer;
+      color: #535353;
+    }
+  }
+`;
+
+export function* iterFilteredWorkers(duty: DutyEditor, workers: Iterable<WorkerEditor>, search: string | undefined): Iterable<WorkerEditor> {
   for (const worker of workers) {
-    if (worker.numOfDuties() >= worker.data.maxDuties) continue;
+    if (!duty.canAddWorker(worker)) continue;
     if (search && !worker.name().toLowerCase().includes(search.toLowerCase())) continue;
 
     yield worker;

@@ -2,12 +2,13 @@ import type { Gender, Graduation } from "@andrey-allyson/escalas-automaticas/dis
 import { DutyEditor } from "./duty-editor";
 import { TableEditor } from "./table-editor";
 import { DutyAddress, DutyAddressData } from "./duty-address";
+import { OrdinaryWorkHandlerData, OrdinaryWorkHandler } from "./ordinary-handler";
 
 export interface WorkerEditorData {
+  readonly ordinary: OrdinaryWorkHandlerData;
   readonly workerID: number;
 
   dutyAddresses: Map<string, DutyAddressData>;
-  daysOfOrdinary: Set<number>;
   graduation: Graduation;
   isDailyWorker: boolean;
   maxDuties: number;
@@ -16,7 +17,11 @@ export interface WorkerEditorData {
 }
 
 export class WorkerEditor {
-  constructor(readonly table: TableEditor, readonly data: WorkerEditorData) { }
+  readonly ordinary: OrdinaryWorkHandler;
+
+  constructor(readonly table: TableEditor, readonly data: WorkerEditorData) {
+    this.ordinary = new OrdinaryWorkHandler(this);
+  }
 
   *iterDuties(): Iterable<DutyEditor> {
     for (const [_, addressData] of this.data.dutyAddresses) {
@@ -93,9 +98,9 @@ export class WorkerEditor {
 
     return addedDuty && addedWorker;
   }
-  
+
   unbindDuty(duty: DutyEditor): boolean {
-    const deletedDuty = this.deleteDuty(duty.address()); 
+    const deletedDuty = this.deleteDuty(duty.address());
     const deletedWorker = duty.deleteWorker(this);
 
     return deletedDuty && deletedWorker;
@@ -117,17 +122,17 @@ export class WorkerEditor {
     return true;
   }
 
-  isDiarist() {
+  isDailyWorker() {
     return this.data.isDailyWorker;
   }
 
   isFull() {
-    return this.numOfDuties() >= this.data.maxDuties; 
+    return this.numOfDuties() >= this.data.maxDuties;
   }
 
   static create(parent: TableEditor, workerID: number) {
     return new WorkerEditor(parent, {
-      daysOfOrdinary: new Set(),
+      ordinary: OrdinaryWorkHandler.createData(),
       dutyAddresses: new Map(),
       isDailyWorker: false,
       graduation: 'gcm',

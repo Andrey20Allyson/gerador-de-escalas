@@ -1,23 +1,20 @@
-import React, { useReducer } from "react";
+import React from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
+import { FaTrash } from "react-icons/fa";
 import styled from "styled-components";
 import { DutyEditor, TableEditor, WorkerEditor } from "../../../app/api/table-edition";
 import { createModalContext } from "../../contexts/modal";
-import { DutySelectionGrid } from "./DutySelectionGrid";
-import { ElementList } from "../../utils/react-iteration";
-import { DutyCard } from "../DutyCard";
-import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
-import { genderComponentMap, graduationTextColorMap } from "../DayEditionModal/utils";
-import { formatWorkerID } from "../WorkerEditionCard/utils";
 import { useRerender } from "../../hooks";
-import { DutyAddress } from "../../../app/api/table-edition/duty-address";
-import { BiTrash } from "react-icons/bi";
-import { GrTrash } from "react-icons/gr";
-import { FaTrash } from "react-icons/fa";
+import { ElementList } from "../../utils/react-iteration";
+import { genderComponentMap } from "../DayEditionModal/utils";
+import { DutyCard } from "../DutyCard";
+import { formatWorkerID } from "../WorkerEditionCard/utils";
+import { DutySelectionGrid } from "./DutySelectionGrid";
 
 export interface DutySelectModalProps {
   worker: WorkerEditor;
   table: TableEditor;
+  idList?: number[];
 }
 
 export function DutySelectModal(props: DutySelectModalProps) {
@@ -43,13 +40,9 @@ export function DutySelectModal(props: DutySelectModalProps) {
   }
 
   function handleAddDuty(duty: DutyEditor) {
-    if (worker.hasDuty(duty.address()) && worker.unbindDuty(duty)) {
-      return rerender();
-    }
+    if (worker.hasDuty(duty.address()) && worker.unbindDuty(duty)) return rerender();
 
-    if (!worker.isFull() && !duty.isFull() && worker.bindDuty(duty)) {
-      return rerender();
-    }
+    if (worker.bindDuty(duty)) return rerender();
   }
 
   function handleClearDuties() {

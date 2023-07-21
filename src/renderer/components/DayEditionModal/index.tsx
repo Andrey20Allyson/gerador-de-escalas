@@ -20,7 +20,6 @@ import {
   StyledModalHeader,
   StyledModalTitle,
   StyledModalTitle2,
-  StyledWorkerInfoSection,
   StyledWorkerViewBody,
 } from "./styles";
 import { genderComponentMap, graduationTextColorMap } from "./utils";
@@ -176,12 +175,12 @@ export function WorkerCard(props: IterProps<WorkerEditor, WorkerViewProps>) {
   return (
     <StyledWorkerViewBody>
       {worker.data.name}
-      <StyledWorkerInfoSection>
+      <section className='info'>
         [<ColoredText color={gradutationColor}>{worker.data.graduation.toUpperCase()}</ColoredText>]
         <Gender />
         <HiUserRemove className="clickable" color='#c00000' onClick={handleWorkerRemove} />
         <SlOptionsVertical />
-      </StyledWorkerInfoSection>
+      </section>
     </StyledWorkerViewBody>
   );
 }
