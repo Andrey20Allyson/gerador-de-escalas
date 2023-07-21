@@ -7,7 +7,9 @@ export interface WorkerEditorData {
   readonly workerID: number;
 
   dutyAddresses: Map<string, DutyAddressData>;
+  daysOfOrdinary: Set<number>;
   graduation: Graduation;
+  isDailyWorker: boolean;
   maxDuties: number;
   gender: Gender;
   name: string;
@@ -87,14 +89,14 @@ export class WorkerEditor {
 
   bindDuty(duty: DutyEditor): boolean {
     const addedDuty = this.addDuty(duty.address());
-    const addedWorker = duty.addWorker(this.id());
+    const addedWorker = duty.addWorker(this);
 
     return addedDuty && addedWorker;
   }
   
   unbindDuty(duty: DutyEditor): boolean {
     const deletedDuty = this.deleteDuty(duty.address()); 
-    const deletedWorker = duty.deleteWorker(this.id());
+    const deletedWorker = duty.deleteWorker(this);
 
     return deletedDuty && deletedWorker;
   }
@@ -115,17 +117,23 @@ export class WorkerEditor {
     return true;
   }
 
+  isDiarist() {
+    return this.data.isDailyWorker;
+  }
+
   isFull() {
     return this.numOfDuties() >= this.data.maxDuties; 
   }
 
   static create(parent: TableEditor, workerID: number) {
     return new WorkerEditor(parent, {
+      daysOfOrdinary: new Set(),
+      dutyAddresses: new Map(),
+      isDailyWorker: false,
       graduation: 'gcm',
       gender: 'N/A',
       maxDuties: 5,
       name: 'N/A',
-      dutyAddresses: new Map(),
       workerID,
     });
   }

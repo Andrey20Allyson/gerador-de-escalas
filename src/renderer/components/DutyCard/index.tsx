@@ -13,11 +13,16 @@ export interface DutyCardProps {
   onExcludeDuty?: (day: number, duty: number) => void;
 }
 
+const dutyMessageMap = new Map([
+  [0, 'D'],
+  [1, 'N'],
+]);
+
 export function DutyCard(props: IterProps<DutyEditor, DutyCardProps>) {
   const { onOpenModal, onExcludeDuty, titleType = 'numeric' } = props;
 
   const duty = props.entry;
-  const day = duty.parent;
+  const { day } = duty;
 
   function handleOpenModal() {
     onOpenModal?.(day.index(), duty.index());
@@ -34,7 +39,7 @@ export function DutyCard(props: IterProps<DutyEditor, DutyCardProps>) {
       title = `Dia ${day.index() + 1} - Turno das ${dutyTitles.at(duty.index())}`;
       break;
     case 'numeric':
-      title = `Dia ${day.index() + 1}.${duty.index() + 1}`
+      title = `Dia ${day.index() + 1} - ${dutyMessageMap.get(duty.index()) ?? '?'}`
       break;
   }
 
@@ -104,7 +109,7 @@ export const StyledDutyCard = styled.span`
       &.exclude {
         background-color: #ff00004c;
         border-color: #f008;
-        flex: .5;
+        font-weight: bold;
         
         &:hover {
           background-color: #ff0000a4;

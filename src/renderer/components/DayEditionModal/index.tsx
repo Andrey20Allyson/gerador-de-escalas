@@ -170,10 +170,7 @@ export function WorkerCard(props: IterProps<WorkerEditor, WorkerViewProps>) {
   const gradutationColor = graduationTextColorMap[worker.data.graduation];
 
   function handleWorkerRemove() {
-    const success = worker.deleteDuty(duty.address()) && duty.deleteWorker(worker.id());
-    if (!success) return;
-
-    onUpdate?.();
+    if (worker.unbindDuty(duty)) onUpdate?.();
   }
 
   return (

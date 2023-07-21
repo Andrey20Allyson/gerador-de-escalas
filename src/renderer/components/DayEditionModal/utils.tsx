@@ -10,7 +10,13 @@ export const genderComponentMap: Record<Gender, () => React.JSX.Element> = {
 };
 
 export const graduationTextColorMap: Record<Graduation, string> = {
-  'sub-insp': '#a7aa00',
+  'sub-insp': '#abad00',
   'insp': '#047400',
+  'gcm': '#000000',
+}
+
+export const graduationTextColor2Map: Record<Graduation, string> = {
+  'sub-insp': '#fbff00',
+  'insp': '#09ff00',
   'gcm': '#000000',
 }

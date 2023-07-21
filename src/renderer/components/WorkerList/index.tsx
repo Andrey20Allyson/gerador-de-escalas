@@ -5,6 +5,7 @@ import { ElementList } from "../../utils/react-iteration";
 import { PropsWithTableEditor } from "../DutyTableGrid";
 import { WorkerEditionCard } from "../WorkerEditionCard";
 import { useDayEditionModal } from "../DayEditionModal";
+import { BiSearch } from "react-icons/bi";
 
 export function WorkerList(props: PropsWithTableEditor) {
   const { table } = props;
@@ -33,6 +34,7 @@ export function WorkerList(props: PropsWithTableEditor) {
     <StyledWorkerList>
       <section className='search'>
         <input type="text" placeholder='pesquisar' onChange={handleChangeSearch} />
+        <BiSearch/>
       </section>
       <section className='scroll-box'>
         <span className='scrolable'>
@@ -50,6 +52,16 @@ export const StyledWorkerList = styled.section`
   flex-direction: column;
   justify-content: space-between;
   gap: .4rem;
+
+  &>.search {
+    display: flex;
+    align-items: end;
+    gap: .4rem;
+
+    &>svg {
+      font-size: 1rem;
+    }
+  }
 
   &>.scroll-box {
     position: relative;
@@ -88,7 +100,7 @@ export const StyledWorkerList = styled.section`
       }
   
       &::-webkit-scrollbar-track {
-        background-color: #d1d1d17d;
+        background-color: #d1d1d1ab;
         border-radius: 4px;
         width: 8px;
       }

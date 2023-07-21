@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { FaCalendarAlt, FaTrash } from 'react-icons/fa';
-import { IoIosAddCircle } from 'react-icons/io';
-import styled from "styled-components";
 import { WorkerEditor } from "../../../app/api/table-edition";
 import { useRerender } from "../../hooks";
 import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
 import { sleep } from "../../utils";
 import { ElementList, IterProps } from "../../utils/react-iteration";
-import { genderComponentMap, graduationTextColorMap } from "../DayEditionModal/utils";
+import { genderComponentMap, graduationTextColor2Map, graduationTextColorMap } from "../DayEditionModal/utils";
 import { DutyCard } from "../DutyCard";
-import { formatWorkerID } from "./utils";
-import { StyledWorkerEditionCard } from "./styles";
 import { useDutySelectModal } from "../DutySelectModal";
+import { StyledWorkerEditionCard } from "./styles";
+import { formatWorkerID } from "./utils";
 
 export interface WorkerEditionCardProps {
   onOpenModal?: (day: number, duty: number) => void;
@@ -53,7 +51,7 @@ export function WorkerEditionCard(props: IterProps<WorkerEditor, WorkerEditionCa
   function handleExcludeDuty(day: number, duty: number) {
     const dutyEditor = worker.table.getDay(day).getDuty(duty);
 
-    if (dutyEditor.deleteWorker(worker.id()) && worker.deleteDuty(dutyEditor.address())) rerender();
+    if (worker.unbindDuty(dutyEditor)) rerender();
   }
 
   function handleExcludeAllDuties() {
@@ -80,7 +78,7 @@ export function WorkerEditionCard(props: IterProps<WorkerEditor, WorkerEditionCa
         <p className='name'>{worker.name()}</p>
         <div className='info'>
           <Gender />
-          [<ColoredText color={graduationTextColorMap[graduation]}>{upperCaseGraduation}</ColoredText>]
+          <ColoredText className='graduation' color={graduationTextColor2Map[graduation]}>{upperCaseGraduation}</ColoredText>
           <p className='id-box'>
             <span className='title'>
               MAT:

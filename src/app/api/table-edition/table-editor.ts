@@ -9,9 +9,10 @@ export interface TableEditorData {
   readonly nunOfDays: number;
   readonly month: number;
   readonly year: number;
+  readonly workers: Map<number, WorkerEditorData>;
+  readonly days: DayEditorData[];
 
-  workers: Map<number, WorkerEditorData>;
-  days: DayEditorData[];
+  rulesActived: boolean;
   dutiesPerDay: number;
 }
 
@@ -48,6 +49,14 @@ export class TableEditor {
     for (const [_, data] of this.data.workers) {
       yield new WorkerEditor(this, data);
     }
+  }
+
+  setRulesActived(value: boolean) {
+    this.data.rulesActived = value;
+  }
+
+  isRulesActived() {
+    return this.data.rulesActived;
   }
 
   numOfDays() {
@@ -93,7 +102,7 @@ export class TableEditor {
 
       for (const dutyEditor of workerEditor.iterDuties()) {
         const duty = table
-          .getDay(dutyEditor.parent.index())
+          .getDay(dutyEditor.day.index())
           .getDuty(dutyEditor.index())
 
         duty.add(workerInfo, true);
@@ -113,13 +122,18 @@ export class TableEditor {
     });
 
     for (const workerInfo of workers) {
-      const { fullWorkerID, name, gender, graduation } = workerInfo;
+      const { fullWorkerID, name, gender, graduation, daysOfWork } = workerInfo;
 
       const worker = WorkerEditor.create(editor, fullWorkerID);
 
       worker.data.name = name;
       worker.data.gender = gender;
       worker.data.graduation = graduation;
+      worker.data.isDailyWorker = daysOfWork.isDailyWorker;
+
+      for (const { day, work } of daysOfWork.entries()) {
+        if (work) worker.data.daysOfOrdinary.add(day);
+      }
 
       editor.addWorker(worker.data);
     }
@@ -137,7 +151,7 @@ export class TableEditor {
       if (!worker) throw new Error(`Can't find worker data with id #${fullWorkerID}!`);
 
       worker.addDuty(duty.address());
-      duty.addWorker(worker.id());
+      duty.addWorker(worker);
     }
 
     return editor;
@@ -147,6 +161,6 @@ export class TableEditor {
     const { dutiesPerDay, month = 0, year = 0 } = options;
     const nunOfDays = getNumOfDaysInMonth(month, year);
 
-    return new TableEditor({ days: [], workers: new Map(), month, year, nunOfDays, dutiesPerDay });
+    return new TableEditor({ days: [], workers: new Map(), month, year, nunOfDays, dutiesPerDay, rulesActived: true });
   }
 }

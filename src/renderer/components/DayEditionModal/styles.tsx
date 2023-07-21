@@ -7,7 +7,7 @@ export const StyledDayViewModal = styled.span`
   display: flex;
   width: 80%;
   height: 80%;
-  background-color: #eee;
+  background-color: #d1d1d1;
   border-radius: .5rem;
   box-shadow: -.4rem .4rem .6rem #0005;
 `;
@@ -18,7 +18,7 @@ export const StyledModalHeader = styled.div`
   padding: 0 .4rem;
   justify-content: space-between;
   align-items: center;
-  background-color: #dddddd;
+  background-color: #bbbbbb;
   border-bottom: 1px solid #6d6d6d5a;
 
   &>svg {

@@ -31,7 +31,7 @@ export function DutyView(props: IterProps<DutyEditor, DutyViewProps>) {
   function handleSelect() {
     if (onSelect) {
       const dutyIndex = duty.index();
-      const dayIndex = duty.parent.index();
+      const dayIndex = duty.day.index();
 
       onSelect(dayIndex, dutyIndex);
     }

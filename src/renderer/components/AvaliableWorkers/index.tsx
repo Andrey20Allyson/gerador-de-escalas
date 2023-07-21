@@ -18,7 +18,7 @@ export function AvaliableWorkers(props: AvaliableWorkers) {
   const [search, setSearch] = useState<string>();
   const { duty, onUpdate } = props;
 
-  const day = duty.parent;
+  const { day } = duty;
   const isDutyFull = duty.numOfWorkers() >= 3;
   const workers = iterFilteredWorkers(day.table.iterWorkers(), search);
 
@@ -45,8 +45,7 @@ export function AvaliableWorkers(props: AvaliableWorkers) {
             function handleAddWorker() {
               if (isDutyFull) return;
 
-              duty.addWorker(worker.id());
-              worker.addDuty(duty.address());
+              duty.bindWorker(worker);
 
               onUpdate?.();
             }

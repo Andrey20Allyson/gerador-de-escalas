@@ -36,6 +36,15 @@ export const StyledWorkerEditionCard = styled.span`
       align-items: center;
       gap: .5rem;
 
+      &>.graduation {
+        background-color: #0004;
+        padding: .2rem;
+        border-radius: .2rem;
+        border: 1px solid #ffffffb7;
+        text-align: center;
+        width: 36%;
+      }
+
       &>.id-box {
         display: flex;
         gap: .2rem;

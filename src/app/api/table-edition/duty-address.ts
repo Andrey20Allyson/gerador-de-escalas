@@ -33,6 +33,6 @@ export class DutyAddress {
   }
 
   static from(duty: DutyEditor) {
-    return DutyAddress.create(duty.table, duty.parent.index(), duty.index());
+    return DutyAddress.create(duty.table, duty.day.index(), duty.index());
   }
 }

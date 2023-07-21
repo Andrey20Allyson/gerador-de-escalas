@@ -11,6 +11,9 @@ import { genderComponentMap, graduationTextColorMap } from "../DayEditionModal/u
 import { formatWorkerID } from "../WorkerEditionCard/utils";
 import { useRerender } from "../../hooks";
 import { DutyAddress } from "../../../app/api/table-edition/duty-address";
+import { BiTrash } from "react-icons/bi";
+import { GrTrash } from "react-icons/gr";
+import { FaTrash } from "react-icons/fa";
 
 export interface DutySelectModalProps {
   worker: WorkerEditor;
@@ -49,6 +52,12 @@ export function DutySelectModal(props: DutySelectModalProps) {
     }
   }
 
+  function handleClearDuties() {
+    worker.unbindAllDuties();
+
+    rerender();
+  }
+
   return (
     <StyledDutySelectModal>
       <section className='head'>
@@ -62,15 +71,18 @@ export function DutySelectModal(props: DutySelectModalProps) {
               {worker.name()}
             </span>
             <span className='other-info'>
-              <label>Matricula</label>
+              <label className='title'>Matricula</label>
               <p className='id'>{formattedWorkerID}</p>
-              <label>Graduação</label>
-              <span>{upperCaseGraduation}</span>
-              <label>Sexo</label>
-              <span>
+              <label className='title'>Graduação</label>
+              <label>{upperCaseGraduation}</label>
+              <label className='title'>Sexo</label>
+              <span className='gender'>
                 <Gender />
               </span>
             </span>
+          </span>
+          <span className='delete-all-box'>
+            <FaTrash onClick={handleClearDuties}/>
           </span>
           <span className='duty-list'>
             <ElementList Component={DutyCard} communProps={{ titleType: 'extence', onExcludeDuty: handleExcludeDuty }} iter={worker.iterDuties()} />
@@ -100,6 +112,7 @@ export const StyledDutySelectModal = styled.div`
     justify-content: space-between;
     border-bottom: inherit;
     align-items: center;
+    font-weight: bold;
     padding: 0 .5rem;
 
     &>svg {
@@ -123,6 +136,7 @@ export const StyledDutySelectModal = styled.div`
         display: flex;
         flex: 1;
         gap: .7rem;
+        font-weight: 900;
 
         &>.name {
           font-size: 1rem;
@@ -145,9 +159,9 @@ export const StyledDutySelectModal = styled.div`
             display: flex;
             justify-content: space-between;
             gap: .2rem;
-            font-size: .9rem;
+            font-size: .8rem;
 
-            &::after {
+            &.title::after {
               content: ":";
             }
           }
@@ -155,6 +169,23 @@ export const StyledDutySelectModal = styled.div`
           &>.id {
             margin: 0;
             font-size: .9rem;
+          }
+
+          &>.gender {
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+          }
+        }
+      }
+
+      &>.delete-all-box {
+        &>svg {
+          transition: all 200ms;
+          cursor: pointer;
+
+          &:hover {
+            opacity: .7;
           }
         }
       }

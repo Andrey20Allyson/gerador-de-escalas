@@ -63,7 +63,7 @@ export function LoadedEditorTypeSelect(props: LoadedEditorTypeSelectProps) {
   const route = EditorSelection.useRoute();
 
   if (route.is('NotSelected')) {
-    navigate('WorkerList', { table });
+    navigate('DutyTableGrid', { table });
   }
 
   return (

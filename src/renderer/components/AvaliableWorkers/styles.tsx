@@ -15,7 +15,7 @@ export const StyledAvaliableWorkerSearchBody = styled.span`
   width: fit-content;
   border-top-right-radius: .3rem;
   padding: 0 .2rem;
-  background-color: #00000022;
+  background-color: #00000006;
 `;
 
 export const StyledAvaliableWorker = styled.span`
@@ -48,12 +48,19 @@ export const StyledAvaliableWorkersScrollable = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: #007900ab;
+    background-color: #f3f3f345;
     border-radius: 4px;
+    width: 8px;
+  }
+  
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: #ececec78;
   }
 
   &::-webkit-scrollbar-track {
-    background-color: #0000;
+    background-color: #d1d1d17d;
+    border-radius: 4px;
+    width: 8px;
   }
 `;
 

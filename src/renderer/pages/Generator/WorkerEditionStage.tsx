@@ -77,7 +77,6 @@ export function WorkerEditionStage() {
           <input type="button" value='Voltar' onClick={prev} />
           <input type="button" value='Gerar' onClick={handleFinish} />
         </Footer>
-        <LoadSpinner color="#00992e" visible={loading} spinnerWidth={3} size={15} />
       </StageBody>
     </StyledLinedBorder>
   );
