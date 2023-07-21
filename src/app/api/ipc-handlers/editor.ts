@@ -75,14 +75,12 @@ export class EditorHandlerFactory implements HandlerFactory<AppEditorHandler> {
   }
 
   hander(): AppEditorHandler {
-    const handler = this;
-
     return {
-      load: async (_, payload) => handler.load(payload),
-      getEditor: async () => handler.createEditor(),
-      save: async (_, data) => handler.save(data),
-      serialize: () => handler.serialize(), 
-      clear: async () => handler.clear(),
+      load: (_, payload) => this.load(payload),
+      getEditor: async () => this.createEditor(),
+      save: async (_, data) => this.save(data),
+      serialize: () => this.serialize(), 
+      clear: async () => this.clear(),
     };
   }
 }

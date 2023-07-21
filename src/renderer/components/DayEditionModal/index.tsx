@@ -24,22 +24,21 @@ import {
   StyledWorkerViewBody,
 } from "./styles";
 import { genderComponentMap, graduationTextColorMap } from "./utils";
-import { useEditionModal } from "../../contexts/duty-edition-modal";
+import { createModalContext } from "../../contexts/modal";
 
 export interface DayViewModalProps {
-  startDutyIndex?: number;
-  startDayIndex?: number;
+  dutyIndex?: number;
+  dayIndex?: number;
   table: TableEditor;
   onUpdate?: () => void;
 }
 
 export function DayEditionModal(props: DayViewModalProps) {
-  const modal = useEditionModal();
-  const { startDutyIndex = 0, startDayIndex = 0, table, onUpdate } = props;
+  const modal = useDayEditionModal();
+  const { dutyIndex: startDutyIndex = 0, dayIndex: startDayIndex = 0, table, onUpdate } = props;
 
   const [dutyIndex, setDutyIndex] = useState(startDutyIndex);
   const [dayIndex, setDayIndex] = useState(startDayIndex);
-  const [closing, setClosing] = useState(false);
 
   const rerender = useRerender();
 
@@ -51,12 +50,8 @@ export function DayEditionModal(props: DayViewModalProps) {
   const day = table.getDay(dayIndex);
   const duty = day.getDuty(dutyIndex);
 
-  function handleAnimationEnd(ev: React.AnimationEvent<HTMLSpanElement>) {
-    if (ev.animationName === 'close') modal.close();
-  }
-
   function handleClose() {
-    setClosing(true);
+    modal.close();
   }
 
   function nextDay() {
@@ -101,7 +96,7 @@ export function DayEditionModal(props: DayViewModalProps) {
     : <StyledEmpityDutyMessage>Esse turno não possui componentes.</StyledEmpityDutyMessage>;
 
   return (
-    <StyledDayViewModal closing={closing} onAnimationEnd={handleAnimationEnd}>
+    <StyledDayViewModal>
       <StyledModalHeader>
         <div />
         <StyledDayViewNavigation>
@@ -130,6 +125,11 @@ export function DayEditionModal(props: DayViewModalProps) {
     </StyledDayViewModal>
   );
 }
+
+export const {
+  ModalProvider: DayEditionModalProvider,
+  useModal: useDayEditionModal,
+} = createModalContext(DayEditionModal);
 
 export interface DutyViewNavationProps {
   duty: DutyEditor;

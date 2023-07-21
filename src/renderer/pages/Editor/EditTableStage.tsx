@@ -1,23 +1,22 @@
-import React from "react";
-import Skeleton from "react-loading-skeleton";
+import React, { useRef } from "react";
+import { TableEditor } from "../../../app/api/table-edition";
 import { AppError, editor } from "../../api";
-import { DutyTableGrid } from "../../components/DutyTableGrid";
+import { EditorTypeSelect } from "../../components/EditorTypeSelect";
 import { LoadSpinner } from "../../components/LoadSpinner";
 import { useStage } from "../../contexts/stages";
-import { useLoading, useTableEditor } from "../../hooks";
+import { useLoading } from "../../hooks";
 import { saveFile } from "../../utils";
 import { Footer, StageBody } from "../Generator/WorkerEditionStage.styles";
-import { EditorTypeSelect } from "../../components/EditorTypeSelect";
-import { DutyEditionModalProvider } from "../../contexts/duty-edition-modal";
+import { DayEditionModalProvider } from "../../components/DayEditionModal";
 
 export function EditTableStage() {
   const { loading, listen } = useLoading();
-  const tableResponse = useTableEditor();
   const { prev } = useStage();
+  const tableRef = useRef<TableEditor>(null);
 
   async function createFile() {
-    if (tableResponse.status !== 'success') return;
-    const table = tableResponse.editor;
+    const table = tableRef.current;
+    if (!table) return;
 
     const saveResponse = await editor.save(table.data);
     if (!saveResponse.ok) return AppError.log(saveResponse.error);
@@ -43,15 +42,15 @@ export function EditTableStage() {
   }
 
   return (
-    <DutyEditionModalProvider>
+    <DayEditionModalProvider>
       <StageBody>
-        <EditorTypeSelect />
+        <EditorTypeSelect tableRef={tableRef} />
         <Footer>
           <input type='button' onClick={handlePrev} value='Voltar' />
           <input type='button' onClick={handleSave} value='Salvar' />
         </Footer>
         <LoadSpinner color="#00992e" visible={loading} spinnerWidth={3} size={15} />
       </StageBody>
-    </DutyEditionModalProvider>
+    </DayEditionModalProvider>
   );
 }

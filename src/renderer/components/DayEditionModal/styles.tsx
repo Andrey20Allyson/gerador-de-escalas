@@ -1,44 +1,15 @@
 import styled from "styled-components";
 
-export interface StyledDayViewModalProps {
-  closing?: boolean;
-}
-
-export const StyledDayViewModal = styled.span<StyledDayViewModalProps>`
+export const StyledDayViewModal = styled.span`
   overflow: hidden;
   box-sizing: content-box;
   flex-direction: column;
-  position: absolute;
   display: flex;
   width: 80%;
   height: 80%;
-  right: 50%;
-  top: 50%;
-  transform: translate(50%, -50%);
   background-color: #eee;
   border-radius: .5rem;
   box-shadow: -.4rem .4rem .6rem #0005;
-  animation-name: ${({ closing }) => closing ? 'close' : 'open'};
-  animation-duration: 200ms;
-  opacity: ${({ closing }) => closing ? '0' : '1'};
-
-  @keyframes open {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-  
-  @keyframes close {
-    0% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-    }
-  }
 `;
 
 export const StyledModalHeader = styled.div`

@@ -1,11 +1,11 @@
-import React from 'react';
-import styled, { css } from 'styled-components';
-import { InferRouteNames, InferRoutes, RouteState, createRouteState, createRouterContext } from '../../contexts/router';
-import { DutyTableGrid } from '../DutyTableGrid';
-import { TableEditor } from '../../../app/api/table-edition';
-import { useTableEditor } from '../../hooks';
+import React, { MutableRefObject } from 'react';
 import Skeleton from 'react-loading-skeleton';
+import styled, { css } from 'styled-components';
+import { TableEditor } from '../../../app/api/table-edition';
 import { hoveredBackground, normalBackground, selectedBackground } from '../../App.styles';
+import { InferRoutes, RouteState, createRouteState, createRouterContext } from '../../contexts/router';
+import { useTableEditor } from '../../hooks';
+import { DutyTableGrid } from '../DutyTableGrid';
 import { WorkerList } from '../WorkerList';
 
 function NotSelected() {
@@ -20,8 +20,18 @@ export const EditorSelection = createRouterContext({
 
 type Routes = InferRoutes<typeof EditorSelection>;
 
-export function EditorTypeSelect() {
+export interface EditorTypeSelectProps {
+  tableRef?: MutableRefObject<TableEditor | null>;
+}
+
+export function EditorTypeSelect(props: EditorTypeSelectProps) {
+  const { tableRef } = props;
+
   const tableResponse = useTableEditor();
+
+  if (tableRef) {
+    tableRef.current = tableResponse.status === 'success' ? tableResponse.editor : null;
+  }
 
   return (
     <EditorSelection.RouterProvider>
@@ -53,7 +63,7 @@ export function LoadedEditorTypeSelect(props: LoadedEditorTypeSelectProps) {
   const route = EditorSelection.useRoute();
 
   if (route.is('NotSelected')) {
-    navigate('DutyTableGrid', { table });
+    navigate('WorkerList', { table });
   }
 
   return (

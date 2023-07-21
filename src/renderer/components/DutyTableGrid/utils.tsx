@@ -20,11 +20,25 @@ export function WorkerView(props: IterProps<WorkerEditor>) {
   return <StyledDutySlot gender={worker.data.gender} graduation={worker.data.graduation} />;
 }
 
-export function DutyView(props: IterProps<DutyEditor>) {
+export interface DutyViewProps {
+  onSelect?: (day: number, duty: number) => void;
+}
+
+export function DutyView(props: IterProps<DutyEditor, DutyViewProps>) {
+  const { onSelect } = props;
   const duty = props.entry;
 
+  function handleSelect() {
+    if (onSelect) {
+      const dutyIndex = duty.index();
+      const dayIndex = duty.parent.index();
+
+      onSelect(dayIndex, dutyIndex);
+    }
+  }
+
   return (
-    <StyledDuty>
+    <StyledDuty onClick={handleSelect}>
       <ElementList Component={WorkerView} iter={duty.iterWorkers()}/>
       <ElementList Component={EmpityDutySlot} iter={iterRange(0, 3 - duty.numOfWorkers())}/>
       <StyledDutyTitle>{dutyTitles.at(duty.data.index) ?? 'N/A'}</StyledDutyTitle>
@@ -33,7 +47,7 @@ export function DutyView(props: IterProps<DutyEditor>) {
 }
 
 export interface DayViewProps {
-  onSelect?: (day: DayEditor) => void;
+  onSelect?: DutyViewProps['onSelect'];
 }
 
 export function DayView(props: IterProps<DayEditor, DayViewProps>) {
@@ -44,12 +58,9 @@ export function DayView(props: IterProps<DayEditor, DayViewProps>) {
     <StyledDay>
       <StyledDutyHeader>
         <StyledDayTitle>Dia {day.data.index + 1}</StyledDayTitle>
-        <StyledExpandDayButton onClick={() => onSelect?.(day)}>
-          <HiOutlineArrowsExpand color='#6d6d6d' />
-        </StyledExpandDayButton>
       </StyledDutyHeader>
       <StyledDutiesContainer>
-        <ElementList Component={DutyView} iter={day.iterDuties()} />
+        <ElementList Component={DutyView} iter={day.iterDuties()} communProps={{ onSelect }} />
       </StyledDutiesContainer>
     </StyledDay>
   );

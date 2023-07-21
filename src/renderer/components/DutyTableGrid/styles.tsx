@@ -69,6 +69,13 @@ export const StyledDuty = styled.div`
   gap: 2px;
   padding: .2rem;
   border-radius: .2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: all 200ms;
+
+  &:hover {
+    background-color: #d3d3d3;
+  }
 `;
 
 export const StyledDutyHeader = styled.section`

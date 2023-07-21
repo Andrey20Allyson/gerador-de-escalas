@@ -3,6 +3,7 @@ import { getNumOfDaysInMonth } from "@andrey-allyson/escalas-automaticas/dist/ut
 import { DayEditor, DayEditorData } from "./day-editor";
 import { normalizeIndex } from "./utils";
 import { WorkerEditor, WorkerEditorData } from "./worker-editor";
+import { DutyEditor } from "./duty-editor";
 
 export interface TableEditorData {
   readonly nunOfDays: number;
@@ -26,6 +27,14 @@ export class TableEditor {
   *iterDays(): Iterable<DayEditor> {
     for (let i = 0; i < this.data.nunOfDays; i++) {
       yield this.getDay(i);
+    }
+  }
+
+  *iterDuties(): Iterable<DutyEditor> {
+    for (const day of this.iterDays()) {
+      for (const duty of day.iterDuties()) {
+        yield duty;
+      }
     }
   }
 

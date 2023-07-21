@@ -50,6 +50,55 @@ export class WorkerEditor {
     return this.data.dutyAddresses.size;
   }
 
+  hasDuty(dutyAddress: DutyAddress) {
+    return this.data.dutyAddresses.has(dutyAddress.key());
+  }
+
+  bindDuties(duties: Iterable<DutyEditor>) {
+    let atLeastOneBound = false;
+
+    for (const duty of duties) {
+      const isBound = this.bindDuty(duty);
+      if (isBound) {
+        atLeastOneBound = true;
+      }
+    }
+
+    return atLeastOneBound;
+  }
+
+  unbindAllDuties() {
+    let atLeastOneUnbound = false;
+
+    for (const [_, addressData] of this.data.dutyAddresses) {
+      const dutyAddress = new DutyAddress(this.table, addressData);
+      const duty = dutyAddress.unref();
+
+      if (duty) {
+        const isUnbound = this.unbindDuty(duty);
+        if (isUnbound) {
+          atLeastOneUnbound = true;
+        }
+      }
+    }
+
+    return atLeastOneUnbound;
+  }
+
+  bindDuty(duty: DutyEditor): boolean {
+    const addedDuty = this.addDuty(duty.address());
+    const addedWorker = duty.addWorker(this.id());
+
+    return addedDuty && addedWorker;
+  }
+  
+  unbindDuty(duty: DutyEditor): boolean {
+    const deletedDuty = this.deleteDuty(duty.address()); 
+    const deletedWorker = duty.deleteWorker(this.id());
+
+    return deletedDuty && deletedWorker;
+  }
+
   deleteDuty(address: DutyAddress) {
     const key = address.key();
     return this.data.dutyAddresses.delete(key);
@@ -64,6 +113,10 @@ export class WorkerEditor {
     dutyAddresses.set(key, address.data);
 
     return true;
+  }
+
+  isFull() {
+    return this.numOfDuties() >= this.data.maxDuties; 
   }
 
   static create(parent: TableEditor, workerID: number) {

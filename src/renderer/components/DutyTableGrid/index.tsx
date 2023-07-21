@@ -1,22 +1,21 @@
 
-import React, { PropsWithChildren, useState } from 'react';
-import { TableEditor, DayEditor } from '../../../app/api/table-edition';
+import React from 'react';
+import { TableEditor } from '../../../app/api/table-edition';
 import { ElementList } from '../../utils/react-iteration';
-import { DayEditionModal } from '../DayEditionModal';
+import { useDayEditionModal } from '../DayEditionModal';
 import { StyledDayEditionGrid } from './styles';
 import { DayView } from './utils';
-import { useEditionModal } from '../../contexts/duty-edition-modal';
 
 export type PropsWithTableEditor<P = unknown> = P & {
   table: TableEditor;
 };
 
 export function DutyTableGrid(props: PropsWithTableEditor) {
-  const modal = useEditionModal();
+  const modal = useDayEditionModal();
   const { table } = props;
 
-  function openModal(day: DayEditor) {
-    modal.open(table, { day: day.index() });
+  function openModal(day: number, duty: number) {
+    modal.open({ table, dayIndex: day, dutyIndex: duty });
   }
 
   return (

@@ -4,6 +4,7 @@ import './App.css';
 import Generator from './pages/Generator';
 import Editor from './pages/Editor';
 import { AppBody, TopNav, StyledNavButton, BodyCard } from './App.styles';
+import { Providers } from './Providers';
 
 type RouteCallback = () => React.JSX.Element;
 
@@ -44,18 +45,20 @@ export default function App() {
   const { Router, navigate, route } = useRoutes(AppRoutes, 'Editor');
 
   return (
-    <AppBody>
-      <div className="title-div">
-        <img src="./assets/images/brasao.png" alt="" />
-        <h1>Gerador de Escalas</h1>
-      </div>
-      <TopNav>
-        <StyledNavButton selected={route === 'Generator'} onClick={() => navigate('Generator')}>Gerador</StyledNavButton>
-        <StyledNavButton selected={route === 'Editor'} onClick={() => navigate('Editor')}>Editor</StyledNavButton>
-      </TopNav>
-      <BodyCard>
-        <Router />
-      </BodyCard>
-    </AppBody>
+    <Providers>
+      <AppBody>
+        <div className="title-div">
+          <img src="./assets/images/brasao.png" alt="" />
+          <h1>Gerador de Escalas</h1>
+        </div>
+        <TopNav>
+          <StyledNavButton selected={route === 'Generator'} onClick={() => navigate('Generator')}>Gerador</StyledNavButton>
+          <StyledNavButton selected={route === 'Editor'} onClick={() => navigate('Editor')}>Editor</StyledNavButton>
+        </TopNav>
+        <BodyCard>
+          <Router />
+        </BodyCard>
+      </AppBody>
+    </Providers>
   )
 }

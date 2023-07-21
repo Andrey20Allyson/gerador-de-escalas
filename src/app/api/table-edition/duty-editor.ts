@@ -8,6 +8,7 @@ export interface DutyEditorData {
   readonly index: number;
 
   workerIDs: Set<number>;
+  workerLimit: number;
   startsAt: number;
   endsAt: number;
 }
@@ -51,6 +52,14 @@ export class DutyEditor {
     return this.data.workerIDs;
   }
 
+  bindWorker(worker: WorkerEditor): boolean {
+    return worker.bindDuty(this);
+  }
+
+  unbindWorker(worker: WorkerEditor): boolean {
+    return worker.unbindDuty(this);
+  }
+
   deleteWorker(workerID: number) {
     return this.data.workerIDs.delete(workerID);
   }
@@ -65,10 +74,15 @@ export class DutyEditor {
     return true;
   }
 
+  isFull() {
+    return this.numOfWorkers() >= this.data.workerLimit;
+  }
+
   static create(parent: DayEditor, index: number) {
     return new DutyEditor(parent, {
       dayIndex: parent.data.index,
       workerIDs: new Set(),
+      workerLimit: 3,
       startsAt: 0,
       endsAt: 0,
       index,

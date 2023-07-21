@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
 import styled from "styled-components";
-import { useEditionModal } from "../../contexts/duty-edition-modal";
 import { useRerender } from "../../hooks";
 import { ElementList } from "../../utils/react-iteration";
 import { PropsWithTableEditor } from "../DutyTableGrid";
 import { WorkerEditionCard } from "../WorkerEditionCard";
+import { useDayEditionModal } from "../DayEditionModal";
 
 export function WorkerList(props: PropsWithTableEditor) {
   const { table } = props;
@@ -14,13 +14,13 @@ export function WorkerList(props: PropsWithTableEditor) {
   const workers = useMemo(() => {
     return Array.from(table.iterWorkers()).sort((a, b) => a.name().toLowerCase() < b.name().toLowerCase() ? -1 : 1)
   }, [table.data.workers]);
-  const modal = useEditionModal();
+  const modal = useDayEditionModal();
   const rerender = useRerender();
 
   const filteredWorkers = search ? workers.filter(worker => worker.name().toUpperCase().includes(search.toUpperCase())) : workers;
 
-  function handleOpenModal(day: number, duty: number) {
-    modal.open(table, { day, duty, onUpdate: rerender })
+  function handleOpenModal(dayIndex: number, dutyIndex: number) {
+    modal.open({ table, dayIndex, dutyIndex, onUpdate: rerender });
   }
 
   function handleChangeSearch(ev: React.ChangeEvent<HTMLInputElement>) {
@@ -67,6 +67,11 @@ export const StyledWorkerList = styled.section`
       flex-direction: column;
       box-sizing: content-box;
       gap: .4rem;
+
+      &::after {
+        content: " ";
+        height: .3rem;
+      }
   
       &::-webkit-scrollbar {
         width: 10px;
