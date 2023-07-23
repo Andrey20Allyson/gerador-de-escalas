@@ -1,38 +1,22 @@
 import React, { useRef } from "react";
 import { TableEditor } from "../../../app/api/table-edition";
-import { AppError, editor } from "../../api";
-import { EditorTypeSelect } from "../../components/EditorTypeSelect";
-import { LoadSpinner } from "../../components/LoadSpinner";
-import { useStage } from "../../contexts/stages";
-import { useLoading } from "../../hooks";
-import { saveFile } from "../../utils";
-import { Footer, StageBody } from "../Generator/WorkerEditionStage.styles";
+import { editor } from "../../api";
 import { DayEditionModalProvider } from "../../components/DayEditionModal";
+import { EditorTypeSelect } from "../../components/EditorTypeSelect";
+import { useSaveTableModal } from "../../components/SaveTableModal";
+import { useStage } from "../../contexts/stages";
+import { Footer, StageBody } from "../Generator/WorkerEditionStage.styles";
 
 export function EditTableStage() {
-  const { loading, listen } = useLoading();
   const { prev } = useStage();
   const tableRef = useRef<TableEditor>(null);
+  const modal = useSaveTableModal();
 
-  async function createFile() {
+  function handleSaveAs() {
     const table = tableRef.current;
-    if (!table) return;
+    if (!table) return alert('Não há nenhuma tabela carregada!');
 
-    const saveResponse = await editor.save(table.data);
-    if (!saveResponse.ok) return AppError.log(saveResponse.error);
-
-    const serializeResponse = await editor.serialize();
-    if (!serializeResponse.ok) return AppError.log(serializeResponse.error);
-
-    const buffer = serializeResponse.data;
-
-    saveFile('Escala.xlsx', buffer);
-  }
-
-  async function handleSave() {
-    const createFilePromise = createFile();
-
-    listen(createFilePromise);
+    modal.open({ table });
   }
 
   async function handlePrev() {
@@ -47,9 +31,8 @@ export function EditTableStage() {
         <EditorTypeSelect tableRef={tableRef} />
         <Footer>
           <input type='button' onClick={handlePrev} value='Voltar' />
-          <input type='button' onClick={handleSave} value='Salvar' />
+          <input type='button' onClick={handleSaveAs} value='Salvar como' />
         </Footer>
-        <LoadSpinner color="#00992e" visible={loading} spinnerWidth={3} size={15} />
       </StageBody>
     </DayEditionModalProvider>
   );

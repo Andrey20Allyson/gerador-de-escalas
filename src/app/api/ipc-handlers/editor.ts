@@ -5,6 +5,8 @@ import { AppError, AppResponse, AppResponseType, ErrorCode } from "../app.base";
 import { AppAssets } from "../assets";
 import { TableEditor, TableEditorData } from "../table-edition";
 import { ReadTablePayload, parseExtraTable, readTables } from "../utils/table";
+import { AppAPI } from "../channels";
+import { DivugationTableFactory, TableFactory } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories";
 
 export interface EditorHandlerFactoryData {
   table: ExtraDutyTable;
@@ -63,11 +65,22 @@ export class EditorHandlerFactory implements HandlerFactory<AppEditorHandler> {
     return AppResponse.ok();
   }
 
-  async serialize(): Promise<AppResponseType<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
+  getSerializer(mode: AppAPI.Editor.SerializationMode): TableFactory {
+    switch (mode) {
+      case 'payment':
+        return this.assets.serializer;
+      case 'divugation':
+        return new DivugationTableFactory();
+      default:
+        throw new Error(`Serialization mode '${mode}' not mapped!`);
+    }
+  }
+
+  async serialize(mode: AppAPI.Editor.SerializationMode): Promise<AppResponseType<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
     const table = this.data?.table;
     if (!table) return AppResponse.error('Shold load data before serialize!', ErrorCode.DATA_NOT_LOADED);
 
-    const { serializer } = this.assets;
+    const serializer = this.getSerializer(mode);
 
     const buffer = await serializer.generate(table, { sheetName: 'DADOS' });
 
@@ -79,7 +92,7 @@ export class EditorHandlerFactory implements HandlerFactory<AppEditorHandler> {
       load: (_, payload) => this.load(payload),
       getEditor: async () => this.createEditor(),
       save: async (_, data) => this.save(data),
-      serialize: () => this.serialize(), 
+      serialize: (_, mode) => this.serialize(mode), 
       clear: async () => this.clear(),
     };
   }

@@ -10,6 +10,7 @@ import { genderComponentMap } from "../DayEditionModal/utils";
 import { DutyCard } from "../DutyCard";
 import { formatWorkerID } from "../WorkerEditionCard/utils";
 import { DutySelectionGrid } from "./DutySelectionGrid";
+import { BsGearFill } from "react-icons/bs";
 
 export interface DutySelectModalProps {
   worker: WorkerEditor;
@@ -74,8 +75,9 @@ export function DutySelectModal(props: DutySelectModalProps) {
               </span>
             </span>
           </span>
-          <span className='delete-all-box'>
+          <span className='options-box'>
             <FaTrash onClick={handleClearDuties}/>
+            <BsGearFill/>
           </span>
           <span className='duty-list'>
             <ElementList Component={DutyCard} communProps={{ titleType: 'extence', onExcludeDuty: handleExcludeDuty }} iter={worker.iterDuties()} />
@@ -172,7 +174,11 @@ export const StyledDutySelectModal = styled.div`
         }
       }
 
-      &>.delete-all-box {
+      &>.options-box {
+        display: flex;
+        gap: .5rem;
+        padding: .5rem 0;
+
         &>svg {
           transition: all 200ms;
           cursor: pointer;

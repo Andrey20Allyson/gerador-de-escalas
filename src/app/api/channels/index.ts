@@ -27,11 +27,13 @@ export namespace AppAPI.Utils {
 }
 
 export namespace AppAPI.Editor {
+  export type SerializationMode = 'payment' | 'divugation';
+
   export interface Channels {
     load(payload: ReadTablePayload): AppResponseType<void, ErrorCode.INVALID_INPUT>;
     save(data: TableEditorData): AppResponseType<void, ErrorCode.DATA_NOT_LOADED>;
     getEditor(): AppResponseType<TableEditorData, ErrorCode.DATA_NOT_LOADED>;
-    serialize(): AppResponseType<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>;
+    serialize(mode: SerializationMode): AppResponseType<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>;
     clear(): void;
   }
 }
