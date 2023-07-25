@@ -22,8 +22,8 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "dev": "electron .",
-    "dev:bundle": "esbuild src/renderer/index.ts --bundle --target=es2020 --watch --sourcemap --outfile=public/bundle.js",
-    "prod:bundle": "esbuild src/renderer/index.ts --bundle --target=es2020 --minify --outfile=public/bundle.js",
+    "dev:bundle": "esbuild src/renderer/index.ts --bundle --target=es2020 --watch --sourcemap --outdir=public",
+    "prod:bundle": "tsx scripts/prod-bundle.ts",
     "build": "tsc -p src/app"
   },
   "keywords": [],
