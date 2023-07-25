@@ -27,7 +27,7 @@ export namespace AppAPI.Utils {
 }
 
 export namespace AppAPI.Editor {
-  export type SerializationMode = 'payment' | 'divugation';
+  export type SerializationMode = 'payment' | 'divugation' | 'day-list';
 
   export interface Channels {
     load(payload: ReadTablePayload): AppResponseType<void, ErrorCode.INVALID_INPUT>;

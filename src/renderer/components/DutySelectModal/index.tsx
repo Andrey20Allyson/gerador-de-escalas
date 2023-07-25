@@ -11,6 +11,7 @@ import { DutyCard } from "../DutyCard";
 import { formatWorkerID } from "../WorkerEditionCard/utils";
 import { DutySelectionGrid } from "./DutySelectionGrid";
 import { BsGearFill } from "react-icons/bs";
+import { useRulesModal } from "../RulesModal";
 
 export interface DutySelectModalProps {
   worker: WorkerEditor;
@@ -22,6 +23,7 @@ export function DutySelectModal(props: DutySelectModalProps) {
   const { table, worker } = props;
 
   const handler = useDutySelectModal();
+  const rulesModal = useRulesModal();
   const rerender = useRerender();
 
   function handleClose() {
@@ -52,6 +54,10 @@ export function DutySelectModal(props: DutySelectModalProps) {
     rerender();
   }
 
+  function handleChangeRules() {
+    rulesModal.open({ table });
+  }
+
   return (
     <StyledDutySelectModal>
       <section className='head'>
@@ -77,7 +83,7 @@ export function DutySelectModal(props: DutySelectModalProps) {
           </span>
           <span className='options-box'>
             <FaTrash onClick={handleClearDuties}/>
-            <BsGearFill/>
+            <BsGearFill onClick={handleChangeRules}/>
           </span>
           <span className='duty-list'>
             <ElementList Component={DutyCard} communProps={{ titleType: 'extence', onExcludeDuty: handleExcludeDuty }} iter={worker.iterDuties()} />

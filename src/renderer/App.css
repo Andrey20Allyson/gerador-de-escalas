@@ -60,11 +60,16 @@ input[type="file"] {
 }
 
 select {
-  background-color: #dadada;
+  background-color: #afafaf;
   outline: none;
   border-width: 0;
   border-bottom-width: 1px;
   height: 100%;
+  font-family: 'Montserrat', sans-serif;
+
+  &>option {
+    background-color: rgb(212, 212, 212);
+  }
 }
 
 button {

@@ -27,9 +27,9 @@ export class OrdinaryWorkHandler {
 
   collidesWithDuty(duty: DutyEditor): boolean {
     if (this.worker.isDailyWorker() && duty.isNightly()) return false;
-
+    
     const dayIndex = duty.day.index();
-
+    
     if (this.workAt(dayIndex)) return true;
 
     const prevDayIndex = dayIndex - 1;

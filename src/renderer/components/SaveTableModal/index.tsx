@@ -37,6 +37,13 @@ export function SaveTableModal(props: SaveTableModalProps) {
     saveFile('Escala da Extra.xlsx', result.data);
   }
 
+  async function handleSaveToDayList() {
+    const result = await serialize('day-list');
+    if (!result.ok) return AppError.log(result.error);
+
+    saveFile('Listagem de Dias.xlsx', result.data);
+  }
+
   function handleClose() {
     handler.close();
   }
@@ -48,8 +55,9 @@ export function SaveTableModal(props: SaveTableModalProps) {
       </section>
       <section className='body'>
         <h1>Escolha um formato para salvar</h1>
-        <button onClick={handleSaveToDivugation}>Salvar para divulgação</button>
         <button onClick={handleSaveToPayment}>Salvar para pagamento</button>
+        <button onClick={handleSaveToDivugation}>Salvar para divulgação</button>
+        <button onClick={handleSaveToDayList}>Salvar Listagem de dias</button>
       </section>
     </StyledSaveTableModal>
   );

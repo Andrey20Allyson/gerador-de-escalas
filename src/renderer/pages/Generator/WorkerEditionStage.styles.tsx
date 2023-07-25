@@ -56,6 +56,19 @@ export const StageBody = styled.div`
   gap: 1rem;
   flex-direction: column;
   align-items: center;
+
+  & .change-rules-button {
+    background-image: linear-gradient(90deg, #e7bd00, #e7a900);
+    color: #000c;
+
+    &:hover {
+      color: #000
+    }
+
+    &:focus {
+      border-color: #f5c235;
+    }
+  }
 `;
 
 export const Footer = styled.footer`

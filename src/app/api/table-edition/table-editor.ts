@@ -148,20 +148,22 @@ export class TableEditor {
       editor.addWorker(worker.data);
     }
 
-    for (const entry of table.entries()) {
-      const duty = editor
-        .getDay(entry.day.day)
-        .getDuty(entry.duty.index);
+    for (const day of table) {
+      for (const duty of day) {
+        const dutyEditor = editor
+          .getDay(day.day)
+          .getDuty(duty.index);
+  
+        dutyEditor.setTime(duty.start, duty.end);
 
-      duty.setTime(entry.duty.start, entry.duty.end);
-
-      const { fullWorkerID } = entry.worker;
-
-      const worker = editor.getWorker(fullWorkerID);
-      if (!worker) throw new Error(`Can't find worker data with id #${fullWorkerID}!`);
-
-      worker.addDuty(duty.address());
-      duty.addWorker(worker);
+        for (const [_, { fullWorkerID }] of duty) {   
+          const workerEditor = editor.getWorker(fullWorkerID);
+          if (!workerEditor) throw new Error(`Can't find worker data with id #${fullWorkerID}!`);
+    
+          workerEditor.addDuty(dutyEditor.address());
+          dutyEditor.addWorker(workerEditor);
+        }
+      }
     }
 
     return editor;

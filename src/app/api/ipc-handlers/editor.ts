@@ -7,6 +7,7 @@ import { TableEditor, TableEditorData } from "../table-edition";
 import { ReadTablePayload, parseExtraTable, readTables } from "../utils/table";
 import { AppAPI } from "../channels";
 import { DivugationTableFactory, TableFactory } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories";
+import { DayListTableFactory } from '@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories/day-list-factory';
 
 export interface EditorHandlerFactoryData {
   table: ExtraDutyTable;
@@ -71,6 +72,8 @@ export class EditorHandlerFactory implements HandlerFactory<AppEditorHandler> {
         return this.assets.serializer;
       case 'divugation':
         return new DivugationTableFactory();
+      case 'day-list':
+        return new DayListTableFactory();
       default:
         throw new Error(`Serialization mode '${mode}' not mapped!`);
     }
