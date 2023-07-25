@@ -1,7 +1,7 @@
 import React from "react";
 import { HiOutlineArrowsExpand } from "react-icons/hi";
 import { WorkerEditor, DayEditor, DutyEditor } from "../../../app/api/table-edition";
-import { iterRange } from "../../utils";
+import { getWeekDayLabel, iterRange } from "../../utils";
 import { ElementList, IterProps } from "../../utils/react-iteration";
 import { StyledDay, StyledDayTitle, StyledDutiesContainer, StyledDuty, StyledDutyHeader, StyledDutySlot, StyledDutyTitle, StyledEmpityDutySlot, StyledExpandDayButton } from "./styles";
 
@@ -38,7 +38,7 @@ export function DutyView(props: IterProps<DutyEditor, DutyViewProps>) {
   }
 
   return (
-    <StyledDuty onClick={handleSelect}>
+    <StyledDuty className={`${duty.numOfWorkers() < 2 ? 'low-quantity' : ''}`} onClick={handleSelect}>
       <ElementList Component={WorkerView} iter={duty.iterWorkers()}/>
       <ElementList Component={EmpityDutySlot} iter={iterRange(0, 3 - duty.numOfWorkers())}/>
       <StyledDutyTitle>{dutyTitles.at(duty.data.index) ?? 'N/A'}</StyledDutyTitle>
@@ -54,10 +54,12 @@ export function DayView(props: IterProps<DayEditor, DayViewProps>) {
   const { onSelect } = props;
   const day = props.entry;
 
+  const weekDayLabel = getWeekDayLabel(day.weekDayIndex());
+
   return (
     <StyledDay>
       <StyledDutyHeader>
-        <StyledDayTitle>Dia {day.data.index + 1}</StyledDayTitle>
+        <StyledDayTitle>Dia {day.data.index + 1}    {weekDayLabel}</StyledDayTitle>
       </StyledDutyHeader>
       <StyledDutiesContainer>
         <ElementList Component={DutyView} iter={day.iterDuties()} communProps={{ onSelect }} />

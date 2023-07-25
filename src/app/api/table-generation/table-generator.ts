@@ -51,7 +51,7 @@ export class TableGenerator {
 
     table.clear();
 
-    table.tryAssignArrayMultipleTimes(workers, 5e3);
+    table.tryAssignArrayMultipleTimes(workers, 7e3);
     
     return AppResponse.ok();
   }

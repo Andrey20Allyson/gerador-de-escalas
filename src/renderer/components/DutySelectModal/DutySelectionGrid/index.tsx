@@ -4,6 +4,8 @@ import { DayEditor, DutyEditor, WorkerEditor } from '../../../../app/api/table-e
 import { ElementList, IterProps } from '../../../utils/react-iteration';
 import { dutyTitles } from '../../DutyTableGrid/utils';
 import { BsPeopleFill } from 'react-icons/bs';
+import { dayOfWeekFrom, firstMondayFromYearAndMonth } from '@andrey-allyson/escalas-automaticas/dist/utils';
+import { getWeekDayLabel } from '../../../utils';
 
 export interface DutySelectionGridProps {
   worker: WorkerEditor;
@@ -38,15 +40,18 @@ export function DayCard(props: IterProps<DayEditor, DayCardProps>) {
   const { onDutySelected, worker } = props;
   const day = props.entry;
 
+  const weekDayLabel = getWeekDayLabel(day.weekDayIndex());
+
   return (
     <StyledDayCard>
-      Dia {day.index() + 1}
+      Dia {day.index() + 1} - {weekDayLabel}
       <span className='duty-row'>
         <ElementList Component={DutySelectButton} communProps={{ onDutySelected, worker }} iter={day.iterDuties()} />
       </span>
     </StyledDayCard>
   );
 }
+
 export const StyledDayCard = styled.span`
   border: 1px solid #0005;
   border-radius: .5rem;
@@ -89,7 +94,7 @@ export function DutySelectButton(props: IterProps<DutyEditor, DutySelectButtonPr
   return (
     <StyledDutySelectButton className={`${canSelect ? ' selectable' : ''}${selected ? ' selected' : ''}`} onClick={handleSelectDuty}>
       {text}
-      <span className='worker-quantity-display'>
+      <span className={`worker-quantity-display${duty.numOfWorkers() < 2 ? ' low-quantity' : ''}`}>
         {duty.numOfWorkers()}
         <BsPeopleFill />
       </span>
@@ -118,6 +123,10 @@ const StyledDutySelectButton = styled.button`
     justify-content: center;
     align-items: center;
     gap: .2rem;
+
+    &.low-quantity {
+      color: #e21111;
+    }
   }
   
   &.selectable {

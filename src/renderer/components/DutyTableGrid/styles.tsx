@@ -49,8 +49,8 @@ export const StyledDay = styled.div`
 
 export const StyledDayTitle = styled.h3`
   margin: 0;
-  flex: .7;
-  font-size: .9rem;
+  flex: 1;
+  font-size: .8rem;
 `;
 
 export const StyledDutiesContainer = styled.div`
@@ -73,6 +73,15 @@ export const StyledDuty = styled.div`
   user-select: none;
   transition: all 200ms;
 
+  &.low-quantity {
+    border: 1px solid #e71b1b;
+    background-color: #e0bd88;
+    
+    &:hover {
+      background-color: #e0e0a9;
+    }
+  }
+  
   &:hover {
     background-color: #d3d3d3;
   }

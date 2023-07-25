@@ -105,7 +105,7 @@ export class DutyEditor {
   }
 
   isNightly() {
-    return this.data.startsAt >= 18 && this.data.startsAt < 7;
+    return this.data.startsAt >= 18 || this.data.startsAt < 7;
   }
 
   prevDuty(): DutyEditor | undefined {

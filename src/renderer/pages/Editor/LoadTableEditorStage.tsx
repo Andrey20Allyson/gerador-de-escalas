@@ -5,9 +5,9 @@ import { AppError } from "../../../app/api/app.base";
 import useTableEditor from "../../hooks/useTableEditor";
 import { useStage } from "../../contexts/stages";
 import { StyledLinedBorder } from "../Generator/DataCollectStage.styles";
-import { LoadSpinner } from "../../components/LoadSpinner";
 import { useLoading } from "../../hooks";
 import { sleep } from "../../utils";
+import { Spinner, Squares } from 'react-activity';
 
 export function LoadTableEditorStage() {
   const { next } = useStage();
@@ -31,25 +31,25 @@ export function LoadTableEditorStage() {
         sheetName: data.tableToEdit.sheetName,
       },
     });
-  
+
     if (!result.ok) {
       AppError.log(result.error);
       return false;
     }
-  
+
     return true;
   }
 
   async function handleSubmit(data: LoadTableFormData) {
     const loadPreGenerateEditorPromise = loadPreGenerateEditor(data);
-    
+
     return listen(loadPreGenerateEditorPromise);
   }
 
   return (
     <StyledLinedBorder>
       <LoadTableStage title="Escolha Escala à Editar" onSubmit={handleSubmit} />
-      <LoadSpinner color="#00e7e7" visible={loading} spinnerWidth={5} size={20} />
+      <Squares color={`#15ff00${loading ? 'ff' : '00'}`} />
     </StyledLinedBorder>
   );
 }

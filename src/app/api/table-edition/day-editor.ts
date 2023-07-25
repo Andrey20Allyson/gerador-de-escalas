@@ -1,10 +1,11 @@
 import { DutyEditorData, DutyEditor } from "./duty-editor";
 import { normalizeIndex } from "./utils";
 import { TableEditor } from "./table-editor";
+import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "@andrey-allyson/escalas-automaticas/dist/utils/week-days";
 
 export interface DayEditorData {
   readonly index: number;
-  
+
   duties: DutyEditorData[];
 }
 
@@ -13,6 +14,14 @@ export class DayEditor {
 
   index() {
     return this.data.index;
+  }
+
+  weekDayIndex() {
+    const { year, month } = this.table.data;
+
+    const firstMonday = firstMondayFromYearAndMonth(year, month);
+
+    return dayOfWeekFrom(firstMonday, this.index());
   }
 
   *iterDuties(): Iterable<DutyEditor> {
