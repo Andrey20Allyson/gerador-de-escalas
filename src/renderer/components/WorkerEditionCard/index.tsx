@@ -67,9 +67,7 @@ export function WorkerEditionCard(props: IterProps<WorkerEditor, WorkerEditionCa
   }
 
   function handleOpenDutySelection() {
-    const { table } = worker;
-
-    dutyModal.open({ table, worker });
+    dutyModal.open({ worker, onUpdate: rerender });
   }
 
   return (

@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { AiOutlineCloseCircle, AiOutlineDoubleLeft, AiOutlineDoubleRight, AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
+import { FaCalendarAlt } from "react-icons/fa";
 import { HiUserRemove } from "react-icons/hi";
-import { SlOptionsVertical } from 'react-icons/sl';
 import { DayEditor, DutyEditor, TableEditor, WorkerEditor } from "../../../app/api/table-edition";
+import { createModalContext } from "../../contexts/modal";
 import { useRerender } from "../../hooks";
 import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
 import { ElementList, IterProps } from "../../utils/react-iteration";
 import { AvaliableWorkers } from "../AvaliableWorkers";
+import { useDutySelectModal } from "../DutySelectModal";
 import { dutyTitles } from "../DutyTableGrid/utils";
 import {
   StyledDayViewModal,
@@ -23,7 +25,6 @@ import {
   StyledWorkerViewBody,
 } from "./styles";
 import { genderComponentMap, graduationTextColorMap } from "./utils";
-import { createModalContext } from "../../contexts/modal";
 
 export interface DayViewModalProps {
   dutyIndex?: number;
@@ -40,14 +41,17 @@ export function DayEditionModal(props: DayViewModalProps) {
   const [dayIndex, setDayIndex] = useState(startDayIndex);
 
   const rerender = useRerender();
+  const day = table.getDay(dayIndex);
+  const duty = day.getDuty(dutyIndex);
 
-  function handleUpdate() {
+  const dutyViewContent = duty.numOfWorkers() > 0
+    ? <ElementList communProps={{ duty, onUpdate: update }} iter={duty.iterWorkers()} Component={WorkerCard} />
+    : <StyledEmpityDutyMessage>Esse turno não possui componentes.</StyledEmpityDutyMessage>;
+
+  function update() {
     onUpdate?.();
     rerender();
   }
-  
-  const day = table.getDay(dayIndex);
-  const duty = day.getDuty(dutyIndex);
 
   function handleClose() {
     modal.close();
@@ -90,10 +94,6 @@ export function DayEditionModal(props: DayViewModalProps) {
     setDutyIndex(prevDutyIndex);
   }
 
-  const dutyViewContent = duty.numOfWorkers() > 0
-    ? <ElementList communProps={{ duty, onUpdate: handleUpdate }} iter={duty.iterWorkers()} Component={WorkerCard} />
-    : <StyledEmpityDutyMessage>Esse turno não possui componentes.</StyledEmpityDutyMessage>;
-
   return (
     <StyledDayViewModal>
       <StyledModalHeader>
@@ -118,7 +118,7 @@ export function DayEditionModal(props: DayViewModalProps) {
           <StyledDutyViewSlotSection>
             {dutyViewContent}
           </StyledDutyViewSlotSection>
-          <AvaliableWorkers duty={duty} onUpdate={handleUpdate} />
+          <AvaliableWorkers duty={duty} onUpdate={update} />
         </StyledDutyViewBody>
       </StyledModalBody>
     </StyledDayViewModal>
@@ -167,9 +167,14 @@ export function WorkerCard(props: IterProps<WorkerEditor, WorkerViewProps>) {
   const { entry: worker, duty, onUpdate } = props;
   const Gender = genderComponentMap[worker.data.gender];
   const gradutationColor = graduationTextColorMap[worker.data.graduation];
+  const dutyModal = useDutySelectModal();
 
   function handleWorkerRemove() {
     if (worker.unbindDuty(duty)) onUpdate?.();
+  }
+
+  function handleOpenDutyModal() {
+    dutyModal.open({ worker, onUpdate });
   }
 
   return (
@@ -179,7 +184,7 @@ export function WorkerCard(props: IterProps<WorkerEditor, WorkerViewProps>) {
         [<ColoredText color={gradutationColor}>{worker.data.graduation.toUpperCase()}</ColoredText>]
         <Gender />
         <HiUserRemove className="clickable" color='#c00000' onClick={handleWorkerRemove} />
-        <SlOptionsVertical />
+        <FaCalendarAlt className='open-modal' onClick={handleOpenDutyModal} />
       </section>
     </StyledWorkerViewBody>
   );

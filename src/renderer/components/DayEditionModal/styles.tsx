@@ -115,6 +115,16 @@ export const StyledWorkerViewBody = styled.span`
     display: flex;
     gap: .3rem;
     align-items: center;
+
+    &>.open-modal {
+      cursor: pointer;
+      transition: fill 200ms, transform 200ms;
+      fill: #0008;
+
+      &:hover {
+        fill: #0009;
+      }
+    }
   }
 `;
 

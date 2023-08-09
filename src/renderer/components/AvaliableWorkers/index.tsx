@@ -22,7 +22,6 @@ export function AvaliableWorkers(props: AvaliableWorkers) {
   const { day } = duty;
   const { table } = day;
 
-  const isDutyFull = duty.numOfWorkers() >= 3;
   const workers = iterFilteredWorkers(duty, table.iterWorkers(), search);
 
   function handleSearchChange(ev: React.ChangeEvent<HTMLInputElement>) {
@@ -57,7 +56,7 @@ export function AvaliableWorkers(props: AvaliableWorkers) {
             }
 
             function handleOpenModal() {
-              selectionModal.open({ table: worker.table, worker });
+              selectionModal.open({ worker });
             }
 
             return (

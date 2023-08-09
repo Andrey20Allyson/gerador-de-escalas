@@ -1,26 +1,27 @@
 import React from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
+import { BsGearFill } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 import styled from "styled-components";
-import { DutyEditor, TableEditor, WorkerEditor } from "../../../app/api/table-edition";
+import { DutyEditor, WorkerEditor } from "../../../app/api/table-edition";
 import { createModalContext } from "../../contexts/modal";
 import { useRerender } from "../../hooks";
 import { ElementList } from "../../utils/react-iteration";
 import { genderComponentMap } from "../DayEditionModal/utils";
 import { DutyCard } from "../DutyCard";
+import { useRulesModal } from "../RulesModal";
 import { formatWorkerID } from "../WorkerEditionCard/utils";
 import { DutySelectionGrid } from "./DutySelectionGrid";
-import { BsGearFill } from "react-icons/bs";
-import { useRulesModal } from "../RulesModal";
 
 export interface DutySelectModalProps {
   worker: WorkerEditor;
-  table: TableEditor;
   idList?: number[];
+  onUpdate?: () => void;
 }
 
 export function DutySelectModal(props: DutySelectModalProps) {
-  const { table, worker } = props;
+  const { worker, onUpdate } = props;
+  const table = worker.table;
 
   const handler = useDutySelectModal();
   const rulesModal = useRulesModal();
@@ -39,19 +40,23 @@ export function DutySelectModal(props: DutySelectModalProps) {
   function handleExcludeDuty(dayIndex: number, dutyIndex: number) {
     const duty = table.getDay(dayIndex).getDuty(dutyIndex);
 
-    if (worker.unbindDuty(duty)) rerender();
+    if (worker.unbindDuty(duty)) update();
   }
 
   function handleAddDuty(duty: DutyEditor) {
-    if (worker.hasDuty(duty.address()) && worker.unbindDuty(duty)) return rerender();
+    if (worker.hasDuty(duty.address()) && worker.unbindDuty(duty)) return update();
 
-    if (worker.bindDuty(duty)) return rerender();
+    if (worker.bindDuty(duty)) return update();
+  }
+
+  function update() {
+    onUpdate?.();
+    rerender();
   }
 
   function handleClearDuties() {
     worker.unbindAllDuties();
-
-    rerender();
+    update();
   }
 
   function handleChangeRules() {
