@@ -1,10 +1,9 @@
 import styled from "styled-components";
 
 export const StyledLinedBorder = styled.div`
-  background-color: #b9b9b9;
+  background-color: #e6e6e6;
   border: 1px solid #0005;
-  min-width: 50%;
-  padding: .5rem;
+  padding: .5rem 1rem;
   gap: .6rem;
   border-radius: .5rem;
   display: flex;

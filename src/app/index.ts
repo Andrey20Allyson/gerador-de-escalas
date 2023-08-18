@@ -5,10 +5,13 @@ import { fromRoot } from './path.utils';
 async function createWindow() {
   const window = new BrowserWindow({
     width: 1100,
+    minWidth: 1100,
     height: 700,
+    minHeight: 700,
     autoHideMenuBar: true,
+    // titleBarStyle: 'hidden',
     icon: fromRoot('./public/assets/images/brasao.png'),
-    resizable: false,
+    fullscreenable: true,
     webPreferences: {
       preload: fromRoot('./dist/preload.js'),
     },

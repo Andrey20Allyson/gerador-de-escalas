@@ -47,10 +47,6 @@ export default function App() {
   return (
     <Providers>
       <AppBody>
-        <div className="title-div">
-          <img src="./assets/images/brasao.png" alt="" />
-          <h1>Gerador de Escalas</h1>
-        </div>
         <TopNav>
           <StyledNavButton selected={route === 'Generator'} onClick={() => navigate('Generator')}>Gerador</StyledNavButton>
           <StyledNavButton selected={route === 'Editor'} onClick={() => navigate('Editor')}>Editor</StyledNavButton>

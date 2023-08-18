@@ -108,13 +108,13 @@ export const StyleEditorTypeSelect = styled.div`
   display: grid;
   gap: .5rem;
   border: 1px solid #0004;
-  background-color: #747474;
+  background-color: #9e9e9e;
   border-radius: .4rem;
   box-shadow: -.3rem .3rem .4rem #0002;
 
   &>.selector {
     padding: .3rem;
-    background-color: #b6b6b6f4;
+    background-color: #e2e2e2f4;
     display: flex;
     flex-direction: column;
     gap: .4rem;
@@ -132,7 +132,7 @@ export const StyleEditorTypeSelect = styled.div`
   
   &>.content {
     padding: .3rem;
-    background-color: #b6b6b6f4;
+    background-color: #e2e2e2f4;
     border-top-right-radius: .4rem;
     border-bottom-right-radius: .4rem;
   }
