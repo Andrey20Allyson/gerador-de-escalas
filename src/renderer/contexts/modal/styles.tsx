@@ -23,6 +23,7 @@ export const StyledModalBackground = styled.section<StyledModalBackGroundProps>`
     }
   }
 
+  z-index: 99;
   position: fixed;
   width: 100vw;
   height: 100vh;

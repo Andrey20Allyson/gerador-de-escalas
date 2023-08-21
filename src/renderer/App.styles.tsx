@@ -40,7 +40,6 @@ export const AppBody = styled.div`
 `;
 
 export const BodyCard = styled.main`
-  ${lineBorder('#777777')}
   margin: 0;
   display: flex;
   height: 100%;
@@ -48,7 +47,6 @@ export const BodyCard = styled.main`
   flex-direction: column;
   justify-content: center;
   background-color: #cccccc;
-  padding: 10px;
   box-shadow: -.2rem .2rem .5rem #0004;
   align-items: center;
   transition: height 1000ms;
@@ -64,12 +62,13 @@ export function lineBorder(color: string) {
 }
 
 export const TopNav = styled.nav`
-  border: 1px solid #777;
   border-bottom: none;
+  z-index: 0;
   display: flex;
   padding: 0 1rem;
   height: 2.1rem;
   background-color: #014b1d;
   color: #000000;
   gap: .2rem;
+  box-shadow: 0 .2rem .3rem #0005;
 `;

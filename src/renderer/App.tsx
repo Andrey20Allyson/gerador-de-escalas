@@ -42,7 +42,7 @@ const AppRoutes = createRoutes({
 });
 
 export default function App() {
-  const { Router, navigate, route } = useRoutes(AppRoutes, 'Generator');
+  const { Router, navigate, route } = useRoutes(AppRoutes, 'Editor');
 
   return (
     <Providers>
