@@ -3,24 +3,29 @@ import { AiOutlineSave } from "react-icons/ai";
 import { BsArrowReturnLeft, BsGear } from 'react-icons/bs';
 import { GoTriangleDown } from 'react-icons/go';
 import styled from "styled-components";
-import { TableEditor } from "../../../app/api/table-edition";
 import { editor } from "../../api";
-import { DayEditionModalProvider } from "../../components/DayEditionModal";
+import { EditorContext } from "../../components/EditorTypeSelect/context";
 import { useRulesModal } from "../../components/RulesModal";
 import { useSaveTableModal } from "../../components/SaveTableModal";
 import { useStage } from "../../contexts/stages";
+import { EditorTypeSelect } from "../../components/EditorTypeSelect";
 
 export function EditTableStage() {
   const { prev } = useStage();
   const saveModal = useSaveTableModal();
   const rulesModal = useRulesModal();
-  const table = TableEditor.create({ dutiesPerDay: 2 });
+  const table = EditorContext.useEditor();
+  const changeEditor = EditorContext.useNavigate();
 
   function handleSaveAs() {
+    if (!table) return;
+
     saveModal.open({ table });
   }
 
   function handleOpenRulesModal() {
+    if (!table) return;
+
     rulesModal.open({ table });
   }
 
@@ -31,26 +36,24 @@ export function EditTableStage() {
   }
 
   return (
-    <DayEditionModalProvider>
-      <StageBody>
-        <section className='tools-section'>
-          <button onClick={handlePrev}><BsArrowReturnLeft />Voltar</button>
-          <button onClick={handleSaveAs}><AiOutlineSave />Salvar</button>
-          <button onClick={handleOpenRulesModal}><BsGear />Regras</button>
-          <StyledSelector>
-            Editores
-            <GoTriangleDown />
-            <section className="selection-section">
-              <button>Calendário</button>
-              <button>Lista</button>
-            </section>
-          </StyledSelector>
-        </section>
-        <section className='editor-section'>
-          {/* <EditorTypeSelect tableRef={tableRef} /> */}
-        </section>
-      </StageBody>
-    </DayEditionModalProvider>
+    <StageBody>
+      <section className='tools-section'>
+        <button onClick={handlePrev}><BsArrowReturnLeft />Voltar</button>
+        <button onClick={handleSaveAs}><AiOutlineSave />Salvar</button>
+        <button onClick={handleOpenRulesModal}><BsGear />Regras</button>
+        <StyledSelector>
+          Editores
+          <GoTriangleDown />
+          <section className="selection-section">
+            <button onClick={() => changeEditor('DutyTableGrid', {})}>Calendário</button>
+            <button onClick={() => changeEditor('WorkerList', {})}>Lista</button>
+          </section>
+        </StyledSelector>
+      </section>
+      <section className='editor-section'>
+        <EditorTypeSelect />
+      </section>
+    </StageBody>
   );
 }
 

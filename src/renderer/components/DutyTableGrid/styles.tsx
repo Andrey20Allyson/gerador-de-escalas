@@ -32,14 +32,27 @@ export const StyledDayEditionGrid = styled.div`
   display: grid;
   gap: .3rem;
   grid-template-columns: repeat(7, 1fr);
-  /* position: relative; */
+  background-color: #fcfcfc;
+  padding: .5rem;
+  border-radius: .3rem;
+
+  &>p {
+    margin: 0;
+    text-align: center;
+    border-bottom: 1px solid #0003;
+    user-select: none;
+  }
 `;
 
 export const StyledDay = styled.div`
-  height: 4rem;
-  width: 6rem;
-  background-color: #cecece;
-  box-shadow: -.1rem .1rem .2rem #0004;
+  height: 9vh;
+  width: 10vw;
+  min-height: 4.5rem;
+  min-width: 8rem;
+  max-height: 5rem;
+  background-color: #f1f1f1;
+  border: 1px solid #0003;
+  /* box-shadow: -.1rem .1rem .2rem #0004; */
   padding: .3rem;
   gap: .2rem;
   border-radius: .2rem;
@@ -50,7 +63,7 @@ export const StyledDay = styled.div`
 export const StyledDayTitle = styled.h3`
   margin: 0;
   flex: 1;
-  font-size: .8rem;
+  font-size: .9rem;
 `;
 
 export const StyledDutiesContainer = styled.div`
@@ -60,11 +73,12 @@ export const StyledDutiesContainer = styled.div`
 `;
 
 export const StyledDuty = styled.div`
-  background-color: #bebebe;
+  background-color: #f8f8f8;
   flex: 1;
   display: flex;
   flex-direction: column-reverse;
-  box-shadow: -.1rem .1rem .2rem #0004 inset;
+  border: 1px solid #0003;
+  /* box-shadow: -.1rem .1rem .2rem #0004 inset; */
   justify-content: end;
   gap: 2px;
   padding: .2rem;
@@ -72,13 +86,14 @@ export const StyledDuty = styled.div`
   cursor: pointer;
   user-select: none;
   transition: all 200ms;
+  align-items: center;
 
   &.low-quantity {
     border: 1px solid #e71b1b;
-    background-color: #e0bd88;
+    background-color: #e2cba8;
     
     &:hover {
-      background-color: #e0e0a9;
+      background-color: #e0d5c4;
     }
   }
   
@@ -105,8 +120,9 @@ export const StyledDutyTitle = styled.h4`
 `;
 
 export const dutySlotStyles = css`
-  height: 5px;
+  height: 7px;
   width: 100%;
+  max-width: 4.5rem;
   overflow: hidden;
   border-radius: .1rem;
 `;
@@ -146,5 +162,5 @@ export const StyledDutySlot = styled.span<StyledDutySlotProps>`
 
 export const StyledEmpityDutySlot = styled.span`
   ${dutySlotStyles}
-  background-color: #a0a0a0;
+  background-color: #adadad56;
 `;

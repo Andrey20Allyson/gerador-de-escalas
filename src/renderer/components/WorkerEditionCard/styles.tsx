@@ -1,14 +1,16 @@
 import styled from "styled-components";
+import { BackgroundColor } from "../../styles";
 
 export const StyledWorkerEditionCard = styled.span`
+  ${BackgroundColor.bg0}
   font-size: .9rem;
   border: 1px solid #0004;
-  background-color: #fff3;
+  max-width: 70rem;
+  width: 100%;
   border-radius: .5rem;
   margin: 0 .4rem;
   padding: .5rem;
   display: flex;
-  box-shadow: -.2rem .2rem .3rem #0003;
   justify-content: space-between;
   align-items: stretch;
   gap: .2rem;
@@ -37,7 +39,7 @@ export const StyledWorkerEditionCard = styled.span`
       gap: .5rem;
 
       &>.graduation {
-        background-color: #0004;
+        background-color: #00000036;
         padding: .2rem;
         border-radius: .2rem;
         border: 1px solid #ffffffb7;

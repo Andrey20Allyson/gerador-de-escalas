@@ -38,15 +38,15 @@ export class AppError {
     return AppError.create(JSON.stringify(error));
   }
 
+  static stringify(error: AppErrorType<unknown>, withCallstack = false) {
+    return `Error code [${error.code}]: ${error.message}${withCallstack ? `\n${error.callstack}` : ''}`;
+  }
+
   static log(error: AppErrorType<unknown>) {
-    const message = `Error code [${error.code}]: ${error.message}`;
-
-    console.error(message, `\n${error.callstack}`);
-
-    console.log('ola');
+    console.error(this.stringify(error, true));
 
     if ('alert' in globalThis) {
-      alert(message);
+      alert(this.stringify(error));
     }
   }
 }
