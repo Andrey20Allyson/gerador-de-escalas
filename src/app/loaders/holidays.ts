@@ -1,17 +1,15 @@
-import { Holiday, Holidays } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib/structs";
-import { Collection } from "../firebase";
+import { Holidays } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib/structs";
 import fs from 'fs/promises';
-import zod, { ZodType } from 'zod';
+import { ZodType } from 'zod';
+import { Collection } from "../firebase";
+import { HolidayType, holidaySchema } from "./holidays.schema";
 
-export interface HodilaysLoaderConfig {
-  firestoreCollection: FirebaseFirestore.CollectionReference;
-}
-
-type GetFileResult<T> = {
+export type GetFileResult<T, E = unknown> = {
   ok: false;
+  error: E;
 } | {
   ok: true;
-  asset: T;
+  data: T;
 };
 
 async function getLocalAsset<T>(name: string, schema: ZodType<T>): Promise<GetFileResult<T>> {
@@ -21,29 +19,69 @@ async function getLocalAsset<T>(name: string, schema: ZodType<T>): Promise<GetFi
     const json = JSON.parse(buffer);
     const typeCheckedJson = schema.parse(json);
 
-    return { ok: true, asset: typeCheckedJson };
-  } catch {
-
-    return { ok: false };
+    return { ok: true, data: typeCheckedJson };
+  } catch (error) {
+    return { ok: false, error };
   }
 }
 
+function createConfig<T extends object>(partialConfig: Partial<T>, defaultConfig: T): T {
+  const newConfig: Partial<T> = {};
+
+  const rawKeys = [
+    ...Object.getOwnPropertyNames(partialConfig),
+    ...Object.getOwnPropertySymbols(partialConfig),
+    ...Object.getOwnPropertyNames(defaultConfig),
+    ...Object.getOwnPropertySymbols(defaultConfig),
+  ] as Array<keyof T>;
+
+  const keys = new Set(rawKeys);
+
+  for (const key of keys) {
+    const value = partialConfig[key] ?? defaultConfig[key];
+
+    if (typeof value === 'object' && value !== null) {
+      newConfig[key] = createConfig(partialConfig[key] ?? {}, defaultConfig[key]);
+      continue;
+    }
+    
+    newConfig[key] = value;
+  }
+
+  return newConfig as T;
+}
+
+type StaticConfigFactory<T> = (partialConfig: Partial<T>) => T;
+
+createConfig.fromStaticDefault = function <T extends object>(defaultConfig: T): StaticConfigFactory<T> {
+  return partial => createConfig(partial, defaultConfig);
+}
+
+export interface HodilaysLoaderConfig {
+  firestoreCollection: FirebaseFirestore.CollectionReference;
+  assetFileName: string;
+}
+
 export class HodilaysLoader {
+  static createConfig = createConfig.fromStaticDefault<HodilaysLoaderConfig>({
+    firestoreCollection: Collection.holidays,
+    assetFileName: 'holidays',
+  });
   config: HodilaysLoaderConfig;
   loaded: Holidays | null;
 
   constructor(config: Partial<HodilaysLoaderConfig> = {}) {
-    const {
-      firestoreCollection = Collection.holidays,
-    } = config;
-
-    this.config = { firestoreCollection };
+    this.config = HodilaysLoader.createConfig(config);
 
     this.loaded = null;
   }
 
   async load() {
+    const localData = await getLocalAsset<HolidayType>(this.config.assetFileName, holidaySchema);
 
+    if (localData.ok) {
+      
+    }
   }
 
   async save() {
@@ -62,7 +100,7 @@ export class HodilaysLoader {
 
   }
 
-  private async saveInDB(holiday: Holiday) {
+  private async saveInDB(holiday: HolidayType) {
 
   }
 }
