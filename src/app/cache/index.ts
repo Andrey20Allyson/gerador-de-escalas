@@ -1,7 +1,8 @@
-import zod, { ZodType } from 'zod';
-import { fromRoot } from '../path.utils';
 import fs from 'fs/promises';
 import _path from 'path';
+import zod, { ZodType } from 'zod';
+import { fromRoot } from '../path.utils';
+import { Config } from '../utils/config';
 
 export function createCacheSchema<T>(dataSchema: ZodType<T>) {
   return zod.object({
@@ -12,7 +13,8 @@ export function createCacheSchema<T>(dataSchema: ZodType<T>) {
   });
 }
 
-export interface CacheType<T> extends zod.infer<ReturnType<typeof createCacheSchema<T>>> { };
+export type CacheSchemaType<T> = ReturnType<typeof createCacheSchema<T>>;
+export interface CacheType<T> extends zod.infer<ReturnType<typeof createCacheSchema<T>>> { }
 
 export const cacheDir = fromRoot('.cache');
 
@@ -20,30 +22,91 @@ export function getCachePath(name: string) {
   return _path.join(cacheDir, `${name}.json`);
 }
 
-export async function loadCache<T>(name: string, schema: ZodType<T>): Promise<CacheType<T> | null> {
-  const path = getCachePath(name);
-  let buffer: string | undefined;
+export type DiskCacheFileSystem = Pick<typeof fs,
+  | 'readFile'
+  | 'writeFile'
+  | 'access'
+  | 'mkdir'
+>;
 
-  try {
-    buffer = await fs.readFile(path, { encoding: 'utf-8' });
-  } catch (error) {
-    return null;
+export type DiskCacheConfig<T = unknown> = Config<{
+  readonly fs: DiskCacheFileSystem;
+  readonly dataSchema: ZodType<T>;
+  readonly directory: string;
+  readonly name: string;
+}, 'name'>;
+
+export interface DiskCacheConfigParam<T = unknown> extends Config.Partial<DiskCacheConfig<T>> { };
+
+export class DiskCache<T = unknown> {
+  static readonly defaults: Config.Defaults<DiskCacheConfig> = {
+    directory: _path.resolve(process.cwd(), '.cache'),
+    dataSchema: zod.unknown(),
+    fs,
+  };
+
+  config: Config.From<DiskCacheConfig<T>>;
+  cacheSchema: CacheSchemaType<T>;
+
+  constructor(config: DiskCacheConfigParam<T>) {
+    this.config = Config.create<DiskCacheConfig<T>, DiskCacheConfig>(config, DiskCache.defaults);
+
+    this.cacheSchema = createCacheSchema(this.config.dataSchema);
   }
 
-  const json = JSON.parse(buffer);
-  const cache = createCacheSchema(schema).parse(json);
-
-  return cache;
-}
-
-export async function saveCache(name: string, cache: CacheType<unknown>) {
-  const path = getCachePath(name);
-
-  try {
-    await fs.access(cacheDir);
-  } catch {
-    fs.mkdir(cacheDir);
+  resolvePath() {
+    return _path.resolve(this.config.directory, this.config.name + '.json');
   }
 
-  await fs.writeFile(path, JSON.stringify(cache));
+  async createCacheDirectoryIfDontExist() {
+    try {
+      await fs.access(this.config.directory);
+    } catch {
+      fs.mkdir(this.config.directory);
+    }
+  }
+
+  async write(buffer: string): Promise<void> {
+    const path = this.resolvePath();
+
+    return fs.writeFile(path, buffer);
+  }
+
+  async read(): Promise<string | null> {
+    const path = this.resolvePath();
+
+    try {
+      return fs.readFile(path, 'utf-8');
+    } catch {
+      return null;
+    }
+  }
+
+  parseWithSchema(buffer: string): CacheType<T> {
+    const json = JSON.parse(buffer);
+    return this.cacheSchema.parse(json);
+  }
+
+  async save(data: CacheType<T>): Promise<void> {
+    this.createCacheDirectoryIfDontExist();
+
+    const buffer = JSON.stringify(data);
+
+    await this.write(buffer);
+  }
+
+  async saveHeader() {
+
+  }
+
+  async load(): Promise<CacheType<T> | null> {
+    const buffer = await this.read();
+    if (buffer === null) return buffer;
+
+    return this.parseWithSchema(buffer);
+  }
+
+  async loadHeader() {
+
+  }
 }

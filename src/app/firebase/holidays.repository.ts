@@ -12,12 +12,12 @@ export const holidaySchema = zod.object({
 export interface HolidayType extends zod.infer<typeof holidaySchema> { };
 
 export type HolidaysRepositoryConfig = Config<{
-  holidaysCollection: firestore.CollectionReference;
+  collection: firestore.CollectionReference;
 }>;
 
 export class HolidaysFirestoreRepository {
   static createConfig = Config.createStaticFactory<HolidaysRepositoryConfig>({
-    holidaysCollection: Collection.holidays,
+    collection: Collection.holidays,
   });
   readonly config: Config.From<HolidaysRepositoryConfig>;
 
@@ -25,22 +25,26 @@ export class HolidaysFirestoreRepository {
     this.config = HolidaysFirestoreRepository.createConfig(config);
   }
 
+  get collection() {
+    return this.config.collection;
+  }
+
   async get(id: string): Promise<HolidayType> {
-    const resp = await this.config.holidaysCollection.doc(id).get();
+    const resp = await this.config.collection.doc(id).get();
 
     return holidaySchema.parse(resp.data());
   }
 
   async getUpdateInfo() {
-    return UpdateInfoHandler.fromCollectionRef(this.config.holidaysCollection);
+    return UpdateInfoHandler.fromCollectionRef(this.config.collection);
   }
 
   async releaseNewVersion() {
-    return UpdateInfoHandler.releaseNewVersionTo(this.config.holidaysCollection);
+    return UpdateInfoHandler.releaseNewVersionTo(this.config.collection);
   }
 
   async getAll(): Promise<HolidayType[]> {
-    const resp = await this.config.holidaysCollection.get();
+    const resp = await this.config.collection.get();
     if (resp.empty) return [];
 
     return resp.docs
@@ -49,7 +53,7 @@ export class HolidaysFirestoreRepository {
   }
 
   async update(data: Partial<HolidayType> & Pick<HolidayType, 'day' | 'month'>) {
-    const resp = await this.config.holidaysCollection
+    const resp = await this.config.collection
       .doc(HolidaysFirestoreRepository.idFromHoliday(data))
       .update(data);
 
@@ -59,7 +63,7 @@ export class HolidaysFirestoreRepository {
   }
 
   async create(holiday: HolidayType) {
-    const resp = await this.config.holidaysCollection
+    const resp = await this.config.collection
       .doc(HolidaysFirestoreRepository.idFromHoliday(holiday))
       .create(holiday);
 

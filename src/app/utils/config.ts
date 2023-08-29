@@ -17,7 +17,7 @@ export namespace Config {
     return [...Object.getOwnPropertyNames(o), ...Object.getOwnPropertySymbols(o)] as (keyof From<O>)[];
   }
 
-  export function create<C extends Config>(partial: Partial<C>, defaults: Defaults<C>): From<C> {
+  export function create<C extends Config, DC extends Config = C>(partial: Partial<C>, defaults: Defaults<DC>): From<C> {
     const config: From<C> = {};
 
     const keys = new Set([
