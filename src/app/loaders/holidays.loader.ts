@@ -1,4 +1,5 @@
-import { CacheType, DiskCache } from "../cache";
+import { CacheType } from "../cache";
+import { DiskCache } from "../cache/disk.cache";
 import { HolidayType, HolidaysFirestoreRepository, holidaySchema } from "../firebase";
 import { Config } from "../utils/config";
 
