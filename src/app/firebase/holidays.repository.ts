@@ -1,5 +1,5 @@
 import zod from 'zod';
-import { createStaticConfigFactory } from '../utils';
+import { Config } from '../utils/config';
 import { firestore } from 'firebase-admin';
 import { Collection, UpdateInfoHandler } from '.';
 
@@ -11,17 +11,17 @@ export const holidaySchema = zod.object({
 
 export interface HolidayType extends zod.infer<typeof holidaySchema> { };
 
-export interface HolidaysRepositoryConfig {
+export type HolidaysRepositoryConfig = Config<{
   holidaysCollection: firestore.CollectionReference;
-}
+}>;
 
 export class HolidaysFirestoreRepository {
-  static createConfig = createStaticConfigFactory<HolidaysRepositoryConfig>({
+  static createConfig = Config.createStaticFactory<HolidaysRepositoryConfig>({
     holidaysCollection: Collection.holidays,
   });
-  readonly config: HolidaysRepositoryConfig;
+  readonly config: Config.From<HolidaysRepositoryConfig>;
 
-  constructor(config: Partial<HolidaysRepositoryConfig> = {}) {
+  constructor(config: Config.Partial<HolidaysRepositoryConfig> = {}) {
     this.config = HolidaysFirestoreRepository.createConfig(config);
   }
 

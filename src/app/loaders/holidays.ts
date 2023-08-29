@@ -1,21 +1,22 @@
 import { CacheType, loadCache, saveCache } from "../cache";
-import { HolidayType, HolidaysFirestoreRepository, holidaySchema } from "../firebase/holidays.repository";
-import { createStaticConfigFactory } from "../utils";
+import { HolidayType, HolidaysFirestoreRepository, holidaySchema } from "../firebase";
+import { Config } from "../utils/config";
 
-export interface HodilaysLoaderConfig {
+export type HodilaysLoaderConfig = Config<{
   repository: HolidaysFirestoreRepository;
   cacheFileName: string;
-}
+}>;
 
 export class HodilaysLoader {
-  static createConfig = createStaticConfigFactory<HodilaysLoaderConfig>({
+  static readonly createConfig = Config.createStaticFactory<HodilaysLoaderConfig>({
     repository: new HolidaysFirestoreRepository(),
     cacheFileName: 'holidays',
   });
-  config: HodilaysLoaderConfig;
+
+  config: Config.From<HodilaysLoaderConfig>;
   inMemoryCache: CacheType<HolidayType> | null;
 
-  constructor(config: Partial<HodilaysLoaderConfig> = {}) {
+  constructor(config: Config.Partial<HodilaysLoaderConfig> = {}) {
     this.config = HodilaysLoader.createConfig(config);
 
     this.inMemoryCache = null;

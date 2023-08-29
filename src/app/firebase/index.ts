@@ -14,3 +14,4 @@ export namespace Collection {
 }
 
 export * from './update-info';
+export * from './holidays.repository';
