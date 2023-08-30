@@ -42,19 +42,19 @@ export class TypedDiskCache<T> extends DiskCache<T> {
 
     super({
       entries: {
-        contains: 'default-cache-io',
+        contains: 'default-cache-io-config',
         content: {
           namespace: prefix + entriesSufix,
           parser: createCacheEntriesParser(schema),
-        }
+        },
       },
       header: {
-        contains: 'default-cache-io',
+        contains: 'default-cache-io-config',
         content: {
           parser: cacheHeaderParser,
           namespace: prefix + headerSufix,
-        }
-      }
+        },
+      },
     });
 
     this.typedConfig = _config;

@@ -6,7 +6,7 @@ import { RegistryEntryType, CollectionHeaderType } from '../base';
 import { DefaultCacheIO, DefaultCacheIOConfig } from './default-io';
 
 export type CacheIODependency<T> = {
-  contains: 'default-cache-io';
+  contains: 'default-cache-io-config';
   content: Config.Partial<DefaultCacheIOConfig<T>>;
 } | {
   contains: 'dependency';
@@ -42,7 +42,7 @@ export class DiskCache<T = unknown> {
 
   private entriesFromConfig(config: Config.From<DiskCacheConfig<T>>): CacheIO<RegistryEntryType<T>[]> {
     switch (config.entries.contains) {
-      case 'default-cache-io':
+      case 'default-cache-io-config':
         return new DefaultCacheIO(config.entries.content);
       case 'dependency':
         return config.entries.content;
@@ -51,7 +51,7 @@ export class DiskCache<T = unknown> {
 
   private headerFromConfig(config: Config.From<DiskCacheConfig<T>>): CacheIO<CollectionHeaderType> {
     switch (config.header.contains) {
-      case 'default-cache-io':
+      case 'default-cache-io-config':
         return new DefaultCacheIO(config.header.content);
       case 'dependency':
         return config.header.content;
