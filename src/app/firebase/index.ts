@@ -1,2 +1,3 @@
-export * from '../repositories/holidays.repository';
+export * from './app';
+export * from './firestore';
 export * from './update-info';

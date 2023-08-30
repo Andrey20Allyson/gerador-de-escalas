@@ -61,7 +61,7 @@ export default class CryptorWithPassword {
   private config: Config.From<CryptorWithPasswordConfig>;
 
   constructor(config: Config.Partial<CryptorWithPasswordConfig>) {
-    this.config = Config.create<CryptorWithPasswordConfig>(config, CryptorWithPassword.defaults);
+    this.config = Config.from<CryptorWithPasswordConfig>(config, CryptorWithPassword.defaults);
 
     if (this.config.password.length === 0) {
       throw CryptorWithPasswordInitError.empityPasswordError();

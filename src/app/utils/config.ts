@@ -8,7 +8,6 @@ export type Config<C = {}, MandatoryField extends keyof C = never> = {
 };
 
 export namespace Config {
-
   export type From<C extends Config<any, any>> = C['config'];
   export type Partial<C extends Config<any, any>> = C['partial'];
   export type Defaults<C extends Config> = C['defaults'];
@@ -17,7 +16,7 @@ export namespace Config {
     return [...Object.getOwnPropertyNames(o), ...Object.getOwnPropertySymbols(o)] as (keyof From<O>)[];
   }
 
-  export function create<C extends Config, DC extends Config = C>(partial: Partial<C>, defaults: Defaults<DC>): From<C> {
+  export function from<C extends Config>(partial: Partial<C>, defaults: Defaults<C>): From<C> {
     const config: From<C> = {};
 
     const keys = new Set([
@@ -35,6 +34,6 @@ export namespace Config {
   export type StaticConfigFactory<C extends Config> = (partial: Config.Partial<C>) => Config.From<C>;
 
   export function createStaticFactory<C extends Config<any, any>>(defaults: Defaults<C>): StaticConfigFactory<C> {
-    return partial => create(partial, defaults);
+    return partial => from(partial, defaults);
   }
 }

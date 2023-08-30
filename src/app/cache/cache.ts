@@ -23,7 +23,7 @@ export class DiskCache<T = unknown> {
   constructor(config: DiskCacheConfigParam<T>) {
     const defaults: Config.Defaults<DiskCacheConfig<T>> = { useInMemoryCache: true };
 
-    this.config = Config.create<DiskCacheConfig<T>, DiskCacheConfig<T>>(config, defaults);
+    this.config = Config.from<DiskCacheConfig<T>>(config, defaults);
 
     this.inMemoryCache = null;
   }

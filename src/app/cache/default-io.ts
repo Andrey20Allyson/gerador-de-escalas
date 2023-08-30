@@ -28,12 +28,16 @@ export class DefaultCacheIO<T> implements CacheIO<T> {
   config: Config.From<DefaultCacheIOConfig<T>>;
 
   constructor(config: Config.Partial<DefaultCacheIOConfig<T>>) {
-    this.config = Config.create<DefaultCacheIOConfig<T>, DefaultCacheIOConfig<T>>(config, {
+    this.config = Config.from<DefaultCacheIOConfig<T>>(config, {
       serializer: JSON.stringify,
       directory: '.cache',
       extname: 'json',
       pfs,
     });
+  }
+
+  get pfs() {
+    return this.config.pfs;
   }
 
   getPath() {
@@ -42,9 +46,9 @@ export class DefaultCacheIO<T> implements CacheIO<T> {
 
   private async createCacheDirectoryIfDontExist() {
     try {
-      await this.config.pfs.access(this.config.directory);
+      await this.pfs.access(this.config.directory);
     } catch {
-      this.config.pfs.mkdir(this.config.directory);
+      this.pfs.mkdir(this.config.directory);
     }
   }
 
@@ -55,14 +59,14 @@ export class DefaultCacheIO<T> implements CacheIO<T> {
 
     const buffer = await this.config.serializer(data);
 
-    return this.config.pfs.writeFile(path, buffer);
+    return this.pfs.writeFile(path, buffer);
   }
 
   async read(): Promise<T | null> {
     const path = this.getPath();
 
     try {
-      const buffer = await this.config.pfs.readFile(path, 'utf-8');
+      const buffer = await this.pfs.readFile(path, 'utf-8');
 
       return this.config.parser(buffer);
     } catch {

@@ -1,6 +1,7 @@
 import { ZodType } from "zod";
 import { colletionHeaderSchema, createRegistryEntrySchema, RegistryEntryType } from "../base";
-import { DefaultCacheIO, DiskCache } from "../cache";
+import { DefaultCacheIO, DiskCache } from ".";
+import { Config } from "../utils/config";
 
 function cacheHeaderParser(data: string) {
   const json = JSON.parse(data);
@@ -18,13 +19,26 @@ function createCacheEntriesParser<T>(documentEntryDataSchema: ZodType<T>) {
   }
 }
 
+export type TypedDiskCacheConfig<T> = Config<{
+  prefix: string,
+  schema: ZodType<T>,
+  entriesSufix: string,
+  headerSufix: string,
+},
+  | 'prefix'
+  | 'schema'
+>;
+
 export class TypedDiskCache<T> extends DiskCache<T> {
-  constructor(
-    prefix: string,
-    schema: ZodType<T>
-  ) {
-    const entriesSufix = '.entries';
-    const headerSufix = '.header';
+  typedConfig: Config.From<TypedDiskCacheConfig<T>>;
+
+  constructor(config: Config.Partial<TypedDiskCacheConfig<T>>) {
+    const _config = Config.from<TypedDiskCacheConfig<T>>(config, {
+      entriesSufix: '.entries',
+      headerSufix: '.header',
+    });
+
+    const { entriesSufix, headerSufix, prefix, schema } = _config;
 
     super({
       entries: new DefaultCacheIO({
@@ -36,5 +50,7 @@ export class TypedDiskCache<T> extends DiskCache<T> {
         parser: cacheHeaderParser,
       }),
     });
+
+    this.typedConfig = _config;
   }
 }

@@ -1,25 +1,30 @@
-import { RegistryEntryType } from "../base/schemas/registry/entry";
 import { HolidayType, holidaySchema } from "../base/schemas/registry/holiday";
+import { RegistryEntryType } from "../base/schemas/registry/registry";
 import { CacheType, DiskCache } from "../cache";
-import { HolidaysFirestoreRepository } from "../firebase";
+import { TypedDiskCache } from "../cache/typed-cache";
+import { Collection } from "../firebase";
+import { CollectionHandler, RepositoryReader } from "../repositories/repository";
+import { TypedRepository } from "../repositories/typed-repository";
 import { Config } from "../utils/config";
-import { TypedDiskCache } from "./typed-cache";
+
+export interface LoaderRepository<T = unknown> extends RepositoryReader<T>, CollectionHandler { }
 
 export type HodilaysLoaderConfig = Config<{
-  repository: HolidaysFirestoreRepository;
+  repository: LoaderRepository<HolidayType>;
   cache: DiskCache<HolidayType>;
 }>;
 
 export class HodilaysLoader {
-  static readonly createConfig = Config.createStaticFactory<HodilaysLoaderConfig>({
-    repository: new HolidaysFirestoreRepository(),
-    cache: new TypedDiskCache('holidays', holidaySchema),
-  });
-
   config: Config.From<HodilaysLoaderConfig>;
-
+  
   constructor(config: Config.Partial<HodilaysLoaderConfig> = {}) {
-    this.config = HodilaysLoader.createConfig(config);
+    this.config = Config.from<HodilaysLoaderConfig>(config, {
+      repository: new TypedRepository({
+        collection: Collection.holidays,
+        schema: holidaySchema
+      }),
+      cache: new TypedDiskCache({ prefix: 'holidays', schema: holidaySchema }),
+    });
   }
 
   get repository() {
@@ -39,18 +44,15 @@ export class HodilaysLoader {
   async load(): Promise<RegistryEntryType<HolidayType>[]> {
     const cache = await this.cache.load();
 
-    const collectionUpdateInfo = await this.repository.getUpdateInfo();
+    let collectionHeader = await this.repository.getHeader().catch(r => console.warn(r));
+    if (collectionHeader === undefined) return cache?.entries ?? [];
 
-    if (cache && cache.header.version >= collectionUpdateInfo.version) return cache.entries;
+    if (cache && cache.header.version >= collectionHeader.version) return cache.entries;
 
-    const entries = await this.repository.getAll();
+    const entries = await this.repository.getFromQuery(this.repository.collection);
 
     const updatedCache: CacheType<HolidayType> = {
-      header: {
-        collectionName: this.repository.collection.id,
-        lastUpdate: collectionUpdateInfo.lastUpdate,
-        version: collectionUpdateInfo.version,
-      },
+      header: collectionHeader,
       entries,
     };
 
