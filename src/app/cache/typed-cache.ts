@@ -1,6 +1,6 @@
 import { ZodType } from "zod";
+import { DiskCache } from ".";
 import { colletionHeaderSchema, createRegistryEntrySchema, RegistryEntryType } from "../base";
-import { DefaultCacheIO, DiskCache } from ".";
 import { Config } from "../utils/config";
 
 function cacheHeaderParser(data: string) {
@@ -41,14 +41,20 @@ export class TypedDiskCache<T> extends DiskCache<T> {
     const { entriesSufix, headerSufix, prefix, schema } = _config;
 
     super({
-      entries: new DefaultCacheIO({
-        namespace: prefix + entriesSufix,
-        parser: createCacheEntriesParser(schema),
-      }),
-      header: new DefaultCacheIO({
-        namespace: prefix + headerSufix,
-        parser: cacheHeaderParser,
-      }),
+      entries: {
+        contains: 'default-cache-io',
+        content: {
+          namespace: prefix + entriesSufix,
+          parser: createCacheEntriesParser(schema),
+        }
+      },
+      header: {
+        contains: 'default-cache-io',
+        content: {
+          parser: cacheHeaderParser,
+          namespace: prefix + headerSufix,
+        }
+      }
     });
 
     this.typedConfig = _config;

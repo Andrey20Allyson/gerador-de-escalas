@@ -3,10 +3,19 @@ import { Config } from '../utils/config';
 import { CacheType } from './types';
 import { CacheIO } from './io';
 import { RegistryEntryType, CollectionHeaderType } from '../base';
+import { DefaultCacheIO, DefaultCacheIOConfig } from './default-io';
+
+export type CacheIODependency<T> = {
+  contains: 'default-cache-io';
+  content: Config.Partial<DefaultCacheIOConfig<T>>;
+} | {
+  contains: 'dependency';
+  content: CacheIO<T>;
+}
 
 export type DiskCacheConfig<T = unknown> = Config<{
-  entries: CacheIO<RegistryEntryType<T>[]>;
-  header: CacheIO<CollectionHeaderType>;
+  entries: CacheIODependency<RegistryEntryType<T>[]>;
+  header: CacheIODependency<CollectionHeaderType>;
   useInMemoryCache: boolean;
 },
   | 'entries'
@@ -17,23 +26,36 @@ export interface DiskCacheConfigParam<T = unknown> extends Config.Partial<DiskCa
 export interface WatchForUpdatesOptions extends fs.WatchOptions { }
 
 export class DiskCache<T = unknown> {
-  config: Config.From<DiskCacheConfig<T>>;
   inMemoryCache: CacheType<T> | null;
 
-  constructor(config: DiskCacheConfigParam<T>) {
-    const defaults: Config.Defaults<DiskCacheConfig<T>> = { useInMemoryCache: true };
+  entries: CacheIO<RegistryEntryType<T>[]>;
+  header: CacheIO<CollectionHeaderType>;
 
-    this.config = Config.from<DiskCacheConfig<T>>(config, defaults);
+  constructor(config: DiskCacheConfigParam<T>) {
+    const _config = Config.from<DiskCacheConfig<T>>(config, { useInMemoryCache: true });
+
+    this.entries = this.entriesFromConfig(_config);
+    this.header = this.headerFromConfig(_config);
 
     this.inMemoryCache = null;
   }
 
-  get entries() {
-    return this.config.entries;
+  private entriesFromConfig(config: Config.From<DiskCacheConfig<T>>): CacheIO<RegistryEntryType<T>[]> {
+    switch (config.entries.contains) {
+      case 'default-cache-io':
+        return new DefaultCacheIO(config.entries.content);
+      case 'dependency':
+        return config.entries.content;
+    }
   }
 
-  get header() {
-    return this.config.header;
+  private headerFromConfig(config: Config.From<DiskCacheConfig<T>>): CacheIO<CollectionHeaderType> {
+    switch (config.header.contains) {
+      case 'default-cache-io':
+        return new DefaultCacheIO(config.header.content);
+      case 'dependency':
+        return config.header.content;
+    }
   }
 
   async save(data: CacheType<T>): Promise<void> {
