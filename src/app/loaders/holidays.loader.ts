@@ -1,91 +1,60 @@
-import { CacheType } from "../cache";
-import { DiskCache } from "../cache/disk.cache";
+import { CacheType, DiskCache } from "../cache";
 import { HolidayType, HolidaysFirestoreRepository, holidaySchema } from "../firebase";
+import { RegistryEntryType } from "../base/schemas/registry-entry";
 import { Config } from "../utils/config";
+import { TypedDiskCache } from "./typed-cache";
 
 export type HodilaysLoaderConfig = Config<{
   repository: HolidaysFirestoreRepository;
-  diskCache: DiskCache<HolidayType>;
-  saveCacheInMemory: boolean;
+  cache: DiskCache<HolidayType>;
 }>;
 
 export class HodilaysLoader {
   static readonly createConfig = Config.createStaticFactory<HodilaysLoaderConfig>({
     repository: new HolidaysFirestoreRepository(),
-    diskCache: new DiskCache({
-      dataSchema: holidaySchema,
-      name: 'holidays',
-    }),
-    saveCacheInMemory: true,
+    cache: new TypedDiskCache('holidays', holidaySchema),
   });
 
   config: Config.From<HodilaysLoaderConfig>;
-  inMemoryCache: CacheType<HolidayType> | null;
 
   constructor(config: Config.Partial<HodilaysLoaderConfig> = {}) {
     this.config = HodilaysLoader.createConfig(config);
-
-    this.inMemoryCache = null;
   }
 
   get repository() {
     return this.config.repository;
   }
 
-  get diskCache() {
-    return this.config.diskCache;
+  get cache() {
+    return this.config.cache;
   }
 
-  clear() {
-    this.inMemoryCache = null;
-  }
-
-  saveInMemoryCache(cache: CacheType<HolidayType>) {
-    if (this.config.saveCacheInMemory) this.inMemoryCache = cache;
-  }
-
-  getInMemoryCache(): CacheType<HolidayType> | null {
-    return this.inMemoryCache;
-  }
-
-  async reload(): Promise<HolidayType[]> {
-    this.clear();
+  async reload(): Promise<RegistryEntryType<HolidayType>[]> {
+    this.cache.clear();
 
     return this.load();
   }
 
-  async load(): Promise<HolidayType[]> {
-    const inDiskCache = await this.diskCache.load();
-    const inMemoryCache = this.getInMemoryCache();
-
-    if (inMemoryCache) {
-      const isInMemoryCacheUpToDate = inDiskCache
-        ? inMemoryCache.version >= inDiskCache.version
-        : true;
-
-      if (isInMemoryCacheUpToDate) return inMemoryCache.data;
-    }
+  async load(): Promise<RegistryEntryType<HolidayType>[]> {
+    const cache = await this.cache.load();
 
     const collectionUpdateInfo = await this.repository.getUpdateInfo();
 
-    if (inDiskCache && inDiskCache.version >= collectionUpdateInfo.version) {
-      this.inMemoryCache = inDiskCache;
+    if (cache && cache.header.version >= collectionUpdateInfo.version) return cache.entries;
 
-      return inDiskCache.data;
-    }
+    const entries = await this.repository.getAll();
 
-    const data = await this.repository.getAll();
-
-    const cache: CacheType<HolidayType> = {
-      collectionName: this.repository.config.collection.id,
-      lastUpdate: collectionUpdateInfo.lastUpdate,
-      version: collectionUpdateInfo.version,
-      data,
+    const updatedCache: CacheType<HolidayType> = {
+      header: {
+        collectionName: this.repository.collection.id,
+        lastUpdate: collectionUpdateInfo.lastUpdate,
+        version: collectionUpdateInfo.version,
+      },
+      entries,
     };
 
-    this.saveInMemoryCache(cache);
-    await this.diskCache.save(cache);
+    await this.cache.save(updatedCache);
 
-    return data;
+    return entries;
   }
 }

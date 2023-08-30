@@ -1,7 +1,9 @@
-import zod from 'zod';
-import { Config } from '../utils/config';
 import { firestore } from 'firebase-admin';
-import { Collection, UpdateInfoHandler } from '.';
+import zod from 'zod';
+import { RegistryEntryType } from '../base';
+import { Config } from '../utils/config';
+import { Collection } from './firestore';
+import { UpdateInfoHandler } from './update-info';
 
 export const holidaySchema = zod.object({
   name: zod.string(),
@@ -29,10 +31,13 @@ export class HolidaysFirestoreRepository {
     return this.config.collection;
   }
 
-  async get(id: string): Promise<HolidayType> {
-    const resp = await this.config.collection.doc(id).get();
+  async get(id: string): Promise<RegistryEntryType<HolidayType>> {
+    const doc = await this.config.collection.doc(id).get();
 
-    return holidaySchema.parse(resp.data());
+    return {
+      id: doc.id,
+      data: holidaySchema.parse(doc.data())
+    };
   }
 
   async getUpdateInfo() {
@@ -43,13 +48,13 @@ export class HolidaysFirestoreRepository {
     return UpdateInfoHandler.releaseNewVersionTo(this.config.collection);
   }
 
-  async getAll(): Promise<HolidayType[]> {
+  async getAll(): Promise<RegistryEntryType<HolidayType>[]> {
     const resp = await this.config.collection.get();
     if (resp.empty) return [];
 
     return resp.docs
       .filter(doc => !doc.id.startsWith('@'))
-      .map(doc => holidaySchema.parse(doc.data()));
+      .map(doc => ({ id: doc.id, data: holidaySchema.parse(doc.data()) }));
   }
 
   async update(data: Partial<HolidayType> & Pick<HolidayType, 'day' | 'month'>) {

@@ -1,7 +1,7 @@
-import { firestore } from ".";
 import admin from 'firebase-admin';
 import zod from "zod";
 import clone from 'clone';
+import { firestore } from './firestore';
 
 export const updateInfoSchema = zod.object({
   lastUpdate: zod.number(),
