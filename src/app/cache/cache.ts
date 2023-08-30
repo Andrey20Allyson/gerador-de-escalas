@@ -1,8 +1,8 @@
 import fs from 'fs';
-import { Config } from '../../utils/config';
-import { CacheType } from '../types';
+import { Config } from '../utils/config';
+import { CacheType } from './types';
 import { CacheIO } from './io';
-import { RegistryEntryType, CollectionHeaderType } from '../../base';
+import { RegistryEntryType, CollectionHeaderType } from '../base';
 
 export type DiskCacheConfig<T = unknown> = Config<{
   entries: CacheIO<RegistryEntryType<T>[]>;
@@ -50,7 +50,7 @@ export class DiskCache<T = unknown> {
 
     return this.inMemoryCache;
   }
-  
+
   private async readCache(header: CollectionHeaderType): Promise<CacheType<T> | null> {
     const entries = await this.entries.read();
     if (entries === null) return null;

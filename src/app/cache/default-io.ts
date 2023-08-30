@@ -1,6 +1,6 @@
-import { Config } from "../../utils/config"
-import path from 'path';
 import pfs from 'fs/promises';
+import path from 'path';
+import { Config } from "../utils/config";
 import { CacheIO } from "./io";
 
 export type DefaultCacheIOPFS = Pick<typeof pfs,

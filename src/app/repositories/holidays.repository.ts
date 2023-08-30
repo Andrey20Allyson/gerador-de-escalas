@@ -1,17 +1,9 @@
 import { firestore } from 'firebase-admin';
-import zod from 'zod';
 import { RegistryEntryType } from '../base';
+import { HolidayType, holidaySchema } from '../base';
+import { Collection } from '../firebase/firestore';
+import { UpdateInfoHandler } from '../firebase/update-info';
 import { Config } from '../utils/config';
-import { Collection } from './firestore';
-import { UpdateInfoHandler } from './update-info';
-
-export const holidaySchema = zod.object({
-  name: zod.string(),
-  day: zod.number(),
-  month: zod.number(),
-});
-
-export interface HolidayType extends zod.infer<typeof holidaySchema> { };
 
 export type HolidaysRepositoryConfig = Config<{
   collection: firestore.CollectionReference;

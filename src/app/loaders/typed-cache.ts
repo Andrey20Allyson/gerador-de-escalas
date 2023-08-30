@@ -1,7 +1,6 @@
 import { ZodType } from "zod";
 import { colletionHeaderSchema, createRegistryEntrySchema, RegistryEntryType } from "../base";
-import { DiskCache } from "../cache";
-import { DefaultCacheIO } from "../cache/disk/default-io";
+import { DefaultCacheIO, DiskCache } from "../cache";
 
 function cacheHeaderParser(data: string) {
   const json = JSON.parse(data);

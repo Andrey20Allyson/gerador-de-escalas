@@ -1,2 +1,2 @@
 export * from './collection-header';
-export * from './registry-entry';
+export * from './registry';

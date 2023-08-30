@@ -1,6 +1,7 @@
+import { RegistryEntryType } from "../base/schemas/registry/entry";
+import { HolidayType, holidaySchema } from "../base/schemas/registry/holiday";
 import { CacheType, DiskCache } from "../cache";
-import { HolidayType, HolidaysFirestoreRepository, holidaySchema } from "../firebase";
-import { RegistryEntryType } from "../base/schemas/registry-entry";
+import { HolidaysFirestoreRepository } from "../firebase";
 import { Config } from "../utils/config";
 import { TypedDiskCache } from "./typed-cache";
 
