@@ -8,12 +8,20 @@ export type Config<C = {}, MandatoryField extends keyof C = never> = {
 };
 
 export namespace Config {
-  export type From<C extends Config<any, any>> = C['config'];
-  export type Partial<C extends Config<any, any>> = C['partial'];
+  export type Any = Config<any, any>;
+  export type From<C extends Config.Any> = C['config'];
+  export type Partial<C extends Config.Any> = C['partial'];
+  export type PartialWithOut<C extends Config.Any, Except extends keyof From<C> = never> = Omit<Partial<C>, Except>;
   export type Defaults<C extends Config> = C['defaults'];
 
   function keysOf<O extends Config>(o: Partial<O> | Defaults<O>): (keyof From<O>)[] {
     return [...Object.getOwnPropertyNames(o), ...Object.getOwnPropertySymbols(o)] as (keyof From<O>)[];
+  }
+
+  function keysSetFrom<O extends Config>(o: Array<Partial<O> | Defaults<O>>): Set<keyof From<O>> {
+    const keys = o.map(keysOf).flat(1);
+
+    return new Set(keys);
   }
 
   export function from<C extends Config>(partial: Partial<C>, defaults: Defaults<C>): From<C> {
@@ -31,9 +39,43 @@ export namespace Config {
     return config;
   }
 
-  export type StaticConfigFactory<C extends Config> = (partial: Config.Partial<C>) => Config.From<C>;
+  function partialHasThisKey<C extends Config>(this: string | symbol | number, partial: Partial<C>): boolean {
+    return this in partial;
+  }
 
-  export function createStaticFactory<C extends Config<any, any>>(defaults: Defaults<C>): StaticConfigFactory<C> {
-    return partial => from(partial, defaults);
+  export function partial<C extends Config>(...partials: Partial<C>[]): Partial<C> {
+    const partial: Partial<C> = {};
+
+    const keys = keysSetFrom(partials);
+
+    for (const key of keys) {
+      const partialThatContainsKey = partials.find(partialHasThisKey, key);
+      if (!partialThatContainsKey) continue;
+
+      partial[key] = partialThatContainsKey[key];
+    }
+
+    return partial;
+  }
+
+  export type Intersection<C extends Config, Except extends keyof From<C> = never> = {
+    partial: Partial<C>;
+    except: Except;
+    half: Omit<Partial<C>, Except>;
+    rest: Pick<Partial<C>, Except>;
+  };
+
+  export namespace Intersection {
+    export type Partial<I extends Intersection<Config.Any, any>> = I['partial'];
+    export type Except<I extends Intersection<Config.Any, any>> = I['except'];
+    export type Half<I extends Intersection<Config.Any, any>> = I['half'];
+    export type Rest<I extends Intersection<Config.Any, any>> = I['rest'];
+  }
+
+  export function intersection<I extends Intersection<Config<any, any>, any>>(
+    half: Intersection.Half<I>,
+    rest: Intersection.Rest<I>,
+  ): Intersection.Partial<I> {
+    return Config.partial(half, rest);
   }
 }
