@@ -1,5 +1,5 @@
 import type { WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib/structs/worker-info";
-import { AppResponseType, ErrorCode, FSErrorCode } from "../app.base";
+import { AppError, AppErrorType, AppResponse, AppResponseType, ErrorCode, FSErrorCode } from "../app.base";
 import { TableEditorData } from "../table-edition/table-editor";
 import { ReadTablePayload } from "../utils/table";
 import { ChannelsFrom, IPCHandler, IPCInvoker, NameChannels } from "./utils";
@@ -11,6 +11,30 @@ export interface LoadedData {
   readonly month: number;
   readonly year: number;
 }
+
+type OptionalPromise<T> = Promise<T> | T;
+
+type AppChannelHandler = {
+  [K in string]: ((...args: any) => OptionalPromise<void | AppResponseType<unknown, unknown>>) | AppChannelHandler;
+}
+
+interface AppHandlerFactory {
+  handler(): AppChannelHandler;
+}
+
+class e implements AppHandlerFactory {
+  async login() {
+
+  }
+
+  handler() {
+    const { login } = this;
+
+    return { login } satisfies AppChannelHandler;
+  }
+}
+
+type LoginHandler = ReturnType<e['handler']>;
 
 export namespace AppAPI {
   export interface Channels {
