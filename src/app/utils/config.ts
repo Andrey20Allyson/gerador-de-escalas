@@ -58,21 +58,22 @@ export namespace Config {
     return partial;
   }
 
-  export type Intersection<C extends Config, Except extends keyof From<C> = never> = {
+  export type Intersection<C extends Config, Divergence extends keyof From<C> = never> = {
     partial: Partial<C>;
-    except: Except;
-    half: Omit<Partial<C>, Except>;
-    rest: Pick<Partial<C>, Except>;
+    divergence: Divergence;
+    half: Omit<Partial<C>, Divergence>;
+    rest: Pick<Partial<C>, Divergence>;
   };
 
   export namespace Intersection {
-    export type Partial<I extends Intersection<Config.Any, any>> = I['partial'];
-    export type Except<I extends Intersection<Config.Any, any>> = I['except'];
-    export type Half<I extends Intersection<Config.Any, any>> = I['half'];
-    export type Rest<I extends Intersection<Config.Any, any>> = I['rest'];
+    export type Any = Intersection<Config.Any, any>;
+    export type Partial<I extends Intersection.Any> = I['partial'];
+    export type Divergence<I extends Intersection.Any> = I['divergence'];
+    export type Half<I extends Intersection.Any> = I['half'];
+    export type Rest<I extends Intersection.Any> = I['rest'];
   }
 
-  export function intersection<I extends Intersection<Config<any, any>, any>>(
+  export function intersection<I extends Intersection.Any>(
     half: Intersection.Half<I>,
     rest: Intersection.Rest<I>,
   ): Intersection.Partial<I> {
