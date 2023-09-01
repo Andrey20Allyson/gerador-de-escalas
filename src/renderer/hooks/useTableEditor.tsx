@@ -17,7 +17,7 @@ export default function useTableEditor(): UseTableEditorResponse {
 
   useEffect(() => {
     async function load() {
-      const response = await api.editor.getEditor();
+      const response = await api.editor.createEditor();
       if (!response.ok) {
         const { error } = response;
 

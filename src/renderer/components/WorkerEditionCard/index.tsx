@@ -5,7 +5,7 @@ import { useRerender } from "../../hooks";
 import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
 import { sleep } from "../../utils";
 import { ElementList, IterProps } from "../../utils/react-iteration";
-import { genderComponentMap, graduationTextColor2Map, graduationTextColorMap } from "../DayEditionModal/utils";
+import { genderComponentMap, graduationTextColor2Map } from "../DayEditionModal/utils";
 import { DutyCard } from "../DutyCard";
 import { useDutySelectModal } from "../DutySelectModal";
 import { StyledWorkerEditionCard } from "./styles";

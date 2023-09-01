@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useRef, useState } from 'react';
+import React, { MutableRefObject, useState } from 'react';
 import styled from 'styled-components';
 import { TableEditor } from '../../../app/api/table-edition';
 import { createModalContext } from '../../contexts/modal';

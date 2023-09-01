@@ -1,5 +1,7 @@
 import { IpcMainInvokeEvent } from 'electron';
-import { AppResponse } from "../app.base";
+import { AppResponse } from '../../base';
+
+export const separator = '.';
 
 export type OptionalPromise<T> = Promise<T> | T;
 

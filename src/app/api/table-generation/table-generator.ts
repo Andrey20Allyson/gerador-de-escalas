@@ -1,8 +1,8 @@
 import { ExtraDutyTableV2, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import { ParseOrdinaryPayload, parseOrdinary } from "../utils/table";
 import { MainTableFactory } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories";
-import { AppResponse, ErrorCode } from "../app.base";
 import { PreGenerateEditor, PreGenerateEditorDTO } from "./pre-generate-editor";
+import { AppResponse, ErrorCode } from "../../base";
 
 export interface GeneratedData {
   table: ExtraDutyTableV2;

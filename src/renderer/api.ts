@@ -1,11 +1,11 @@
-import { AppInvoker } from "../app/api/channels";
-import { IPCInvokerProxyFactory } from "../app/api/renderer.ipc";
+import { IpcInvokerProxyFactory } from "../app/api/mapping";
+import { APIHandler } from '../app/api/ipc';
 
-const factory = new IPCInvokerProxyFactory((path, ...args) => {
+const factory = new IpcInvokerProxyFactory((path, ...args) => {
   return window.resource(path, ...args);
 });
 
-export const api = factory.create<AppInvoker>();
+export const api = factory.create<APIHandler>();
 export const { editor, generator } = api;
 
-export * from '../app/api/app.base';
+export * from '../app/base/api';

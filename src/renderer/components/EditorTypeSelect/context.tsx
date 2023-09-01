@@ -42,7 +42,7 @@ export function createEditorContext<R extends RoutesLike>(RouterContext: RouterC
 
     useEffect(() => {
       async function load() {
-        const response = await api.editor.getEditor();
+        const response = await api.editor.createEditor();
         if (!response.ok) {
           const { error } = response;
 

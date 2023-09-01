@@ -4,11 +4,11 @@ import { BsArrowReturnLeft, BsGear } from 'react-icons/bs';
 import { GoTriangleDown } from 'react-icons/go';
 import styled from "styled-components";
 import { editor } from "../../api";
+import { EditorTypeSelect } from "../../components/EditorTypeSelect";
 import { EditorContext } from "../../components/EditorTypeSelect/context";
 import { useRulesModal } from "../../components/RulesModal";
 import { useSaveTableModal } from "../../components/SaveTableModal";
 import { useStage } from "../../contexts/stages";
-import { EditorTypeSelect } from "../../components/EditorTypeSelect";
 
 export function EditTableStage() {
   const { prev } = useStage();

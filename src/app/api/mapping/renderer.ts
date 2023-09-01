@@ -1,10 +1,11 @@
+import { IpcInvokerMapFromFactory, IpcMappingFactory } from ".";
 import { separator } from "./utils";
 
-export type IPCInvokerFunction = (...args: unknown[]) => unknown;
+export type IpcInvokerFunction = (...args: unknown[]) => unknown;
 
-export type IPCInvokerRecord = IPCInvokerFunction & { [K in string]: IPCInvokerRecord }
+export type IPCInvokerRecord = { [K in string]: IPCInvokerRecord | IpcInvokerFunction }
 
-export class IPCInvokerProxyFactory {
+export class IpcInvokerProxyFactory {
   constructor(public listener: (path: string, ...args: unknown[]) => unknown) { }
 
   private _create(prefix = '', path = ''): IPCInvokerRecord {
@@ -31,7 +32,7 @@ export class IPCInvokerProxyFactory {
     return new Proxy(callback, { get }) as any;
   }
 
-  create<T = IPCInvokerRecord>(): T {
-    return this._create() as T;
+  create<F extends IpcMappingFactory = IpcMappingFactory>(): IpcInvokerMapFromFactory<F> {
+    return this._create() as IpcInvokerMapFromFactory<F>;
   }
 }

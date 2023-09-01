@@ -1,11 +1,11 @@
 import React from "react";
-import { TableEditor } from "../../../app/api/table-edition";
-import styled from "styled-components";
-import { createModalContext } from "../../contexts/modal";
-import { AppAPI } from "../../../app/api/channels";
-import { AppError, editor } from "../../api";
-import { saveFile } from "../../utils";
 import { AiOutlineCloseCircle } from "react-icons/ai";
+import styled from "styled-components";
+import { SerializationMode } from "../../../app/api/ipc";
+import { TableEditor } from "../../../app/api/table-edition";
+import { AppError, editor } from "../../api";
+import { createModalContext } from "../../contexts/modal";
+import { saveFile } from "../../utils";
 
 export interface SaveTableModalProps {
   table: TableEditor;
@@ -16,7 +16,7 @@ export function SaveTableModal(props: SaveTableModalProps) {
 
   const handler = useSaveTableModal();
 
-  async function serialize(mode: AppAPI.Editor.SerializationMode) {
+  async function serialize(mode: SerializationMode) {
     const saveResponse = await editor.save(table.data);
     if (!saveResponse.ok) return saveResponse;
 

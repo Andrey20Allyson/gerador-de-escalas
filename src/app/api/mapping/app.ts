@@ -1,27 +1,27 @@
 import { IpcMain } from "electron";
-import { AppError, AppResponse } from "../app.base";
 import { separator } from "./utils";
-import { IpcMapping, IpcMappingFactory } from "./mapping.types";
+import { IpcMapping, IpcMappingFactory } from ".";
+import { AppResponse, AppError } from "../../base";
 
 export type HandlerType = { [K in string]: IpcMapping.HandlerFunction | HandlerType };
-export type IPCHandlerMapValue = {
+export type IpcHandlerMapValue = {
   thisArg?: unknown;
   callback: IpcMapping.HandlerFunction<unknown[]>;
 };
-export type IPCHandlerMap = Map<string, IPCHandlerMapValue>;
+export type IpcHandlerMap = Map<string, IpcHandlerMapValue>;
 
-export type IPCReciver = Pick<IpcMain, 'handle'>;
+export type IpcReciver = Pick<IpcMain, 'handle'>;
 
-export class IPCHandlerConsumer {
-  handlers: IPCHandlerMap;
-  recivers: Set<IPCReciver>;
+export class IpcHandlerConsumer {
+  handlers: IpcHandlerMap;
+  recivers: Set<IpcReciver>;
 
   constructor(factory: IpcMappingFactory) {
     this.recivers = new Set();
-    this.handlers = IPCHandlerConsumer.map(factory);
+    this.handlers = IpcHandlerConsumer.map(factory);
   }
 
-  listen(ipc: IPCReciver) {
+  listen(ipc: IpcReciver) {
     if (this.recivers.has(ipc)) return;
 
     this.recivers.add(ipc);
@@ -43,7 +43,7 @@ export class IPCHandlerConsumer {
     }
   }
 
-  private static _map(handler: IpcMapping, prefix = '', handlerMap: IPCHandlerMap = new Map()) {
+  private static _map(handler: IpcMapping, prefix = '', handlerMap: IpcHandlerMap = new Map()) {
     for (let key in handler.map) {
       const value = handler.map[key];
       if (value === undefined) continue;
@@ -54,14 +54,14 @@ export class IPCHandlerConsumer {
           thisArg: handler.thisArg,
         });
       } else {
-        IPCHandlerConsumer._map(value, prefix + key + separator, handlerMap);
+        IpcHandlerConsumer._map(value, prefix + key + separator, handlerMap);
       }
     }
 
     return handlerMap;
   }
 
-  static map<F extends IpcMappingFactory>(factory: F): IPCHandlerMap {
-    return IPCHandlerConsumer._map(factory.handler())
+  static map<F extends IpcMappingFactory>(factory: F): IpcHandlerMap {
+    return IpcHandlerConsumer._map(factory.handler())
   }
 }

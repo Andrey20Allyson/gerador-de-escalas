@@ -1,7 +1,6 @@
 import React from "react";
 import { LoadTableFormData, LoadTableStage } from "../../components/LoadTableStage";
-import { api } from "../../api";
-import { AppError } from "../../../app/api/app.base";
+import { AppError, api } from "../../api";
 import useTableEditor from "../../hooks/useTableEditor";
 import { useStage } from "../../contexts/stages";
 import { StyledLinedBorder } from "../Generator/DataCollectStage.styles";

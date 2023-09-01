@@ -1,20 +1,21 @@
-import { ExtraDutyTable, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
-import fs from 'fs/promises';
-import { AppEditorHandler, HandlerFactory } from ".";
-import { AppError, AppResponse, ErrorCode } from "../app.base";
-import { AppAssets } from "../assets";
-import { TableEditor, TableEditorData } from "../table-edition";
-import { ReadTablePayload, parseExtraTable, readTables } from "../utils/table";
-import { AppAPI } from "../channels";
 import { DivugationTableFactory, TableFactory } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories";
 import { DayListTableFactory } from '@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories/day-list-factory';
+import { ExtraDutyTable, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import fs from 'fs/promises';
+import { AppAssets } from "../assets";
+import { IpcMapping, IpcMappingFactory } from "../mapping";
+import { TableEditor, TableEditorData } from "../table-edition";
+import { ReadTablePayload, parseExtraTable, readTables } from "../utils/table";
+import { AppResponse, ErrorCode, AppError } from "../../base";
 
 export interface EditorHandlerFactoryData {
   table: ExtraDutyTable;
   workers: WorkerInfo[];
 }
 
-export class EditorHandlerFactory implements HandlerFactory<AppEditorHandler> {
+export type SerializationMode = 'payment' | 'divugation' | 'day-list';
+
+export class EditorHandler implements IpcMappingFactory {
   constructor(
     readonly assets: AppAssets,
     public data?: EditorHandlerFactoryData
@@ -24,7 +25,7 @@ export class EditorHandlerFactory implements HandlerFactory<AppEditorHandler> {
     delete this.data;
   }
 
-  async load(payload: ReadTablePayload): Promise<AppResponse<void, ErrorCode.INVALID_INPUT>> {
+  async load(_: IpcMapping.IpcEvent, payload: ReadTablePayload): Promise<AppResponse<void, ErrorCode.INVALID_INPUT>> {
     try {
       const tables = await readTables(payload, fs);
       const { holidays, workerRegistryMap } = this.assets;
@@ -52,7 +53,7 @@ export class EditorHandlerFactory implements HandlerFactory<AppEditorHandler> {
     return AppResponse.ok(editor.data);
   }
 
-  save(data: TableEditorData): AppResponse<void, ErrorCode.DATA_NOT_LOADED> {
+  save(_: IpcMapping.IpcEvent, data: TableEditorData): AppResponse<void, ErrorCode.DATA_NOT_LOADED> {
     const { data: thisData } = this;
     if (!thisData) return AppResponse.error('Shold load data before save!', ErrorCode.DATA_NOT_LOADED);
 
@@ -66,7 +67,7 @@ export class EditorHandlerFactory implements HandlerFactory<AppEditorHandler> {
     return AppResponse.ok();
   }
 
-  getSerializer(mode: AppAPI.Editor.SerializationMode): TableFactory {
+  getSerializer(mode: SerializationMode): TableFactory {
     switch (mode) {
       case 'payment':
         return this.assets.serializer;
@@ -79,7 +80,7 @@ export class EditorHandlerFactory implements HandlerFactory<AppEditorHandler> {
     }
   }
 
-  async serialize(mode: AppAPI.Editor.SerializationMode): Promise<AppResponse<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
+  async serialize(_: IpcMapping.IpcEvent, mode: SerializationMode): Promise<AppResponse<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
     const table = this.data?.table;
     if (!table) return AppResponse.error('Shold load data before serialize!', ErrorCode.DATA_NOT_LOADED);
 
@@ -90,13 +91,13 @@ export class EditorHandlerFactory implements HandlerFactory<AppEditorHandler> {
     return AppResponse.ok(buffer.buffer);
   }
 
-  hander(): AppEditorHandler {
-    return {
-      load: (_, payload) => this.load(payload),
-      getEditor: async () => this.createEditor(),
-      save: async (_, data) => this.save(data),
-      serialize: (_, mode) => this.serialize(mode), 
-      clear: async () => this.clear(),
-    };
+  handler() {
+    return IpcMapping.create({
+      createEditor: this.createEditor,
+      serialize: this.serialize,
+      clear: this.clear,
+      load: this.load,
+      save: this.save,
+    }, this);
   }
 }
