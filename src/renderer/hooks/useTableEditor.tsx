@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { TableEditor } from "../../app/api/table-edition";
-import { AppError, AppErrorType, ErrorCode, api } from "../api";
+import { AppError, ErrorCode, api } from "../api";
 
 export type UseTableEditorResponse = {
   status: 'loading';
 } | {
   status: 'error';
-  error: AppErrorType<ErrorCode.DATA_NOT_LOADED>;
+  error: AppError<ErrorCode.DATA_NOT_LOADED>;
 } | {
   status: 'success';
   editor: TableEditor;

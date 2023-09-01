@@ -9,19 +9,19 @@ export enum FSErrorCode {
   WRITE = 'file-system:write-error',
 }
 
-export type AppErrorType<TCode = ErrorCode.UNKNOW> = {
+export type AppError<TCode = ErrorCode.UNKNOW> = {
   code: TCode | ErrorCode.UNKNOW;
   callstack?: string;
   type: 'app-error';
   message: string;
 };
 
-export class AppError {
-  static create<TCode>(
+export namespace AppError {
+  export function create<TCode>(
     message: string,
     code: TCode | ErrorCode.UNKNOW = ErrorCode.UNKNOW,
     callstack?: string
-  ): AppErrorType<TCode> {
+  ): AppError<TCode> {
     return {
       type: 'app-error',
       callstack,
@@ -30,7 +30,7 @@ export class AppError {
     };
   }
 
-  static parse(error: unknown): AppErrorType {
+  export function parse(error: unknown): AppError {
     if (error instanceof Error) {
       return AppError.create(error.message, ErrorCode.UNKNOW, error.stack);
     }
@@ -38,45 +38,56 @@ export class AppError {
     return AppError.create(JSON.stringify(error));
   }
 
-  static stringify(error: AppErrorType<unknown>, withCallstack = false) {
+  export function stringify(error: AppError<unknown>, withCallstack = false) {
     return `Error code [${error.code}]: ${error.message}${withCallstack ? `\n${error.callstack}` : ''}`;
   }
 
-  static log(error: AppErrorType<unknown>) {
-    console.error(this.stringify(error, true));
+  export function log(error: AppError<unknown>) {
+    console.error(AppError.stringify(error, true));
 
     if ('alert' in globalThis) {
-      alert(this.stringify(error));
+      alert(AppError.stringify(error));
     }
   }
 }
 
-export type AppResponseType<TData = void, TErrorCode = ErrorCode.UNKNOW> = {
+export type AppResponse<TData = void, TErrorCode = ErrorCode.UNKNOW> = {
   ok: false,
-  error: AppErrorType<TErrorCode>;
+  error: AppError<TErrorCode>;
 } | {
   ok: true;
   data: TData;
 };
 
-export class AppResponse {
-  static ok<TError>(): AppResponseType<void, TError>;
-  static ok<TData, TError>(data: TData): AppResponseType<TData, TError>;
-  static ok<TData, TError>(data?: TData): AppResponseType<TData, TError> {
+export namespace AppResponse {
+  export function ok<TError>(): AppResponse<void, TError>;
+  export function ok<TData, TError>(data: TData): AppResponse<TData, TError>;
+  export function ok<TData, TError>(data?: TData): AppResponse<TData, TError> {
     return {
       ok: true,
       data: data as TData,
     };
   }
 
-  static error<TData, TCode = ErrorCode.UNKNOW>(
+  export function error<TData, TCode>(error: AppError): AppResponse<TData, TCode>;
+  export function error<TData, TCode = ErrorCode.UNKNOW>(
     message: string,
-    code: TCode | ErrorCode.UNKNOW = ErrorCode.UNKNOW,
+    code?: TCode | ErrorCode.UNKNOW,
     callstack?: string
-  ): AppResponseType<TData, TCode> {
+  ): AppResponse<TData, TCode>;
+
+  export function error<TData, TCode = ErrorCode.UNKNOW>(
+    messageOrError: string | AppError<TCode>,
+    code?: TCode | ErrorCode.UNKNOW,
+    callstack?: string
+  ): AppResponse<TData, TCode> {
+    const error = typeof messageOrError === 'object'
+      ? messageOrError
+      : AppError.create(messageOrError, code ?? ErrorCode.UNKNOW, callstack);
+
     return {
       ok: false,
-      error: AppError.create(message, code, callstack),
+      error,
     };
   }
 }

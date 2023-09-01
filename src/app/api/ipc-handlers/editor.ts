@@ -1,7 +1,7 @@
 import { ExtraDutyTable, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import fs from 'fs/promises';
 import { AppEditorHandler, HandlerFactory } from ".";
-import { AppError, AppResponse, AppResponseType, ErrorCode } from "../app.base";
+import { AppError, AppResponse, ErrorCode } from "../app.base";
 import { AppAssets } from "../assets";
 import { TableEditor, TableEditorData } from "../table-edition";
 import { ReadTablePayload, parseExtraTable, readTables } from "../utils/table";
@@ -24,7 +24,7 @@ export class EditorHandlerFactory implements HandlerFactory<AppEditorHandler> {
     delete this.data;
   }
 
-  async load(payload: ReadTablePayload): Promise<AppResponseType<void, ErrorCode.INVALID_INPUT>> {
+  async load(payload: ReadTablePayload): Promise<AppResponse<void, ErrorCode.INVALID_INPUT>> {
     try {
       const tables = await readTables(payload, fs);
       const { holidays, workerRegistryMap } = this.assets;
@@ -41,7 +41,7 @@ export class EditorHandlerFactory implements HandlerFactory<AppEditorHandler> {
     }
   }
 
-  createEditor(): AppResponseType<TableEditorData, ErrorCode.DATA_NOT_LOADED> {
+  createEditor(): AppResponse<TableEditorData, ErrorCode.DATA_NOT_LOADED> {
     const { data } = this;
     if (!data) return AppResponse.error('Shold load data before get editor!', ErrorCode.DATA_NOT_LOADED);
 
@@ -52,7 +52,7 @@ export class EditorHandlerFactory implements HandlerFactory<AppEditorHandler> {
     return AppResponse.ok(editor.data);
   }
 
-  save(data: TableEditorData): AppResponseType<void, ErrorCode.DATA_NOT_LOADED> {
+  save(data: TableEditorData): AppResponse<void, ErrorCode.DATA_NOT_LOADED> {
     const { data: thisData } = this;
     if (!thisData) return AppResponse.error('Shold load data before save!', ErrorCode.DATA_NOT_LOADED);
 
@@ -79,7 +79,7 @@ export class EditorHandlerFactory implements HandlerFactory<AppEditorHandler> {
     }
   }
 
-  async serialize(mode: AppAPI.Editor.SerializationMode): Promise<AppResponseType<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
+  async serialize(mode: AppAPI.Editor.SerializationMode): Promise<AppResponse<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
     const table = this.data?.table;
     if (!table) return AppResponse.error('Shold load data before serialize!', ErrorCode.DATA_NOT_LOADED);
 

@@ -1,7 +1,7 @@
 import { ExtraDutyTableV2, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import { ParseOrdinaryPayload, parseOrdinary } from "../utils/table";
 import { MainTableFactory } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories";
-import { AppResponse, AppResponseType, ErrorCode } from "../app.base";
+import { AppResponse, ErrorCode } from "../app.base";
 import { PreGenerateEditor, PreGenerateEditorDTO } from "./pre-generate-editor";
 
 export interface GeneratedData {
@@ -26,7 +26,7 @@ export class TableGenerator {
     this.data = { table, workers };
   }
 
-  createPreGenerateEditor(): AppResponseType<PreGenerateEditorDTO, ErrorCode.DATA_NOT_LOADED> {
+  createPreGenerateEditor(): AppResponse<PreGenerateEditorDTO, ErrorCode.DATA_NOT_LOADED> {
     if (!this.data) return AppResponse.error(`Can't pre generate editor before load data!`, ErrorCode.DATA_NOT_LOADED);
 
     const editor = PreGenerateEditor.from(this.data.workers);
@@ -34,7 +34,7 @@ export class TableGenerator {
     return AppResponse.ok(editor.data);
   }
 
-  save(data: PreGenerateEditorDTO): AppResponseType<void, ErrorCode.DATA_NOT_LOADED> {
+  save(data: PreGenerateEditorDTO): AppResponse<void, ErrorCode.DATA_NOT_LOADED> {
     if (!this.data) return AppResponse.error(`Can't save editor before load data!`, ErrorCode.DATA_NOT_LOADED);
 
     const editor = new PreGenerateEditor(data);
@@ -44,7 +44,7 @@ export class TableGenerator {
     return AppResponse.ok();
   }
 
-  generate(): AppResponseType<void, ErrorCode.DATA_NOT_LOADED> {
+  generate(): AppResponse<void, ErrorCode.DATA_NOT_LOADED> {
     if (!this.data) return AppResponse.error(`Can't generate table before load data!`, ErrorCode.DATA_NOT_LOADED);
     
     const { table, workers } = this.data;
@@ -56,7 +56,7 @@ export class TableGenerator {
     return AppResponse.ok();
   }
 
-  async serialize(serializer: MainTableFactory): Promise<AppResponseType<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
+  async serialize(serializer: MainTableFactory): Promise<AppResponse<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
     if (!this.data) return AppResponse.error(`Can't serialize before load data!`, ErrorCode.DATA_NOT_LOADED);
     
     const buffer = await serializer.generate(this.data.table, { sheetName: 'DADOS' });
