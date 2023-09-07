@@ -27,12 +27,11 @@ export interface LoadedEditorTypeSelectProps {
 }
 
 export function LoadedEditorTypeSelect(props: LoadedEditorTypeSelectProps) {
-  const { table } = props;
   const navigate = EditorRouterContext.useNavigate();
   const route = EditorRouterContext.useRoute();
 
   if (route.is('NotSelected')) {
-    navigate('WorkerList', { table });
+    navigate('WorkerList');
   }
 
   return <EditorRouterContext.Router />;
@@ -48,7 +47,7 @@ export function EditorTypeOption(props: EditorTypeOptionProps) {
   const { route } = props;
 
   function handleSubmit() {
-    navigate(route.name, route.props);
+    navigate(route.name);
   }
 
   return (

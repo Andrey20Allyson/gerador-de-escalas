@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import styled, { css } from 'styled-components';
 import './App.css';
-import Generator from './pages/Generator';
-import Editor from './pages/Editor';
-import { AppBody, TopNav, StyledNavButton, BodyCard } from './App.styles';
+import { AppBody, BodyCard, StyledNavButton, TopNav } from './App.styles';
 import { Providers } from './Providers';
+import Configuration from './pages/Configuration';
+import Editor from './pages/Editor';
+import Generator from './pages/Generator';
 
 type RouteCallback = () => React.JSX.Element;
 
@@ -39,10 +39,11 @@ function createRoutes<R extends RoutesType>(routes: R): R {
 const AppRoutes = createRoutes({
   Generator,
   Editor,
+  Configuration,
 });
 
 export default function App() {
-  const { Router, navigate, route } = useRoutes(AppRoutes, 'Editor');
+  const { Router, navigate, route } = useRoutes(AppRoutes, 'Configuration');
 
   return (
     <Providers>
@@ -50,6 +51,7 @@ export default function App() {
         <TopNav>
           <StyledNavButton selected={route === 'Generator'} onClick={() => navigate('Generator')}>Gerador</StyledNavButton>
           <StyledNavButton selected={route === 'Editor'} onClick={() => navigate('Editor')}>Editor</StyledNavButton>
+          <StyledNavButton selected={route === 'Configuration'} onClick={() => navigate('Configuration')}>Configurações</StyledNavButton>
         </TopNav>
         <BodyCard>
           <Router />
