@@ -8,9 +8,11 @@ export interface FormProviderProps extends PropsWithChildren {
 };
 
 export function FormProvider(props: FormProviderProps) {
-  const { children } = props;
+  const { children, onSubmit } = props;
 
   const controller = new FormController();
+
+  if (onSubmit) controller.subscribe(onSubmit);
 
   return (
     <formContext.Provider value={controller}>
@@ -25,3 +27,6 @@ export function useFormController() {
 
   return controller;
 }
+
+export * from './form-controller';
+export * from './form-field';

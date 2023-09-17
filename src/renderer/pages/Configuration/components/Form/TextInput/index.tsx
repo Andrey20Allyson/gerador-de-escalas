@@ -1,11 +1,9 @@
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { useFormController } from '../context';
+import { PropsWithName, PropsWithTitle } from '../types';
 
-export interface TextInputProps {
-  title: string;
-  name: string;
-}
+export interface TextInputProps extends PropsWithName, PropsWithTitle { }
 
 export function TextInput(props: TextInputProps) {
   const {
@@ -14,19 +12,16 @@ export function TextInput(props: TextInputProps) {
   } = props;
 
   const controller = useFormController();
-
-  function handleChange(ev: ChangeEvent<HTMLInputElement>) {
-    const value = ev.currentTarget.value;
-
-    controller
-      .field(name)
-      .set(value);
-  }
+  const field = controller.field(name);
 
   return (
     <StyledTextInput>
       {title}
-      <input className='text-input' onChange={handleChange} type="text" />
+      <input
+        className='text-input'
+        ref={field.createRefHandler()}
+        onChange={field.createChangeHandler()}
+        type="text" />
     </StyledTextInput>
   );
 }

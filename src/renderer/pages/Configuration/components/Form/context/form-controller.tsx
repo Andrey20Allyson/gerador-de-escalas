@@ -6,7 +6,7 @@ export type SetterParam<T> = T | ((oldValue: T) => T);
 export class AtonHook<T> {
   private _setter: (value: SetterParam<T>) => void;
   private readonly _value: T;
-  
+
   constructor(initialValue: T) {
     const [value, setter] = useState<T>(initialValue);
 
@@ -26,14 +26,23 @@ export class AtonHook<T> {
 }
 
 export type FormControllerData = Partial<Record<string, FormFieldValue>>;
+export type FormControllerErrors = Partial<Record<string, string>>;
 export type OnSubmitHandler = (controller: FormController) => void;
+export type MapType<A extends readonly [] | any[], B> = {
+  [K in keyof A]: B
+};
 
 export class FormController {
-  private _data = new AtonHook<FormControllerData>({});
+  readonly errors = new AtonHook<FormControllerErrors>({});
+  readonly data = new AtonHook<FormControllerData>({});
   private _onSubmitHandlers: OnSubmitHandler[] = [];
 
-  field(name: string) {
-    return new FormField(this._data, name);
+  field(name: string): FormField {
+    return new FormField(this, name);
+  }
+
+  fields<A extends readonly [] | string[]>(fieldNames: A): MapType<A, FormField> {
+    return fieldNames.map(name => this.field(name)) as MapType<A, FormField>;
   }
 
   subscribe(handler: OnSubmitHandler) {
@@ -45,4 +54,8 @@ export class FormController {
       handler(this);
     }
   }
+}
+
+export interface FormConsumer {
+  field(name: string): FormField;
 }
