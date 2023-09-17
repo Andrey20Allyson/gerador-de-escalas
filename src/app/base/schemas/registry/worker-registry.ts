@@ -5,7 +5,6 @@ export const workerRegistrySchema = zod.object({
   ...WORKER_REGISTRIES_SCHEMA.shape,
   name: zod.string(),
   isCoordinator: zod.boolean().optional(),
-  role: zod.enum([
-    'coordinator'
-  ]).array().optional(),
 });
+
+export type WorkerRegistry = zod.infer<typeof workerRegistrySchema>;

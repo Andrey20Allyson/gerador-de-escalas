@@ -1,7 +1,12 @@
 import React from "react";
+import { AiOutlineCloudUpload, AiOutlineDelete, AiOutlineSave } from "react-icons/ai";
 import styled from "styled-components";
+import { ElementList } from "../../utils/react-iteration";
 import { StyledToolsSection } from "../Editor/EditTableStage.styles";
-import { AiOutlineSave, AiOutlineDelete, AiOutlineCloudUpload } from "react-icons/ai";
+import { WorkerRegistryView } from "./components/WorkerRegistryView";
+import { RegistryGrid } from "./components/RegistryGrid";
+import { mockedWorkers } from "./mock";
+import { RegistrySearch } from "./components/RegistrySearch";
 
 export default function Configuration() {
   return (
@@ -12,18 +17,18 @@ export default function Configuration() {
       <div className="body">
         <section className="register-section">
           <h1>Registrar agente</h1>
-          <label className="text-input-label">
+          <StyledConfigTextInput>
             Nome
             <input type="text" />
-          </label>
-          <label className="text-input-label">
+          </StyledConfigTextInput>
+          <StyledConfigTextInput>
             CPF
             <input type="text" />
-          </label>
-          <label className="text-input-label">
+          </StyledConfigTextInput>
+          <StyledConfigTextInput>
             Matrícula
             <input type="text" />
-          </label>
+          </StyledConfigTextInput>
           <section className="register-footer">
             <div className="footer-collumn">
               <label>Gênero</label>
@@ -54,6 +59,12 @@ export default function Configuration() {
         </section>
         <StyledVerticalLine />
         <section className="search-section">
+          <RegistrySearch />
+          <RegistryGrid>
+            <ElementList
+              Component={WorkerRegistryView}
+              iter={mockedWorkers} />
+          </RegistryGrid>
         </section>
       </div>
     </StyledConfiguration>
@@ -63,6 +74,18 @@ export default function Configuration() {
 export const StyledVerticalLine = styled.span`
   width: 1px;
   background-color: #0002;
+`;
+
+export const StyledConfigTextInput = styled.label`
+  display: flex;
+  flex-direction: column;
+  text-indent: .3rem;
+
+  &>input {
+    background-color: #fafafa;
+    border: 1px solid #0001;
+    border-radius: .4rem;
+  }
 `;
 
 export const StyledConfiguration = styled.div`
@@ -84,19 +107,8 @@ export const StyledConfiguration = styled.div`
       flex: .6;
       display: flex;
       flex-direction: column;
+      max-width: 28rem;
       gap: .5rem;
-  
-      &>.text-input-label {
-        display: flex;
-        flex-direction: column;
-        text-indent: .3rem;
-  
-        &>input {
-          background-color: #fafafa;
-          border: 1px solid #0001;
-          border-radius: .4rem;
-        }
-      }
 
       &>.register-footer {
         display: flex;
@@ -151,6 +163,9 @@ export const StyledConfiguration = styled.div`
   
     &>.search-section {
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
     }
   }
 `;

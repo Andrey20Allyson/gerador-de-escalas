@@ -22,10 +22,11 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "dev": "electron .",
+    "electron": "electron .",
     "dev:bundle": "esbuild src/renderer/index.ts --bundle --target=es2020 --watch --sourcemap --outdir=public",
     "prod:bundle": "tsx scripts/prod-bundle.ts",
-    "build": "tsc -p src/app"
+    "build": "tsc -p src/app",
+    "build:watch": "tsx scripts/dev-build.ts"
   },
   "keywords": [],
   "author": "",
@@ -47,6 +48,7 @@
     "electron-packager": "^17.1.1",
     "electron-winstaller": "^5.1.0",
     "esbuild": "^0.18.1",
+    "tsx": "^3.12.9",
     "typescript": "^5.1.3",
     "vitest": "^0.34.3"
   }
