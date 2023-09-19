@@ -3,14 +3,28 @@ import { FormController } from "./form-controller";
 import { ParserLike, Result } from './parsing';
 import { ValuePipe } from './value-pipe';
 
+export type AttrNameThatTypeExtends<O, T> = {
+  [K in keyof O]: O[K] extends T ? K : never;
+}[keyof O];
+
 export type FormFieldValue =
   | string
   | number
+  | boolean
   | Date;
 
 export type ObjectWithValue = {
   value: string;
 };
+
+export type ObjectWithCheck = {
+  checked: boolean;
+};
+
+export interface InputHandler<E> {
+  handleRef(ref: E | null): void;
+  handleChange(event: ChangeEvent<E>): void;
+}
 
 export class FormField implements Result.OnReusltError {
   constructor(
@@ -25,7 +39,7 @@ export class FormField implements Result.OnReusltError {
   value(): Result<FormFieldValue> {
     const value = this.get();
     if (value === undefined) {
-      const error = Result.error('This form hasn\'t initialized');
+      const error = Result.error('This field hasn\'t initialized!');
       console.warn(error.message);
 
       return error;
@@ -43,16 +57,30 @@ export class FormField implements Result.OnReusltError {
   }
 
   set(value: FormFieldValue): this {
-    this.controller.data.set(state => ({
-      ...state,
-      [this.name]: value,
-    }));
+    this.clearError();
+
+    this.controller.data.set(state => {
+      if (this.get() !== value) this.clearError();
+      
+      return {
+        ...state,
+        [this.name]: value,
+      };
+    });
 
     return this;
   }
 
   error() {
     return this.controller.errors.get()[this.name];
+  }
+
+  clearError() {
+    this.controller.errors.set(errors => {
+      const { [this.name]: _, ...rest } = errors;
+
+      return { ...rest };
+    });
   }
 
   warn(message: string) {
@@ -62,16 +90,19 @@ export class FormField implements Result.OnReusltError {
     }));
   }
 
-  createChangeHandler() {
-    return (ev: ChangeEvent<ObjectWithValue>) => this.set(ev.currentTarget.value);
+  inputHandler(): InputHandler<ObjectWithValue> {
+    return this.handlerTo('value');
   }
 
-  createRefHandler() {
-    return (ref: ObjectWithValue | null) => {
-      if (ref === null || this.exist()) return;
+  checkboxHandler(): InputHandler<ObjectWithCheck> {
+    return this.handlerTo('checked');
+  }
 
-      this.set(ref.value);
-    }
+  handlerTo<E extends object>(attr: Exclude<AttrNameThatTypeExtends<E, FormFieldValue>, keyof EventTarget>): InputHandler<E> {
+    return {
+      handleChange: ev => this.set(ev.currentTarget[attr] as FormFieldValue),
+      handleRef: ref => ref !== null && !this.exist() && this.set(ref[attr] as FormFieldValue),
+    };
   }
 
   pipe<R extends FormFieldValue>(parser: ParserLike<FormFieldValue, R>): ValuePipe<R> {

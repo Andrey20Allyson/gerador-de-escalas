@@ -6,15 +6,19 @@ import { PropsWithName, PropsWithTitle } from '../types';
 export interface SelectProps extends PropsWithChildren, PropsWithName, PropsWithTitle { }
 
 export function Select(props: SelectProps) {
-  const { children, name } = props;
-  
+  const { children, name, title } = props;
+
   const constroller = useFormController();
   const field = constroller.field(name);
 
+  const { handleChange, handleRef } = field.inputHandler();
+
   return (
     <StyledSelect>
-      <label>Gênero</label>
-      <select ref={field.createRefHandler()}>
+      <label>{title}</label>
+      <select
+        onChange={handleChange}
+        ref={handleRef}>
         {children}
       </select>
     </StyledSelect>

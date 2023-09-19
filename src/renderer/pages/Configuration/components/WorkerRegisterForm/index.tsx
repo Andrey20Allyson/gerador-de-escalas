@@ -11,17 +11,18 @@ export interface WorkerRegisterFormProps {
 }
 
 const NAME_PARSER = parsers.string()
-  .then(parsers.enum(['ola', 'mundo']));
+  .then(parsers.regexp(/^[\w .]*$/));
 
 export function WorkerRegisterForm(props: WorkerRegisterFormProps) {
   function handleSubmit(controller: FormController) {
     const [nameField, workerIDField, individualIDField] = controller.fields(['name', 'workerID', 'individualID']);
 
     try {
-      const result = nameField.pipe(NAME_PARSER).unwrap();
+      const name = nameField.pipe(NAME_PARSER).unwrap();
 
-    } catch {
-
+      console.log(name);
+    } catch (err) {
+      console.warn(err);
     }
   }
 
@@ -44,7 +45,7 @@ export function WorkerRegisterForm(props: WorkerRegisterFormProps) {
           </Form.Select>
           <div className="footer-collumn">
             <label>Coodenador</label>
-            <input type="checkbox" />
+            <input type="checkbox" onChange={ev => console.log(ev.currentTarget.checked)} />
           </div>
         </Form.Row>
         <Form.Row contentJustify="start">

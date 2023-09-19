@@ -13,15 +13,19 @@ export function TextInput(props: TextInputProps) {
 
   const controller = useFormController();
   const field = controller.field(name);
+  const error = field.error();
+
+  const { handleChange, handleRef } = field.inputHandler();
 
   return (
     <StyledTextInput>
       {title}
       <input
         className='text-input'
-        ref={field.createRefHandler()}
-        onChange={field.createChangeHandler()}
+        ref={handleRef}
+        onChange={handleChange}
         type="text" />
+      <small className='warning'>{error}</small>
     </StyledTextInput>
   );
 }
@@ -35,5 +39,12 @@ export const StyledTextInput = styled.label`
     background-color: #fafafa;
     border: 1px solid #0001;
     border-radius: .4rem;
+  }
+
+  &>.warning {
+    color: #bd0000;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    white-space: nowrap;
   }
 `;
