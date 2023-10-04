@@ -14,7 +14,7 @@ export function CheckBox(props: CheckBoxProps) {
   const controller = useFormController();
   const field = controller.field(name);
 
-  const { handleChange, handleRef } = field.inputHandler();
+  const { handleChange, handleRef } = field.checkboxHandler();
 
   return (
     <StyledCheckBox>
