@@ -10,17 +10,37 @@ export interface WorkerRegisterFormProps {
   onSubmit?: (worker: WorkerRegistry) => void;
 }
 
-const NAME_PARSER = parsers.string()
-  .then(parsers.regexp(/^[\w .]*$/));
+const NAME_PARSER = parsers.string();
+const GENDER_PARSER = parsers.enum(['M', 'F']);
 
 export function WorkerRegisterForm(props: WorkerRegisterFormProps) {
+  const {
+    onSubmit
+  } = props;
+
   function handleSubmit(controller: FormController) {
-    const [nameField, workerIDField, individualIDField] = controller.fields(['name', 'workerID', 'individualID']);
+    const [
+      nameField,
+      workerIDField,
+      individualIDField,
+      genderField,
+      isCoordinatorField,
+    ] = controller.fields(['name', 'workerID', 'individualID', 'gender', 'isCoordinator']);
 
     try {
       const name = nameField.pipe(NAME_PARSER).unwrap();
+      const workerID = workerIDField.pipe(parsers.string()).unwrap();
+      const individualID = individualIDField.pipe(parsers.string()).unwrap();
+      const gender = genderField.pipe(GENDER_PARSER).unwrap();
+      const isCoordinator = isCoordinatorField.pipe(parsers.boolean()).unwrap();
 
-      console.log(name);
+      onSubmit?.({
+        name,
+        workerID,
+        individualID,
+        gender,
+        isCoordinator,
+      });
     } catch (err) {
       console.warn(err);
     }
@@ -34,18 +54,12 @@ export function WorkerRegisterForm(props: WorkerRegisterFormProps) {
         <Form.TextInput title="CPF" name="individualID" />
         <Form.TextInput title="Matrícula" name="workerID" />
         <Form.Row separator="line">
-          <Form.Select title="Graduação" name="graduation">
+          <Form.Select title="Genero" name="gender">
             <option value="M">Masculino</option>
             <option value="F">Feminino</option>
           </Form.Select>
-          <Form.Select title="Graduação" name="graduation">
-            <option value="gcm">GCM</option>
-            <option value="sub-insp">Sub Inspetor</option>
-            <option value="insp">Inspetor</option>
-          </Form.Select>
           <div className="footer-collumn">
-            <label>Coodenador</label>
-            <input type="checkbox" onChange={ev => console.log(ev.currentTarget.checked)} />
+            <Form.CheckBox title="Coordenador" name="isCoordinator" />
           </div>
         </Form.Row>
         <Form.Row contentJustify="start">
