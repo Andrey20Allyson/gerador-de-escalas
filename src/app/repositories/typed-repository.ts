@@ -1,7 +1,12 @@
 import admin from 'firebase-admin';
 import _firestore from 'firebase-admin/firestore';
 import { ZodType } from "zod";
-import { CollectionHeaderType, OptionalIDRegistryEntryType, PartialDataRegistryEntryType, RegistryEntryType } from "../base";
+import {
+  CollectionHeaderType,
+  OptionalIDRegistryEntryType,
+  PartialDataRegistryEntryType,
+  RegistryEntryType
+} from "../base";
 import { UpdateInfoHandler } from '../firebase';
 import { firestore } from "../firebase/firestore";
 import { Config } from "../utils/config";
@@ -82,7 +87,7 @@ export class TypedRepository<T = unknown> implements Repository<T> {
 
   async releaseNewVersion(): Promise<CollectionHeaderType> {
     const info = await UpdateInfoHandler.releaseNewVersionTo(this.collection);
-    
+
     return this.collectionHeaderFromUpdateInfo(info);
   }
 
