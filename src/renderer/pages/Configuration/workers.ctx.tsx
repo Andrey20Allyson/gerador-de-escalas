@@ -6,7 +6,7 @@ import { api } from "../../api";
 class WorkerRegistriesService {
   private _registries = new AtonHook<RegistryEntryType<WorkerRegistry>[]>([]);
   private _error = new AtonHook<AppError<unknown> | null>(null);
-  private _loading = new AtonHook<boolean>(false);
+  private _loading = new AtonHook<boolean>(true);
 
   constructor() {
     useEffect(() => {

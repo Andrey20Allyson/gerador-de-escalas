@@ -1,18 +1,18 @@
 import React from "react";
 import { GoTrash, GoPencil } from "react-icons/go";
-import { WorkerRegistry } from "../../../../../app/base";
+import { RegistryEntryType, WorkerRegistry } from "../../../../../app/base";
 import { IterProps } from "../../../../utils/react-iteration";
 import { StyledWorkerRegistryView } from "./styles";
 
-export function WorkerRegistryView(props: IterProps<WorkerRegistry>) {
-  props.entry.isCoordinator = true;
-
+export function WorkerRegistryView(props: IterProps<RegistryEntryType<WorkerRegistry>>) {
   const {
-    isCoordinator,
-    individualID,
-    workerID,
-    gender,
-    name,
+    data: {
+      isCoordinator,
+      individualID,
+      workerID,
+      gender,
+      name,
+    },
   } = props.entry;
 
   return (

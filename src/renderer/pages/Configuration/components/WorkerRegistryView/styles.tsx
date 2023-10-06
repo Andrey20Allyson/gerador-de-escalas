@@ -16,6 +16,7 @@ export const StyledWorkerRegistryView = styled.div`
 
     &>h2 {
       text-align: left;
+      font-size: 1rem;
     }
 
     &>p {

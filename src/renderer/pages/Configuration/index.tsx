@@ -7,8 +7,7 @@ import { RegistryGrid } from "./components/RegistryGrid";
 import { RegistrySearch } from "./components/RegistrySearch";
 import { WorkerRegisterForm } from "./components/WorkerRegisterForm";
 import { WorkerRegistryView } from "./components/WorkerRegistryView";
-import { mockedWorkers } from "./mock";
-import { WorkerRegistriesProvider } from "./workers.ctx";
+import { WorkerRegistriesProvider, useWorkerRegistriesService } from "./workers.ctx";
 
 export default function Configuration() {
   return (
@@ -22,15 +21,29 @@ export default function Configuration() {
         <section className="search-section">
           <WorkerRegistriesProvider>
             <RegistrySearch />
-            <RegistryGrid>
-              <ElementList
-                Component={WorkerRegistryView}
-                iter={mockedWorkers} />
-            </RegistryGrid>
+            <WorkerRegistryGrid />
           </WorkerRegistriesProvider>
         </section>
       </div>
     </StyledConfiguration >
+  );
+}
+
+export interface WorkerRegistryListProps { }
+
+export function WorkerRegistryGrid(props: WorkerRegistryListProps) {
+  const service = useWorkerRegistriesService();
+
+  console.log(service.isLoading());
+  console.log(service.list());
+  console.log(service.getError());
+
+  return (
+    <RegistryGrid>
+      <ElementList
+        Component={WorkerRegistryView}
+        iter={service.list()} />
+    </RegistryGrid>
   );
 }
 
