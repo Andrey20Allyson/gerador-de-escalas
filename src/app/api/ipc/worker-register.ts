@@ -49,7 +49,7 @@ export class WorkerRegisterHandler implements IpcMappingFactory {
     return AppResponse.ok(entry)
   }
 
-  async list(_: IpcMapping.IpcEvent, options: ListOptions) {
+  async list(_: IpcMapping.IpcEvent, options: ListOptions = {}) {
     const entries = await this.loader.load();
 
     return AppResponse.ok(entries.slice(options.offset, options.limit));
