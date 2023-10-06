@@ -41,6 +41,14 @@ export class WorkerRegisterHandler implements IpcMappingFactory {
     return AppResponse.ok(entry);
   }
 
+  async get(_: IpcMapping.IpcEvent, id: string) {
+    const entries = await this.loader.load();
+
+    const entry = entries.find(entry => entry.id === id);
+
+    return AppResponse.ok(entry)
+  }
+
   async list(_: IpcMapping.IpcEvent, options: ListOptions) {
     const entries = await this.loader.load();
 
@@ -63,6 +71,7 @@ export class WorkerRegisterHandler implements IpcMappingFactory {
     return IpcMapping.create({
       create: this.create,
       list: this.list,
+      get: this.get,
       update: this.update,
       delete: this.delete,
     }, this);
