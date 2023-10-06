@@ -8,6 +8,7 @@ import { RegistrySearch } from "./components/RegistrySearch";
 import { WorkerRegisterForm } from "./components/WorkerRegisterForm";
 import { WorkerRegistryView } from "./components/WorkerRegistryView";
 import { mockedWorkers } from "./mock";
+import { WorkerRegistriesProvider } from "./workers.ctx";
 
 export default function Configuration() {
   return (
@@ -19,12 +20,14 @@ export default function Configuration() {
         <WorkerRegisterForm />
         <StyledVerticalLine />
         <section className="search-section">
-          <RegistrySearch />
-          <RegistryGrid>
-            <ElementList
-              Component={WorkerRegistryView}
-              iter={mockedWorkers} />
-          </RegistryGrid>
+          <WorkerRegistriesProvider>
+            <RegistrySearch />
+            <RegistryGrid>
+              <ElementList
+                Component={WorkerRegistryView}
+                iter={mockedWorkers} />
+            </RegistryGrid>
+          </WorkerRegistriesProvider>
         </section>
       </div>
     </StyledConfiguration >
