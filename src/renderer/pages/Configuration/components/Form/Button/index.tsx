@@ -1,13 +1,16 @@
 import React, { PropsWithChildren } from "react";
 import styled from "styled-components";
+import { FormController, useFormController } from "../context";
 
 export interface ButtonProps extends PropsWithChildren {
-  onClick?: () => void;
+  onClick?: (controller: FormController) => void;
 }
 
 export function Button(props: ButtonProps) {
+  const controller = useFormController();
+  
   return (
-    <StyledButton>
+    <StyledButton onClick={() => props.onClick?.(controller)}>
       {props.children}
     </StyledButton>
   );

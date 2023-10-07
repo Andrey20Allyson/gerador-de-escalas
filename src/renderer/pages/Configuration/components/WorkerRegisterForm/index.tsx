@@ -64,7 +64,7 @@ export function WorkerRegisterForm(props: WorkerRegisterFormProps) {
         </Form.Row>
         <Form.Row contentJustify="start">
           <Form.SubmitButton><AiOutlineCloudUpload />Registrar</Form.SubmitButton>
-          <Form.Button><AiOutlineDelete /> Resetar</Form.Button>
+          <Form.Button onClick={controller => controller.clear()}><AiOutlineDelete /> Resetar</Form.Button>
         </Form.Row>
       </Form.Root>
     </StyledWorkerRegisterFormBody>

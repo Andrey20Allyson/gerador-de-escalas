@@ -8,15 +8,21 @@ import { RegistrySearch } from "./components/RegistrySearch";
 import { WorkerRegisterForm } from "./components/WorkerRegisterForm";
 import { WorkerRegistryView } from "./components/WorkerRegistryView";
 import { WorkerRegistriesProvider, useWorkerRegistriesService } from "./workers.ctx";
+import { WorkerRegistry } from "../../../app/base";
+import { api } from "../../api";
 
 export default function Configuration() {
+  async function createWorker(workerRegistry: WorkerRegistry) {
+    const result = await api.config.workers.create(workerRegistry);
+  }
+
   return (
     <StyledConfiguration>
       <StyledToolsSection>
         <button><AiOutlineSave />Salvar</button>
       </StyledToolsSection>
       <div className="body">
-        <WorkerRegisterForm />
+        <WorkerRegisterForm onSubmit={createWorker} />
         <StyledVerticalLine />
         <section className="search-section">
           <WorkerRegistriesProvider>
