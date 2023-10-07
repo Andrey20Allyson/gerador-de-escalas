@@ -21,6 +21,16 @@ export class FormController {
     return fieldNames.map(name => this.field(name)) as MapType<A, FormField>;
   }
 
+  *allFields(): Generator<FormField> {
+    for (const name in this.data.get()) {
+      yield this.field(name);
+    }
+  }
+
+  clear() {
+    this.data.set({});
+  }
+
   subscribe(handler: OnSubmitHandler) {
     this._onSubmitHandlers.push(handler);
   }
