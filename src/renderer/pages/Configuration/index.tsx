@@ -40,10 +40,6 @@ export interface WorkerRegistryListProps { }
 export function WorkerRegistryGrid(props: WorkerRegistryListProps) {
   const service = useWorkerRegistriesService();
 
-  console.log(service.isLoading());
-  console.log(service.list());
-  console.log(service.getError());
-
   return (
     <RegistryGrid>
       <ElementList
