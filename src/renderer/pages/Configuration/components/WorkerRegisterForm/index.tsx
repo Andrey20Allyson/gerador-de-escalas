@@ -2,93 +2,12 @@ import React from "react";
 import { AiOutlineCloudUpload, AiOutlineDelete } from "react-icons/ai";
 import styled from "styled-components";
 import { WorkerRegistry } from "../../../../../app/base";
-import Form from "../Form";
-import { FormController } from "../Form";
-import { Result, ValueParser, parsers } from "../Form/context/parsing";
-import { CustomParser } from "../Form/context/parsing/custom";
+import Form, { FormController } from "../Form";
+import { parsers } from "../Form/context/parsing";
+import { CPFParser } from "../Form/context/parsing/cpf";
 
 export interface WorkerRegisterFormProps {
   onSubmit?: (worker: WorkerRegistry) => void;
-}
-
-export type CPFParserEMM = {
-  INVALID_CPF: string;
-};
-
-export class CPFParser extends ValueParser<string, string, CPFParserEMM>  {
-  constructor() {
-    super({
-      INVALID_CPF: 'cpf $0 é inválido!, motivo: "$1"',
-    });
-  }
-
-  isCPFFormatValid(cpf: string): boolean {
-    return /\d{3}\.\d{3}\.\d{3}-\d{2}/.test(cpf);
-  }
-
-  isValidationDigitValid(digits: Uint8Array, offset: 0 | 1): boolean {
-    if (digits.length < 11) return false;
-
-    const verifierDigit = digits[9 + offset];
-    const sumLength = 9 + offset;
-    const digitMultplier = 10 + offset;
-
-    let sum = 0;
-    for (let i = 0; i < sumLength; i++) {
-      sum += digits[i] * (digitMultplier - i);
-    }
-
-    const rest = 11 - (sum % 11);
-    const digit = (rest >= 10) ? 0 : rest;
-
-    return digit === verifierDigit;
-  }
-
-  isValidationDigitsValid(digits: Uint8Array): Result<Uint8Array> {
-    const isValid = this.isValidationDigitValid(digits, 0)
-      && this.isValidationDigitValid(digits, 1);
-
-    if (isValid) {
-      return Result.ok(digits);
-    } else {
-      return Result.error('invalid cpf digits');
-    }
-  }
-
-  parseDigits(cpf: string): Result<Uint8Array> {
-    if (!this.isCPFFormatValid(cpf)) return Result.error('invalid cpf format');
-
-    const digits = new Uint8Array(11);
-    let digitCount = 0;
-
-    for (let i = 0; i < cpf.length; i++) {
-      const char = cpf.charAt(i);
-      const digit = parseInt(char);
-
-      if (!isNaN(digit)) {
-        digits[digitCount++] = digit;
-      }
-    }
-
-    if (digitCount < 11) return Result.error('invalid cpf size');
-
-    return Result.ok(digits);
-  }
-
-  isCPFValid(cpf: string): Result<Uint8Array> {
-    const digits = this.parseDigits(cpf);
-    if (digits.type === 'error') return digits;
-
-    return this.isValidationDigitsValid(digits.value);
-  }
-
-  parse(cpf: string): Result<string> {
-    if (this.isCPFValid(cpf)) {
-      return this.ok(cpf);
-    } else {
-      return this.error('INVALID_CPF', cpf);
-    }
-  }
 }
 
 const NAME_PARSER = parsers.string();
