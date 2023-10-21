@@ -2,6 +2,7 @@ import { AppResponse, WorkerRegistry, workerRegistrySchema } from "../../base";
 import { Collection } from "../../firebase";
 import { TypedLoader } from "../../loaders/typed-loader";
 import { TypedRepository } from "../../repositories/typed-repository";
+import { AppAssets } from "../assets";
 import { IpcMapping, IpcMappingFactory } from "../mapping";
 
 export interface ListOptions {
@@ -11,28 +12,14 @@ export interface ListOptions {
 }
 
 export class WorkerRegisterHandler implements IpcMappingFactory {
-  loader: TypedLoader<WorkerRegistry>;
-  repository: TypedRepository<WorkerRegistry>;
+  constructor(readonly assets: AppAssets) { }
 
-  constructor() {
-    this.repository = new TypedRepository({
-      collection: Collection.workerRegistries,
-      schema: workerRegistrySchema,
-    });
+  get loader(): TypedLoader<WorkerRegistry> {
+    return this.assets.services.workerRegistry.loader;
+  }
 
-    this.loader = new TypedLoader({
-      cache: {
-        contains: 'config',
-        content: {
-          prefix: 'worker-registries',
-        },
-      },
-      repository: {
-        contains: 'instance',
-        content: this.repository,
-      },
-      schema: workerRegistrySchema,
-    });
+  get repository(): TypedRepository<WorkerRegistry> {
+    return this.assets.services.workerRegistry.repository;
   }
 
   async create(_: IpcMapping.IpcEvent, worker: WorkerRegistry) {
@@ -57,7 +44,7 @@ export class WorkerRegisterHandler implements IpcMappingFactory {
 
   async update(_: IpcMapping.IpcEvent, id: string, changes: Partial<WorkerRegistry>) {
     const result = await this.repository.update({ id, data: changes });
-  
+
     return AppResponse.ok(result);
   }
 

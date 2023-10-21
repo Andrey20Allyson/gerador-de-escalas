@@ -18,7 +18,7 @@ export class APIHandler implements IpcMappingFactory {
   constructor(readonly assets: AppAssets) {
     this.generator = new GeneratorHandler(assets);
     this.editor = new EditorHandler(assets);
-    this.config = new ConfigHandler();
+    this.config = new ConfigHandler(assets);
     this.utils = new UtilsHandler();
   }
 
