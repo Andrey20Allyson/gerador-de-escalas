@@ -17,7 +17,7 @@ export const StyledRegistryGrid = styled.span`
   flex: 1;
   display: grid;
   box-sizing: content-box;
-  grid-template-columns: repeat(auto-fill, minmax(min-content, 25rem));
+  grid-template-columns: repeat(auto-fill, minmax(min-content, 22rem));
   justify-content: center;
   justify-items: center;
   gap: .8rem;
