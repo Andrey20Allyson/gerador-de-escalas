@@ -2,7 +2,7 @@ import { utils } from "@andrey-allyson/escalas-automaticas";
 import { MainTableFactory } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories";
 import { Holidays, WorkerRegistriesMap } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import fs from 'fs/promises';
-import { HolidayType, WorkerRegistry, holidaySchema, workerRegistrySchema } from "../base";
+import { HolidayType, RegistryEntryType, WorkerRegistry, holidaySchema, workerRegistrySchema } from "../base";
 import { Collection } from "../firebase";
 import { TypedLoader } from "../loaders/typed-loader";
 import { fromRoot } from "../path.utils";
@@ -52,11 +52,11 @@ export class AppAssets {
     ] = await Promise.all([
       workerService.loader
         .load()
-        .then(entities => entities.map(entity => entity.data)),
+        .then(this.mapEntitiesData),
 
       holidaysService.loader
         .load()
-        .then(entities => entities.map(entity => entity.data)),
+        .then(this.mapEntitiesData),
 
       fs.readFile(fromRoot('./assets/output-pattern.xlsx')),
     ]);
@@ -74,6 +74,10 @@ export class AppAssets {
       holidays: holidaysService,
     });
   }
+
+  private static mapEntitiesData<T>(entities: RegistryEntryType<T>[]): T[] {
+    return entities.map(entity => entity.data as T);
+  } 
 }
 
 export class WorkerRegistryService {
