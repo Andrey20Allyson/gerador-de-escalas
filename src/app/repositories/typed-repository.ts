@@ -106,9 +106,10 @@ export class TypedRepository<T = unknown> implements Repository<T> {
   async update(registry: PartialDataRegistryEntryType<T>): Promise<admin.firestore.WriteResult> {
     const docRef = this.doc(registry.id);
 
-    const result = await docRef.update(registry.data);
-
-    await UpdateInfoHandler.releaseNewVersionTo(this.collection);
+    const [result] = await Promise.all([
+      docRef.update(registry.data),
+      this.releaseNewVersion(),
+    ]);
 
     return result;
   }
@@ -116,7 +117,10 @@ export class TypedRepository<T = unknown> implements Repository<T> {
   async create(registry: OptionalIDRegistryEntryType<T>): Promise<RegistryEntryType<T>> {
     const docRef = this.doc(registry.id);
 
-    await docRef.create(registry.data ?? {});
+    await Promise.all([
+      docRef.create(registry.data ?? {}),
+      this.releaseNewVersion(),
+    ]);
 
     return {
       id: docRef.id,
@@ -125,7 +129,12 @@ export class TypedRepository<T = unknown> implements Repository<T> {
   }
 
   async delete(id: string): Promise<admin.firestore.WriteResult> {
-    const result = await this.doc(id).delete();
+    const docRef = this.doc(id);
+
+    const [result] = await Promise.all([
+      docRef.delete(),
+      this.releaseNewVersion(),
+    ]);
 
     return result;
   }
