@@ -1,4 +1,3 @@
-import { utils } from "@andrey-allyson/escalas-automaticas";
 import { MainTableFactory } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories";
 import { Holidays, WorkerRegistriesMap } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import fs from 'fs/promises';
