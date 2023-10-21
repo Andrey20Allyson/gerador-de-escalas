@@ -13,24 +13,28 @@ export interface AppAssetsServices {
   readonly holidays: HolidaysService;
 }
 
+export interface AppAssetsData {
+  workerRegistryMap: WorkerRegistriesMap,
+  serializer: MainTableFactory,
+  holidays: Holidays,
+}
+
 export class AppAssets {
   constructor(
-    private _workerRegistryMap: WorkerRegistriesMap,
-    private _serializer: MainTableFactory,
-    private _holidays: Holidays,
+    private data: AppAssetsData,
     readonly services: AppAssetsServices,
   ) { }
 
   get workerRegistryMap() {
-    return this._workerRegistryMap;
+    return this.data.workerRegistryMap;
   }
 
   get serializer() {
-    return this._serializer;
+    return this.data.serializer;
   }
 
   get holidays() {
-    return this._holidays;
+    return this.data.holidays;
   }
 
   reload() {
@@ -41,27 +45,34 @@ export class AppAssets {
     const workerService = new WorkerRegistryService();
     const holidaysService = new HolidaysService();
 
-    const holidaysBuffer = await fs.readFile(fromRoot('./assets/holidays.json'));
-    const patternBuffer = await fs.readFile(fromRoot('./assets/output-pattern.xlsx'));
+    const [
+      registries,
+      holidaysRegistries,
+      patternBuffer,
+    ] = await Promise.all([
+      workerService.loader
+        .load()
+        .then(entities => entities.map(entity => entity.data)),
 
-    const holidays = utils.Result.unwrap(Holidays.safeParse(holidaysBuffer));
+      holidaysService.loader
+        .load()
+        .then(entities => entities.map(entity => entity.data)),
 
-    const registries = await workerService.loader
-      .load()
-      .then(entities => entities.map(entity => entity.data));
+      fs.readFile(fromRoot('./assets/output-pattern.xlsx')),
+    ]);
 
+    const holidays = Holidays.from(holidaysRegistries);
     const workerRegistryMap = new WorkerRegistriesMap(registries);
     const serializer = new MainTableFactory(patternBuffer);
 
-    return new AppAssets(
+    return new AppAssets({
       workerRegistryMap,
       serializer,
       holidays,
-      {
-        workerRegistry: workerService,
-        holidays: holidaysService,
-      }
-    );
+    }, {
+      workerRegistry: workerService,
+      holidays: holidaysService,
+    });
   }
 }
 
