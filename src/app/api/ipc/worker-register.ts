@@ -62,7 +62,7 @@ export class WorkerRegisterHandler implements IpcMappingFactory {
   }
 
   async delete(_: IpcMapping.IpcEvent, id: string) {
-    const result = this.repository.delete(id);
+    const result = await this.repository.delete(id);
 
     return AppResponse.ok(result);
   }
