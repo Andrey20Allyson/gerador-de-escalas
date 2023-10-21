@@ -1,5 +1,4 @@
-import { AppResponse, WorkerRegistry, workerRegistrySchema } from "../../base";
-import { Collection } from "../../firebase";
+import { AppResponse, WorkerRegistry } from "../../base";
 import { TypedLoader } from "../../loaders/typed-loader";
 import { TypedRepository } from "../../repositories/typed-repository";
 import { AppAssets } from "../assets";
