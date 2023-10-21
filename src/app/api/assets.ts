@@ -2,7 +2,7 @@ import { utils } from "@andrey-allyson/escalas-automaticas";
 import { MainTableFactory } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories";
 import { Holidays, WorkerRegistriesMap } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import fs from 'fs/promises';
-import { WorkerRegistry, workerRegistrySchema } from "../base";
+import { HolidayType, WorkerRegistry, holidaySchema, workerRegistrySchema } from "../base";
 import { Collection } from "../firebase";
 import { TypedLoader } from "../loaders/typed-loader";
 import { fromRoot } from "../path.utils";
@@ -10,6 +10,7 @@ import { TypedRepository } from "../repositories/typed-repository";
 
 export interface AppAssetsServices {
   readonly workerRegistry: WorkerRegistryService;
+  readonly holidays: HolidaysService;
 }
 
 export class AppAssets {
@@ -38,6 +39,7 @@ export class AppAssets {
 
   static async load(): Promise<AppAssets> {
     const workerService = new WorkerRegistryService();
+    const holidaysService = new HolidaysService();
 
     const holidaysBuffer = await fs.readFile(fromRoot('./assets/holidays.json'));
     const patternBuffer = await fs.readFile(fromRoot('./assets/output-pattern.xlsx'));
@@ -57,6 +59,7 @@ export class AppAssets {
       holidays,
       {
         workerRegistry: workerService,
+        holidays: holidaysService,
       }
     );
   }
@@ -84,6 +87,32 @@ export class WorkerRegistryService {
         content: this.repository,
       },
       schema: workerRegistrySchema,
+    });
+  }
+}
+
+export class HolidaysService {
+  repository: TypedRepository<HolidayType>
+  loader: TypedLoader<HolidayType>;
+
+  constructor() {
+    this.repository = new TypedRepository({
+      collection: Collection.holidays,
+      schema: holidaySchema,
+    });
+
+    this.loader = new TypedLoader({
+      cache: {
+        contains: 'config',
+        content: {
+          prefix: 'holidays',
+        },
+      },
+      repository: {
+        contains: 'instance',
+        content: this.repository,
+      },
+      schema: holidaySchema,
     });
   }
 }
