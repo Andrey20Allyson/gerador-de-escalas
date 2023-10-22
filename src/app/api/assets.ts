@@ -19,6 +19,8 @@ export interface AppAssetsData {
 }
 
 export class AppAssets {
+  private static readonly DOT_REGEXP = /\./g;  
+
   constructor(
     private data: AppAssetsData,
     readonly services: AppAssetsServices,
@@ -51,7 +53,8 @@ export class AppAssets {
     ] = await Promise.all([
       workerService.loader
         .load()
-        .then(this.mapEntitiesData),
+        .then(AppAssets.mapEntitiesData)
+        .then(AppAssets.normalizeWorkersId),
 
       holidaysService.loader
         .load()
@@ -76,7 +79,14 @@ export class AppAssets {
 
   private static mapEntitiesData<T>(entities: RegistryEntryType<T>[]): T[] {
     return entities.map(entity => entity.data as T);
-  } 
+  }
+
+  private static normalizeWorkersId(registries: WorkerRegistry[]): WorkerRegistry[] {
+    return registries.map(registry => ({
+      ...registry,
+      workerID: registry.workerID.replace(AppAssets.DOT_REGEXP, ''),
+    }));
+  }
 }
 
 export class WorkerRegistryService {
