@@ -26,7 +26,8 @@
     "dev:bundle": "esbuild src/renderer/index.ts --bundle --target=es2020 --watch --sourcemap --outdir=public",
     "prod:bundle": "tsx scripts/prod-bundle.ts",
     "build": "tsc -p src/app",
-    "build:watch": "tsx scripts/dev-build.ts"
+    "build:watch": "tsx scripts/dev-build.ts",
+    "build:scripts": "tsc -p scripts && tsc-alias -p scripts/tsconfig.json"
   },
   "keywords": [],
   "author": "",
@@ -44,10 +45,12 @@
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
     "@types/styled-components": "^5.1.26",
+    "commander": "^11.1.0",
     "electron": "^25.1.0",
     "electron-packager": "^17.1.1",
     "electron-winstaller": "^5.1.0",
     "esbuild": "^0.18.1",
+    "tsc-alias": "^1.8.8",
     "tsx": "^3.12.9",
     "typescript": "^5.1.3",
     "vitest": "^0.34.3"
