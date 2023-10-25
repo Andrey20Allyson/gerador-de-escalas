@@ -18,8 +18,10 @@ export interface RouteState<R extends RoutesLike, N extends keyof R = keyof R> {
   name: N;
 }
 
+type PropsArgs<T> = keyof T extends never ? [] : [props: T];
+
 export interface RouterContext<TRoutes extends RoutesLike> {
-  useNavigate(): <TRoute extends keyof TRoutes>(route: TRoute, props: InferProps<TRoutes[TRoute]>) => void;
+  useNavigate(): <TRoute extends keyof TRoutes>(route: TRoute, ...args: PropsArgs<InferProps<TRoutes[TRoute]>>) => void;
   RouterProvider(props: PropsWithChildren): JSX.Element;
   Router(): JSX.Element;
   useRoute(): RouteState<TRoutes>;
@@ -78,7 +80,9 @@ export function createRouterContext<TRoutes extends RoutesLike, TIRoute extends 
   function useNavigate() {
     const { setCurrentRoute } = useRoutes();
 
-    return <TRoute extends keyof TRoutes>(route: TRoute, props: InferProps<TRoutes[TRoute]>) => setCurrentRoute(createRouteState(route, props));
+    return <TRoute extends keyof TRoutes>(route: TRoute, ...[props]: PropsArgs<InferProps<TRoutes[TRoute]>>) => {
+      return setCurrentRoute(createRouteState(route, props ?? {} as InferProps<TRoutes[TIRoute]>));
+    }
   }
 
   function useRoute() {

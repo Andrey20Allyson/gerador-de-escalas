@@ -54,12 +54,10 @@ export function DayView(props: IterProps<DayEditor, DayViewProps>) {
   const { onSelect } = props;
   const day = props.entry;
 
-  const weekDayLabel = getWeekDayLabel(day.weekDayIndex());
-
   return (
     <StyledDay>
       <StyledDutyHeader>
-        <StyledDayTitle>Dia {day.data.index + 1}    {weekDayLabel}</StyledDayTitle>
+        <StyledDayTitle>Dia {day.data.index + 1}</StyledDayTitle>
       </StyledDutyHeader>
       <StyledDutiesContainer>
         <ElementList Component={DutyView} iter={day.iterDuties()} communProps={{ onSelect }} />

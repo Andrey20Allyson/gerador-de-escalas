@@ -1,18 +1,18 @@
 import { io } from '@andrey-allyson/escalas-automaticas';
 import { ipcMain } from 'electron';
 import fs from 'fs/promises';
-import { IPCHandlerConsumer } from './app.ipc';
-import { loadAssets } from './assets';
-import { APIHandlerFactory } from './ipc-handlers';
+import { AppAssets } from './assets';
+import { APIHandler } from './ipc';
+import { IpcHandlerConsumer } from './mapping/app';
 
 io.setFileSystem(fs);
 
 export async function loadAPI(debug = false) {
-  const assets = await loadAssets();
+  const assets = await AppAssets.load();
 
-  const HandlerFactory = new APIHandlerFactory(assets);
+  const handlerFactory = new APIHandler(assets);
 
-  const ipcHandler = new IPCHandlerConsumer(HandlerFactory.hander());
+  const ipcHandler = new IpcHandlerConsumer(handlerFactory);
 
   ipcHandler.listen(ipcMain);
 }

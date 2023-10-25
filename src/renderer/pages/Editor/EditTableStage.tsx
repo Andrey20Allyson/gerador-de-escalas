@@ -1,29 +1,31 @@
-import React, { useRef } from "react";
-import { TableEditor } from "../../../app/api/table-edition";
+import React from "react";
+import { AiOutlineSave } from "react-icons/ai";
+import { BsArrowReturnLeft, BsGear } from 'react-icons/bs';
+import { GoTriangleDown } from 'react-icons/go';
+import styled from "styled-components";
 import { editor } from "../../api";
-import { DayEditionModalProvider } from "../../components/DayEditionModal";
 import { EditorTypeSelect } from "../../components/EditorTypeSelect";
+import { EditorContext } from "../../components/EditorTypeSelect/context";
+import { useRulesModal } from "../../components/RulesModal";
 import { useSaveTableModal } from "../../components/SaveTableModal";
 import { useStage } from "../../contexts/stages";
-import { Footer, StageBody } from "../Generator/WorkerEditionStage.styles";
-import { useRulesModal } from "../../components/RulesModal";
+import { StyledEditTableStageBody, StyledToolsSection, StyledSelector } from "./EditTableStage.styles";
 
 export function EditTableStage() {
   const { prev } = useStage();
-  const tableRef = useRef<TableEditor>(null);
   const saveModal = useSaveTableModal();
   const rulesModal = useRulesModal();
+  const table = EditorContext.useEditor();
+  const changeEditor = EditorContext.useNavigate();
 
   function handleSaveAs() {
-    const table = tableRef.current;
-    if (!table) return alert('Não há nenhuma tabela carregada!');
+    if (!table) return;
 
     saveModal.open({ table });
   }
 
   function handleOpenRulesModal() {
-    const table = tableRef.current;
-    if (!table) return alert('Não há nenhuma tabela carregada!');
+    if (!table) return;
 
     rulesModal.open({ table });
   }
@@ -35,15 +37,23 @@ export function EditTableStage() {
   }
 
   return (
-    <DayEditionModalProvider>
-      <StageBody>
-        <EditorTypeSelect tableRef={tableRef} />
-        <Footer>
-          <input type='button' onClick={handlePrev} value='Voltar' />
-          <input type='button' onClick={handleSaveAs} value='Salvar Como' />
-          <input className='change-rules-button' type='button' onClick={handleOpenRulesModal} value='Configurar Regras' />
-        </Footer>
-      </StageBody>
-    </DayEditionModalProvider>
+    <StyledEditTableStageBody>
+      <StyledToolsSection>
+        <button onClick={handlePrev}><BsArrowReturnLeft />Voltar</button>
+        <button onClick={handleSaveAs}><AiOutlineSave />Salvar</button>
+        <button onClick={handleOpenRulesModal}><BsGear />Regras</button>
+        <StyledSelector>
+          Editores
+          <GoTriangleDown />
+          <section className="selection-section">
+            <button onClick={() => changeEditor('DutyTableGrid')}>Calendário</button>
+            <button onClick={() => changeEditor('WorkerList')}>Lista</button>
+          </section>
+        </StyledSelector>
+      </StyledToolsSection>
+      <section className='editor-section'>
+        <EditorTypeSelect />
+      </section>
+    </StyledEditTableStageBody>
   );
 }

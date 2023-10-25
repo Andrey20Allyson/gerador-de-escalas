@@ -2,14 +2,13 @@ import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 import { useRerender } from "../../hooks";
 import { ElementList } from "../../utils/react-iteration";
-import { PropsWithTableEditor } from "../DutyTableGrid";
 import { WorkerEditionCard } from "../WorkerEditionCard";
 import { useDayEditionModal } from "../DayEditionModal";
 import { BiSearch } from "react-icons/bi";
+import { EditorContext } from "../EditorTypeSelect/context";
 
-export function WorkerList(props: PropsWithTableEditor) {
-  const { table } = props;
-
+export function WorkerList() {
+  const table = EditorContext.useEditorOrThrow();
   const [search, setSearch] = useState<string>();
 
   const workers = useMemo(() => {
@@ -33,8 +32,8 @@ export function WorkerList(props: PropsWithTableEditor) {
   return (
     <StyledWorkerList>
       <section className='search'>
-        <input type="text" placeholder='pesquisar' onChange={handleChangeSearch} />
         <BiSearch/>
+        <input type="text" placeholder='pesquisar' onChange={handleChangeSearch} />
       </section>
       <section className='scroll-box'>
         <span className='scrolable'>
@@ -51,12 +50,33 @@ export const StyledWorkerList = styled.section`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: .4rem;
-
+  padding: 1rem 2rem;
+  box-sizing: border-box;
+  gap: .8rem;
+  
   &>.search {
     display: flex;
-    align-items: end;
     gap: .4rem;
+    padding: .4rem;
+    align-items: center;
+    border-radius: .2rem;
+
+    &:hover {
+      background-color: #fff4;
+    }
+
+    &:focus-within {
+      background-color: #fff5;
+    }
+
+    &>input {
+      width: 100%;
+      border: none;
+      
+      &:focus {
+        box-shadow: none;
+      }
+    }
 
     &>svg {
       font-size: 1rem;
@@ -77,7 +97,10 @@ export const StyledWorkerList = styled.section`
       overflow-y: scroll;
       display: flex;
       flex-direction: column;
-      box-sizing: content-box;
+      align-items: center;
+      box-sizing: border-box;
+      overflow-x: hidden;
+      padding: 0 1.5rem;
       gap: .4rem;
 
       &::after {

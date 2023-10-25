@@ -11,10 +11,6 @@
   box-shadow: -.2rem .2rem .5rem #0004;
   align-items: center;
   transition: height 1000ms;
-
-  border-width: 1px;
-  border-style: solid;
-  border-color: #0003;
 }
 
 .form-body {
@@ -60,7 +56,7 @@ input[type="file"] {
 }
 
 select {
-  background-color: #afafaf;
+  background-color: #cccccc;
   outline: none;
   border-width: 0;
   border-bottom-width: 1px;

@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { DutyEditor } from "../../../app/api/table-edition";
 import { IterProps } from "../../utils/react-iteration";
 import { dutyTitles } from "../DutyTableGrid/utils";
+import { BackgroundColor } from "../../styles";
 
 export interface DutyCardProps {
   titleType?: 'numeric' | 'extence';
@@ -61,8 +62,8 @@ export function DutyCard(props: IterProps<DutyEditor, DutyCardProps>) {
 }
 
 export const StyledDutyCard = styled.span`
-  box-shadow: -.1rem .1rem .2rem #0002 inset;
-  background-color: #00000008;
+  /* box-shadow: -.1rem .1rem .2rem #0002 inset; */
+  ${BackgroundColor.bg2}
   border: 1px solid #0002;
   flex-direction: column;
   border-radius: .2rem;
@@ -91,9 +92,9 @@ export const StyledDutyCard = styled.span`
     
     &>button {
       cursor: pointer;
-      background-color: #99999961;
+      ${BackgroundColor.bg1}
       outline: none;
-      border: 1px solid #ffffff7d;
+      border: 1px solid #0003;
       display: flex;
       align-items: center;
       border-radius: .3rem;
@@ -103,7 +104,7 @@ export const StyledDutyCard = styled.span`
       flex: 1;
 
       &:hover {
-        background-color: #f0f0f0c5
+        background-color: #979797c5
       }
 
       &.exclude {

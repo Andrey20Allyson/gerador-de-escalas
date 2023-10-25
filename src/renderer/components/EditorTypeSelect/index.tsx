@@ -1,55 +1,24 @@
-import React, { MutableRefObject } from 'react';
+import React, { PropsWithChildren } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import styled, { css } from 'styled-components';
 import { TableEditor } from '../../../app/api/table-edition';
 import { hoveredBackground, normalBackground, selectedBackground } from '../../App.styles';
-import { InferRoutes, RouteState, createRouteState, createRouterContext } from '../../contexts/router';
-import { useTableEditor } from '../../hooks';
-import { DutyTableGrid } from '../DutyTableGrid';
-import { WorkerList } from '../WorkerList';
+import { RouteState } from '../../contexts/router';
+import { EditorContext, EditorRouterContext, Routes } from './context';
 
-function NotSelected() {
-  return <Skeleton width='100%' height='99%' />
-}
+export function EditorTypeSelect() {
+  const table = EditorContext.useEditor();
 
-export const EditorSelection = createRouterContext({
-  DutyTableGrid,
-  NotSelected,
-  WorkerList,
-}, 'NotSelected', {});
-
-type Routes = InferRoutes<typeof EditorSelection>;
-
-export interface EditorTypeSelectProps {
-  tableRef?: MutableRefObject<TableEditor | null>;
-}
-
-export function EditorTypeSelect(props: EditorTypeSelectProps) {
-  const { tableRef } = props;
-
-  const tableResponse = useTableEditor();
-
-  if (tableRef) {
-    tableRef.current = tableResponse.status === 'success' ? tableResponse.editor : null;
-  }
-
-  return (
-    <EditorSelection.RouterProvider>
-      {tableResponse.status === 'loading' ? <LoadingEditorTypeSelect /> : tableResponse.status === 'success' ? <LoadedEditorTypeSelect table={tableResponse.editor} /> : <div>Error</div>}
-    </EditorSelection.RouterProvider>
-  );
+  return table
+    ? <LoadedEditorTypeSelect table={table} />
+    : <LoadingEditorTypeSelect />
 }
 
 export function LoadingEditorTypeSelect() {
   return (
-    <StyleEditorTypeSelect>
-      <section className='selector'>
-        <Skeleton width='80px' height='1.3rem' count={10} />
-      </section>
-      <section className='content'>
-        <Skeleton style={{ width: '100%', height: '99%' }} />
-      </section>
-    </StyleEditorTypeSelect>
+    <section className='content'>
+      <Skeleton style={{ width: '100%', height: '99%' }} />
+    </section>
   );
 }
 
@@ -58,85 +27,35 @@ export interface LoadedEditorTypeSelectProps {
 }
 
 export function LoadedEditorTypeSelect(props: LoadedEditorTypeSelectProps) {
-  const { table } = props;
-  const navigate = EditorSelection.useNavigate();
-  const route = EditorSelection.useRoute();
+  const navigate = EditorRouterContext.useNavigate();
+  const route = EditorRouterContext.useRoute();
 
   if (route.is('NotSelected')) {
-    navigate('DutyTableGrid', { table });
+    navigate('WorkerList');
   }
 
-  return (
-    <StyleEditorTypeSelect>
-      <section className='selector'>
-        <h2>Editores</h2>
-        <EditorTypeButton title='Calendário' route={createRouteState('DutyTableGrid', { table })} />
-        <EditorTypeButton title='Lista' route={createRouteState('WorkerList', { table })} />
-      </section>
-      <section className='content'>
-        <EditorSelection.Router />
-      </section>
-    </StyleEditorTypeSelect>
-  );
+  return <EditorRouterContext.Router />;
 }
 
-export interface EditorTypeButtonProps {
+export interface EditorTypeOptionProps extends PropsWithChildren {
   route: RouteState<Routes>;
-  title: string;
 }
 
-export function EditorTypeButton(props: EditorTypeButtonProps) {
-  const navigate = EditorSelection.useNavigate();
-  const actualRoute = EditorSelection.useRoute();
+export function EditorTypeOption(props: EditorTypeOptionProps) {
+  const navigate = EditorRouterContext.useNavigate();
+  const actualRoute = EditorRouterContext.useRoute();
   const { route } = props;
 
   function handleSubmit() {
-    navigate(route.name, route.props);
+    navigate(route.name);
   }
 
   return (
     <StyledEditorTypeButton selected={route.is(actualRoute.name)} onClick={handleSubmit}>
-      {props.title}
+      {props.children}
     </StyledEditorTypeButton>
   );
 }
-
-export const StyleEditorTypeSelect = styled.div`
-  grid-template-columns: min-content 1fr;
-  min-width: 900px;
-  height: 400px;
-  display: grid;
-  gap: .5rem;
-  border: 1px solid #0004;
-  background-color: #747474;
-  border-radius: .4rem;
-  box-shadow: -.3rem .3rem .4rem #0002;
-
-  &>.selector {
-    padding: .3rem;
-    background-color: #b6b6b6f4;
-    display: flex;
-    flex-direction: column;
-    gap: .4rem;
-    align-items: stretch;
-    border-top-left-radius: .4rem;
-    border-bottom-left-radius: .4rem;
-
-    &>h2 {
-      font-size: .9rem;
-      margin: 0;
-      margin-bottom: .2rem;
-      text-align: center;
-    }
-  }
-  
-  &>.content {
-    padding: .3rem;
-    background-color: #b6b6b6f4;
-    border-top-right-radius: .4rem;
-    border-bottom-right-radius: .4rem;
-  }
-`;
 
 export interface StyledEditorTypeButtonProps {
   selected?: boolean;

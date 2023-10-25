@@ -29,3 +29,7 @@ type Holiday = {
   month: number;
 };
 ```
+
+## "gerador-de-escalas-baas-firebase-adminsdk.json"
+
+Esse arquivo é o `service account` que é utilizado conectar e autenticar o aplicativo ao `back-end as a service` da Firebase.

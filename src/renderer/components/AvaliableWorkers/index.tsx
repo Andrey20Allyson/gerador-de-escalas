@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import { BiSearch } from "react-icons/bi";
+import { FaCalendarAlt } from "react-icons/fa";
 import { HiUserAdd } from "react-icons/hi";
-import { SlOptionsVertical } from "react-icons/sl";
 import styled from "styled-components";
 import { DutyEditor, WorkerEditor } from "../../../app/api/table-edition";
 import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
 import { ElementList, IterProps } from "../../utils/react-iteration";
 import { genderComponentMap, graduationTextColorMap } from "../DayEditionModal/utils";
-import { StyledAvaliableWorkerBody, StyledAvaliableWorkerSearchBody, StyledAvaliableWorkersScrollable, StyledAvaliableWorkersSection } from "./styles";
 import { useDutySelectModal } from "../DutySelectModal";
-import { FaCalendarAlt } from "react-icons/fa";
+import { StyledAvaliableWorkerBody, StyledAvaliableWorkerSearchBody, StyledAvaliableWorkersScrollable, StyledAvaliableWorkersSection } from "./styles";
 
 export interface AvaliableWorkers {
   onUpdate?: () => void;
