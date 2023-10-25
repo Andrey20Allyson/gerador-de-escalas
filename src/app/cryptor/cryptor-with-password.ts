@@ -1,4 +1,3 @@
-import { Config } from "../utils/config";
 import crypto from 'crypto';
 
 export type NumberRange = {
@@ -11,11 +10,11 @@ export type PartialNumberRange = {
   end?: number;
 }
 
-export type CryptorWithPasswordConfig = Config<{
-  keyGenIterations: number;
+export interface CryptorWithPasswordConfig {
   password: string;
-  saltSize: number;
-}, 'password'>;
+  keyGenIterations?: number;
+  saltSize?: number;
+}
 
 export type ExtractedBuffers = {
   encryptedBuffer: Buffer;
@@ -53,36 +52,34 @@ export default class CryptorWithPassword {
   static readonly CRYPTOGRAPH_ALGORITHM = 'aes-256-cbc';
   static readonly INITIALIZATION_VECTOR_SIZE = 16;
   static readonly PBKD_DIGEST = 'sha256';
-  static defaults: Config.Defaults<CryptorWithPasswordConfig> = {
-    keyGenIterations: 1e5,
-    saltSize: 16,
-  };
+  static readonly DEFAULT_KEY_GEN_ITERATIONS = 1e5;
+  static readonly DEFAULT_SALT_SIZE = 16;
 
-  private config: Config.From<CryptorWithPasswordConfig>;
+  readonly password: string;
+  readonly keyGenIterations: number;
+  readonly saltSize: number;
 
-  constructor(config: Config.Partial<CryptorWithPasswordConfig>) {
-    this.config = Config.from<CryptorWithPasswordConfig>(config, CryptorWithPassword.defaults);
+  constructor(config: CryptorWithPasswordConfig) {
+    this.password = config.password;
+    this.keyGenIterations = config.keyGenIterations ?? CryptorWithPassword.DEFAULT_KEY_GEN_ITERATIONS;
+    this.saltSize = config.saltSize ?? CryptorWithPassword.DEFAULT_SALT_SIZE;
 
-    if (this.config.password.length === 0) {
+    if (this.password.length === 0) {
       throw CryptorWithPasswordInitError.empityPasswordError();
     }
   }
 
   generateSalt() {
-    return crypto.randomBytes(this.config.saltSize);
+    return crypto.randomBytes(this.saltSize);
   }
 
   generateIV() {
     return crypto.randomBytes(CryptorWithPassword.INITIALIZATION_VECTOR_SIZE);
   }
 
-  getPassword() {
-    return this.config.password;
-  }
-
   async getKey(salt: Buffer): Promise<Buffer> {
     return new Promise((res, rej) => {
-      crypto.pbkdf2(this.config.password, salt, this.config.keyGenIterations, 32, CryptorWithPassword.PBKD_DIGEST, (err, key) => {
+      crypto.pbkdf2(this.password, salt, this.keyGenIterations, 32, CryptorWithPassword.PBKD_DIGEST, (err, key) => {
         if (err) return rej(err);
 
         res(key);
@@ -93,7 +90,7 @@ export default class CryptorWithPassword {
   getSaltRange(): NumberRange {
     return {
       start: 0,
-      end: this.config.saltSize
+      end: this.saltSize
     };
   }
 
@@ -157,7 +154,7 @@ export default class CryptorWithPassword {
         decipher.final(),
       );
     } catch (error) {
-      throw CryptorWithPasswordDecryptError.probableIncorrectPasswordError(this.config.password);
+      throw CryptorWithPasswordDecryptError.probableIncorrectPasswordError(this.password);
     }
 
     const decryptedBuffer = Buffer.concat(decryptedBuffers);
