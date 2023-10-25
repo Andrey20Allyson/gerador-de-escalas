@@ -1,4 +1,4 @@
-import { Config } from "./config";
+import { Config } from "../utils/config";
 import crypto from 'crypto';
 
 export type NumberRange = {
