@@ -2,6 +2,7 @@ import { MainTableFactory } from "@andrey-allyson/escalas-automaticas/dist/auto-
 import { Holidays, WorkerRegistriesMap } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import fs from 'fs/promises';
 import { HolidayType, RegistryEntryType, WorkerRegistry, holidaySchema, workerRegistrySchema } from "../base";
+import { TypedDiskCache } from "../cache/typed-cache";
 import { Collection } from "../firebase";
 import { TypedLoader } from "../loaders/typed-loader";
 import { fromRoot } from "../path.utils";
@@ -18,13 +19,28 @@ export interface AppAssetsData {
   holidays: Holidays,
 }
 
-export class AppAssets {
-  private static readonly DOT_REGEXP = /\./g;  
+export class AppAssetsNotLoadedError extends Error {
+  constructor() {
+    super(`App assets hasn't loaded yet!`);
+  }
+}
 
-  constructor(
-    private data: AppAssetsData,
-    readonly services: AppAssetsServices,
-  ) { }
+export class AppAssets {
+  private static readonly DOT_REGEXP = /\./g;
+  private _data: AppAssetsData | null = null;
+  private _services: AppAssetsServices | null = null;
+
+  constructor() { }
+
+  private get data() {
+    if (this._data === null) throw new AppAssetsNotLoadedError();
+    return this._data;
+  }
+
+  get services() {
+    if (this._services === null) throw new AppAssetsNotLoadedError();
+    return this._services;
+  }
 
   get workerRegistryMap() {
     return this.data.workerRegistryMap;
@@ -38,27 +54,24 @@ export class AppAssets {
     return this.data.holidays;
   }
 
-  reload() {
+  async unlock(password: string) {
 
   }
 
-  static async load(): Promise<AppAssets> {
-    const workerService = new WorkerRegistryService();
-    const holidaysService = new HolidaysService();
-
+  async load() {
     const [
       registries,
       holidaysRegistries,
       patternBuffer,
     ] = await Promise.all([
-      workerService.loader
+      this.services.workerRegistry.loader
         .load()
         .then(AppAssets.mapEntitiesData)
         .then(AppAssets.normalizeWorkersId),
 
-      holidaysService.loader
+      this.services.holidays.loader
         .load()
-        .then(this.mapEntitiesData),
+        .then(AppAssets.mapEntitiesData),
 
       fs.readFile(fromRoot('./assets/output-pattern.xlsx')),
     ]);
@@ -67,14 +80,15 @@ export class AppAssets {
     const workerRegistryMap = new WorkerRegistriesMap(registries);
     const serializer = new MainTableFactory(patternBuffer);
 
-    return new AppAssets({
-      workerRegistryMap,
-      serializer,
+    this._data = {
       holidays,
-    }, {
-      workerRegistry: workerService,
-      holidays: holidaysService,
-    });
+      serializer,
+      workerRegistryMap,
+    };
+  }
+
+  reload() {
+
   }
 
   private static mapEntitiesData<T>(entities: RegistryEntryType<T>[]): T[] {
@@ -90,7 +104,8 @@ export class AppAssets {
 }
 
 export class WorkerRegistryService {
-  repository: TypedRepository<WorkerRegistry>
+  repository: TypedRepository<WorkerRegistry>;
+  cache: TypedDiskCache<WorkerRegistry>;
   loader: TypedLoader<WorkerRegistry>;
 
   constructor() {
@@ -99,24 +114,21 @@ export class WorkerRegistryService {
       schema: workerRegistrySchema,
     });
 
-    this.loader = new TypedLoader({
-      cache: {
-        contains: 'config',
-        content: {
-          prefix: 'worker-registries',
-        },
-      },
-      repository: {
-        contains: 'instance',
-        content: this.repository,
-      },
+    this.cache = new TypedDiskCache({
+      prefix: 'worker-registries',
       schema: workerRegistrySchema,
+    });
+
+    this.loader = new TypedLoader({
+      cache: this.cache,
+      repository: this.repository,
     });
   }
 }
 
 export class HolidaysService {
-  repository: TypedRepository<HolidayType>
+  repository: TypedRepository<HolidayType>;
+  cache: TypedDiskCache<HolidayType>;
   loader: TypedLoader<HolidayType>;
 
   constructor() {
@@ -125,18 +137,14 @@ export class HolidaysService {
       schema: holidaySchema,
     });
 
-    this.loader = new TypedLoader({
-      cache: {
-        contains: 'config',
-        content: {
-          prefix: 'holidays',
-        },
-      },
-      repository: {
-        contains: 'instance',
-        content: this.repository,
-      },
+    this.cache = new TypedDiskCache({
+      prefix: 'holidays',
       schema: holidaySchema,
+    });
+
+    this.loader = new TypedLoader({
+      cache: this.cache,
+      repository: this.repository,
     });
   }
 }
