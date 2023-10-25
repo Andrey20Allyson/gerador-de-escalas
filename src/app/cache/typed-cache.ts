@@ -1,10 +1,10 @@
 import { ZodType } from "zod";
-import { DiskCache } from ".";
+import { DefaultCacheIO, DiskCache } from ".";
 import { colletionHeaderSchema, createRegistryEntrySchema, RegistryEntryType } from "../base";
-import { Config } from "../utils/config";
 
-function cacheHeaderParser(data: string) {
-  const json = JSON.parse(data);
+function cacheHeaderParser(data: Buffer) {
+  const str = data.toString('utf-8');
+  const json = JSON.parse(str);
 
   return colletionHeaderSchema.parse(json);
 }
@@ -12,51 +12,39 @@ function cacheHeaderParser(data: string) {
 function createCacheEntriesParser<T>(documentEntryDataSchema: ZodType<T>) {
   const entriesSchema = createRegistryEntrySchema(documentEntryDataSchema).array();
 
-  return (data: string): RegistryEntryType<T>[] => {
-    const json = JSON.parse(data);
+  return (data: Buffer): RegistryEntryType<T>[] => {
+    const str = data.toString('utf-8');
+    const json = JSON.parse(str);
 
     return entriesSchema.parse(json);
   }
 }
 
-export type TypedDiskCacheConfig<T> = Config<{
+export interface TypedDiskCacheConfig<T> {
   prefix: string,
   schema: ZodType<T>,
-  entriesSufix: string,
-  headerSufix: string,
-},
-  | 'prefix'
-  | 'schema'
->;
+  entriesSufix?: string,
+  headerSufix?: string,
+}
 
 export class TypedDiskCache<T> extends DiskCache<T> {
-  typedConfig: Config.From<TypedDiskCacheConfig<T>>;
-
-  constructor(config: Config.Partial<TypedDiskCacheConfig<T>>) {
-    const _config = Config.from<TypedDiskCacheConfig<T>>(config, {
-      entriesSufix: '.entries',
-      headerSufix: '.header',
-    });
-
-    const { entriesSufix, headerSufix, prefix, schema } = _config;
+  constructor(config: TypedDiskCacheConfig<T>) {
+    const {
+      prefix,
+      schema,
+      entriesSufix = '.entries',
+      headerSufix = '.header',
+    } = config;
 
     super({
-      entries: {
-        contains: 'default-cache-io-config',
-        content: {
-          namespace: prefix + entriesSufix,
-          parser: createCacheEntriesParser(schema),
-        },
-      },
-      header: {
-        contains: 'default-cache-io-config',
-        content: {
-          parser: cacheHeaderParser,
-          namespace: prefix + headerSufix,
-        },
-      },
+      entries: new DefaultCacheIO({
+        namespace: prefix + entriesSufix,
+        parser: createCacheEntriesParser(schema),
+      }),
+      header: new DefaultCacheIO({
+        namespace: prefix + headerSufix,
+        parser: cacheHeaderParser,
+      })
     });
-
-    this.typedConfig = _config;
   }
 }

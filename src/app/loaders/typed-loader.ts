@@ -4,7 +4,7 @@ import { CollectionHandler, RepositoryReader } from "../repositories/repository"
 
 export interface LoaderRepository<T = unknown> extends RepositoryReader<T>, CollectionHandler { }
 
-export type TypedLoaderConfig<T = unknown> = {
+export interface TypedLoaderConfig<T = unknown> {
   saveInCache?: boolean;
   repository: LoaderRepository<T>;
   cache: DiskCache<T>;

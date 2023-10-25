@@ -7,6 +7,8 @@ import { Collection } from "../firebase";
 import { TypedLoader } from "../loaders/typed-loader";
 import { fromRoot } from "../path.utils";
 import { TypedRepository } from "../repositories/typed-repository";
+import CryptorWithPassword from "../cryptor/cryptor-with-password";
+import { CacheDecryptor, CacheEncryptor } from "../cache/cache-cryptor";
 
 export interface AppAssetsServices {
   readonly workerRegistry: WorkerRegistryService;
@@ -21,7 +23,13 @@ export interface AppAssetsData {
 
 export class AppAssetsNotLoadedError extends Error {
   constructor() {
-    super(`App assets hasn't loaded yet!`);
+    super(`App assets data hasn't loaded yet!`);
+  }
+}
+
+export class AppAssetsServicesLockedError extends Error {
+  constructor() {
+    super(`App assets services hasn't unlocked yet!`);
   }
 }
 
@@ -38,7 +46,7 @@ export class AppAssets {
   }
 
   get services() {
-    if (this._services === null) throw new AppAssetsNotLoadedError();
+    if (this._services === null) throw new AppAssetsServicesLockedError();
     return this._services;
   }
 
@@ -107,8 +115,9 @@ export class WorkerRegistryService {
   repository: TypedRepository<WorkerRegistry>;
   cache: TypedDiskCache<WorkerRegistry>;
   loader: TypedLoader<WorkerRegistry>;
+  cryptor: CryptorWithPassword;
 
-  constructor() {
+  constructor(password: string) {
     this.repository = new TypedRepository({
       collection: Collection.workerRegistries,
       schema: workerRegistrySchema,
@@ -118,6 +127,12 @@ export class WorkerRegistryService {
       prefix: 'worker-registries',
       schema: workerRegistrySchema,
     });
+
+    this.cryptor = new CryptorWithPassword({ password });
+
+    this.cache
+      .appendPostSerialize(new CacheEncryptor(this.cryptor))
+      .appendPreParse(new CacheDecryptor(this.cryptor));
 
     this.loader = new TypedLoader({
       cache: this.cache,
@@ -130,8 +145,9 @@ export class HolidaysService {
   repository: TypedRepository<HolidayType>;
   cache: TypedDiskCache<HolidayType>;
   loader: TypedLoader<HolidayType>;
+  cryptor: CryptorWithPassword;
 
-  constructor() {
+  constructor(password: string) {
     this.repository = new TypedRepository({
       collection: Collection.holidays,
       schema: holidaySchema,
@@ -141,6 +157,12 @@ export class HolidaysService {
       prefix: 'holidays',
       schema: holidaySchema,
     });
+
+    this.cryptor = new CryptorWithPassword({ password });
+
+    this.cache
+      .appendPostSerialize(new CacheEncryptor(this.cryptor))
+      .appendPreParse(new CacheDecryptor(this.cryptor));
 
     this.loader = new TypedLoader({
       cache: this.cache,
