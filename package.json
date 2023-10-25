@@ -23,10 +23,9 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "electron": "electron .",
-    "dev:bundle": "esbuild src/renderer/index.ts --bundle --target=es2020 --watch --sourcemap --outdir=public",
-    "prod:bundle": "tsx scripts/prod-bundle.ts",
-    "build": "tsc -p src/app",
-    "build:watch": "tsx scripts/dev-build.ts",
+    "build:app": "tsc -p src/app",
+    "build:prod": "node scripts build:prod",
+    "build:dev": "node scripts build:dev",
     "build:scripts": "tsc -p scripts && tsc-alias -p scripts/tsconfig.json"
   },
   "keywords": [],
