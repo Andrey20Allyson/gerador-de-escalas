@@ -3,12 +3,14 @@ import { Holidays, WorkerRegistriesMap } from "@andrey-allyson/escalas-automatic
 import fs from 'fs/promises';
 import { HolidayType, RegistryEntryType, WorkerRegistry, holidaySchema, workerRegistrySchema } from "../base";
 import { TypedDiskCache } from "../cache/typed-cache";
-import { Collection } from "../firebase";
 import { TypedLoader } from "../loaders/typed-loader";
 import { fromRoot } from "../path.utils";
 import { TypedRepository } from "../repositories/typed-repository";
 import CryptorWithPassword from "../cryptor/cryptor-with-password";
 import { CacheDecryptor, CacheEncryptor } from "../cache/cache-cryptor";
+import admin from 'firebase-admin';
+import { HOLIDAYS_COLLECTION_NAME, WORKER_REGISTRIES_COLLECTION_NAME } from "../firebase/collections";
+import { FirestoreInitializer } from "../firebase";
 
 export interface AppAssetsServices {
   readonly workerRegistry: WorkerRegistryService;
@@ -62,8 +64,19 @@ export class AppAssets {
     return this.data.holidays;
   }
 
-  async unlock(password: string) {
+  isServicesLocked() {
+    return this._services === null;
+  }
 
+  async unlockServices(password: string) {
+    const initializer = new FirestoreInitializer({ password });
+
+    const firestore = await initializer.getFirestore();
+
+    this._services = {
+      holidays: new HolidaysService({ firestore, password }),
+      workerRegistry: new WorkerRegistryService({ firestore, password }),
+    };
   }
 
   async load() {
@@ -111,20 +124,31 @@ export class AppAssets {
   }
 }
 
+export interface ServiceConfig {
+  password: string;
+  firestore: admin.firestore.Firestore;
+}
+
 export class WorkerRegistryService {
   repository: TypedRepository<WorkerRegistry>;
   cache: TypedDiskCache<WorkerRegistry>;
   loader: TypedLoader<WorkerRegistry>;
   cryptor: CryptorWithPassword;
 
-  constructor(password: string) {
+  constructor(config: ServiceConfig) {
+    const {
+      firestore,
+      password,
+    } = config;
+
     this.repository = new TypedRepository({
-      collection: Collection.workerRegistries,
+      firestore,
+      collectionName: WORKER_REGISTRIES_COLLECTION_NAME,
       schema: workerRegistrySchema,
     });
 
     this.cache = new TypedDiskCache({
-      prefix: 'worker-registries',
+      prefix: WORKER_REGISTRIES_COLLECTION_NAME,
       schema: workerRegistrySchema,
     });
 
@@ -147,14 +171,20 @@ export class HolidaysService {
   loader: TypedLoader<HolidayType>;
   cryptor: CryptorWithPassword;
 
-  constructor(password: string) {
+  constructor(config: ServiceConfig) {
+    const {
+      firestore,
+      password,
+    } = config;
+
     this.repository = new TypedRepository({
-      collection: Collection.holidays,
+      firestore,
+      collectionName: HOLIDAYS_COLLECTION_NAME,
       schema: holidaySchema,
     });
 
     this.cache = new TypedDiskCache({
-      prefix: 'holidays',
+      prefix: HOLIDAYS_COLLECTION_NAME,
       schema: holidaySchema,
     });
 

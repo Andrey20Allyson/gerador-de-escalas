@@ -5,6 +5,10 @@ import { CollectionHeaderType, colletionHeaderSchema } from "../../base";
 export class CollectionHeader {
   constructor(private readonly data: CollectionHeaderType) { }
 
+  get collectionName() {
+    return this.data.collectionName;    
+  }
+
   get lastUpdate() {
     return this.data.lastUpdate;
   }
@@ -13,7 +17,7 @@ export class CollectionHeader {
     return this.data.version;
   }
 
-  getJson(): CollectionHeaderType {
+  getJSON(): CollectionHeaderType {
     return clone(this.data);
   }
 

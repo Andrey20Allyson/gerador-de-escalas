@@ -1,6 +1,5 @@
 import admin from 'firebase-admin';
 import firestoreModule from 'firebase-admin/firestore';
-import { firestore } from '../firebase/firestore';
 import { ZodType } from "zod";
 import {
   CollectionHeaderType,
@@ -8,30 +7,36 @@ import {
   PartialDataRegistryEntryType,
   RegistryEntryType
 } from "../base";
-import { UpdateInfoHandler } from '../firebase';
+import { CollectionHeaderController } from '../firebase';
 import { Repository } from "./repository";
 
 export interface TypedRepositoryConfig<T> {
-  firestore?: admin.firestore.Firestore;
-  collection: admin.firestore.CollectionReference;
+  firestore: admin.firestore.Firestore;
+  collectionName: string;
   schema: ZodType<T>;
 }
 
 export class TypedRepository<T = unknown> implements Repository<T> {
   schema: ZodType<T>;
   collection: admin.firestore.CollectionReference;
-  firestore: admin.firestore.Firestore
+  firestore: admin.firestore.Firestore;
+  headerController: CollectionHeaderController;
 
   constructor(config: TypedRepositoryConfig<T>) {
     const {
-      collection,
+      collectionName,
       schema,
-      firestore: _firestore = firestore,
+      firestore,
     } = config;
 
     this.schema = schema;
-    this.collection = collection;
-    this.firestore = _firestore;
+    this.firestore = firestore;
+    this.collection = this.firestore.collection(collectionName);
+
+    this.headerController = new CollectionHeaderController({
+      collectionName,
+      firestore,
+    });
   }
 
   parseQuerySnapshot(querySnapshot: admin.firestore.QuerySnapshot): RegistryEntryType<T>[] {
@@ -70,23 +75,14 @@ export class TypedRepository<T = unknown> implements Repository<T> {
     return this.getFromDoc(docRef);
   }
 
-  private collectionHeaderFromUpdateInfo(info: UpdateInfoHandler): CollectionHeaderType {
-    return {
-      collectionName: this.collection.id,
-      ...info.getJson(),
-    };
-  }
-
-  async getHeader(): Promise<CollectionHeaderType> {
-    const info = await UpdateInfoHandler.fromCollectionRef(this.collection);
-
-    return this.collectionHeaderFromUpdateInfo(info);
+  getHeader(): Promise<CollectionHeaderType> {
+    return this.headerController.getJSON();
   }
 
   async releaseNewVersion(): Promise<CollectionHeaderType> {
-    const info = await UpdateInfoHandler.releaseNewVersionTo(this.collection);
-
-    return this.collectionHeaderFromUpdateInfo(info);
+    const header = await this.headerController.releaseNewVersion();
+  
+    return header.getJSON();
   }
 
   async getFromDoc(docRef: admin.firestore.DocumentReference): Promise<RegistryEntryType<T> | null> {

@@ -30,6 +30,12 @@ export class CollectionHeaderController {
     return this.collection.id;
   }
 
+  async getJSON() {
+    const header = await this.get();
+
+    return header.getJSON();
+  }
+
   async get() {
     return await this.firestore.runTransaction(async transaction => {
       const doc = await transaction.get(this.header);
@@ -47,7 +53,7 @@ export class CollectionHeaderController {
       const updateInfo = CollectionHeader.fromDoc(doc);
       updateInfo.releaseNewVersion();
 
-      transaction.update(this.header, updateInfo.getJson());
+      transaction.update(this.header, updateInfo.getJSON());
 
       return updateInfo;
     });
@@ -56,7 +62,7 @@ export class CollectionHeaderController {
   private create(transaction: admin.firestore.Transaction) {
     const updateInfo = CollectionHeader.create(this.getCollectionName());
 
-    transaction.create(this.header, updateInfo.getJson());
+    transaction.create(this.header, updateInfo.getJSON());
 
     return updateInfo;
   }
