@@ -1,5 +1,6 @@
 import admin from 'firebase-admin';
-import _firestore from 'firebase-admin/firestore';
+import firestoreModule from 'firebase-admin/firestore';
+import { firestore } from '../firebase/firestore';
 import { ZodType } from "zod";
 import {
   CollectionHeaderType,
@@ -8,32 +9,29 @@ import {
   RegistryEntryType
 } from "../base";
 import { UpdateInfoHandler } from '../firebase';
-import { firestore } from "../firebase/firestore";
-import { Config } from "../utils/config";
 import { Repository } from "./repository";
 
-export type TypedRepositoryConfig<T> = Config<{
-  firestore: admin.firestore.Firestore;
+export interface TypedRepositoryConfig<T> {
+  firestore?: admin.firestore.Firestore;
   collection: admin.firestore.CollectionReference;
   schema: ZodType<T>;
-},
-  | 'collection'
-  | 'schema'
->;
+}
 
 export class TypedRepository<T = unknown> implements Repository<T> {
-  config: Config.From<TypedRepositoryConfig<T>>;
+  schema: ZodType<T>;
+  collection: admin.firestore.CollectionReference;
+  firestore: admin.firestore.Firestore
 
-  constructor(config: Config.Partial<TypedRepositoryConfig<T>>) {
-    this.config = Config.from<TypedRepositoryConfig<T>>(config, { firestore });
-  }
+  constructor(config: TypedRepositoryConfig<T>) {
+    const {
+      collection,
+      schema,
+      firestore: _firestore = firestore,
+    } = config;
 
-  get schema() {
-    return this.config.schema;
-  }
-
-  get collection() {
-    return this.config.collection;
+    this.schema = schema;
+    this.collection = collection;
+    this.firestore = _firestore;
   }
 
   parseQuerySnapshot(querySnapshot: admin.firestore.QuerySnapshot): RegistryEntryType<T>[] {
@@ -142,9 +140,9 @@ export class TypedRepository<T = unknown> implements Repository<T> {
   runTransaction<TR = unknown>(
     updateFunction: (transaction: admin.firestore.Transaction) => Promise<TR>,
     transactionOptions:
-      | _firestore.ReadWriteTransactionOptions
-      | _firestore.ReadOnlyTransactionOptions
+      | firestoreModule.ReadWriteTransactionOptions
+      | firestoreModule.ReadOnlyTransactionOptions
   ): Promise<TR> {
-    return this.config.firestore.runTransaction(updateFunction, transactionOptions);
+    return this.firestore.runTransaction(updateFunction, transactionOptions);
   }
 }
