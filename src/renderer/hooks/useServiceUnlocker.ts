@@ -4,7 +4,7 @@ import { AppError, api } from "../api";
 export function useServiceUnlocker() {
   const [isLocked, setLocked] = useState(true);
 
-  async function requestIsLocked(): Promise<boolean> {
+  async function isServicesLocked(): Promise<boolean> {
     const isLocked = await api.isServicesLocked();
     if (!isLocked.ok) AppError.throwError(isLocked.error);
 
@@ -12,7 +12,7 @@ export function useServiceUnlocker() {
   }
 
   useEffect(() => {
-    requestIsLocked()
+    isServicesLocked()
       .then(isLocked => {
         if (isLocked) return;
 
@@ -27,12 +27,12 @@ export function useServiceUnlocker() {
       return;
     }
 
-    const isLocked = await requestIsLocked();
+    const isLocked = await isServicesLocked();
     if (isLocked) {
       alert('Services still locked!');
       return;
     }
-    
+
     setLocked(false);
   }
 
