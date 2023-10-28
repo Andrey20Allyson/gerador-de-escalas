@@ -24,7 +24,10 @@ export class APIHandler implements IpcMappingFactory {
   }
 
   async unlockServices(_: IpcMapping.IpcEvent, password: string) {
-    return this.assets.unlockServices(password);
+    const unlockResult = await this.assets.unlockServices(password);
+    if (unlockResult.ok === false) return unlockResult;
+    
+    this.assets.load();
   }
 
   isServicesLocked() {
