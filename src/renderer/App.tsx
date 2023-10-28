@@ -6,7 +6,7 @@ import Configuration from './pages/Configuration';
 import Editor from './pages/Editor';
 import Generator from './pages/Generator';
 import UnlockPage from './pages/Unlock';
-import { useServiceUnlocker } from './hooks/useServiceUnlock';
+import { useServiceUnlocker } from './hooks/useServiceUnlocker';
 
 type RouteCallback = () => React.JSX.Element;
 
