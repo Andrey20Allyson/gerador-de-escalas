@@ -1,4 +1,4 @@
-import { enumerate, iterReverse } from "../../utils";
+import { enumerate, iterReverse } from "@gde/renderer/utils";
 
 export function formatWorkerID(id: number, endSize = 1) {
   const str = id.toString();

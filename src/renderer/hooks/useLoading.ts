@@ -1,5 +1,5 @@
+import { sleep } from "@gde/renderer/utils";
 import { useState } from "react";
-import { sleep } from "../utils";
 
 export default function useLoading() {
   const [loading, setLoading] = useState(false);

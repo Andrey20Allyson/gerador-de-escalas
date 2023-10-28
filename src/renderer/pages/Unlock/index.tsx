@@ -1,6 +1,6 @@
 import React, { ChangeEvent, KeyboardEvent, useState } from "react";
-import styled from "styled-components";
 import { Dots } from 'react-activity';
+import styled from "styled-components";
 
 export interface UnlockPageProps {
   isLoading?: boolean;

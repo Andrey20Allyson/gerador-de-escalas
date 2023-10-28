@@ -1,11 +1,11 @@
+import { DutyEditor } from "@gde/app/api/table-edition";
+import { dutyTitles } from "@gde/renderer/components/DutyTableGrid/utils";
+import { BackgroundColor } from "@gde/renderer/styles";
+import { IterProps } from "@gde/renderer/utils/react-iteration";
 import React from "react";
 import { GrClose } from "react-icons/gr";
 import { PiBookOpen } from "react-icons/pi";
 import styled from "styled-components";
-import { DutyEditor } from "../../../app/api/table-edition";
-import { IterProps } from "../../utils/react-iteration";
-import { dutyTitles } from "../DutyTableGrid/utils";
-import { BackgroundColor } from "../../styles";
 
 export interface DutyCardProps {
   titleType?: 'numeric' | 'extence';

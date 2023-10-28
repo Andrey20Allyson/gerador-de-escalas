@@ -1,6 +1,6 @@
+import { TableEditor } from "@gde/app/api/table-edition";
+import { AppError, ErrorCode, api } from "@gde/renderer/api";
 import { useEffect, useState } from "react";
-import { TableEditor } from "../../app/api/table-edition";
-import { AppError, ErrorCode, api } from "../api";
 
 export type UseTableEditorResponse = {
   status: 'loading';

@@ -1,13 +1,13 @@
+import { WorkerEditor } from "@gde/app/api/table-edition";
+import { genderComponentMap, graduationTextColor2Map } from "@gde/renderer/components/DayEditionModal/utils";
+import { DutyCard } from "@gde/renderer/components/DutyCard";
+import { useDutySelectModal } from "@gde/renderer/components/DutySelectModal";
+import { useRerender } from "@gde/renderer/hooks";
+import { ColoredText } from "@gde/renderer/pages/Generator/WorkerEditionStage.styles";
+import { sleep } from "@gde/renderer/utils";
+import { ElementList, IterProps } from "@gde/renderer/utils/react-iteration";
 import React, { useEffect, useState } from "react";
 import { FaCalendarAlt, FaTrash } from 'react-icons/fa';
-import { WorkerEditor } from "../../../app/api/table-edition";
-import { useRerender } from "../../hooks";
-import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
-import { sleep } from "../../utils";
-import { ElementList, IterProps } from "../../utils/react-iteration";
-import { genderComponentMap, graduationTextColor2Map } from "../DayEditionModal/utils";
-import { DutyCard } from "../DutyCard";
-import { useDutySelectModal } from "../DutySelectModal";
 import { StyledWorkerEditionCard } from "./styles";
 import { formatWorkerID } from "./utils";
 

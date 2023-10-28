@@ -1,7 +1,7 @@
+import { AppError, RegistryEntryType, WorkerRegistry } from "@gde/app/base";
+import { api } from "@gde/renderer/api";
+import { AtonHook } from "@gde/renderer/utils/state";
 import React, { PropsWithChildren, createContext, useContext, useEffect } from "react";
-import { AppError, RegistryEntryType, WorkerRegistry } from "../../../app/base";
-import { AtonHook } from "../../utils/state";
-import { api } from "../../api";
 
 class WorkerRegistriesService {
   private _registries = new AtonHook<RegistryEntryType<WorkerRegistry>[]>([]);

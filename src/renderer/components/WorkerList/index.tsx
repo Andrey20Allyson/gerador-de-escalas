@@ -1,11 +1,11 @@
+import { useDayEditionModal } from "@gde/renderer/components/DayEditionModal";
+import { EditorContext } from "@gde/renderer/components/EditorTypeSelect/context";
+import { WorkerEditionCard } from "@gde/renderer/components/WorkerEditionCard";
+import { useRerender } from "@gde/renderer/hooks";
+import { ElementList } from "@gde/renderer/utils/react-iteration";
 import React, { useMemo, useState } from "react";
-import styled from "styled-components";
-import { useRerender } from "../../hooks";
-import { ElementList } from "../../utils/react-iteration";
-import { WorkerEditionCard } from "../WorkerEditionCard";
-import { useDayEditionModal } from "../DayEditionModal";
 import { BiSearch } from "react-icons/bi";
-import { EditorContext } from "../EditorTypeSelect/context";
+import styled from "styled-components";
 
 export function WorkerList() {
   const table = EditorContext.useEditorOrThrow();

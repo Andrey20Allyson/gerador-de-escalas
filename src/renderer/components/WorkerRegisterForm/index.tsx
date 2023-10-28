@@ -1,10 +1,10 @@
+import { WorkerRegistry } from "@gde/app/base";
+import Form, { FormController } from "@gde/renderer/components/Form";
+import { parsers } from "@gde/renderer/components/Form/context/parsing";
+import { CPFParser } from "@gde/renderer/components/Form/context/parsing/cpf";
 import React from "react";
 import { AiOutlineCloudUpload, AiOutlineDelete } from "react-icons/ai";
 import styled from "styled-components";
-import { WorkerRegistry } from "../../../../../app/base";
-import Form, { FormController } from "../Form";
-import { parsers } from "../Form/context/parsing";
-import { CPFParser } from "../Form/context/parsing/cpf";
 
 export interface WorkerRegisterFormProps {
   onSubmit?: (worker: WorkerRegistry) => void;

@@ -1,5 +1,5 @@
+import { AppError, api } from "@gde/renderer/api";
 import { useEffect, useState } from "react";
-import { AppError, api } from "../api";
 
 export function useServiceUnlocker() {
   const [isLocked, setLocked] = useState(true);

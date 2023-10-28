@@ -1,15 +1,15 @@
+import { AppError, WorkerRegistry } from "@gde/app/base";
+import { api } from "@gde/renderer/api";
+import { RegistryGrid } from "@gde/renderer/components/RegistryGrid";
+import { RegistrySearch } from "@gde/renderer/components/RegistrySearch";
+import { WorkerRegisterForm } from "@gde/renderer/components/WorkerRegisterForm";
+import { WorkerRegistryView } from "@gde/renderer/components/WorkerRegistryView";
+import { StyledToolsSection } from "@gde/renderer/pages/Editor/EditTableStage.styles";
+import { ElementList } from "@gde/renderer/utils/react-iteration";
 import React from "react";
 import { AiOutlineSave } from "react-icons/ai";
 import styled from "styled-components";
-import { ElementList } from "../../utils/react-iteration";
-import { StyledToolsSection } from "../Editor/EditTableStage.styles";
-import { RegistryGrid } from "./components/RegistryGrid";
-import { RegistrySearch } from "./components/RegistrySearch";
-import { WorkerRegisterForm } from "./components/WorkerRegisterForm";
-import { WorkerRegistryView } from "./components/WorkerRegistryView";
 import { WorkerRegistriesProvider, useWorkerRegistriesService } from "./workers.ctx";
-import { AppError, WorkerRegistry } from "../../../app/base";
-import { api } from "../../api";
 
 export default function ConfigurationPage() {
   return (

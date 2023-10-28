@@ -1,8 +1,8 @@
+import { WorkerEditor } from "@gde/app/api/table-generation/pre-generate-editor";
+import { useRerender } from "@gde/renderer/hooks";
+import { DayCell, DayGrid, WorkDayCell } from "@gde/renderer/pages/Generator/WorkerEditionStage.styles";
+import { getFirstSundayOfMonth, getNumOfDaysInMonth, iterRange } from '@gde/renderer/utils';
 import React from "react";
-import { WorkerEditor } from "../../app/api/table-generation/pre-generate-editor";
-import { useRerender } from "../hooks";
-import { DayCell, DayGrid, WorkDayCell } from "../pages/Generator/WorkerEditionStage.styles";
-import { getFirstSundayOfMonth, getNumOfDaysInMonth, iterRange } from '../utils';
 
 export interface WorkDayGridProps {
   worker: WorkerEditor;

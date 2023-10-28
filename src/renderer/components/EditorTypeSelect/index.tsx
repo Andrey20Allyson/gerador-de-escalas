@@ -1,9 +1,9 @@
+import { TableEditor } from '@gde/app/api/table-edition';
+import { hoveredBackground, normalBackground, selectedBackground } from '@gde/renderer/App.styles';
+import { RouteState } from '@gde/renderer/contexts/router';
 import React, { PropsWithChildren } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import styled, { css } from 'styled-components';
-import { TableEditor } from '../../../app/api/table-edition';
-import { hoveredBackground, normalBackground, selectedBackground } from '../../App.styles';
-import { RouteState } from '../../contexts/router';
 import { EditorContext, EditorRouterContext, Routes } from './context';
 
 export function EditorTypeSelect() {

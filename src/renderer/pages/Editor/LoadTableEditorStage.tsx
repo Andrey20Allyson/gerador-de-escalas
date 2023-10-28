@@ -1,12 +1,12 @@
+import { AppError, api } from "@gde/renderer/api";
+import { LoadTableFormData, LoadTableStage } from "@gde/renderer/components/LoadTableStage";
+import { useStage } from "@gde/renderer/contexts/stages";
+import { useLoading } from "@gde/renderer/hooks";
+import useTableEditor from "@gde/renderer/hooks/useTableEditor";
+import { StyledLinedBorder } from "@gde/renderer/pages/Generator/DataCollectStage.styles";
+import { sleep } from "@gde/renderer/utils";
 import React from "react";
-import { LoadTableFormData, LoadTableStage } from "../../components/LoadTableStage";
-import { AppError, api } from "../../api";
-import useTableEditor from "../../hooks/useTableEditor";
-import { useStage } from "../../contexts/stages";
-import { StyledLinedBorder } from "../Generator/DataCollectStage.styles";
-import { useLoading } from "../../hooks";
-import { sleep } from "../../utils";
-import { Spinner, Squares } from 'react-activity';
+import { Squares } from 'react-activity';
 
 export function LoadTableEditorStage() {
   const { next } = useStage();

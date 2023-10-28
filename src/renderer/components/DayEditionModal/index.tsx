@@ -1,15 +1,15 @@
+import { DayEditor, DutyEditor, TableEditor, WorkerEditor } from "@gde/app/api/table-edition";
+import { AvaliableWorkers } from "@gde/renderer/components/AvaliableWorkers";
+import { useDutySelectModal } from "@gde/renderer/components/DutySelectModal";
+import { dutyTitles } from "@gde/renderer/components/DutyTableGrid/utils";
+import { createModalContext } from "@gde/renderer/contexts/modal";
+import { useRerender } from "@gde/renderer/hooks";
+import { ColoredText } from "@gde/renderer/pages/Generator/WorkerEditionStage.styles";
+import { ElementList, IterProps } from "@gde/renderer/utils/react-iteration";
 import React, { useState } from "react";
 import { AiOutlineCloseCircle, AiOutlineDoubleLeft, AiOutlineDoubleRight, AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 import { FaCalendarAlt } from "react-icons/fa";
 import { HiUserRemove } from "react-icons/hi";
-import { DayEditor, DutyEditor, TableEditor, WorkerEditor } from "../../../app/api/table-edition";
-import { createModalContext } from "../../contexts/modal";
-import { useRerender } from "../../hooks";
-import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
-import { ElementList, IterProps } from "../../utils/react-iteration";
-import { AvaliableWorkers } from "../AvaliableWorkers";
-import { useDutySelectModal } from "../DutySelectModal";
-import { dutyTitles } from "../DutyTableGrid/utils";
 import {
   StyledDayViewModal,
   StyledDayViewNavigation,

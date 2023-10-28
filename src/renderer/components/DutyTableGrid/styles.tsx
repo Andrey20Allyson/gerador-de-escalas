@@ -1,5 +1,5 @@
+import { Gender, Graduation } from "@gde/renderer/extra-duty-lib";
 import styled, { css } from "styled-components";
-import { Graduation, Gender } from "../../extra-duty-lib";
 
 export const StyledExpandDayButton = styled.button`
   background-color: #ffffff22;
