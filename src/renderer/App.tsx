@@ -7,6 +7,8 @@ import Editor from './pages/Editor';
 import Generator from './pages/Generator';
 import UnlockPage from './pages/Unlock';
 import { useServiceUnlocker } from './hooks/useServiceUnlocker';
+import { AppError } from './api';
+import { AssetsErrorCode } from '../app/api/assets.error';
 
 type RouteCallback = () => React.JSX.Element;
 
@@ -52,6 +54,16 @@ export default function App() {
     await services.unlock(password);
   }
 
+  function getPasswordError() {
+    if (services.error === undefined) return;
+    
+    if (services.error.code === AssetsErrorCode.INCORRECT_PASSWORD) {
+      return true;
+    }
+
+    AppError.log(services.error);
+  }
+
   return (
     <Providers>
       <AppBody>
@@ -61,7 +73,7 @@ export default function App() {
           <StyledNavButton selected={route === 'Configuration'} onClick={() => navigate('Configuration')}>Configurações</StyledNavButton>
         </TopNav>
         <BodyCard>
-          {services.isLocked ? <UnlockPage onSubmit={handleUnlock} /> : <Router />}
+          {services.isLocked ? <UnlockPage hasPasswordError={getPasswordError()} onSubmit={handleUnlock} /> : <Router />}
         </BodyCard>
       </AppBody>
     </Providers>

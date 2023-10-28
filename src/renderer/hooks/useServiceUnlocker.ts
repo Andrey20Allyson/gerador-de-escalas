@@ -3,6 +3,7 @@ import { AppError, api } from "../api";
 
 export function useServiceUnlocker() {
   const [isLocked, setLocked] = useState(true);
+  const [error, setError] = useState<AppError<unknown>>();
 
   async function isServicesLocked(): Promise<boolean> {
     const isLocked = await api.isServicesLocked();
@@ -23,7 +24,7 @@ export function useServiceUnlocker() {
   async function unlock(password: string) {
     const result = await api.unlockServices(password);
     if (result.ok === false) {
-      AppError.log(result.error);
+      setError(result.error);
       return;
     }
 
@@ -36,5 +37,5 @@ export function useServiceUnlocker() {
     setLocked(false);
   }
 
-  return { isLocked, unlock };
+  return { isLocked, unlock, error };
 }

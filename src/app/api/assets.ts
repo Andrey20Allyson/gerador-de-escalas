@@ -11,6 +11,7 @@ import { CacheDecryptor, CacheEncryptor } from "../cache/cache-cryptor";
 import admin from 'firebase-admin';
 import { HOLIDAYS_COLLECTION_NAME, WORKER_REGISTRIES_COLLECTION_NAME } from "../firebase/collections";
 import { FirestoreInitializer } from "../firebase";
+import { AssetsErrorCode } from "./assets.error";
 
 export interface AppAssetsServices {
   readonly workerRegistry: WorkerRegistryService;
@@ -33,10 +34,6 @@ export class AppAssetsServicesLockedError extends Error {
   constructor() {
     super(`App assets services hasn't unlocked yet!`);
   }
-}
-
-export enum AssetsError {
-  INCORRECT_PASSWORD = 'assets:incorrect-password'
 }
 
 export class AppAssets {
@@ -72,7 +69,7 @@ export class AppAssets {
     return this._services === null;
   }
 
-  async unlockServices(password: string): Promise<AppResponse<void, AssetsError.INCORRECT_PASSWORD>> {
+  async unlockServices(password: string): Promise<AppResponse<void, AssetsErrorCode.INCORRECT_PASSWORD>> {
     const initializer = new FirestoreInitializer({ password });
 
     try {
@@ -85,7 +82,7 @@ export class AppAssets {
 
       return AppResponse.ok();
     } catch (err) {
-      return AppResponse.error(`The password '${password}' is incorrect!`, AssetsError.INCORRECT_PASSWORD);
+      return AppResponse.error(`The password '${password}' is incorrect!`, AssetsErrorCode.INCORRECT_PASSWORD);
     }
   }
 

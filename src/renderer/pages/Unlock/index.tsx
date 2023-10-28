@@ -2,12 +2,14 @@ import React, { ChangeEvent, KeyboardEvent, useState } from "react";
 import styled from "styled-components";
 
 export interface UnlockPageProps {
+  hasPasswordError?: boolean;
   onSubmit?: (password: string) => void;
 }
 
 export default function UnlockPage(props: UnlockPageProps) {
   const {
     onSubmit,
+    hasPasswordError = false,
   } = props;
 
   const [password, setPassword] = useState('');
@@ -31,8 +33,9 @@ export default function UnlockPage(props: UnlockPageProps) {
       <h1 className="title">Bem Vindo</h1>
       <label>
         Senha:
-        <input type="text" onChange={handleChange} onKeyDown={handleKeyDown} />
+        <input type="password" onChange={handleChange} onKeyDown={handleKeyDown} />
       </label>
+      {hasPasswordError && <small className="error-message">senha incorreta</small>}
       <button className="enter" onClick={submit}>Entrar</button>
     </StyledUnlockPage>
   );
@@ -45,6 +48,10 @@ export const StyledUnlockPage = styled.div`
   
   & .title {
     margin-bottom: 2rem;
+  }
+
+  & .error-message {
+    color: red;
   }
 
   & .enter {
