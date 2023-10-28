@@ -8,10 +8,6 @@ export function useServiceUnlocker() {
     const isLocked = await api.isServicesLocked();
     if (!isLocked.ok) AppError.throwError(isLocked.error);
 
-    if (isLocked.data === true) {
-      alert('Services still locked!');
-    }
-
     return isLocked.data;
   }
 
@@ -32,8 +28,11 @@ export function useServiceUnlocker() {
     }
 
     const isLocked = await requestIsLocked();
-    if (isLocked) return;
-
+    if (isLocked) {
+      alert('Services still locked!');
+      return;
+    }
+    
     setLocked(false);
   }
 
