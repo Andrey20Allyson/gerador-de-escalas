@@ -28,6 +28,8 @@ export class APIHandler implements IpcMappingFactory {
     if (unlockResult.ok === false) return unlockResult;
     
     this.assets.load();
+
+    return AppResponse.ok();
   }
 
   isServicesLocked() {
