@@ -46,6 +46,7 @@ export class FirestoreInitializer {
     return app;
   }
 
+  /**@throws If `password` is incorrect or if service account is invalid*/
   async getApp(): Promise<admin.app.App> {
     try {
       return admin.app(this.appName);
@@ -54,6 +55,7 @@ export class FirestoreInitializer {
     }
   }
 
+  /**@throws If `password` is incorrect or if service account is invalid*/
   async getFirestore(): Promise<admin.firestore.Firestore> {
     const app = await this.getApp();
     const firestore = app.firestore();

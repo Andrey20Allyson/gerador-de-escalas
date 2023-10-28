@@ -49,4 +49,8 @@ export namespace AppError {
       alert(AppError.stringify(error));
     }
   }
+
+  export function throwError(error: AppError<unknown>): never {
+    throw new Error(AppError.stringify(error));
+  }
 }

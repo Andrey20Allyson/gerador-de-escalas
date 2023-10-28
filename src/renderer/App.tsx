@@ -5,6 +5,8 @@ import { Providers } from './Providers';
 import Configuration from './pages/Configuration';
 import Editor from './pages/Editor';
 import Generator from './pages/Generator';
+import UnlockPage from './pages/Unlock';
+import { useServiceUnlocker } from './hooks/useServiceUnlock';
 
 type RouteCallback = () => React.JSX.Element;
 
@@ -44,6 +46,11 @@ const AppRoutes = createRoutes({
 
 export default function App() {
   const { Router, navigate, route } = useRoutes(AppRoutes, 'Generator');
+  const services = useServiceUnlocker();
+
+  async function handleUnlock(password: string) {
+    await services.unlock(password);
+  }
 
   return (
     <Providers>
@@ -54,7 +61,7 @@ export default function App() {
           <StyledNavButton selected={route === 'Configuration'} onClick={() => navigate('Configuration')}>Configurações</StyledNavButton>
         </TopNav>
         <BodyCard>
-          <Router />
+          {services.isLocked ? <UnlockPage onSubmit={handleUnlock} /> : <Router />}
         </BodyCard>
       </AppBody>
     </Providers>

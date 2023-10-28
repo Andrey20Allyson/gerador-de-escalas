@@ -1,7 +1,7 @@
 import { MainTableFactory } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories";
 import { Holidays, WorkerRegistriesMap } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import fs from 'fs/promises';
-import { HolidayType, RegistryEntryType, WorkerRegistry, holidaySchema, workerRegistrySchema } from "../base";
+import { AppError, AppResponse, ErrorCode, HolidayType, RegistryEntryType, WorkerRegistry, holidaySchema, workerRegistrySchema } from "../base";
 import { TypedDiskCache } from "../cache/typed-cache";
 import { TypedLoader } from "../loaders/typed-loader";
 import { fromRoot } from "../path.utils";
@@ -33,6 +33,10 @@ export class AppAssetsServicesLockedError extends Error {
   constructor() {
     super(`App assets services hasn't unlocked yet!`);
   }
+}
+
+export enum AssetsError {
+  INCORRECT_PASSWORD = 'assets:incorrect-password'
 }
 
 export class AppAssets {
@@ -68,15 +72,21 @@ export class AppAssets {
     return this._services === null;
   }
 
-  async unlockServices(password: string) {
+  async unlockServices(password: string): Promise<AppResponse<void, AssetsError.INCORRECT_PASSWORD>> {
     const initializer = new FirestoreInitializer({ password });
 
-    const firestore = await initializer.getFirestore();
+    try {
+      const firestore = await initializer.getFirestore();
+  
+      this._services = {
+        holidays: new HolidaysService({ firestore, password }),
+        workerRegistry: new WorkerRegistryService({ firestore, password }),
+      };
 
-    this._services = {
-      holidays: new HolidaysService({ firestore, password }),
-      workerRegistry: new WorkerRegistryService({ firestore, password }),
-    };
+      return AppResponse.ok();
+    } catch (err) {
+      return AppResponse.error(`The password '${password}' is incorrect!`, AssetsError.INCORRECT_PASSWORD);
+    }
   }
 
   async load() {

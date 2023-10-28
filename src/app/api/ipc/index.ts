@@ -1,3 +1,4 @@
+import { AppResponse } from '../../base';
 import { AppAssets } from '../assets';
 import { IpcMapping, IpcMappingFactory } from '../mapping';
 import { ConfigHandler } from './config';
@@ -22,13 +23,25 @@ export class APIHandler implements IpcMappingFactory {
     this.utils = new UtilsHandler();
   }
 
+  async unlockServices(_: IpcMapping.IpcEvent, password: string) {
+    return this.assets.unlockServices(password);
+  }
+
+  isServicesLocked() {
+    const isLocked = this.assets.isServicesLocked();
+
+    return AppResponse.ok(isLocked);
+  }
+
   handler() {
     return IpcMapping.create({
       config: this.config.handler(),
       generator: this.generator.handler(),
       editor: this.editor.handler(),
       utils: this.utils.handler(),
-    });
+      unlockServices: this.unlockServices,
+      isServicesLocked: this.isServicesLocked,
+    }, this);
   }
 }
 
