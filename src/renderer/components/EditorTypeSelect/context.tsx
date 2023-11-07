@@ -1,9 +1,9 @@
+import { TableEditor } from "@gde/app/api/table-edition";
+import { api, AppError } from "@gde/renderer/api";
+import { DutyTableGrid } from "@gde/renderer/components/DutyTableGrid";
+import { createRouterContext, InferRoutes, RouterContext, RoutesLike } from "@gde/renderer/contexts/router";
+import { UseTableEditorResponse } from "@gde/renderer/hooks/useTableEditor";
 import React, { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
-import { TableEditor } from "../../../app/api/table-edition";
-import { api, AppError } from "../../api";
-import { createRouterContext, InferRoutes, RouterContext, RoutesLike } from "../../contexts/router";
-import { UseTableEditorResponse } from "../../hooks/useTableEditor";
-import { DutyTableGrid } from "../DutyTableGrid";
 import { WorkerList } from "../WorkerList";
 import { NotSelected } from "./utils";
 
@@ -54,7 +54,7 @@ export function createEditorContext<R extends RoutesLike>(RouterContext: RouterC
 
         setTableResponse({ status: 'success', editor });
       }
-      
+
       if (tableResponse === undefined) load();
     }, []);
 
@@ -63,6 +63,15 @@ export function createEditorContext<R extends RoutesLike>(RouterContext: RouterC
     if (tableResponse.status === 'error') throw new Error(AppError.stringify(tableResponse.error));
 
     return tableResponse.status === 'success' ? tableResponse.editor : null;
+  }
+
+  function useClearEditor() {
+    const { setTableResponse } = useEditorContext();
+
+    return async () => {
+      setTableResponse(undefined);
+      await api.editor.clear();
+    }
   }
 
   function useEditorOrThrow() {
@@ -85,6 +94,7 @@ export function createEditorContext<R extends RoutesLike>(RouterContext: RouterC
     useEditor,
     useNavigate,
     useEditorOrThrow,
+    useClearEditor,
   };
 }
 

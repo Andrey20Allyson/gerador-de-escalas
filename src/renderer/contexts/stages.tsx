@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, PropsWithChildren, useEffect } from "react";
-import { LoadBar } from "../components/LoadBar";
+import { LoadBar } from "@gde/renderer/components/LoadBar";
 
 export type StageComponent = () => React.JSX.Element;
 

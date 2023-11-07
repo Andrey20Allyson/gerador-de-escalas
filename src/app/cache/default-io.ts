@@ -1,7 +1,8 @@
 import pfs from 'fs/promises';
 import path from 'path';
-import { Config } from "../utils/config";
+import { BufferReducer, DataTransformer } from './data-transformer';
 import { CacheIO } from "./io";
+import { PromiseOrNot } from './types';
 
 export type DefaultCacheIOPFS = Pick<typeof pfs,
   | 'readFile'
@@ -10,46 +11,76 @@ export type DefaultCacheIOPFS = Pick<typeof pfs,
   | 'mkdir'
 >;
 
-type PromiseOrNot<T> = Promise<T> | T; 
+export type CacheIOParser<T> = (data: Buffer) => PromiseOrNot<T>;
+export type CacheIOSerializer<T> = (data: T) => PromiseOrNot<Buffer>;
 
-export type DefaultCacheIOConfig<T> = Config<{
-  serializer: (data: T) => PromiseOrNot<string | Buffer>;
-  parser: (data: string) => PromiseOrNot<T>;
-  pfs: DefaultCacheIOPFS
+export interface DefaultCacheIOConfig<T> {
+  parser: CacheIOParser<T>;
   namespace: string;
-  directory: string;
-  extname: string;
-},
-  | 'namespace'
-  | 'parser'
->;
+  serializer?: CacheIOSerializer<T>;
+  pfs?: DefaultCacheIOPFS;
+  preParse?: BufferReducer | BufferReducer[];
+  postSerialize?: BufferReducer | BufferReducer[];
+  directory?: string;
+  extname?: string;
+}
+
+export function jsonToBuffer(data: unknown): Buffer {
+  const str = JSON.stringify(data);
+
+  return Buffer.from(str);
+}
 
 export class DefaultCacheIO<T> implements CacheIO<T> {
-  config: Config.From<DefaultCacheIOConfig<T>>;
+  readonly parser: CacheIOParser<T>;
+  readonly serializer: CacheIOSerializer<T>;
+  readonly preParse: DataTransformer;
+  readonly postSerialize: DataTransformer;
+  readonly pfs: DefaultCacheIOPFS;
+  readonly directory: string;
+  readonly extname: string;
+  readonly namespace: string;
 
-  constructor(config: Config.Partial<DefaultCacheIOConfig<T>>) {
-    this.config = Config.from<DefaultCacheIOConfig<T>>(config, {
-      serializer: JSON.stringify,
-      directory: '.cache',
-      extname: 'json',
-      pfs,
-    });
-  }
+  constructor(config: DefaultCacheIOConfig<T>) {
+    const {
+      namespace,
+      parser,
+      directory = '.cache',
+      extname = 'json',
+      pfs: _pfs = pfs,
+      serializer = jsonToBuffer,
+      preParse = [],
+      postSerialize = [],
+    } = config;
 
-  get pfs() {
-    return this.config.pfs;
+    this.parser = parser;
+    this.namespace = namespace;
+    this.directory = directory;
+    this.serializer = serializer;
+    this.pfs = _pfs;
+    this.extname = extname;
+    this.preParse = DataTransformer.from(preParse);
+    this.postSerialize = DataTransformer.from(postSerialize);
   }
 
   getPath() {
-    return path.resolve(this.config.directory, `${this.config.namespace}.${this.config.extname}`);
+    return path.resolve(this.directory, `${this.namespace}.${this.extname}`);
   }
 
   private async createCacheDirectoryIfDontExist() {
     try {
-      await this.pfs.access(this.config.directory);
+      await this.pfs.access(this.directory);
     } catch {
-      this.pfs.mkdir(this.config.directory);
+      this.pfs.mkdir(this.directory);
     }
+  }
+
+  getPostSerialize(): DataTransformer {
+    return this.postSerialize;
+  }
+
+  getPreParse(): DataTransformer {
+    return this.preParse;
   }
 
   async write(data: T): Promise<void> {
@@ -57,18 +88,20 @@ export class DefaultCacheIO<T> implements CacheIO<T> {
 
     this.createCacheDirectoryIfDontExist();
 
-    const buffer = await this.config.serializer(data);
+    const initialBuffer = await this.serializer(data);
+    const transformedBuffer = await this.postSerialize.transform(initialBuffer);
 
-    return this.pfs.writeFile(path, buffer);
+    return this.pfs.writeFile(path, transformedBuffer);
   }
 
   async read(): Promise<T | null> {
     const path = this.getPath();
 
     try {
-      const buffer = await this.pfs.readFile(path, 'utf-8');
+      const initialBuffer = await this.pfs.readFile(path);
+      const transformedBuffer = await this.preParse.transform(initialBuffer);
 
-      return this.config.parser(buffer);
+      return this.parser(transformedBuffer);
     } catch {
       return null;
     }

@@ -1,6 +1,6 @@
+import { PreGenerateEditor } from "@gde/app/api/table-generation/pre-generate-editor";
+import { AppError, api } from "@gde/renderer/api";
 import { useEffect, useState } from "react";
-import { PreGenerateEditor } from "../../app/api/table-generation/pre-generate-editor";
-import { AppError, api } from "../api";
 
 export default function usePreGenerateEditor() {
   const [editor, setData] = useState<PreGenerateEditor>();

@@ -1,13 +1,12 @@
+import { WorkerEditor } from "@gde/app/api/table-generation/pre-generate-editor";
+import { AppError, api } from "@gde/renderer/api";
+import { WorkDayGrid } from "@gde/renderer/components/WorkDayGrid";
+import { useStage } from "@gde/renderer/contexts/stages";
+import { usePreGenerateEditor, useRerender } from "@gde/renderer/hooks";
+import { saveFile, sleep } from "@gde/renderer/utils";
 import React, { useMemo, useState } from "react";
-import { WorkerEditor } from "../../../app/api/table-generation/pre-generate-editor";
-import { AppError, api } from "../../api";
-import { LoadSpinner } from "../../components/LoadSpinner";
-import { WorkDayGrid } from "../../components/WorkDayGrid";
-import { useStage } from "../../contexts/stages";
-import { usePreGenerateEditor, useRerender } from "../../hooks";
-import { saveFile, sleep } from "../../utils";
-import { ColoredText, Footer, HeaderLabel, HelpIcon, StageBody, StageHeader } from "./WorkerEditionStage.styles";
 import { StyledLinedBorder } from "./DataCollectStage.styles";
+import { ColoredText, Footer, HeaderLabel, HelpIcon, StageBody, StageHeader } from "./WorkerEditionStage.styles";
 
 function toNumber(value: string) {
   const number = +value;

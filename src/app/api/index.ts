@@ -8,7 +8,7 @@ import { IpcHandlerConsumer } from './mapping/app';
 io.setFileSystem(fs);
 
 export async function loadAPI(debug = false) {
-  const assets = await AppAssets.load();
+  const assets = new AppAssets();
 
   const handlerFactory = new APIHandler(assets);
 

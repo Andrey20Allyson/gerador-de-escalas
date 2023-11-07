@@ -1,16 +1,16 @@
+import { DutyEditor, WorkerEditor } from "@gde/app/api/table-edition";
+import { genderComponentMap } from "@gde/renderer/components/DayEditionModal/utils";
+import { DutyCard } from "@gde/renderer/components/DutyCard";
+import { useRulesModal } from "@gde/renderer/components/RulesModal";
+import { formatWorkerID } from "@gde/renderer/components/WorkerEditionCard/utils";
+import { createModalContext } from "@gde/renderer/contexts/modal";
+import { useRerender } from "@gde/renderer/hooks";
+import { ElementList } from "@gde/renderer/utils/react-iteration";
 import React from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { BsGearFill } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 import styled from "styled-components";
-import { DutyEditor, WorkerEditor } from "../../../app/api/table-edition";
-import { createModalContext } from "../../contexts/modal";
-import { useRerender } from "../../hooks";
-import { ElementList } from "../../utils/react-iteration";
-import { genderComponentMap } from "../DayEditionModal/utils";
-import { DutyCard } from "../DutyCard";
-import { useRulesModal } from "../RulesModal";
-import { formatWorkerID } from "../WorkerEditionCard/utils";
 import { DutySelectionGrid } from "./DutySelectionGrid";
 
 export interface DutySelectModalProps {

@@ -1,10 +1,15 @@
+import { AssetsErrorCode } from '@gde/app/api/assets.error';
 import React, { useState } from 'react';
 import './App.css';
 import { AppBody, BodyCard, StyledNavButton, TopNav } from './App.styles';
 import { Providers } from './Providers';
+import { AppError } from './api';
+import { useLoading } from './hooks';
+import { useServiceUnlocker } from './hooks/useServiceUnlocker';
 import Configuration from './pages/Configuration';
 import Editor from './pages/Editor';
 import Generator from './pages/Generator';
+import UnlockPage from './pages/Unlock';
 
 type RouteCallback = () => React.JSX.Element;
 
@@ -44,6 +49,22 @@ const AppRoutes = createRoutes({
 
 export default function App() {
   const { Router, navigate, route } = useRoutes(AppRoutes, 'Generator');
+  const services = useServiceUnlocker();
+  const { listen, loading } = useLoading();
+
+  async function handleUnlock(password: string) {
+    await listen(services.unlock(password));
+  }
+
+  function getPasswordError() {
+    if (services.error === undefined) return;
+    
+    if (services.error.code === AssetsErrorCode.INCORRECT_PASSWORD) {
+      return true;
+    }
+
+    AppError.log(services.error);
+  }
 
   return (
     <Providers>
@@ -54,7 +75,7 @@ export default function App() {
           <StyledNavButton selected={route === 'Configuration'} onClick={() => navigate('Configuration')}>Configurações</StyledNavButton>
         </TopNav>
         <BodyCard>
-          <Router />
+          {services.isLocked ? <UnlockPage isLoading={loading} hasPasswordError={getPasswordError()} onSubmit={handleUnlock} /> : <Router />}
         </BodyCard>
       </AppBody>
     </Providers>

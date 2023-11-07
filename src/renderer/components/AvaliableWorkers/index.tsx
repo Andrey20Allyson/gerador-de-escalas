@@ -1,13 +1,13 @@
+import { DutyEditor, WorkerEditor } from "@gde/app/api/table-edition";
+import { genderComponentMap, graduationTextColorMap } from "@gde/renderer/components/DayEditionModal/utils";
+import { useDutySelectModal } from "@gde/renderer/components/DutySelectModal";
+import { ColoredText } from "@gde/renderer/pages/Generator/WorkerEditionStage.styles";
+import { ElementList, IterProps } from "@gde/renderer/utils/react-iteration";
 import React, { useState } from "react";
 import { BiSearch } from "react-icons/bi";
 import { FaCalendarAlt } from "react-icons/fa";
 import { HiUserAdd } from "react-icons/hi";
 import styled from "styled-components";
-import { DutyEditor, WorkerEditor } from "../../../app/api/table-edition";
-import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
-import { ElementList, IterProps } from "../../utils/react-iteration";
-import { genderComponentMap, graduationTextColorMap } from "../DayEditionModal/utils";
-import { useDutySelectModal } from "../DutySelectModal";
 import { StyledAvaliableWorkerBody, StyledAvaliableWorkerSearchBody, StyledAvaliableWorkersScrollable, StyledAvaliableWorkersSection } from "./styles";
 
 export interface AvaliableWorkers {

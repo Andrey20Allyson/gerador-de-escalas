@@ -1,4 +1,6 @@
+import { Command } from 'commander';
 import { context } from 'esbuild';
+import { ProgramInitializer } from 'index';
 import ts from 'typescript';
 
 async function runDevBundle() {
@@ -57,10 +59,15 @@ function reportWatchStatusChanged(diagnostic: ts.Diagnostic) {
   console.info(ts.formatDiagnostic(diagnostic, formatHost));
 }
 
-async function main() {
-  await runDevBundle();
+export class DevBuildProgramInitializer implements ProgramInitializer {
+  initialize(program: Command): void {
+    program
+      .command('build:dev')
+      .description('build for development')
+      .action(async () => {
+        await runDevBundle();
 
-  runDevBuild();
+        runDevBuild();
+      });
+  }
 }
-
-main();

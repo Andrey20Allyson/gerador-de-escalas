@@ -1,9 +1,8 @@
+import { DayEditor, DutyEditor, WorkerEditor } from "@gde/app/api/table-edition";
+import { iterRange } from "@gde/renderer/utils";
+import { ElementList, IterProps } from "@gde/renderer/utils/react-iteration";
 import React from "react";
-import { HiOutlineArrowsExpand } from "react-icons/hi";
-import { WorkerEditor, DayEditor, DutyEditor } from "../../../app/api/table-edition";
-import { getWeekDayLabel, iterRange } from "../../utils";
-import { ElementList, IterProps } from "../../utils/react-iteration";
-import { StyledDay, StyledDayTitle, StyledDutiesContainer, StyledDuty, StyledDutyHeader, StyledDutySlot, StyledDutyTitle, StyledEmpityDutySlot, StyledExpandDayButton } from "./styles";
+import { StyledDay, StyledDayTitle, StyledDutiesContainer, StyledDuty, StyledDutyHeader, StyledDutySlot, StyledDutyTitle, StyledEmpityDutySlot } from "./styles";
 
 export const dutyTitles = [
   '7 as 19h',

@@ -1,7 +1,7 @@
+import { StageProvider, StageRouter } from "@gde/renderer/contexts/stages";
 import React from "react";
-import { StageLoadBar, StageProvider, StageRouter } from "../../contexts/stages";
-import { LoadTableEditorStage } from "./LoadTableEditorStage";
 import { EditTableStage } from "./EditTableStage";
+import { LoadTableEditorStage } from "./LoadTableEditorStage";
 
 export default function Editor() {
   return (

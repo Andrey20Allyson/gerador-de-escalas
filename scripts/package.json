@@ -1,0 +1,4 @@
+{
+  "name": "scripts",
+  "main": "dist/scripts/index.js"
+}

@@ -1,4 +1,4 @@
-import { AtonHook } from "../../../../../utils/state";
+import { AtonHook } from "@gde/renderer/utils/state";
 import { FormField, FormFieldValue } from "./form-field";
 
 export type FormControllerData = Partial<Record<string, FormFieldValue>>;

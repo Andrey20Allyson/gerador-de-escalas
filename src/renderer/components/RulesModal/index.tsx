@@ -1,7 +1,7 @@
+import { TableEditor } from '@gde/app/api/table-edition';
+import { createModalContext } from '@gde/renderer/contexts/modal';
 import React, { MutableRefObject, useState } from 'react';
 import styled from 'styled-components';
-import { TableEditor } from '../../../app/api/table-edition';
-import { createModalContext } from '../../contexts/modal';
 
 export interface RulesModalProps {
   table: TableEditor;

@@ -1,9 +1,8 @@
-
+import { useDayEditionModal } from '@gde/renderer/components/DayEditionModal';
+import { EditorContext } from '@gde/renderer/components/EditorTypeSelect/context';
+import { firstMondayFromYearAndMonth, iterRange } from '@gde/renderer/utils';
+import { ElementList } from '@gde/renderer/utils/react-iteration';
 import React from 'react';
-import { firstMondayFromYearAndMonth, iterRange } from '../../utils';
-import { ElementList } from '../../utils/react-iteration';
-import { useDayEditionModal } from '../DayEditionModal';
-import { EditorContext } from '../EditorTypeSelect/context';
 import { StyledDayEditionGrid } from './styles';
 import { DayView } from './utils';
 

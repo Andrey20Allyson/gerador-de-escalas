@@ -1,5 +1,5 @@
+import { Scrollable } from '@gde/renderer/components/Scrollable';
 import React, { PropsWithChildren } from 'react';
-import { Scrollable } from '../Scrollable';
 import { StyledRegistryGrid, StyledRegistryGridBody } from './styles';
 
 export interface RegistryGridProps extends PropsWithChildren { }

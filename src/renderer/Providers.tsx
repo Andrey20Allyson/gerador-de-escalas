@@ -1,9 +1,9 @@
 import React, { PropsWithChildren } from 'react';
+import { DayEditionModalProvider } from './components/DayEditionModal';
 import { DutySelectModalProvider } from './components/DutySelectModal';
+import { EditorContext } from './components/EditorTypeSelect/context';
 import { RulesModalProvider } from './components/RulesModal';
 import { SaveTableModalProvider } from './components/SaveTableModal';
-import { EditorContext } from './components/EditorTypeSelect/context';
-import { DayEditionModalProvider } from './components/DayEditionModal';
 
 export function Providers(props: PropsWithChildren) {
   return (

@@ -1,11 +1,10 @@
+import { DayEditor, DutyEditor, WorkerEditor } from '@gde/app/api/table-edition';
+import { dutyTitles } from '@gde/renderer/components/DutyTableGrid/utils';
+import { getWeekDayLabel } from '@gde/renderer/utils';
+import { ElementList, IterProps } from '@gde/renderer/utils/react-iteration';
 import React from 'react';
-import styled from 'styled-components';
-import { DayEditor, DutyEditor, WorkerEditor } from '../../../../app/api/table-edition';
-import { ElementList, IterProps } from '../../../utils/react-iteration';
-import { dutyTitles } from '../../DutyTableGrid/utils';
 import { BsPeopleFill } from 'react-icons/bs';
-import { dayOfWeekFrom, firstMondayFromYearAndMonth } from '@andrey-allyson/escalas-automaticas/dist/utils';
-import { getWeekDayLabel } from '../../../utils';
+import styled from 'styled-components';
 
 export interface DutySelectionGridProps {
   worker: WorkerEditor;
