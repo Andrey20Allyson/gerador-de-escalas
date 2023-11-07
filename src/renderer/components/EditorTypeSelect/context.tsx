@@ -54,7 +54,7 @@ export function createEditorContext<R extends RoutesLike>(RouterContext: RouterC
 
         setTableResponse({ status: 'success', editor });
       }
-      
+
       if (tableResponse === undefined) load();
     }, []);
 
@@ -63,6 +63,15 @@ export function createEditorContext<R extends RoutesLike>(RouterContext: RouterC
     if (tableResponse.status === 'error') throw new Error(AppError.stringify(tableResponse.error));
 
     return tableResponse.status === 'success' ? tableResponse.editor : null;
+  }
+
+  function useClearEditor() {
+    const { setTableResponse } = useEditorContext();
+
+    return async () => {
+      setTableResponse(undefined);
+      await api.editor.clear();
+    }
   }
 
   function useEditorOrThrow() {
@@ -85,6 +94,7 @@ export function createEditorContext<R extends RoutesLike>(RouterContext: RouterC
     useEditor,
     useNavigate,
     useEditorOrThrow,
+    useClearEditor,
   };
 }
 

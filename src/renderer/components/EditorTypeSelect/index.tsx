@@ -1,7 +1,7 @@
 import { TableEditor } from '@gde/app/api/table-edition';
 import { hoveredBackground, normalBackground, selectedBackground } from '@gde/renderer/App.styles';
 import { RouteState } from '@gde/renderer/contexts/router';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useEffect } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import styled, { css } from 'styled-components';
 import { EditorContext, EditorRouterContext, Routes } from './context';
@@ -30,9 +30,11 @@ export function LoadedEditorTypeSelect(props: LoadedEditorTypeSelectProps) {
   const navigate = EditorRouterContext.useNavigate();
   const route = EditorRouterContext.useRoute();
 
-  if (route.is('NotSelected')) {
-    navigate('WorkerList');
-  }
+  useEffect(() => {
+    if (route.is('NotSelected')) {
+      navigate('WorkerList');
+    }
+  }, [route.name]); 
 
   return <EditorRouterContext.Router />;
 }

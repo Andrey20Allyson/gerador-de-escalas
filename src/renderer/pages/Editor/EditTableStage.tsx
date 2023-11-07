@@ -4,7 +4,7 @@ import { EditorContext } from "@gde/renderer/components/EditorTypeSelect/context
 import { useRulesModal } from "@gde/renderer/components/RulesModal";
 import { useSaveTableModal } from "@gde/renderer/components/SaveTableModal";
 import { useStage } from "@gde/renderer/contexts/stages";
-import React from "react";
+import React, { useEffect } from "react";
 import { AiOutlineSave } from "react-icons/ai";
 import { BsArrowReturnLeft, BsGear } from 'react-icons/bs';
 import { GoTriangleDown } from 'react-icons/go';
@@ -16,6 +16,7 @@ export function EditTableStage() {
   const rulesModal = useRulesModal();
   const table = EditorContext.useEditor();
   const changeEditor = EditorContext.useNavigate();
+  const clearEditor = EditorContext.useClearEditor();
 
   function handleSaveAs() {
     if (!table) return;
@@ -29,9 +30,13 @@ export function EditTableStage() {
     rulesModal.open({ table });
   }
 
-  async function handlePrev() {
-    await editor.clear();
+  useEffect(() => {
+    return () => {
+      clearEditor();
+    }
+  }, []);
 
+  async function handlePrev() {
     prev();
   }
 
