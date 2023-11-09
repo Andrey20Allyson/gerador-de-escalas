@@ -104,7 +104,14 @@ export const tableEditorSlice = createSlice({
   }
 });
 
-export const { addRelationship, clear, removeRelationShip } = tableEditorSlice.actions;
+export const {
+  addRelationship,
+  clear,
+  removeRelationShip,
+  initialize,
+  redo,
+  undo,
+} = tableEditorSlice.actions;
 
 export type StateSelector<S, R> = (state: S) => R;
 
