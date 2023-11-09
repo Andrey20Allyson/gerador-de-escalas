@@ -21,10 +21,6 @@ const initialState: TableEditorState = {
   history: [],
 };
 
-export function currentState(state: TableEditorState): TableData | null {
-  return state.history.at(state.undoIndex) ?? null;
-}
-
 export function pushToHistory(state: TableEditorState, newData: TableData) {
   state.history = [
     newData,
@@ -54,7 +50,7 @@ export const tableEditorSlice = createSlice({
       return initialState;
     },
     addRelationship(state, action: PayloadAction<AddRelationshipPayload>) {
-      const current = currentState(state);
+      const current = currentDataSelector(state);
       if (current === null) return;
 
       const idGenerator = new IdGenerator(current.idCounters);
@@ -77,7 +73,7 @@ export const tableEditorSlice = createSlice({
       pushToHistory(state, newData);
     },
     removeRelationShip(state, action: PayloadAction<RemoveRelationshipPayload>) {
-      const current = currentState(state);
+      const current = currentDataSelector(state);
       if (current === null) return;
 
       const newData: TableData = {
@@ -108,8 +104,12 @@ export function tableEditorSelector(state: RootState): TableEditorState {
   return state.tableEditor;
 }
 
+export function currentDataSelector(state: TableEditorState): TableData | null {
+  return state.history.at(state.undoIndex) ?? null;
+}
+
 export function relationshipsSelector(state: RootState): DutyAndWorkerRelationship[] {
-  const current = currentState(tableEditorSelector(state));
+  const current = currentDataSelector(tableEditorSelector(state));
   if (current === null) throw new Error();
 
   return current.dutyAndWorkerRelationships;
