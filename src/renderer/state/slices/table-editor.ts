@@ -16,6 +16,10 @@ export interface RemoveRelationshipPayload {
   id: number;
 }
 
+export interface InitializerPayload {
+  tableData: TableData;
+}
+
 const initialState: TableEditorState = {
   undoIndex: 0,
   history: [],
@@ -48,6 +52,10 @@ export const tableEditorSlice = createSlice({
   reducers: {
     clear() {
       return initialState;
+    },
+    initialize(state, action: PayloadAction<InitializerPayload>) {
+      state.history = [action.payload.tableData];
+      state.undoIndex = 0;
     },
     addRelationship(state, action: PayloadAction<AddRelationshipPayload>) {
       const current = currentDataSelector(state);
@@ -110,7 +118,7 @@ export function currentDataSelector(state: TableEditorState): TableData | null {
 
 export function relationshipsSelector(state: RootState): DutyAndWorkerRelationship[] {
   const current = currentDataSelector(tableEditorSelector(state));
-  if (current === null) throw new Error();
+  if (current === null) throw new Error(`Table editor has't initialized yet!`);
 
   return current.dutyAndWorkerRelationships;
 }
