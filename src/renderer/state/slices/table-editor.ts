@@ -58,7 +58,7 @@ export const tableEditorSlice = createSlice({
       state.undoIndex = 0;
     },
     addRelationship(state, action: PayloadAction<AddRelationshipPayload>) {
-      const current = currentDataSelector(state);
+      const current = currentTableSelector(state);
       if (current === null) return;
 
       const idGenerator = new IdGenerator(current.idCounters);
@@ -80,8 +80,8 @@ export const tableEditorSlice = createSlice({
 
       pushToHistory(state, newData);
     },
-    removeRelationShip(state, action: PayloadAction<RemoveRelationshipPayload>) {
-      const current = currentDataSelector(state);
+    removeRelationship(state, action: PayloadAction<RemoveRelationshipPayload>) {
+      const current = currentTableSelector(state);
       if (current === null) return;
 
       const newData: TableData = {
@@ -107,7 +107,7 @@ export const tableEditorSlice = createSlice({
 export const {
   addRelationship,
   clear,
-  removeRelationShip,
+  removeRelationship,
   initialize,
   redo,
   undo,
@@ -119,12 +119,12 @@ export function tableEditorSelector(state: RootState): TableEditorState {
   return state.tableEditor;
 }
 
-export function currentDataSelector(state: TableEditorState): TableData | null {
+export function currentTableSelector(state: TableEditorState): TableData | null {
   return state.history.at(state.undoIndex) ?? null;
 }
 
 export function relationshipsSelector(state: RootState): DutyAndWorkerRelationship[] {
-  const current = currentDataSelector(tableEditorSelector(state));
+  const current = currentTableSelector(tableEditorSelector(state));
   if (current === null) throw new Error(`Table editor has't initialized yet!`);
 
   return current.dutyAndWorkerRelationships;
