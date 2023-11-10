@@ -4,7 +4,7 @@ import { DutySelectModalProvider } from './components/DutySelectModal';
 import { EditorContext } from './components/EditorTypeSelect/context';
 import { RulesModalProvider } from './components/RulesModal';
 import { SaveTableModalProvider } from './components/SaveTableModal';
-import Redux from 'react-redux';
+import * as Redux from 'react-redux';
 import { store } from './state/store';
 
 export function Providers(props: PropsWithChildren) {
