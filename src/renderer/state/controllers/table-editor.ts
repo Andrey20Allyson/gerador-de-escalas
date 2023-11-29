@@ -11,13 +11,38 @@ export function currentTableFromRootSelector(state: RootState) {
   return table;
 }
 
-export class DutyEditorController {
-  readonly dispatcher = useAppDispatch();
+export interface IDutyEditor {
+  remove(workerId: number): this;
+  add(workerId: number): this;
+  relationships(): DutyAndWorkerRelationship[];
+  size(): number;
+  workers(): WorkerData[];
+}
+
+export type DispatcherType = ReturnType<typeof useAppDispatch>;
+
+export interface EditorControllerOptions {
+  dispatcher?: DispatcherType;
+  table?: TableData;
+}
+
+export interface DutyEditorControllerOptions extends EditorControllerOptions { }
+
+export class DutyEditorController implements IDutyEditor {
+  readonly dispatcher: DispatcherType;
   readonly table: TableData;
   readonly duty: DutyData;
 
-  constructor(dutyId: number) {
-    this.table = useAppSelector(currentTableFromRootSelector);
+  constructor(dutyId: number);
+  constructor(dutyId: number, options: DutyEditorControllerOptions);
+  constructor(dutyId: number, options: DutyEditorControllerOptions = {}) {
+    const {
+      dispatcher = useAppDispatch(),
+      table = useAppSelector(currentTableFromRootSelector),
+    } = options;
+
+    this.table = table;
+    this.dispatcher = dispatcher;
 
     const duty = this.table.duties.find(duty => duty.id === dutyId);
     if (duty === undefined) throw new Error(`Duty with id ${dutyId} can't be found!`);
@@ -66,22 +91,29 @@ export class DutyEditorController {
     });
   }
 
-  static from(array: (number | DutyData)[]): DutyEditorController[] {
-    return array.map(value => {
-      if (typeof value === 'number') {
-        return new DutyEditorController(value);
-      } else {
-        return new DutyEditorController(value.id);
-      }
+  static from(iterable: Iterable<number | DutyData>): DutyEditorController[] {
+    const options: DutyEditorControllerOptions = {
+      dispatcher: useAppDispatch(),
+      table: useAppSelector(currentTableFromRootSelector),
+    };
+
+    return Array.from(iterable, value => {
+      const dutyId = typeof value === 'number' ? value : value.id;
+
+      return new DutyEditorController(dutyId, options);
     });
   }
 }
+
+export interface WorkerEditorControllerOptions extends EditorControllerOptions { }
 
 export class WorkerEditorController {
   readonly dispatcher = useDispatch();
   readonly table: TableData;
   readonly worker: WorkerData;
 
+  constructor(workerId: number);
+  constructor(workerId: number, options: WorkerEditorControllerOptions);
   constructor(workerId: number) {
     this.table = useAppSelector(currentTableFromRootSelector);
 
@@ -125,6 +157,19 @@ export class WorkerEditorController {
       if (duty === undefined) throw new Error(`Can't find duty with id ${relationship.dutyId}!`);
 
       return duty;
+    });
+  }
+
+  static from(iterable: Iterable<number | WorkerData>): WorkerEditorController[] {
+    const options: WorkerEditorControllerOptions = {
+      dispatcher: useAppDispatch(),
+      table: useAppSelector(currentTableFromRootSelector),
+    };
+
+    return Array.from(iterable, value => {
+      const dutyId = typeof value === 'number' ? value : value.id;
+
+      return new WorkerEditorController(dutyId, options);
     });
   }
 }
