@@ -3,6 +3,7 @@ import { LoadTableFormData, LoadTableStage } from "@gde/renderer/components/Load
 import { useStage } from "@gde/renderer/contexts/stages";
 import { useLoading, useTableData } from "@gde/renderer/hooks";
 import { StyledLinedBorder } from "@gde/renderer/pages/Generator/DataCollectStage.styles";
+import { TableEditorController } from "@gde/renderer/state/controllers/table-editor";
 import { sleep } from "@gde/renderer/utils";
 import React from "react";
 import { Squares } from 'react-activity';
@@ -13,7 +14,8 @@ export function LoadTableEditorStage() {
   const tableResponse = useTableData();
 
   if (tableResponse.status === 'success') {
-    
+    new TableEditorController()
+      .load(tableResponse.data);
     next();
   }
 
