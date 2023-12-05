@@ -89,7 +89,6 @@ export class AppAssets {
   async load() {
     const [
       registries,
-      holidaysRegistries,
       patternBuffer,
     ] = await Promise.all([
       this.services.workerRegistry.loader
@@ -97,14 +96,11 @@ export class AppAssets {
         .then(AppAssets.mapEntitiesData)
         .then(AppAssets.normalizeWorkersId),
 
-      this.services.holidays.loader
-        .load()
-        .then(AppAssets.mapEntitiesData),
-
       fs.readFile(fromRoot('./assets/output-pattern.xlsx')),
     ]);
 
-    const holidays = Holidays.from(holidaysRegistries);
+    // TODO remove holidays from whole application
+    const holidays = Holidays.from([]);
     const workerRegistryMap = new WorkerRegistriesMap(registries);
     const serializer = new MainTableFactory(patternBuffer);
 

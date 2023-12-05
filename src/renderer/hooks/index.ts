@@ -9,3 +9,8 @@ export {
   useRerender,
   useLoading,
 };
+
+export {
+  useAppDispatch,
+  useAppSelector
+} from './state-hooks';
