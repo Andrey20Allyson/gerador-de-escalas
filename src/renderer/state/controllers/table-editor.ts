@@ -1,5 +1,5 @@
-import { useAppDispatch, useAppSelector } from "@gde/renderer/hooks";
-import { addRelationship, currentTableSelector, removeRelationship, tableEditorSelector } from "../slices/table-editor";
+import { useAppDispatch, useAppSelector, useTableData } from "@gde/renderer/hooks";
+import { currentTableSelector, editorActions, tableEditorSelector } from "../slices/table-editor";
 import { DutyAndWorkerRelationship, DutyData, TableData, WorkerData } from "@gde/app/api/table-reactive-edition/table";
 import { useDispatch } from "react-redux";
 import { RootState } from "../store";
@@ -56,7 +56,7 @@ export class DutyEditorController implements IDutyEditor {
     });
     if (foundRelationship === undefined) return this;
 
-    this.dispatcher(removeRelationship({ id: foundRelationship.id }));
+    this.dispatcher(editorActions.removeRelationship({ id: foundRelationship.id }));
 
     return this;
   }
@@ -67,7 +67,7 @@ export class DutyEditorController implements IDutyEditor {
     });
     if (alreadyHasHelationship) return this;
 
-    this.dispatcher(addRelationship({ dutyId: this.duty.id, workerId }));
+    this.dispatcher(editorActions.addRelationship({ dutyId: this.duty.id, workerId }));
 
     return this;
   }
@@ -108,14 +108,19 @@ export class DutyEditorController implements IDutyEditor {
 export interface WorkerEditorControllerOptions extends EditorControllerOptions { }
 
 export class WorkerEditorController {
-  readonly dispatcher = useDispatch();
+  readonly dispatcher: DispatcherType;
   readonly table: TableData;
   readonly worker: WorkerData;
 
   constructor(workerId: number);
   constructor(workerId: number, options: WorkerEditorControllerOptions);
-  constructor(workerId: number) {
-    this.table = useAppSelector(currentTableFromRootSelector);
+  constructor(workerId: number, options: WorkerEditorControllerOptions = {}) {
+    const {
+      dispatcher = useAppDispatch(),
+      table = useAppSelector(currentTableFromRootSelector),
+    } = options;
+    this.table = table;
+    this.dispatcher = dispatcher;
 
     const worker = this.table.workers.find(worker => worker.id === workerId);
     if (worker === undefined) throw new Error(`Worker with id ${workerId} can't be found!`);
@@ -129,7 +134,7 @@ export class WorkerEditorController {
     });
     if (foundRelationship === undefined) return this;
 
-    this.dispatcher(removeRelationship({ id: foundRelationship.id }));
+    this.dispatcher(editorActions.removeRelationship({ id: foundRelationship.id }));
 
     return this;
   }
@@ -140,7 +145,7 @@ export class WorkerEditorController {
     });
     if (alreadyHasHelationship) return this;
 
-    this.dispatcher(addRelationship({ workerId: this.worker.id, dutyId }));
+    this.dispatcher(editorActions.addRelationship({ workerId: this.worker.id, dutyId }));
 
     return this;
   }
@@ -174,4 +179,27 @@ export class WorkerEditorController {
   }
 }
 
-export class TableEditorController { }
+export interface TableEditorControllerOptions extends EditorControllerOptions { }
+
+export class TableEditorController {
+  dispatcher: DispatcherType;
+  constructor(options: TableEditorControllerOptions = {}) {
+    const {
+      dispatcher = useAppDispatch(),
+    } = options;
+
+    this.dispatcher = dispatcher;
+  }
+
+  load(data: TableData) {
+    this.dispatcher(editorActions.initialize({ tableData: data }));
+  }
+
+  undo() {
+
+  }
+
+  redo() {
+
+  }
+}

@@ -2,21 +2,21 @@ import { TableEditor } from "@gde/app/api/table-edition";
 import { api, AppError } from "@gde/renderer/api";
 import { DutyTableGrid } from "@gde/renderer/components/DutyTableGrid";
 import { createRouterContext, InferRoutes, RouterContext, RoutesLike } from "@gde/renderer/contexts/router";
-import { UseTableEditorResponse } from "@gde/renderer/hooks/useTableEditor";
 import React, { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
 import { WorkerList } from "../WorkerList";
 import { NotSelected } from "./utils";
+import { TableDataResponse } from "@gde/renderer/hooks/useTableData";
 
 export interface EditorContext {
-  tableResponse: UseTableEditorResponse | undefined;
-  setTableResponse: (table: UseTableEditorResponse | undefined) => void;
+  tableResponse: TableDataResponse | undefined;
+  setTableResponse: (table: TableDataResponse | undefined) => void;
 }
 
 export function createEditorContext<R extends RoutesLike>(RouterContext: RouterContext<R>) {
   const ctx = createContext<EditorContext | null>(null);
 
   function Provider(props: PropsWithChildren) {
-    const [tableResponse, setTableResponse] = useState<UseTableEditorResponse>();
+    const [tableResponse, setTableResponse] = useState<TableDataResponse>();
 
     return (
       <ctx.Provider value={{

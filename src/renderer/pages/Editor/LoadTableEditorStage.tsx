@@ -1,8 +1,7 @@
 import { AppError, api } from "@gde/renderer/api";
 import { LoadTableFormData, LoadTableStage } from "@gde/renderer/components/LoadTableStage";
 import { useStage } from "@gde/renderer/contexts/stages";
-import { useLoading } from "@gde/renderer/hooks";
-import useTableEditor from "@gde/renderer/hooks/useTableEditor";
+import { useLoading, useTableData } from "@gde/renderer/hooks";
 import { StyledLinedBorder } from "@gde/renderer/pages/Generator/DataCollectStage.styles";
 import { sleep } from "@gde/renderer/utils";
 import React from "react";
@@ -11,9 +10,10 @@ import { Squares } from 'react-activity';
 export function LoadTableEditorStage() {
   const { next } = useStage();
   const { listen, loading } = useLoading();
-  const tableResponse = useTableEditor();
+  const tableResponse = useTableData();
 
   if (tableResponse.status === 'success') {
+    
     next();
   }
 
