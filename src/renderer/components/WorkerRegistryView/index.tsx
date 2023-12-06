@@ -1,7 +1,7 @@
-import { AppError, RegistryEntryType, WorkerRegistry } from "@gde/app/base";
-import { api } from "@gde/renderer/api";
-import { useWorkerRegistriesService } from "@gde/renderer/pages/Configuration/workers.ctx";
-import { IterProps } from "@gde/renderer/utils/react-iteration";
+import { AppError, RegistryEntryType, WorkerRegistry } from "../../../app/base";
+import { api } from "../../api";
+import { useWorkerRegistriesService } from "../../pages/Configuration/workers.ctx";
+import { IterProps } from "../../utils/react-iteration";
 import React from "react";
 import { GoPencil, GoTrash } from "react-icons/go";
 import { StyledWorkerRegistryView } from "./styles";

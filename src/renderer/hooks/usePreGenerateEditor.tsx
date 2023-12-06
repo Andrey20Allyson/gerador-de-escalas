@@ -1,5 +1,5 @@
-import { PreGenerateEditor } from "@gde/app/api/table-generation/pre-generate-editor";
-import { AppError, api } from "@gde/renderer/api";
+import { PreGenerateEditor } from "../../app/api/table-generation/pre-generate-editor";
+import { AppError, api } from "../api";
 import { useEffect, useState } from "react";
 
 export default function usePreGenerateEditor() {

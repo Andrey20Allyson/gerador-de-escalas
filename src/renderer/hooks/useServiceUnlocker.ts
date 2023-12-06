@@ -1,4 +1,4 @@
-import { AppError, api } from "@gde/renderer/api";
+import { AppError, api } from "../api";
 import { useEffect, useState } from "react";
 
 export function useServiceUnlocker() {

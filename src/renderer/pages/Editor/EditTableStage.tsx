@@ -1,13 +1,12 @@
-import { editor } from "@gde/renderer/api";
-import { EditorTypeSelect } from "@gde/renderer/components/EditorTypeSelect";
-import { EditorContext } from "@gde/renderer/components/EditorTypeSelect/context";
-import { useRulesModal } from "@gde/renderer/components/RulesModal";
-import { useSaveTableModal } from "@gde/renderer/components/SaveTableModal";
-import { useStage } from "@gde/renderer/contexts/stages";
+import { EditorTypeSelect } from "../../components/EditorTypeSelect";
+import { EditorContext } from "../../components/EditorTypeSelect/context";
+import { useRulesModal } from "../../components/RulesModal";
+import { useSaveTableModal } from "../../components/SaveTableModal";
 import React, { useEffect } from "react";
 import { AiOutlineSave } from "react-icons/ai";
 import { BsArrowReturnLeft, BsGear } from 'react-icons/bs';
 import { GoTriangleDown } from 'react-icons/go';
+import { useStage } from "../../contexts/stages";
 import { StyledEditTableStageBody, StyledSelector, StyledToolsSection } from "./EditTableStage.styles";
 
 export function EditTableStage() {

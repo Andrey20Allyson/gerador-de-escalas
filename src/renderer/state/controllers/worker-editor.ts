@@ -1,5 +1,5 @@
-import { TableData, WorkerData, DutyData } from "@gde/app/api/table-reactive-edition/table";
-import { useAppDispatch, useAppSelector } from "@gde/renderer/hooks";
+import { TableData, WorkerData, DutyData } from "../../../app/api/table-reactive-edition/table";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 import { editorActions } from "../slices/table-editor";
 import { EditorControllerOptions, DispatcherType, currentTableFromRootSelector } from "./table-editor";
 
@@ -33,6 +33,14 @@ export class WorkerEditorController {
     if (foundRelationship === undefined) return this;
 
     this.dispatcher(editorActions.removeRelationship({ id: foundRelationship.id }));
+
+    return this;
+  }
+
+  leaveAll() {
+    for (const duty of this.duties()) {
+      this.leave(duty.id);      
+    }
 
     return this;
   }

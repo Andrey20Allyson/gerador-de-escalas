@@ -1,11 +1,11 @@
-import { TableEditor } from "@gde/app/api/table-edition";
-import { api, AppError } from "@gde/renderer/api";
-import { DutyTableGrid } from "@gde/renderer/components/DutyTableGrid";
-import { createRouterContext, InferRoutes, RouterContext, RoutesLike } from "@gde/renderer/contexts/router";
+import { TableEditor } from "../../../app/api/table-edition";
+import { api, AppError } from "../../api";
+import { DutyTableGrid } from "../../components/DutyTableGrid";
+import { createRouterContext, InferRoutes, RouterContext, RoutesLike } from "../../contexts/router";
 import React, { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
 import { WorkerList } from "../WorkerList";
 import { NotSelected } from "./utils";
-import { TableDataResponse } from "@gde/renderer/hooks/useTableData";
+import { TableDataResponse } from "../../hooks/useTableData";
 
 export interface EditorContext {
   tableResponse: TableDataResponse | undefined;

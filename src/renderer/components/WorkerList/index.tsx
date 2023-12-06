@@ -1,23 +1,25 @@
-import { useDayEditionModal } from "@gde/renderer/components/DayEditionModal";
-import { EditorContext } from "@gde/renderer/components/EditorTypeSelect/context";
-import { WorkerEditionCard } from "@gde/renderer/components/WorkerEditionCard";
-import { useRerender } from "@gde/renderer/hooks";
-import { ElementList } from "@gde/renderer/utils/react-iteration";
+import { useDayEditionModal } from "../../components/DayEditionModal";
+import { WorkerEditionCard } from "../../components/WorkerEditionCard";
+import { useRerender } from "../../hooks";
+import { WorkerEditorController } from "../../state/controllers/worker-editor";
+import { ElementList } from "../../utils/react-iteration";
 import React, { useMemo, useState } from "react";
 import { BiSearch } from "react-icons/bi";
 import styled from "styled-components";
 
 export function WorkerList() {
-  const table = EditorContext.useEditorOrThrow();
+  const workerControllers = WorkerEditorController.all();
   const [search, setSearch] = useState<string>();
 
-  const workers = useMemo(() => {
-    return Array.from(table.iterWorkers()).sort((a, b) => a.name().toLowerCase() < b.name().toLowerCase() ? -1 : 1)
-  }, [table.data.workers]);
+  const workers = workerControllers.map(controller => controller.worker);
+
+  const sortedWorkers = useMemo(() => {
+    return Array.from(workers).sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1)
+  }, [workers]);
   const modal = useDayEditionModal();
   const rerender = useRerender();
 
-  const filteredWorkers = search ? workers.filter(worker => worker.name().toUpperCase().includes(search.toUpperCase())) : workers;
+  const filteredWorkers = search ? sortedWorkers.filter(worker => worker.name.toUpperCase().includes(search.toUpperCase())) : workers;
 
   function handleOpenModal(dayIndex: number, dutyIndex: number) {
     modal.open({ table, dayIndex, dutyIndex, onUpdate: rerender });
@@ -37,7 +39,7 @@ export function WorkerList() {
       </section>
       <section className='scroll-box'>
         <span className='scrolable'>
-          <ElementList communProps={{ onOpenModal: handleOpenModal }} Component={WorkerEditionCard} iter={filteredWorkers} />
+          <ElementList communProps={{ onOpenModal: handleOpenModal }} Component={WorkerEditionCard} iter={filteredWorkers.map(worker => worker.id)} />
         </span>
       </section>
     </StyledWorkerList>

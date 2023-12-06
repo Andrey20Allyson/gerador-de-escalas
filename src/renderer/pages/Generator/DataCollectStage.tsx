@@ -1,6 +1,6 @@
-import { AppError, api } from "@gde/renderer/api";
-import { useStage } from "@gde/renderer/contexts/stages";
-import { parseNumberOrThrow } from "@gde/renderer/utils";
+import { AppError, api } from "../../api";
+import { useStage } from "../../contexts/stages";
+import { parseNumberOrThrow } from "../../utils";
 import React, { useState } from "react";
 import { StyledLinedBorder } from "./DataCollectStage.styles";
 import { HeaderLabel } from "./WorkerEditionStage.styles";

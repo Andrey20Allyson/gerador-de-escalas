@@ -1,6 +1,6 @@
-import { DayEditor, DutyEditor, WorkerEditor } from "@gde/app/api/table-edition";
-import { iterRange } from "@gde/renderer/utils";
-import { ElementList, IterProps } from "@gde/renderer/utils/react-iteration";
+import { DayEditor, DutyEditor, WorkerEditor } from "../../../app/api/table-edition";
+import { iterRange } from "../../utils";
+import { ElementList, IterProps } from "../../utils/react-iteration";
 import React from "react";
 import { StyledDay, StyledDayTitle, StyledDutiesContainer, StyledDuty, StyledDutyHeader, StyledDutySlot, StyledDutyTitle, StyledEmpityDutySlot } from "./styles";
 

@@ -1,11 +1,11 @@
-import { DayEditor, DutyEditor, TableEditor, WorkerEditor } from "@gde/app/api/table-edition";
-import { AvaliableWorkers } from "@gde/renderer/components/AvaliableWorkers";
-import { useDutySelectModal } from "@gde/renderer/components/DutySelectModal";
-import { dutyTitles } from "@gde/renderer/components/DutyTableGrid/utils";
-import { createModalContext } from "@gde/renderer/contexts/modal";
-import { useRerender } from "@gde/renderer/hooks";
-import { ColoredText } from "@gde/renderer/pages/Generator/WorkerEditionStage.styles";
-import { ElementList, IterProps } from "@gde/renderer/utils/react-iteration";
+import { DayEditor, DutyEditor, TableEditor, WorkerEditor } from "../../../app/api/table-edition";
+import { AvaliableWorkers } from "../../components/AvaliableWorkers";
+import { useDutySelectModal } from "../../components/DutySelectModal";
+import { dutyTitles } from "../../components/DutyTableGrid/utils";
+import { createModalContext } from "../../contexts/modal";
+import { useRerender } from "../../hooks";
+import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
+import { ElementList, IterProps } from "../../utils/react-iteration";
 import React, { useState } from "react";
 import { AiOutlineCloseCircle, AiOutlineDoubleLeft, AiOutlineDoubleRight, AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 import { FaCalendarAlt } from "react-icons/fa";
@@ -25,23 +25,26 @@ import {
   StyledWorkerViewBody,
 } from "./styles";
 import { genderComponentMap, graduationTextColorMap } from "./utils";
+import { TableEditorController } from "../../state/controllers/table-editor";
 
 export interface DayViewModalProps {
   dutyIndex?: number;
   dayIndex?: number;
-  table: TableEditor;
   onUpdate?: () => void;
 }
 
 export function DayEditionModal(props: DayViewModalProps) {
+  const { dutyIndex: startDutyIndex = 0, dayIndex: startDayIndex = 0, onUpdate } = props;
+
   const modal = useDayEditionModal();
-  const { dutyIndex: startDutyIndex = 0, dayIndex: startDayIndex = 0, table, onUpdate } = props;
+  const tableController = new TableEditorController();
+  const { table } = tableController;
 
   const [dutyIndex, setDutyIndex] = useState(startDutyIndex);
   const [dayIndex, setDayIndex] = useState(startDayIndex);
 
   const rerender = useRerender();
-  const day = table.getDay(dayIndex);
+  const tableNumOfDays = table.config.numOfDays;
   const duty = day.getDuty(dutyIndex);
 
   const dutyViewContent = duty.numOfWorkers() > 0
@@ -58,14 +61,14 @@ export function DayEditionModal(props: DayViewModalProps) {
   }
 
   function nextDay() {
-    const nextDayIndex = (dayIndex + 1) % table.numOfDays();
+    const nextDayIndex = (dayIndex + 1) % tableNumOfDays;
 
     setDayIndex(nextDayIndex);
   }
 
   function prevDay() {
     const prevDayIndex = dayIndex - 1;
-    const normalizedPrevDayIndex = (prevDayIndex < 0 ? table.numOfDays() + prevDayIndex : prevDayIndex) % table.numOfDays();
+    const normalizedPrevDayIndex = (prevDayIndex < 0 ? tableNumOfDays + prevDayIndex : prevDayIndex) % tableNumOfDays;
 
     setDayIndex(normalizedPrevDayIndex);
   }

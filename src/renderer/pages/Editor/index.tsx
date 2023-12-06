@@ -1,4 +1,4 @@
-import { StageProvider, StageRouter } from "@gde/renderer/contexts/stages";
+import { StageProvider, StageRouter } from "../../contexts/stages";
 import React from "react";
 import { EditTableStage } from "./EditTableStage";
 import { LoadTableEditorStage } from "./LoadTableEditorStage";

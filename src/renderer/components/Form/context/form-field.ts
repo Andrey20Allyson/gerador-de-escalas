@@ -1,6 +1,6 @@
 import { ChangeEvent } from 'react';
 import { FormController } from "./form-controller";
-import { ParserLike, Result } from './parsing';
+import { ParserLike, Result } from '../parsing';
 import { ValuePipe } from './value-pipe';
 
 export type AttrNameThatTypeExtends<O, T> = {

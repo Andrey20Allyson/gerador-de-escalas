@@ -1,10 +1,10 @@
-import { AppError, api } from "@gde/renderer/api";
-import { LoadTableFormData, LoadTableStage } from "@gde/renderer/components/LoadTableStage";
-import { useStage } from "@gde/renderer/contexts/stages";
-import { useLoading, useTableData } from "@gde/renderer/hooks";
-import { StyledLinedBorder } from "@gde/renderer/pages/Generator/DataCollectStage.styles";
-import { TableEditorController } from "@gde/renderer/state/controllers/table-editor";
-import { sleep } from "@gde/renderer/utils";
+import { AppError, api } from "../../api";
+import { LoadTableFormData, LoadTableStage } from "../../components/LoadTableStage";
+import { useStage } from "../../contexts/stages";
+import { useLoading, useTableData } from "../../hooks";
+import { StyledLinedBorder } from "../../pages/Generator/DataCollectStage.styles";
+import { TableEditorController } from "../../state/controllers/table-editor";
+import { sleep } from "../../utils";
 import React from "react";
 import { Squares } from 'react-activity';
 

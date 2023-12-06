@@ -1,7 +1,15 @@
-import { TableData, DutyData, DutyAndWorkerRelationship, WorkerData } from "@gde/app/api/table-reactive-edition/table";
-import { useAppDispatch, useAppSelector } from "@gde/renderer/hooks";
+import { DutyAndWorkerRelationship, DutyData, TableData, WorkerData } from "../../../app/api/table-reactive-edition/table";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 import { editorActions } from "../slices/table-editor";
-import { EditorControllerOptions, IDutyEditor, DispatcherType, currentTableFromRootSelector } from "./table-editor";
+import { DispatcherType, EditorControllerOptions, currentTableFromRootSelector } from "./table-editor";
+
+export interface IDutyEditor {
+  remove(workerId: number): this;
+  add(workerId: number): this;
+  relationships(): DutyAndWorkerRelationship[];
+  size(): number;
+  workers(): WorkerData[];
+}
 
 export interface DutyEditorControllerOptions extends EditorControllerOptions { }
 
@@ -48,6 +56,41 @@ export class DutyEditorController implements IDutyEditor {
 
     return this;
   }
+  
+  shift(count: number) {
+    const dutyLimit = this.table.config.dutyCapacity;
+    const numOfDays = this.table.config.numOfDays;
+    const dutyIdx = this.duty.index;
+    const day = this.duty.day;
+
+    const dayShift = Math.floor((count + dutyIdx) / dutyLimit);
+    
+    const nextIdx = (dutyIdx + dutyLimit + count % dutyLimit) % dutyLimit;
+    const nextDay = (day + dayShift + numOfDays) % numOfDays;
+
+    const duty = this.table.duties.find(duty => duty.day === nextDay && duty.index === nextIdx);
+    if (!duty) throw new Error(`Can't find duty at day ${nextDay} in duty index ${nextIdx}`);
+
+    const { table, dispatcher } = this;
+
+    return new DutyEditorController(duty.id, { table, dispatcher });
+  }
+
+  next(count: number = 1) {
+    return this.shift(count);
+  }
+
+  prev(count: number = 1) {
+    return this.shift(-count);
+  }
+
+  nextDay(count: number = 1) {
+    return this.next(count * 2);
+  }
+
+  prevDay(count: number = 1) {
+    return this.prev(count * 2);
+  }
 
   relationships(): DutyAndWorkerRelationship[] {
     return this.table.dutyAndWorkerRelationships.filter(relationship => relationship.dutyId === this.duty.id);
@@ -81,9 +124,17 @@ export class DutyEditorController implements IDutyEditor {
     });
   }
 
+  static find(day: number, index: number): DutyData {
+    const table = useAppSelector(currentTableFromRootSelector);
+    const duty = table.duties.find(duty => duty.day === day && duty.index === index);
+    if (!duty) throw new Error(`Can't find duty at day ${day} in index ${index}`);
+
+    return duty;
+  }
+
   static all(): DutyEditorController[] {
     const table = useAppSelector(currentTableFromRootSelector);
-    
+
     const options: DutyEditorControllerOptions = {
       dispatcher: useAppDispatch(),
       table,

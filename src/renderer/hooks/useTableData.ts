@@ -1,4 +1,4 @@
-import { TableData } from "@gde/app/api/table-reactive-edition/table";
+import { TableData } from "../../app/api/table-reactive-edition/table";
 import { useEffect, useState } from "react";
 import { AppError, AppResponse, ErrorCode, api } from "../api";
 

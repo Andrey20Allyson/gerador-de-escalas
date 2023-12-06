@@ -1,5 +1,5 @@
 import React from "react";
-import { StageProvider, StageRouter } from "@gde/renderer/contexts/stages";
+import { StageProvider, StageRouter } from "../../contexts/stages";
 import { DataCollectStage } from "./DataCollectStage";
 import { WorkerEditionStage } from "./WorkerEditionStage";
 

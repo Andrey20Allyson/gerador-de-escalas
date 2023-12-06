@@ -1,7 +1,7 @@
-import { DayEditor, DutyEditor, WorkerEditor } from '@gde/app/api/table-edition';
-import { dutyTitles } from '@gde/renderer/components/DutyTableGrid/utils';
-import { getWeekDayLabel } from '@gde/renderer/utils';
-import { ElementList, IterProps } from '@gde/renderer/utils/react-iteration';
+import { DayEditor, DutyEditor, WorkerEditor } from '../../../../app/api/table-edition';
+import { dutyTitles } from '../../../components/DutyTableGrid/utils';
+import { getWeekDayLabel } from '../../../utils';
+import { ElementList, IterProps } from '../../../utils/react-iteration';
 import React from 'react';
 import { BsPeopleFill } from 'react-icons/bs';
 import styled from 'styled-components';

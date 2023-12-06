@@ -1,4 +1,4 @@
-import { DutyAndWorkerRelationship, IdGenerator, TableData, TableFactory } from "@gde/app/api/table-reactive-edition/table";
+import { DutyAndWorkerRelationship, IdGenerator, TableData, TableFactory } from "../../../app/api/table-reactive-edition/table";
 import { createSlice, PayloadAction, } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 

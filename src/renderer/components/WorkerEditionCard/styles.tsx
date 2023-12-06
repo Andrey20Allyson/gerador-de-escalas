@@ -1,4 +1,4 @@
-import { BackgroundColor } from "@gde/renderer/styles";
+import { BackgroundColor } from "../../styles";
 import styled from "styled-components";
 
 export const StyledWorkerEditionCard = styled.span`

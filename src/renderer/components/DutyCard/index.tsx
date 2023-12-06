@@ -1,7 +1,7 @@
-import { DutyEditor } from "@gde/app/api/table-edition";
-import { dutyTitles } from "@gde/renderer/components/DutyTableGrid/utils";
-import { BackgroundColor } from "@gde/renderer/styles";
-import { IterProps } from "@gde/renderer/utils/react-iteration";
+import { dutyTitles } from "../../components/DutyTableGrid/utils";
+import { DutyEditorController } from "../../state/controllers/duty-editor";
+import { BackgroundColor } from "../../styles";
+import { IterProps } from "../../utils/react-iteration";
 import React from "react";
 import { GrClose } from "react-icons/gr";
 import { PiBookOpen } from "react-icons/pi";
@@ -10,8 +10,8 @@ import styled from "styled-components";
 export interface DutyCardProps {
   titleType?: 'numeric' | 'extence';
 
-  onOpenModal?: (day: number, duty: number) => void;
-  onExcludeDuty?: (day: number, duty: number) => void;
+  onOpenModal?: (id: number) => void;
+  onExcludeDuty?: (id: number) => void;
 }
 
 const dutyMessageMap = new Map([
@@ -19,28 +19,29 @@ const dutyMessageMap = new Map([
   [1, 'N'],
 ]);
 
-export function DutyCard(props: IterProps<DutyEditor, DutyCardProps>) {
+export function DutyCard(props: IterProps<number, DutyCardProps>) {
   const { onOpenModal, onExcludeDuty, titleType = 'numeric' } = props;
 
-  const duty = props.entry;
+  const dutyController = new DutyEditorController(props.entry);
+  const duty = dutyController.duty;
   const { day } = duty;
 
   function handleOpenModal() {
-    onOpenModal?.(day.index(), duty.index());
+    onOpenModal?.(duty.id);
   }
 
   function handleExcludeDuty() {
-    onExcludeDuty?.(day.index(), duty.index());
+    onExcludeDuty?.(duty.id);
   }
 
   let title: string;
 
   switch (titleType) {
     case 'extence':
-      title = `Dia ${day.index() + 1} - Turno das ${dutyTitles.at(duty.index())}`;
+      title = `Dia ${day + 1} - Turno das ${dutyTitles.at(duty.index)}`;
       break;
     case 'numeric':
-      title = `Dia ${day.index() + 1} - ${dutyMessageMap.get(duty.index()) ?? '?'}`
+      title = `Dia ${day + 1} - ${dutyMessageMap.get(duty.index) ?? '?'}`
       break;
   }
 
