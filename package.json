@@ -21,6 +21,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "vitest",
+    "test:renderer": "jest",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
