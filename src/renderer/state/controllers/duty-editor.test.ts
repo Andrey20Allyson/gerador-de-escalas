@@ -25,7 +25,7 @@ function mockTable(): TableData {
 
   return {
     duties: mockDuties(numOfDays, dutyCapacity),
-    config: { dutyCapacity, month: 11, numOfDays, year: 2023 },
+    config: { workerCapacity: 5, dutyCapacity, month: 11, numOfDays, year: 2023 },
     dutyAndWorkerRelationships: [],
     idCounters: new Map(),
     workers: [],

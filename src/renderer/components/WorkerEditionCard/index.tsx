@@ -14,7 +14,7 @@ import { WorkerEditorController } from "../../state/controllers/worker-editor";
 import { DutyEditorController } from "../../state/controllers/duty-editor";
 
 export interface WorkerEditionCardProps {
-  onOpenModal?: (day: number, duty: number) => void;
+  onOpenModal?: (dutyId: number) => void;
 }
 
 export function WorkerEditionCard(props: IterProps<number, WorkerEditionCardProps>) {
@@ -22,7 +22,8 @@ export function WorkerEditionCard(props: IterProps<number, WorkerEditionCardProp
 
   const workerController = new WorkerEditorController(props.entry);
   const { worker } = workerController;
-  const duties = workerController.duties();
+
+  const dutyIds = workerController.duties().map(duty => duty.id);
   
   const [copiedID, setCopiedID] = useState(false);
   const dutyModal = useDutySelectModal();
@@ -50,10 +51,8 @@ export function WorkerEditionCard(props: IterProps<number, WorkerEditionCardProp
 
   const formattedWorkerID = formatWorkerID(worker.workerId);
 
-  function handleExcludeDuty(day: number, duty: number) {
-    const dutyController = DutyEditorController.find(day, duty);
-
-    workerController.leave(dutyController.duty.id);
+  function handleExcludeDuty(dutyId: number) {
+    workerController.leave(dutyId);
   }
 
   function handleExcludeAllDuties() {
@@ -67,13 +66,13 @@ export function WorkerEditionCard(props: IterProps<number, WorkerEditionCardProp
   }
 
   function handleOpenDutySelection() {
-    dutyModal.open({ worker: workerController, onUpdate: rerender });
+    dutyModal.open({ workerId: worker.id });
   }
 
   return (
     <StyledWorkerEditionCard>
       <section className='presentation'>
-        <p className='name'>{workerController.name()}</p>
+        <p className='name'>{worker.name}</p>
         <div className='info'>
           <Gender />
           <ColoredText className='graduation' color={graduationTextColor2Map[graduation]}>{upperCaseGraduation}</ColoredText>
@@ -88,7 +87,7 @@ export function WorkerEditionCard(props: IterProps<number, WorkerEditionCardProp
         </div>
       </section>
       <section className='duty-list'>
-        <ElementList Component={DutyCard} communProps={{ onExcludeDuty: handleExcludeDuty, onOpenModal }} iter={duties} />
+        <ElementList Component={DutyCard} communProps={{ onExcludeDuty: handleExcludeDuty, onOpenModal }} iter={dutyIds} />
       </section>
       <section className='commands'>
         <button className='add-duty-button' onClick={handleOpenDutySelection}>

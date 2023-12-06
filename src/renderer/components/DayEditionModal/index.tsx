@@ -25,76 +25,47 @@ import {
   StyledWorkerViewBody,
 } from "./styles";
 import { genderComponentMap, graduationTextColorMap } from "./utils";
-import { TableEditorController } from "../../state/controllers/table-editor";
+import { Searcher, TableEditorController } from "../../state/controllers/table-editor";
+import { DutyEditorController } from "state/controllers/duty-editor";
 
-export interface DayViewModalProps {
-  dutyIndex?: number;
-  dayIndex?: number;
-  onUpdate?: () => void;
+export interface DutyViewModalProps {
+  dutyId: number;
 }
 
-export function DayEditionModal(props: DayViewModalProps) {
-  const { dutyIndex: startDutyIndex = 0, dayIndex: startDayIndex = 0, onUpdate } = props;
+export function DutyEditionModal(props: DutyViewModalProps) {
+  const { dutyId: startDutyId } = props;
 
-  const modal = useDayEditionModal();
   const tableController = new TableEditorController();
   const { table } = tableController;
 
-  const [dutyIndex, setDutyIndex] = useState(startDutyIndex);
-  const [dayIndex, setDayIndex] = useState(startDayIndex);
+  const [dutyId, setDutyId] = useState(startDutyId);
+  const dutyController = new DutyEditorController(dutyId);
+  const { duty } = dutyController;
 
-  const rerender = useRerender();
-  const tableNumOfDays = table.config.numOfDays;
-  const duty = day.getDuty(dutyIndex);
+  const modal = useDayEditionModal();
 
-  const dutyViewContent = duty.numOfWorkers() > 0
-    ? <ElementList communProps={{ duty, onUpdate: update }} iter={duty.iterWorkers()} Component={WorkerCard} />
+  const dutyViewContent = dutyController.size() > 0
+    ? <ElementList communProps={{}} iter={dutyController.workers()} Component={WorkerCard} />
     : <StyledEmpityDutyMessage>Esse turno não possui componentes.</StyledEmpityDutyMessage>;
-
-  function update() {
-    onUpdate?.();
-    rerender();
-  }
 
   function handleClose() {
     modal.close();
   }
 
   function nextDay() {
-    const nextDayIndex = (dayIndex + 1) % tableNumOfDays;
-
-    setDayIndex(nextDayIndex);
+    setDutyId(dutyController.nextDay().duty.id);
   }
 
   function prevDay() {
-    const prevDayIndex = dayIndex - 1;
-    const normalizedPrevDayIndex = (prevDayIndex < 0 ? tableNumOfDays + prevDayIndex : prevDayIndex) % tableNumOfDays;
-
-    setDayIndex(normalizedPrevDayIndex);
+    setDutyId(dutyController.prevDay().duty.id);
   }
 
   function nextDuty() {
-    const limit = day.numOfDuties();
-    let nextDutyIndex = dutyIndex + 1;
-
-    if (nextDutyIndex >= limit) {
-      nextDay();
-      nextDutyIndex = 0;
-    }
-
-    setDutyIndex(nextDutyIndex);
+    setDutyId(dutyController.next().duty.id);
   }
 
   function prevDuty() {
-    let last = day.numOfDuties() - 1;
-    let prevDutyIndex = dutyIndex - 1;
-
-    if (prevDutyIndex < 0) {
-      prevDay();
-      prevDutyIndex = last;
-    }
-
-    setDutyIndex(prevDutyIndex);
+    setDutyId(dutyController.prev().duty.id);
   }
 
   return (
@@ -113,15 +84,15 @@ export function DayEditionModal(props: DayViewModalProps) {
         <AiOutlineCloseCircle onClick={handleClose} size={25} color="#cc0000" />
       </StyledModalHeader>
       <StyledModalBody>
-        <DutyEditionNavation day={day} duty={duty} onNavate={setDutyIndex} />
+        <DutyEditionNavation day={duty.day} selectedDutyIndex={duty.index} onNavigate={setDutyId} />
         <StyledModalTitle2>
-          Turno das {dutyTitles.at(dutyIndex)}
+          Turno das {dutyTitles.at(duty.index)}
         </StyledModalTitle2>
         <StyledDutyViewBody>
           <StyledDutyViewSlotSection>
             {dutyViewContent}
           </StyledDutyViewSlotSection>
-          <AvaliableWorkers duty={duty} onUpdate={update} />
+          <AvaliableWorkers duty={duty.id} />
         </StyledDutyViewBody>
       </StyledModalBody>
     </StyledDayViewModal>
@@ -131,29 +102,37 @@ export function DayEditionModal(props: DayViewModalProps) {
 export const {
   ModalProvider: DayEditionModalProvider,
   useModal: useDayEditionModal,
-} = createModalContext(DayEditionModal);
+} = createModalContext(DutyEditionModal);
 
 export interface DutyViewNavationProps {
-  duty: DutyEditor;
-  day: DayEditor;
-  onNavate?: (newIndex: number) => void;
+  day: number;
+  selectedDutyIndex: number;
+  onNavigate?: (id: number) => void;
 }
 
 export function DutyEditionNavation(props: DutyViewNavationProps) {
-  const { day, duty, onNavate } = props;
+  const { day, selectedDutyIndex, onNavigate } = props;
 
-  const dutyIndex = duty.data.index;
+  const tableController = new TableEditorController();
+  const dutyIds = tableController
+    .findDuties(Searcher.duty.dayEquals(day))
+    .map(controller => controller.duty.id);
 
   return (
     <StyledDutyViewNavigation>
-      <ElementList iter={day.iterDuties()} Component={props => {
-        const { entry: duty } = props;
+      <ElementList iter={dutyIds} Component={props => {
+        const { entry: dutyId } = props;
 
-        const thisDutyIndex = duty.data.index;
+        const dutyController = new DutyEditorController(dutyId);
+        const { duty } = dutyController;
+
+        function handleNavigate() {
+          onNavigate?.(duty.id);
+        }
 
         return (
-          <StyledDutyViewNavButton selected={dutyIndex === thisDutyIndex} onClick={() => onNavate?.(thisDutyIndex)}>
-            {dutyTitles.at(thisDutyIndex)}
+          <StyledDutyViewNavButton selected={duty.index === selectedDutyIndex} onClick={handleNavigate}>
+            {dutyTitles.at(duty.index)}
           </StyledDutyViewNavButton>
         );
       }} />
@@ -162,12 +141,11 @@ export function DutyEditionNavation(props: DutyViewNavationProps) {
 }
 
 export interface WorkerViewProps {
-  onUpdate?: () => void;
   duty: DutyEditor;
 }
 
 export function WorkerCard(props: IterProps<WorkerEditor, WorkerViewProps>) {
-  const { entry: worker, duty, onUpdate } = props;
+  const { entry: worker, duty } = props;
   const Gender = genderComponentMap[worker.data.gender];
   const gradutationColor = graduationTextColorMap[worker.data.graduation];
   const dutyModal = useDutySelectModal();

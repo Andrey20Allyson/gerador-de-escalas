@@ -12,55 +12,47 @@ import { BsGearFill } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 import styled from "styled-components";
 import { DutySelectionGrid } from "./DutySelectionGrid";
+import { Searcher, TableEditorController } from "state/controllers/table-editor";
+import { WorkerEditorController } from "state/controllers/worker-editor";
 
 export interface DutySelectModalProps {
-  worker: WorkerEditor;
+  workerId: number;
   idList?: number[];
-  onUpdate?: () => void;
 }
 
 export function DutySelectModal(props: DutySelectModalProps) {
-  const { worker, onUpdate } = props;
-  const table = worker.table;
+  const { workerId } = props;
+  const tableController = new TableEditorController();
+  const workerController = new WorkerEditorController(workerId);
+
+  const { worker } = workerController;
 
   const handler = useDutySelectModal();
   const rulesModal = useRulesModal();
-  const rerender = useRerender();
 
   function handleClose() {
     handler.close();
   }
 
-  const graduation = worker.graduation();
-  const upperCaseGraduation = graduation.toUpperCase();
-  const Gender = genderComponentMap[worker.gender()];
+  const upperCaseGraduation = worker.graduation.toUpperCase();
+  const Gender = genderComponentMap[worker.gender];
 
-  const formattedWorkerID = formatWorkerID(worker.id());
+  const formattedWorkerID = formatWorkerID(worker.workerId);
 
-  function handleExcludeDuty(dayIndex: number, dutyIndex: number) {
-    const duty = table.getDay(dayIndex).getDuty(dutyIndex);
-
-    if (worker.unbindDuty(duty)) update();
+  function handleExcludeDuty(dutyId: number) {
+    workerController.leave(dutyId);
   }
 
-  function handleAddDuty(duty: DutyEditor) {
-    if (worker.hasDuty(duty.address()) && worker.unbindDuty(duty)) return update();
-
-    if (worker.bindDuty(duty)) return update();
-  }
-
-  function update() {
-    onUpdate?.();
-    rerender();
+  function handleAddDuty(dutyId: number) {
+    workerController.enter(dutyId);
   }
 
   function handleClearDuties() {
-    worker.unbindAllDuties();
-    update();
+    workerController.leaveAll();
   }
 
   function handleChangeRules() {
-    rulesModal.open({ table });
+    rulesModal.open();
   }
 
   return (
@@ -73,7 +65,7 @@ export function DutySelectModal(props: DutySelectModalProps) {
         <div className='presentation'>
           <span className='worker-info'>
             <span className='name'>
-              {worker.name()}
+              {worker.name}
             </span>
             <span className='other-info'>
               <label className='title'>Matricula</label>

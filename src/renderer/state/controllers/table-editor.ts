@@ -27,7 +27,7 @@ export namespace Searcher {
       return duty => duty.day === day;
     },
     indexEquals(index: number) {
-      return duty => duty.index === index; 
+      return duty => duty.index === index;
     },
   } satisfies Record<string, SearcherFactory<DutyData>>;
 }
@@ -55,7 +55,7 @@ export class TableEditorController {
     this.table = table;
   }
 
-  findWorker(...searchers: Searcher<WorkerData>[]) {
+  findWorker(...searchers: Searcher<WorkerData>[]): WorkerEditorController | null {
     const worker = this.table.workers.find(worker => searchers.every(seacher => seacher(worker)));
     if (!worker) return null;
 
@@ -64,13 +64,41 @@ export class TableEditorController {
     return new WorkerEditorController(worker.id, { dispatcher, table });
   }
 
-  findDuty(...searchers: Searcher<DutyData>[]) {
+  findWorkers(...searchers: Searcher<WorkerData>[]): WorkerEditorController[] {
+    const { table, dispatcher } = this;
+
+    return this.table.workers
+      .filter(worker => searchers.every(searcher => searcher(worker)))
+      .map(worker => new WorkerEditorController(worker.id, { table, dispatcher }));
+  }
+
+  findDuty(...searchers: Searcher<DutyData>[]): DutyEditorController | null {
     const duty = this.table.duties.find(duty => searchers.every(seacher => seacher(duty)));
     if (!duty) return null;
 
     const { dispatcher, table } = this;
 
     return new DutyEditorController(duty.id, { dispatcher, table });
+  }
+
+  findDuties(...searchers: Searcher<DutyData>[]): DutyEditorController[] {
+    const { table, dispatcher } = this;
+
+    return this.table.duties
+      .filter(duty => searchers.every(searcher => searcher(duty)))
+      .map(duty => new DutyEditorController(duty.id, { table, dispatcher }));
+  }
+
+  *iterDays(): Iterable<number> {
+    for (let day = 0; day < this.table.config.numOfDays; day++) {
+      yield day;
+    }
+  }
+
+  *iterDutyIndexes(): Iterable<number> {
+    for (let dutyIdx = 0; dutyIdx < this.table.config.dutyCapacity; dutyIdx++) {
+      yield dutyIdx;
+    }
   }
 
   load(data: TableData) {
@@ -83,5 +111,9 @@ export class TableEditorController {
 
   redo() {
 
+  }
+
+  clear() {
+    
   }
 }

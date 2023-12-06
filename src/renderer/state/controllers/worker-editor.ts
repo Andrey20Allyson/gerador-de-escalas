@@ -71,6 +71,10 @@ export class WorkerEditorController {
     });
   }
 
+  dutyQuantity() {
+    return this.duties().length;
+  }
+
   static from(iterable: Iterable<number | WorkerData>): WorkerEditorController[] {
     const options: WorkerEditorControllerOptions = {
       dispatcher: useAppDispatch(),

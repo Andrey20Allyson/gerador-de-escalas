@@ -17,12 +17,11 @@ export function WorkerList() {
     return Array.from(workers).sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1)
   }, [workers]);
   const modal = useDayEditionModal();
-  const rerender = useRerender();
 
   const filteredWorkers = search ? sortedWorkers.filter(worker => worker.name.toUpperCase().includes(search.toUpperCase())) : workers;
 
-  function handleOpenModal(dayIndex: number, dutyIndex: number) {
-    modal.open({ table, dayIndex, dutyIndex, onUpdate: rerender });
+  function handleOpenModal(dutyId: number) {
+    modal.open({ dutyId });
   }
 
   function handleChangeSearch(ev: React.ChangeEvent<HTMLInputElement>) {

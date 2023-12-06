@@ -3,9 +3,7 @@ import { createModalContext } from '../../contexts/modal';
 import React, { MutableRefObject, useState } from 'react';
 import styled from 'styled-components';
 
-export interface RulesModalProps {
-  table: TableEditor;
-}
+export interface RulesModalProps { }
 
 export function RulesModal(props: RulesModalProps) {
   const { table } = props;

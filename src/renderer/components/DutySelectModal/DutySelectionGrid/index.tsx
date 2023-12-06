@@ -1,3 +1,4 @@
+import { WorkerEditorController } from 'state/controllers/worker-editor';
 import { DayEditor, DutyEditor, WorkerEditor } from '../../../../app/api/table-edition';
 import { dutyTitles } from '../../../components/DutyTableGrid/utils';
 import { getWeekDayLabel } from '../../../utils';
@@ -5,19 +6,22 @@ import { ElementList, IterProps } from '../../../utils/react-iteration';
 import React from 'react';
 import { BsPeopleFill } from 'react-icons/bs';
 import styled from 'styled-components';
+import { TableEditorController } from 'state/controllers/table-editor';
 
 export interface DutySelectionGridProps {
-  worker: WorkerEditor;
-  onDutySelected?: (duty: DutyEditor) => void;
+  workerId: number;
+  onDutySelected?: (dutyId: number) => void;
 }
 
 export function DutySelectionGrid(props: DutySelectionGridProps) {
-  const { worker, onDutySelected } = props;
-  const table = worker.table;
+  const { workerId, onDutySelected } = props;
+
+  const tableController = new TableEditorController();
+  const dutyIds = tableController.table.duties.map(duty => duty.id);
 
   return (
     <StyledDutySelectionGrid>
-      <ElementList Component={DayCard} communProps={{ onDutySelected, worker }} iter={table.iterDays()} />
+      <ElementList Component={DayCard} communProps={{ onDutySelected, workerId }} iter={dutyIds} />
     </StyledDutySelectionGrid>
   );
 }

@@ -1,27 +1,31 @@
+import React, { useState } from "react";
+import { BiSearch } from "react-icons/bi";
+import { FaCalendarAlt } from "react-icons/fa";
+import { HiUserAdd } from "react-icons/hi";
+import { DutyEditorController } from "state/controllers/duty-editor";
+import { TableEditorController } from "state/controllers/table-editor";
+import { WorkerEditorController } from "state/controllers/worker-editor";
+import styled from "styled-components";
 import { DutyEditor, WorkerEditor } from "../../../app/api/table-edition";
 import { genderComponentMap, graduationTextColorMap } from "../../components/DayEditionModal/utils";
 import { useDutySelectModal } from "../../components/DutySelectModal";
 import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
 import { ElementList, IterProps } from "../../utils/react-iteration";
-import React, { useState } from "react";
-import { BiSearch } from "react-icons/bi";
-import { FaCalendarAlt } from "react-icons/fa";
-import { HiUserAdd } from "react-icons/hi";
-import styled from "styled-components";
 import { StyledAvaliableWorkerBody, StyledAvaliableWorkerSearchBody, StyledAvaliableWorkersScrollable, StyledAvaliableWorkersSection } from "./styles";
 
 export interface AvaliableWorkers {
   onUpdate?: () => void;
-  duty: DutyEditor;
+  dutyId: number;
 }
 
 export function AvaliableWorkers(props: AvaliableWorkers) {
   const [search, setSearch] = useState<string>();
-  const { duty, onUpdate } = props;
-  const { day } = duty;
-  const { table } = day;
+  const { dutyId, onUpdate } = props;
+  const tableController = new TableEditorController();
+  const dutyController = new DutyEditorController(dutyId);
+  const { duty } = dutyController;
 
-  const workers = iterFilteredWorkers(duty, table.iterWorkers(), search);
+  const workers = tableController.table.workers.map(worker => worker.id);
 
   function handleSearchChange(ev: React.ChangeEvent<HTMLInputElement>) {
     const { value } = ev.currentTarget;
@@ -37,35 +41,38 @@ export function AvaliableWorkers(props: AvaliableWorkers) {
       </StyledAvaliableWorkerSearchBody>
       <StyledAvaliableWorkersSection>
         <StyledAvaliableWorkersScrollable>
-          <ElementList iter={workers} communProps={{ duty }} Component={(props: IterProps<WorkerEditor, { duty: DutyEditor }>) => {
-            const { duty } = props;
-            const worker = props.entry;
+          <ElementList iter={workers} communProps={{ dutyId }} Component={(props: IterProps<number, { dutyId: number }>) => {
+            const { dutyId, entry: workerId } = props;
+
+            const tableController = new TableEditorController();
+            const { table } = tableController;
+
+            const workerController = new WorkerEditorController(workerId);
+            const { worker } = workerController;
+
             const selectionModal = useDutySelectModal();
 
-            const Gender = genderComponentMap[worker.gender()];
-            const gradutationColor = graduationTextColorMap[worker.graduation()];
-            const dutyLimit = worker.data.maxDuties;
+            const Gender = genderComponentMap[worker.gender];
+            const gradutationColor = graduationTextColorMap[worker.graduation];
+            const dutyLimit = table.config.workerCapacity;
 
             function handleAddWorker() {
-              if (worker.isFull()) return;
-
-              duty.bindWorker(worker);
-
-              onUpdate?.();
+              workerController.enter(dutyId)
             }
 
             function handleOpenModal() {
-              selectionModal.open({ worker });
+              selectionModal.open({ workerId });
             }
 
             return (
               <StyledAvaliableWorker>
-                {worker.name()}
+                {worker.name}
                 <section className='info'>
-                  [<ColoredText color='#303100'>{worker.numOfDuties()} / {dutyLimit}</ColoredText>]
-                  [<ColoredText color={gradutationColor}>{worker.data.graduation.toUpperCase()}</ColoredText>]
+                  [<ColoredText color='#303100'>{workerController.duties().length} / {dutyLimit}</ColoredText>]
+                  [<ColoredText color={gradutationColor}>{worker.graduation.toUpperCase()}</ColoredText>]
                   <Gender />
-                  <HiUserAdd className={`add-worker ${worker.isFull() ? ' unclickable' : ''}`} onClick={handleAddWorker} />
+                  {/* TODO make verification of worker insertion rules */}
+                  <HiUserAdd className={`add-worker ${false ? ' unclickable' : ''}`} onClick={handleAddWorker} />
                   <FaCalendarAlt className='open-selection-modal' onClick={handleOpenModal} />
                 </section>
               </StyledAvaliableWorker>

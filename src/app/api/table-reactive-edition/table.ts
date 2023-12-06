@@ -20,6 +20,7 @@ export interface TableConfig {
   month: number;
   dutyCapacity: number;
   numOfDays: number;
+  workerCapacity: number;
 }
 
 export interface DutyAndWorkerRelationship {
@@ -51,6 +52,7 @@ export class TableFactory {
         dutyCapacity: table.config.dutyCapacity,
         month: table.config.month,
         year: table.config.year,
+        workerCapacity: 5,
       },
       dutyAndWorkerRelationships: [],
     };
