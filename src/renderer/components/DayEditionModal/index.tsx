@@ -1,15 +1,16 @@
-import { DayEditor, DutyEditor, TableEditor, WorkerEditor } from "../../../app/api/table-edition";
-import { AvaliableWorkers } from "../../components/AvaliableWorkers";
-import { useDutySelectModal } from "../../components/DutySelectModal";
-import { dutyTitles } from "../../components/DutyTableGrid/utils";
-import { createModalContext } from "../../contexts/modal";
-import { useRerender } from "../../hooks";
-import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
-import { ElementList, IterProps } from "../../utils/react-iteration";
 import React, { useState } from "react";
 import { AiOutlineCloseCircle, AiOutlineDoubleLeft, AiOutlineDoubleRight, AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 import { FaCalendarAlt } from "react-icons/fa";
 import { HiUserRemove } from "react-icons/hi";
+import { DutyEditorController } from "../../state/controllers/duty-editor";
+import { WorkerEditorController } from "../../state/controllers/worker-editor";
+import { AvaliableWorkers } from "../../components/AvaliableWorkers";
+import { useDutySelectModal } from "../../components/DutySelectModal";
+import { dutyTitles } from "../../components/DutyTableGrid/utils";
+import { createModalContext } from "../../contexts/modal";
+import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
+import { Searcher, TableEditorController } from "../../state/controllers/table-editor";
+import { ElementList, IterProps } from "../../utils/react-iteration";
 import {
   StyledDayViewModal,
   StyledDayViewNavigation,
@@ -25,8 +26,6 @@ import {
   StyledWorkerViewBody,
 } from "./styles";
 import { genderComponentMap, graduationTextColorMap } from "./utils";
-import { Searcher, TableEditorController } from "../../state/controllers/table-editor";
-import { DutyEditorController } from "state/controllers/duty-editor";
 
 export interface DutyViewModalProps {
   dutyId: number;
@@ -45,7 +44,7 @@ export function DutyEditionModal(props: DutyViewModalProps) {
   const modal = useDayEditionModal();
 
   const dutyViewContent = dutyController.size() > 0
-    ? <ElementList communProps={{}} iter={dutyController.workers()} Component={WorkerCard} />
+    ? <ElementList communProps={{ dutyId }} iter={dutyController.workerIds()} Component={WorkerCard} />
     : <StyledEmpityDutyMessage>Esse turno não possui componentes.</StyledEmpityDutyMessage>;
 
   function handleClose() {
@@ -76,7 +75,7 @@ export function DutyEditionModal(props: DutyViewModalProps) {
           <AiOutlineDoubleLeft onClick={prevDay} />
           <AiOutlineLeft onClick={prevDuty} />
           <StyledModalTitle>
-            Dia {day.data.index + 1}
+            Dia {duty.day + 1}
           </StyledModalTitle>
           <AiOutlineRight onClick={nextDuty} />
           <AiOutlineDoubleRight onClick={nextDay} />
@@ -92,7 +91,7 @@ export function DutyEditionModal(props: DutyViewModalProps) {
           <StyledDutyViewSlotSection>
             {dutyViewContent}
           </StyledDutyViewSlotSection>
-          <AvaliableWorkers duty={duty.id} />
+          <AvaliableWorkers dutyId={duty.id} />
         </StyledDutyViewBody>
       </StyledModalBody>
     </StyledDayViewModal>
@@ -141,28 +140,32 @@ export function DutyEditionNavation(props: DutyViewNavationProps) {
 }
 
 export interface WorkerViewProps {
-  duty: DutyEditor;
+  dutyId: number;
 }
 
-export function WorkerCard(props: IterProps<WorkerEditor, WorkerViewProps>) {
-  const { entry: worker, duty } = props;
-  const Gender = genderComponentMap[worker.data.gender];
-  const gradutationColor = graduationTextColorMap[worker.data.graduation];
+export function WorkerCard(props: IterProps<number, WorkerViewProps>) {
+  const { entry: workerId, dutyId } = props;
+  
+  const workerController = new WorkerEditorController(workerId);
+  const { worker } = workerController;
+
+  const Gender = genderComponentMap[worker.gender];
+  const gradutationColor = graduationTextColorMap[worker.graduation];
   const dutyModal = useDutySelectModal();
 
   function handleWorkerRemove() {
-    if (worker.unbindDuty(duty)) onUpdate?.();
+    workerController.leave(dutyId);
   }
 
   function handleOpenDutyModal() {
-    dutyModal.open({ worker, onUpdate });
+    dutyModal.open({ workerId });
   }
 
   return (
     <StyledWorkerViewBody>
-      {worker.data.name}
+      {worker.name}
       <section className='info'>
-        [<ColoredText color={gradutationColor}>{worker.data.graduation.toUpperCase()}</ColoredText>]
+        [<ColoredText color={gradutationColor}>{worker.graduation.toUpperCase()}</ColoredText>]
         <Gender />
         <HiUserRemove className="clickable" color='#c00000' onClick={handleWorkerRemove} />
         <FaCalendarAlt className='open-modal' onClick={handleOpenDutyModal} />

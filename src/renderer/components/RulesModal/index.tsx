@@ -1,16 +1,15 @@
-import { TableEditor } from '../../../app/api/table-edition';
 import { createModalContext } from '../../contexts/modal';
 import React, { MutableRefObject, useState } from 'react';
+import { TableEditorController } from '../../state/controllers/table-editor';
 import styled from 'styled-components';
+import { WorkerInsertionRulesState } from '../../../app/api/table-edition';
 
-export interface RulesModalProps { }
-
-export function RulesModal(props: RulesModalProps) {
-  const { table } = props;
+export function RulesModal() {
+  const tableController = new TableEditorController();
   const modalHandler = useRulesModal();
 
   const setValueListeners: Set<SetToggleButtonValue> = new Set();
-  const rules = table.rules();
+  const rules: WorkerInsertionRulesState = tableController.table.rules;
 
   function handleConfirm() {
     modalHandler.close();

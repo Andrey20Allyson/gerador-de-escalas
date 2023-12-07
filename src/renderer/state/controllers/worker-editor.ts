@@ -60,6 +60,10 @@ export class WorkerEditorController {
     return this.table.dutyAndWorkerRelationships.filter(relationship => relationship.workerId === this.worker.id);
   }
 
+  dutyIds(): number[] {
+    return this.duties().map(duty => duty.id);
+  }
+
   duties(): DutyData[] {
     const dutyMap = new Map(this.table.duties.map(duty => [duty.id, duty]));
 

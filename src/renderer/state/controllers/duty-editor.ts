@@ -100,6 +100,10 @@ export class DutyEditorController implements IDutyEditor {
     return this.relationships().length;
   }
 
+  workerIds(): number[] {
+    return this.workers().map(worker => worker.id);
+  }
+
   workers(): WorkerData[] {
     const workerMap = new Map(this.table.workers.map(worker => [worker.id, worker]));
 

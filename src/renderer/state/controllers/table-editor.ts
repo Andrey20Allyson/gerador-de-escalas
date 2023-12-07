@@ -4,6 +4,7 @@ import { currentTableSelector, editorActions, tableEditorSelector } from "../sli
 import { RootState } from "../store";
 import { WorkerEditorController } from "./worker-editor";
 import { DutyEditorController } from "./duty-editor";
+import { firstMondayFromYearAndMonth, dayOfWeekFrom } from "../../utils";
 
 export function currentTableFromRootSelector(state: RootState) {
   const table = currentTableSelector(tableEditorSelector(state));
@@ -87,6 +88,30 @@ export class TableEditorController {
     return this.table.duties
       .filter(duty => searchers.every(searcher => searcher(duty)))
       .map(duty => new DutyEditorController(duty.id, { table, dispatcher }));
+  }
+
+  dayOfWeekFrom(day: number) {
+    const { year, month } = this.table.config;
+
+    const firstMonday = firstMondayFromYearAndMonth(year, month);
+
+    return dayOfWeekFrom(firstMonday, day);
+  }
+
+  duties(): DutyData[] {
+    return this.table.duties;
+  }
+
+  workers(): WorkerData[] {
+    return this.table.workers;
+  }
+
+  dutyIds(): number[] {
+    return this.duties().map(duty => duty.id);
+  }
+
+  workerIds(): number[] {
+    return this.workers().map(worker => worker.id);
   }
 
   *iterDays(): Iterable<number> {

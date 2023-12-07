@@ -12,8 +12,8 @@ import { BsGearFill } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 import styled from "styled-components";
 import { DutySelectionGrid } from "./DutySelectionGrid";
-import { Searcher, TableEditorController } from "state/controllers/table-editor";
-import { WorkerEditorController } from "state/controllers/worker-editor";
+import { Searcher, TableEditorController } from "../../state/controllers/table-editor";
+import { WorkerEditorController } from "../../state/controllers/worker-editor";
 
 export interface DutySelectModalProps {
   workerId: number;
@@ -83,10 +83,10 @@ export function DutySelectModal(props: DutySelectModalProps) {
             <BsGearFill onClick={handleChangeRules}/>
           </span>
           <span className='duty-list'>
-            <ElementList Component={DutyCard} communProps={{ titleType: 'extence', onExcludeDuty: handleExcludeDuty }} iter={worker.iterDuties()} />
+            <ElementList Component={DutyCard} communProps={{ titleType: 'extence', onExcludeDuty: handleExcludeDuty }} iter={workerController.dutyIds()} />
           </span>
         </div>
-        <DutySelectionGrid onDutySelected={handleAddDuty} worker={worker} />
+        <DutySelectionGrid onDutySelected={handleAddDuty} workerId={worker.id} />
       </section>
     </StyledDutySelectModal>
   );

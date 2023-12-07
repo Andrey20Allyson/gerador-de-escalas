@@ -1,4 +1,5 @@
 import type { ExtraDuty, ExtraDutyTableV2, Gender, Graduation, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import { WorkerInsertionRulesState } from "../table-edition";
 
 export interface WorkerData {
   id: number;
@@ -33,6 +34,7 @@ export interface TableData {
   idCounters: Map<string, number>;
   workers: WorkerData[];
   duties: DutyData[];
+  rules: WorkerInsertionRulesState;
   dutyAndWorkerRelationships: DutyAndWorkerRelationship[];
   config: TableConfig;
 }
@@ -47,6 +49,12 @@ export class TableFactory {
       idCounters: this.idGenerator.counters,
       duties: [],
       workers: [],
+      rules: {
+        femaleRule: true,
+        inspRule: true,
+        ordinaryRule: true,
+        timeOffRule: true,
+      },
       config: {
         numOfDays: table.width,
         dutyCapacity: table.config.dutyCapacity,

@@ -1,7 +1,7 @@
-import { useAppSelector } from 'hooks';
+import { useAppSelector } from '../../hooks';
 import React, { PropsWithChildren, useEffect } from 'react';
 import Skeleton from 'react-loading-skeleton';
-import { currentTableSelector, tableEditorSelector } from 'state/slices/table-editor';
+import { currentTableSelector, tableEditorSelector } from '../../state/slices/table-editor';
 import styled, { css } from 'styled-components';
 import { hoveredBackground, normalBackground, selectedBackground } from '../../App.styles';
 import { RouteState } from '../../contexts/router';

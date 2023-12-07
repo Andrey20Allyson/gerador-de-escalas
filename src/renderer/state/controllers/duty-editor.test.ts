@@ -24,6 +24,12 @@ function mockTable(): TableData {
   const numOfDays = 30;
 
   return {
+    rules: {
+      femaleRule: true,
+      inspRule: true,
+      ordinaryRule: true,
+      timeOffRule: true,
+    },
     duties: mockDuties(numOfDays, dutyCapacity),
     config: { workerCapacity: 5, dutyCapacity, month: 11, numOfDays, year: 2023 },
     dutyAndWorkerRelationships: [],
