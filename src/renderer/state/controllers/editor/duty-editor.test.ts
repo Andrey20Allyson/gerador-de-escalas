@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals';
-import { DutyData, TableData } from '../../../app/api/table-reactive-edition/table';
+import { DutyData, TableData } from '../../../../app/api/table-reactive-edition/table';
 import { DispatcherType, Searcher, TableEditorController } from './table-editor';
 
 function mockDuties(numOfDays: number, dutyCapacity: number): DutyData[] {

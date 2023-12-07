@@ -1,8 +1,8 @@
-import { DutyData, TableData, WorkerData } from "../../../app/api/table-reactive-edition/table";
-import { useAppDispatch, useAppSelector } from "../../hooks";
-import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "../../utils";
-import { currentTableSelector, editorActions, tableEditorSelector } from "../slices/table-editor";
-import { RootState } from "../store";
+import { DutyData, TableData, WorkerData } from "../../../../app/api/table-reactive-edition/table";
+import { useAppDispatch, useAppSelector } from "../../../hooks";
+import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "../../../utils";
+import { currentTableSelector, editorActions, tableEditorSelector } from "../../slices/table-editor";
+import { RootState } from "../../store";
 import { DutyEditorController } from "./duty-editor";
 import { WorkerEditorController } from "./worker-editor";
 

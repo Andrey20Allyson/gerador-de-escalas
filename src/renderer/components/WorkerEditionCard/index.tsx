@@ -1,17 +1,14 @@
-import { WorkerEditor } from "../../../app/api/table-edition";
+import React, { useEffect, useState } from "react";
+import { FaCalendarAlt, FaTrash } from 'react-icons/fa';
 import { genderComponentMap, graduationTextColor2Map } from "../../components/DayEditionModal/utils";
 import { DutyCard } from "../../components/DutyCard";
 import { useDutySelectModal } from "../../components/DutySelectModal";
-import { useRerender } from "../../hooks";
 import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
+import { WorkerEditorController } from "../../state/controllers/editor/worker-editor";
 import { sleep } from "../../utils";
 import { ElementList, IterProps } from "../../utils/react-iteration";
-import React, { useEffect, useState } from "react";
-import { FaCalendarAlt, FaTrash } from 'react-icons/fa';
 import { StyledWorkerEditionCard } from "./styles";
 import { formatWorkerID } from "./utils";
-import { WorkerEditorController } from "../../state/controllers/worker-editor";
-import { DutyEditorController } from "../../state/controllers/duty-editor";
 
 export interface WorkerEditionCardProps {
   onOpenModal?: (dutyId: number) => void;

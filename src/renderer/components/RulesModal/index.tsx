@@ -1,6 +1,6 @@
 import { createModalContext } from '../../contexts/modal';
 import React, { MutableRefObject, useState } from 'react';
-import { TableEditorController } from '../../state/controllers/table-editor';
+import { TableEditorController } from '../../state/controllers/editor/table-editor';
 import styled from 'styled-components';
 import { WorkerInsertionRulesState } from '../../../app/api/table-edition';
 

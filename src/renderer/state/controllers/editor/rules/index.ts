@@ -1,6 +1,6 @@
-import { WorkerInsertionRulesState } from "../../../../app/api/table-edition";
-import { TableData } from "../../../../app/api/table-reactive-edition/table";
-import { useAppDispatch, useAppSelector } from "../../../hooks";
+import { WorkerInsertionRulesState } from "../../../../../app/api/table-edition";
+import { TableData } from "../../../../../app/api/table-reactive-edition/table";
+import { useAppDispatch, useAppSelector } from "../../../../hooks";
 import { DutyEditorController } from "../duty-editor";
 import { DispatcherType, EditorControllerOptions, currentTableFromRootSelector } from "../table-editor";
 import { WorkerEditorController } from "../worker-editor";

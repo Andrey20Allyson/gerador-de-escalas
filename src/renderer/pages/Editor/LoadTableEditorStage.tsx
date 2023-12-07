@@ -3,7 +3,7 @@ import { LoadTableFormData, LoadTableStage } from "../../components/LoadTableSta
 import { useStage } from "../../contexts/stages";
 import { useLoading, useTableData } from "../../hooks";
 import { StyledLinedBorder } from "../../pages/Generator/DataCollectStage.styles";
-import { TableEditorController } from "../../state/controllers/table-editor";
+import { TableEditorController } from "../../state/controllers/editor/table-editor";
 import { sleep } from "../../utils";
 import React from "react";
 import { Squares } from 'react-activity';
