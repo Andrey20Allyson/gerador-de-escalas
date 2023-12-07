@@ -10,6 +10,7 @@ import type {
 import { WorkerInsertionRulesState } from "../table-edition";
 
 export interface OrdinaryInfo {
+  readonly isDailyWorker: boolean;
   readonly startsAt: number;
   readonly endsAt: number;
   readonly duration: number;
@@ -34,6 +35,7 @@ export interface DutyData {
 
 export interface TableConfig extends ExtraDutyTableConfig {
   readonly numOfDays: number;
+  readonly dutiesPerDay: number;
   readonly workerCapacity: number;
 }
 
@@ -73,6 +75,7 @@ export class TableFactory {
       },
       config: {
         ...table.config,
+        dutiesPerDay: Math.floor(24 / table.config.dutyDuration),
         numOfDays: table.width,
         workerCapacity: Math.trunc(this.BASE_WORKER_CAPACITY / table.config.dutyPositionSize),
       },
@@ -97,6 +100,7 @@ export class TableFactory {
       workerId: worker.fullWorkerID,
       ordinary: {
         endsAt,
+        isDailyWorker: daysOfWork.isDailyWorker,
         startsAt: workTime.startTime,
         duration: workTime.totalTime,
       },

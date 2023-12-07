@@ -2,12 +2,12 @@ import { expect, test } from '@jest/globals';
 import { DutyData, TableData } from '../../../../app/api/table-reactive-edition/table';
 import { DispatcherType, Searcher, TableEditorController } from './table';
 
-function mockDuties(numOfDays: number, dutyCapacity: number): DutyData[] {
+function mockDuties(numOfDays: number, dutiesPerDay: number): DutyData[] {
   const duties: DutyData[] = [];
   let idCount = 1;
 
   for (let day = 0; day < numOfDays; day++) {
-    for (let index = 0; index < dutyCapacity; index++) {
+    for (let index = 0; index < dutiesPerDay; index++) {
       duties.push({
         day,
         index,
@@ -20,7 +20,7 @@ function mockDuties(numOfDays: number, dutyCapacity: number): DutyData[] {
 }
 
 function mockTable(): TableData {
-  const dutyCapacity = 2;
+  const dutiesPerDay = 2;
   const numOfDays = 30;
 
   return {
@@ -30,18 +30,19 @@ function mockTable(): TableData {
       ordinaryRule: true,
       timeOffRule: true,
     },
-    duties: mockDuties(numOfDays, dutyCapacity),
+    duties: mockDuties(numOfDays, dutiesPerDay),
     config: {
       workerCapacity: 5,
-      dutyCapacity,
+      dutyCapacity: 3,
       month: 11,
       numOfDays,
       year: 2023,
-      dutyDuration: 6,
+      dutyDuration: 12,
       dutyMinDistance: 4,
-      dutyInterval: 6,
+      dutyInterval: 12,
+      dutiesPerDay,
       dutyPositionSize: 2,
-      firstDutyTime: 6
+      firstDutyTime: 7
     },
     dutyAndWorkerRelationships: [],
     idCounters: {},

@@ -121,7 +121,7 @@ export class TableEditorController {
   }
 
   *iterDutyIndexes(): Iterable<number> {
-    for (let dutyIdx = 0; dutyIdx < this.table.config.dutyCapacity; dutyIdx++) {
+    for (let dutyIdx = 0; dutyIdx < this.table.config.dutiesPerDay; dutyIdx++) {
       yield dutyIdx;
     }
   }

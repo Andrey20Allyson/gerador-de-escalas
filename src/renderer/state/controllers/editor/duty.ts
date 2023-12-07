@@ -1,3 +1,4 @@
+import { firstMondayFromYearAndMonth, dayOfWeekFrom } from "@andrey-allyson/escalas-automaticas/dist/utils";
 import { DutyAndWorkerRelationship, DutyData, TableData, WorkerData } from "../../../../app/api/table-reactive-edition/table";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { editorActions } from "../../slices/table-editor";
@@ -56,7 +57,7 @@ export class DutyEditorController implements IDutyEditor {
 
     return this;
   }
-  
+
   shift(count: number) {
     const dutyLimit = this.table.config.dutyCapacity;
     const numOfDays = this.table.config.numOfDays;
@@ -64,7 +65,7 @@ export class DutyEditorController implements IDutyEditor {
     const day = this.duty.day;
 
     const dayShift = Math.floor((count + dutyIdx) / dutyLimit);
-    
+
     const nextIdx = (dutyIdx + dutyLimit + count % dutyLimit) % dutyLimit;
     const nextDay = (day + dayShift + numOfDays) % numOfDays;
 
@@ -74,6 +75,27 @@ export class DutyEditorController implements IDutyEditor {
     const { table, dispatcher } = this;
 
     return new DutyEditorController(duty.id, { table, dispatcher });
+  }
+
+  dayOfWeek() {
+    const { year, month } = this.table.config;
+    const { day } = this.duty;
+
+    const firstMonday = firstMondayFromYearAndMonth(year, month);
+
+    return dayOfWeekFrom(firstMonday, day);
+  }
+
+  startsAt() {
+    return this.table.config.firstDutyTime + this.table.config.dutyDuration * this.duty.index;
+  }
+
+  endsAt() {
+    return this.startsAt() + this.table.config.dutyDuration;
+  }
+
+  timeOffEnd() {
+    return this.endsAt() + this.table.config.dutyDuration;
   }
 
   next(count: number = 1) {
