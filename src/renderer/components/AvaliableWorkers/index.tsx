@@ -14,13 +14,12 @@ import { ElementList, IterProps } from "../../utils/react-iteration";
 import { StyledAvaliableWorkerBody, StyledAvaliableWorkerSearchBody, StyledAvaliableWorkersScrollable, StyledAvaliableWorkersSection } from "./styles";
 
 export interface AvaliableWorkers {
-  onUpdate?: () => void;
   dutyId: number;
 }
 
 export function AvaliableWorkers(props: AvaliableWorkers) {
   const [search, setSearch] = useState<string>();
-  const { dutyId, onUpdate } = props;
+  const { dutyId } = props;
   const tableController = new TableEditorController();
   const dutyController = new DutyEditorController(dutyId);
   const { duty } = dutyController;

@@ -1,50 +1,66 @@
-import type { ExtraDuty, ExtraDutyTableV2, Gender, Graduation, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import type {
+  DayRestriction,
+  ExtraDuty,
+  ExtraDutyTableConfig,
+  ExtraDutyTableV2,
+  Gender,
+  Graduation,
+  WorkerInfo
+} from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import { WorkerInsertionRulesState } from "../table-edition";
 
+export interface OrdinaryInfo {
+  readonly startsAt: number;
+  readonly endsAt: number;
+  readonly duration: number;
+}
+
 export interface WorkerData {
-  id: number;
-  workerId: number;
-  individualId: number;
-  name: string;
-  graduation: Graduation;
-  gender: Gender;
+  readonly id: number;
+  readonly workerId: number;
+  readonly individualId: number;
+  readonly name: string;
+  readonly graduation: Graduation;
+  readonly gender: Gender;
+  readonly restrictions: DayRestriction[];
+  readonly ordinary: OrdinaryInfo;
 }
 
 export interface DutyData {
-  id: number;
-  day: number;
-  index: number;
+  readonly id: number;
+  readonly day: number;
+  readonly index: number;
 }
 
-export interface TableConfig {
-  year: number;
-  month: number;
-  dutyCapacity: number;
-  numOfDays: number;
-  workerCapacity: number;
+export interface TableConfig extends ExtraDutyTableConfig {
+  readonly numOfDays: number;
+  readonly workerCapacity: number;
 }
 
 export interface DutyAndWorkerRelationship {
-  id: number;
-  workerId: number;
-  dutyId: number;
+  readonly id: number;
+  readonly workerId: number;
+  readonly dutyId: number;
 }
 
 export interface TableData {
-  idCounters: Map<string, number>;
+  idCounters: Record<string, number>;
   workers: WorkerData[];
   duties: DutyData[];
   rules: WorkerInsertionRulesState;
   dutyAndWorkerRelationships: DutyAndWorkerRelationship[];
-  config: TableConfig;
+  readonly config: TableConfig;
 }
 
 export class TableFactory {
+  readonly BASE_WORKER_CAPACITY = 10;
+
   constructor(
     readonly idGenerator: IdGenerator = new IdGenerator(),
   ) { }
 
   createTableData(table: ExtraDutyTableV2): TableData {
+
     return {
       idCounters: this.idGenerator.counters,
       duties: [],
@@ -56,11 +72,9 @@ export class TableFactory {
         timeOffRule: true,
       },
       config: {
+        ...table.config,
         numOfDays: table.width,
-        dutyCapacity: table.config.dutyCapacity,
-        month: table.config.month,
-        year: table.config.year,
-        workerCapacity: 5,
+        workerCapacity: Math.trunc(this.BASE_WORKER_CAPACITY / table.config.dutyPositionSize),
       },
       dutyAndWorkerRelationships: [],
     };
@@ -75,8 +89,18 @@ export class TableFactory {
   }
 
   createWorkerData(worker: WorkerInfo): WorkerData {
+    const { workTime, daysOfWork } = worker;
+
+    const endsAt = workTime.startTime + workTime.totalTime;
+
     return {
       workerId: worker.fullWorkerID,
+      ordinary: {
+        endsAt,
+        startsAt: workTime.startTime,
+        duration: workTime.totalTime,
+      },
+      restrictions: Array.from(daysOfWork.values()),
       gender: worker.gender,
       graduation: worker.graduation,
       id: this.idGenerator.next('worker'),
@@ -115,7 +139,7 @@ export class TableFactory {
         const workerData = workerDataMap.get(worker.fullWorkerID);
         if (workerData === undefined) continue;
 
-        tableData.dutyAndWorkerRelationships.push();
+        tableData.dutyAndWorkerRelationships.push(this.createDutyAndWorkerRelationship(workerData.id, dutyData.id));
       }
     }
 
@@ -149,16 +173,16 @@ export class TableFactory {
 
 export class IdGenerator {
   constructor(
-    readonly counters: Map<string, number> = new Map(),
+    readonly counters: Record<string, number> = {},
   ) { }
 
   next(name: string) {
-    let id = this.counters.get(name);
+    let id = this.counters[name];
     if (id === undefined) {
       id = 0;
     }
 
-    this.counters.set(name, id + 1);
+    this.counters[name] = id + 1;
 
     return id;
   }

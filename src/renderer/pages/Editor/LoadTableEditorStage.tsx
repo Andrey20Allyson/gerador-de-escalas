@@ -12,10 +12,10 @@ export function LoadTableEditorStage() {
   const { next } = useStage();
   const { listen, loading } = useLoading();
   const tableResponse = useTableData();
+  const tableLoader = TableEditorController.useEditorLoader();
 
   if (tableResponse.status === 'success') {
-    new TableEditorController()
-      .load(tableResponse.data);
+    tableLoader.load(tableResponse.data);
     next();
   }
 

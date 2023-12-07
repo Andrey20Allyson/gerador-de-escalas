@@ -135,5 +135,5 @@ export function dutyRelationshipsSelector(dutyId: number): StateSelector<RootSta
 
 export function workerRelationship(workerId: number): StateSelector<RootState, DutyAndWorkerRelationship[]> {
   return state => relationshipsSelector(state)
-    .filter(relationship => relationship.workerId = workerId);
+    .filter(relationship => relationship.workerId === workerId);
 }

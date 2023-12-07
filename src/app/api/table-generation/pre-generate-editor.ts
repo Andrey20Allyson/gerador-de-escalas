@@ -1,4 +1,4 @@
-import type { DayOfWork, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import type { WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 
 export interface WorkerEditorDTO {
   readonly workerID: number;
@@ -9,6 +9,11 @@ export interface WorkerEditorDTO {
   year: number;
   name: string;
 }
+
+export interface OldDayOfWork {
+  work: boolean;
+  day: number;
+} 
 
 export class WorkerEditor {
   constructor(parent: PreGenerateEditor, readonly data: WorkerEditorDTO) { }
@@ -21,7 +26,7 @@ export class WorkerEditor {
     return this.data.numberOfDays;
   }
 
-  *days(): Iterable<DayOfWork> {
+  *days(): Iterable<OldDayOfWork> {
     for (const [day, work] of this.data.ordinaryDays) {
       yield { day, work };
     }
@@ -97,7 +102,11 @@ export class PreGenerateEditor {
       if (!worker) throw new Error(`Invalid input, 'workers' arg have a not mapped worker!`);
       
       for (const { day, work } of worker.days()) {
-        workerInfo.daysOfWork.setDayOfWork(day, work);
+        if (work) {
+          workerInfo.daysOfWork.work(day);
+        } else {
+          workerInfo.daysOfWork.notWork(day);
+        }
       }
     }
   }

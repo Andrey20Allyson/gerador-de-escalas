@@ -31,9 +31,20 @@ function mockTable(): TableData {
       timeOffRule: true,
     },
     duties: mockDuties(numOfDays, dutyCapacity),
-    config: { workerCapacity: 5, dutyCapacity, month: 11, numOfDays, year: 2023 },
+    config: {
+      workerCapacity: 5,
+      dutyCapacity,
+      month: 11,
+      numOfDays,
+      year: 2023,
+      dutyDuration: 6,
+      dutyMinDistance: 4,
+      dutyInterval: 6,
+      dutyPositionSize: 2,
+      firstDutyTime: 6
+    },
     dutyAndWorkerRelationships: [],
-    idCounters: new Map(),
+    idCounters: {},
     workers: [],
   };
 }

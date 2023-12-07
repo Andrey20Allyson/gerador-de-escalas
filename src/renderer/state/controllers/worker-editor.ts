@@ -28,7 +28,7 @@ export class WorkerEditorController {
 
   leave(dutyId: number) {
     const foundRelationship = this.table.dutyAndWorkerRelationships.find(relationship => {
-      return relationship.dutyId === dutyId && relationship.dutyId === this.worker.id;
+      return relationship.dutyId === dutyId && relationship.workerId === this.worker.id;
     });
     if (foundRelationship === undefined) return this;
 
@@ -76,7 +76,7 @@ export class WorkerEditorController {
   }
 
   dutyQuantity() {
-    return this.duties().length;
+    return this.relationships().length;
   }
 
   static from(iterable: Iterable<number | WorkerData>): WorkerEditorController[] {

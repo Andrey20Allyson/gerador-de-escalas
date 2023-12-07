@@ -1,10 +1,10 @@
-import { DutyAndWorkerRelationship, DutyData, TableData, WorkerData } from "../../../app/api/table-reactive-edition/table";
+import { DutyData, TableData, WorkerData } from "../../../app/api/table-reactive-edition/table";
 import { useAppDispatch, useAppSelector } from "../../hooks";
+import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "../../utils";
 import { currentTableSelector, editorActions, tableEditorSelector } from "../slices/table-editor";
 import { RootState } from "../store";
-import { WorkerEditorController } from "./worker-editor";
 import { DutyEditorController } from "./duty-editor";
-import { firstMondayFromYearAndMonth, dayOfWeekFrom } from "../../utils";
+import { WorkerEditorController } from "./worker-editor";
 
 export function currentTableFromRootSelector(state: RootState) {
   const table = currentTableSelector(tableEditorSelector(state));
@@ -140,5 +140,15 @@ export class TableEditorController {
 
   clear() {
     
+  }
+
+  static useEditorLoader() {
+    const dispatcher = useAppDispatch();
+    
+    function load(table: TableData) {
+      dispatcher(editorActions.initialize({ tableData: table }));
+    }
+
+    return { load };
   }
 }

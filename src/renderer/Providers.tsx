@@ -5,19 +5,22 @@ import { DutySelectModalProvider } from './components/DutySelectModal';
 import { RulesModalProvider } from './components/RulesModal';
 import { SaveTableModalProvider } from './components/SaveTableModal';
 import { store } from './state/store';
+import { EditorRouterContext } from './components/EditorTypeSelect/context';
 
 export function Providers(props: PropsWithChildren) {
   return (
     <Redux.Provider store={store}>
-      <RulesModalProvider>
-        <SaveTableModalProvider>
-          <DutySelectModalProvider>
-            <DayEditionModalProvider>
-              {props.children}
-            </DayEditionModalProvider>
-          </DutySelectModalProvider>
-        </SaveTableModalProvider>
-      </RulesModalProvider>
+      <EditorRouterContext.RouterProvider>
+        <RulesModalProvider>
+          <SaveTableModalProvider>
+            <DutySelectModalProvider>
+              <DayEditionModalProvider>
+                {props.children}
+              </DayEditionModalProvider>
+            </DutySelectModalProvider>
+          </SaveTableModalProvider>
+        </RulesModalProvider>
+      </EditorRouterContext.RouterProvider>
     </Redux.Provider>
   );
 }
