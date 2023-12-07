@@ -1,7 +1,7 @@
 import { TableData, WorkerData, DutyData } from "../../../../app/api/table-reactive-edition/table";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { editorActions } from "../../slices/table-editor";
-import { EditorControllerOptions, DispatcherType, currentTableFromRootSelector } from "./table-editor";
+import { EditorControllerOptions, DispatcherType, currentTableFromRootSelector } from "./table";
 
 export interface WorkerEditorControllerOptions extends EditorControllerOptions { }
 

@@ -1,5 +1,5 @@
 import { dutyTitles } from "../../components/DutyTableGrid/utils";
-import { DutyEditorController } from "../../state/controllers/editor/duty-editor";
+import { DutyEditorController } from "../../state/controllers/editor/duty";
 import { BackgroundColor } from "../../styles";
 import { IterProps } from "../../utils/react-iteration";
 import React from "react";

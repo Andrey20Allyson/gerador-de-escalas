@@ -1,7 +1,7 @@
 import { DutyAndWorkerRelationship, DutyData, TableData, WorkerData } from "../../../../app/api/table-reactive-edition/table";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { editorActions } from "../../slices/table-editor";
-import { DispatcherType, EditorControllerOptions, currentTableFromRootSelector } from "./table-editor";
+import { DispatcherType, EditorControllerOptions, currentTableFromRootSelector } from "./table";
 
 export interface IDutyEditor {
   remove(workerId: number): this;

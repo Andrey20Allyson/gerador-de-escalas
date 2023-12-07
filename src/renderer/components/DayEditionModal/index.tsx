@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { AiOutlineCloseCircle, AiOutlineDoubleLeft, AiOutlineDoubleRight, AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 import { FaCalendarAlt } from "react-icons/fa";
 import { HiUserRemove } from "react-icons/hi";
-import { DutyEditorController } from "../../state/controllers/editor/duty-editor";
-import { WorkerEditorController } from "../../state/controllers/editor/worker-editor";
+import { DutyEditorController } from "../../state/controllers/editor/duty";
+import { WorkerEditorController } from "../../state/controllers/editor/worker";
 import { AvaliableWorkers } from "../../components/AvaliableWorkers";
 import { useDutySelectModal } from "../../components/DutySelectModal";
 import { dutyTitles } from "../../components/DutyTableGrid/utils";
 import { createModalContext } from "../../contexts/modal";
 import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
-import { Searcher, TableEditorController } from "../../state/controllers/editor/table-editor";
+import { Searcher, TableEditorController } from "../../state/controllers/editor/table";
 import { ElementList, IterProps } from "../../utils/react-iteration";
 import {
   StyledDayViewModal,

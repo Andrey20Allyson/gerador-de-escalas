@@ -1,4 +1,4 @@
-import { TableEditorController } from "../../state/controllers/editor/table-editor";
+import { TableEditorController } from "../../state/controllers/editor/table";
 import { SerializationMode } from "../../../app/api/ipc";
 import { TableEditor } from "../../../app/api/table-edition";
 import { AppError, editor } from "../../api";

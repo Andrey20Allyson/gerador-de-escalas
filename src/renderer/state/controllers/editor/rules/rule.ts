@@ -1,5 +1,5 @@
-import { DutyEditorController } from "../duty-editor";
-import { WorkerEditorController } from "../worker-editor";
+import { DutyEditorController } from "../duty";
+import { WorkerEditorController } from "../worker";
 
 export abstract class EditorRule {
   private enabled = true;

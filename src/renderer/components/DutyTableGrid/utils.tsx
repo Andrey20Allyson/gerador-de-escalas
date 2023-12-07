@@ -2,8 +2,8 @@ import { iterRange } from "../../utils";
 import { ElementList, IterProps } from "../../utils/react-iteration";
 import React from "react";
 import { StyledDay, StyledDayTitle, StyledDutiesContainer, StyledDuty, StyledDutyHeader, StyledDutySlot, StyledDutyTitle, StyledEmpityDutySlot } from "./styles";
-import { Searcher, TableEditorController } from "../../state/controllers/editor/table-editor";
-import { WorkerEditorController } from "../../state/controllers/editor/worker-editor";
+import { Searcher, TableEditorController } from "../../state/controllers/editor/table";
+import { WorkerEditorController } from "../../state/controllers/editor/worker";
 
 export const dutyTitles = [
   '7 as 19h',

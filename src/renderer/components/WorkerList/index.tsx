@@ -1,7 +1,7 @@
 import { useDayEditionModal } from "../../components/DayEditionModal";
 import { WorkerEditionCard } from "../../components/WorkerEditionCard";
 import { useRerender } from "../../hooks";
-import { WorkerEditorController } from "../../state/controllers/editor/worker-editor";
+import { WorkerEditorController } from "../../state/controllers/editor/worker";
 import { ElementList } from "../../utils/react-iteration";
 import React, { useMemo, useState } from "react";
 import { BiSearch } from "react-icons/bi";

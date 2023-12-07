@@ -4,7 +4,7 @@ import { ElementList } from '../../utils/react-iteration';
 import React from 'react';
 import { StyledDayEditionGrid } from './styles';
 import { DayView } from './utils';
-import { TableEditorController } from '../../state/controllers/editor/table-editor';
+import { TableEditorController } from '../../state/controllers/editor/table';
 
 export function DutyTableGrid() {
   const modal = useDayEditionModal();

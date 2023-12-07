@@ -4,7 +4,7 @@ import { genderComponentMap, graduationTextColor2Map } from "../../components/Da
 import { DutyCard } from "../../components/DutyCard";
 import { useDutySelectModal } from "../../components/DutySelectModal";
 import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
-import { WorkerEditorController } from "../../state/controllers/editor/worker-editor";
+import { WorkerEditorController } from "../../state/controllers/editor/worker";
 import { sleep } from "../../utils";
 import { ElementList, IterProps } from "../../utils/react-iteration";
 import { StyledWorkerEditionCard } from "./styles";

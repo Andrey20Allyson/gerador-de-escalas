@@ -8,7 +8,7 @@ import { GoTriangleDown } from 'react-icons/go';
 import { useStage } from "../../contexts/stages";
 import { StyledEditTableStageBody, StyledSelector, StyledToolsSection } from "./EditTableStage.styles";
 import { EditorRouterContext } from "../../components/EditorTypeSelect/context";
-import { TableEditorController } from "../../state/controllers/editor/table-editor";
+import { TableEditorController } from "../../state/controllers/editor/table";
 
 export function EditTableStage() {
   const { prev } = useStage();

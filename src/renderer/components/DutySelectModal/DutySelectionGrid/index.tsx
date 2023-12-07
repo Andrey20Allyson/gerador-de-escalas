@@ -2,8 +2,8 @@ import React from 'react';
 import { BsPeopleFill } from 'react-icons/bs';
 import styled from 'styled-components';
 import { OnDutySelect, dutyTitles } from '../../../components/DutyTableGrid/utils';
-import { TableEditorController } from '../../../state/controllers/editor/table-editor';
-import { WorkerEditorController } from '../../../state/controllers/editor/worker-editor';
+import { TableEditorController } from '../../../state/controllers/editor/table';
+import { WorkerEditorController } from '../../../state/controllers/editor/worker';
 import { getWeekDayLabel } from '../../../utils';
 import { ElementList, IterProps } from '../../../utils/react-iteration';
 

@@ -12,8 +12,8 @@ import { BsGearFill } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 import styled from "styled-components";
 import { DutySelectionGrid } from "./DutySelectionGrid";
-import { Searcher, TableEditorController } from "../../state/controllers/editor/table-editor";
-import { WorkerEditorController } from "../../state/controllers/editor/worker-editor";
+import { Searcher, TableEditorController } from "../../state/controllers/editor/table";
+import { WorkerEditorController } from "../../state/controllers/editor/worker";
 
 export interface DutySelectModalProps {
   workerId: number;
