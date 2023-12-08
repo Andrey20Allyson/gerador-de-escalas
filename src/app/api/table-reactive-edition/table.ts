@@ -11,6 +11,7 @@ import { WorkerInsertionRulesState } from "../table-edition";
 
 export interface OrdinaryInfo {
   readonly isDailyWorker: boolean;
+  readonly timeOffEnd: number;
   readonly startsAt: number;
   readonly endsAt: number;
   readonly duration: number;
@@ -100,6 +101,7 @@ export class TableFactory {
       workerId: worker.fullWorkerID,
       ordinary: {
         endsAt,
+        timeOffEnd: endsAt + workTime.totalTime,
         isDailyWorker: daysOfWork.isDailyWorker,
         startsAt: workTime.startTime,
         duration: workTime.totalTime,
