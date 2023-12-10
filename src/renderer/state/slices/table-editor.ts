@@ -1,6 +1,7 @@
 import { DutyAndWorkerRelationship, IdGenerator, TableData, TableFactory } from "../../../app/api/table-reactive-edition/table";
 import { createSlice, PayloadAction, } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
+import { WorkerInsertionRulesState } from "../../../app/api/table-edition";
 
 export interface TableEditorState {
   history: TableData[];
@@ -14,6 +15,11 @@ export interface AddRelationshipPayload {
 
 export interface RemoveRelationshipPayload {
   id: number;
+}
+
+export interface SetRulePayload {
+  rule: keyof WorkerInsertionRulesState;
+  value: boolean;
 }
 
 export interface InitializerPayload {
@@ -90,6 +96,15 @@ export const tableEditorSlice = createSlice({
       }
 
       pushToHistory(state, newData);
+    },
+    setRule(state, action: PayloadAction<SetRulePayload>) {
+      const current = currentTableSelector(state);
+      if (current === null) return;
+
+      current.rules = {
+        ...current.rules,
+        [action.payload.rule]: action.payload.value,
+      };
     },
     undo(state) {
       if (!canUndo(state)) return;
