@@ -76,6 +76,7 @@ export class TableFactory {
       },
       config: {
         ...table.config,
+        dutyCapacity: 3,
         dutiesPerDay: Math.floor(24 / table.config.dutyDuration),
         numOfDays: table.width,
         workerCapacity: Math.trunc(this.BASE_WORKER_CAPACITY / table.config.dutyPositionSize),

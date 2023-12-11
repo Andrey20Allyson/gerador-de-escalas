@@ -42,7 +42,13 @@ export function DutySelectModal(props: DutySelectModalProps) {
   }
 
   function handleAddDuty(dutyId: number) {
-    workerController.enter(dutyId);
+    const selected = workerController.duties().some(duty => duty.id === dutyId);
+    
+    if (selected) {
+      workerController.leave(dutyId);
+    } else {
+      workerController.enter(dutyId);
+    }
   }
 
   function handleClearDuties() {

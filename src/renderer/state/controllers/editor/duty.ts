@@ -137,6 +137,17 @@ export class DutyEditorController implements IDutyEditor {
     });
   }
 
+  distanceTo(otherDuty: DutyData) {
+    const { dutiesPerDay } = this.table.config;
+    const duty = this.duty;
+
+    const posA = duty.index + duty.day * dutiesPerDay;
+    const posB = otherDuty.index + otherDuty.day * dutiesPerDay;
+    const distance = Math.abs(posA - posB);
+
+    return distance;
+  }
+
   static from(iterable: Iterable<number | DutyData>): DutyEditorController[] {
     const options: DutyEditorControllerOptions = {
       dispatcher: useAppDispatch(),

@@ -7,6 +7,7 @@ import { TableEditorController } from '../../../state/controllers/editor/table';
 import { WorkerEditorController } from '../../../state/controllers/editor/worker';
 import { getWeekDayLabel } from '../../../utils';
 import { ElementList, IterProps } from '../../../utils/react-iteration';
+import { EditorRulesService as EditorRuleService } from '../../../state/controllers/editor/rules';
 
 export interface DutySelectionGridProps {
   workerId: number;
@@ -101,7 +102,8 @@ export function DutySelectButton(props: IterProps<number, DutySelectButtonProps>
   const text = dutyTitles.at(duty.index);
   const selected = workerController.duties().some(workerDuty => workerDuty.id === duty.id);
 
-  const canSelect = true; // dutyController.canAddWorker(worker);
+  const ruleService = new EditorRuleService();
+  const canSelect = ruleService.check(workerId, duty.id);
 
   function handleSelectDuty() {
     if (selected || canSelect) {

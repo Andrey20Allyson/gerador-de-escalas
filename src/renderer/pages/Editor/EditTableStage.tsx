@@ -17,8 +17,6 @@ export function EditTableStage() {
   const tableController = new TableEditorController();
   const changeEditor = EditorRouterContext.useNavigate();
 
-  console.log('EditTableStage:', tableController.table.dutyAndWorkerRelationships);
-
   function handleSaveAs() {
     if (!tableController) return;
 

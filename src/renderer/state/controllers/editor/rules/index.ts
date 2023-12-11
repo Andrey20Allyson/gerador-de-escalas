@@ -7,7 +7,7 @@ import { DispatcherType, EditorControllerOptions, currentTableFromRootSelector }
 import { WorkerEditorController } from "../worker";
 import { DayRestrictionRule } from "./impl/day-restriction-rule";
 import { DutyCapacityRule } from "./impl/duty-capacity-rule";
-import { DutyIntervalRule } from "./impl/duty-interval-rule";
+import { DutyMinDistanceRule } from "./impl/duty-min-distance-rule";
 import { GenderRule } from "./impl/gender-rule";
 import { InspRule } from "./impl/insp-rule";
 import { WorkerCapacityRule } from "./impl/worker-capacity-rule";
@@ -30,6 +30,8 @@ export class EditorRulesService {
 
     this.dispatcher = dispatcher;
     this.table = table;
+
+    this.initializeRules();
   }
 
   initializeRules() {
@@ -46,7 +48,7 @@ export class EditorRulesService {
 
     if (tableRules.ordinaryRule) this.rules.push(new DayRestrictionRule());
 
-    if (tableRules.timeOffRule) this.rules.push(new DutyIntervalRule());
+    if (tableRules.timeOffRule) this.rules.push(new DutyMinDistanceRule());
   }
 
   getWorkerAndDuty(workerId: number, dutyId: number) {

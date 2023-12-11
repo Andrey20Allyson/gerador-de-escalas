@@ -1,3 +1,4 @@
+import { TableData } from "../../../app/api/table-reactive-edition/table";
 import { AppError, api } from "../../api";
 import { LoadTableFormData, LoadTableStage } from "../../components/LoadTableStage";
 import { useStage } from "../../contexts/stages";
@@ -15,9 +16,14 @@ export function LoadTableEditorStage() {
   const tableLoader = TableEditorController.useEditorLoader();
 
   if (tableResponse.status === 'success') {
-    tableLoader.load(tableResponse.data);
-    next();
+    loadState(tableResponse.data);
   }
+  
+  async function loadState(table: TableData) {
+    tableLoader.load(table);
+    await sleep();
+    next();
+  } 
 
   async function loadPreGenerateEditor(data: LoadTableFormData) {
     await sleep();
