@@ -75,8 +75,12 @@ export class WorkerEditorController {
     });
   }
 
-  dutyQuantity() {
+  dutyQuantity(): number {
     return this.relationships().length;
+  }
+
+  dutyMinDistance(): number {
+    return this.worker.ordinary.isDailyWorker ? 1 : this.table.config.dutyMinDistance;
   }
 
   static from(iterable: Iterable<number | WorkerData>): WorkerEditorController[] {
