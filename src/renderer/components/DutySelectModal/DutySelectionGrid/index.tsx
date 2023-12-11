@@ -2,6 +2,7 @@ import React from 'react';
 import { BsPeopleFill } from 'react-icons/bs';
 import styled from 'styled-components';
 import { OnDutySelect, dutyTitles } from '../../../components/DutyTableGrid/utils';
+import { DutySearcher } from '../../../state/controllers/editor/searchers/duty';
 import { TableEditorController } from '../../../state/controllers/editor/table';
 import { WorkerEditorController } from '../../../state/controllers/editor/worker';
 import { getWeekDayLabel } from '../../../utils';
@@ -82,17 +83,21 @@ export interface DutySelectButtonProps {
 
 export function DutySelectButton(props: IterProps<number, DutySelectButtonProps>) {
   const { onDutySelected, workerId, day, entry: index } = props;
-  
+
   const tableController = new TableEditorController();
-  
-  const dutyController = tableController.findDuty();
+
+  const dutyController = tableController.findDuty(
+    DutySearcher
+      .dayEquals(day)
+      .indexEquals(index),
+  );
   if (!dutyController) throw new Error(`Can't find duty at day ${day} in index ${index}!`);
-  
+
   const { duty } = dutyController;
   const dutySize = dutyController.size();
 
   const workerController = new WorkerEditorController(workerId);
-  
+
   const text = dutyTitles.at(duty.index);
   const selected = workerController.duties().some(workerDuty => workerDuty.id === duty.id);
 

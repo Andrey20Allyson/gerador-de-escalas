@@ -1,6 +1,7 @@
 import { expect, test } from '@jest/globals';
 import { DutyData, TableData } from '../../../../app/api/table-reactive-edition/table';
-import { DispatcherType, Searcher, TableEditorController } from './table';
+import { DispatcherType, TableEditorController } from './table';
+import { DutySearcher } from './searchers/duty';
 
 function mockDuties(numOfDays: number, dutiesPerDay: number): DutyData[] {
   const duties: DutyData[] = [];
@@ -58,8 +59,9 @@ test('#next method shild return next duty', () => {
   const tableController = new TableEditorController({ table, dispatcher: dispatcherMock });
 
   const dutyController = tableController.findDuty(
-    Searcher.duty.dayEquals(0),
-    Searcher.duty.indexEquals(1),
+    DutySearcher
+      .dayEquals(0)
+      .indexEquals(1)
   );
   if (!dutyController) throw new Error(`Can't find duty`);
 

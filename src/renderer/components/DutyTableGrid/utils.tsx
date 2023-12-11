@@ -1,9 +1,10 @@
+import React from "react";
+import { DutySearcher } from "../../state/controllers/editor/searchers/duty";
+import { TableEditorController } from "../../state/controllers/editor/table";
+import { WorkerEditorController } from "../../state/controllers/editor/worker";
 import { iterRange } from "../../utils";
 import { ElementList, IterProps } from "../../utils/react-iteration";
-import React from "react";
 import { StyledDay, StyledDayTitle, StyledDutiesContainer, StyledDuty, StyledDutyHeader, StyledDutySlot, StyledDutyTitle, StyledEmpityDutySlot } from "./styles";
-import { Searcher, TableEditorController } from "../../state/controllers/editor/table";
-import { WorkerEditorController } from "../../state/controllers/editor/worker";
 
 export const dutyTitles = [
   '7 as 19h',
@@ -32,8 +33,9 @@ export function DutyView(props: IterProps<number, DutyViewProps>) {
   const { onSelect, day } = props;
   const tableController = new TableEditorController();
   const dutyController = tableController.findDuty(
-    Searcher.duty.dayEquals(day),
-    Searcher.duty.indexEquals(props.entry),
+    DutySearcher
+      .dayEquals(day)
+      .indexEquals(props.entry)
   );
   if (!dutyController) throw new Error(`Can't find duty at day ${day} in index ${props.entry}!`);
 

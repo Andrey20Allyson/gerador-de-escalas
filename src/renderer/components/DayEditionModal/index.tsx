@@ -2,14 +2,15 @@ import React, { useState } from "react";
 import { AiOutlineCloseCircle, AiOutlineDoubleLeft, AiOutlineDoubleRight, AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 import { FaCalendarAlt } from "react-icons/fa";
 import { HiUserRemove } from "react-icons/hi";
-import { DutyEditorController } from "../../state/controllers/editor/duty";
-import { WorkerEditorController } from "../../state/controllers/editor/worker";
 import { AvaliableWorkers } from "../../components/AvaliableWorkers";
 import { useDutySelectModal } from "../../components/DutySelectModal";
 import { dutyTitles } from "../../components/DutyTableGrid/utils";
 import { createModalContext } from "../../contexts/modal";
 import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
-import { Searcher, TableEditorController } from "../../state/controllers/editor/table";
+import { DutyEditorController } from "../../state/controllers/editor/duty";
+import { DutySearcher } from "../../state/controllers/editor/searchers/duty";
+import { TableEditorController } from "../../state/controllers/editor/table";
+import { WorkerEditorController } from "../../state/controllers/editor/worker";
 import { ElementList, IterProps } from "../../utils/react-iteration";
 import {
   StyledDayViewModal,
@@ -33,9 +34,6 @@ export interface DutyViewModalProps {
 
 export function DutyEditionModal(props: DutyViewModalProps) {
   const { dutyId: startDutyId } = props;
-
-  const tableController = new TableEditorController();
-  const { table } = tableController;
 
   const [dutyId, setDutyId] = useState(startDutyId);
   const dutyController = new DutyEditorController(dutyId);
@@ -114,7 +112,7 @@ export function DutyEditionNavation(props: DutyViewNavationProps) {
 
   const tableController = new TableEditorController();
   const dutyIds = tableController
-    .findDuties(Searcher.duty.dayEquals(day))
+    .findDuties(DutySearcher.dayEquals(day))
     .map(controller => controller.duty.id);
 
   return (

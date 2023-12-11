@@ -1,6 +1,7 @@
 import { DutyData, TableData, WorkerData } from "../../../../app/api/table-reactive-edition/table";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "../../../utils";
+import { Searcher } from "../../../utils/searcher";
 import { currentTableSelector, editorActions, tableEditorSelector } from "../../slices/table-editor";
 import { RootState } from "../../store";
 import { DutyEditorController } from "./duty";
@@ -11,26 +12,6 @@ export function currentTableFromRootSelector(state: RootState) {
   if (table === null) throw new Error(`Table editor has't initialized yet!`);
 
   return table;
-}
-
-export type Searcher<T> = (value: T) => boolean;
-export type SearcherFactory<T> = (...args: any[]) => Searcher<T>;
-
-export namespace Searcher {
-  export const worker = {
-    nameEquals(name: string) {
-      return worker => worker.name === name
-    },
-  } satisfies Record<string, SearcherFactory<WorkerData>>;
-
-  export const duty = {
-    dayEquals(day: number) {
-      return duty => duty.day === day;
-    },
-    indexEquals(index: number) {
-      return duty => duty.index === index;
-    },
-  } satisfies Record<string, SearcherFactory<DutyData>>;
 }
 
 export type DispatcherType = ReturnType<typeof useAppDispatch>;
@@ -56,8 +37,8 @@ export class TableEditorController {
     this.table = table;
   }
 
-  findWorker(...searchers: Searcher<WorkerData>[]): WorkerEditorController | null {
-    const worker = this.table.workers.find(worker => searchers.every(seacher => seacher(worker)));
+  findWorker(searcher: Searcher<WorkerData>): WorkerEditorController | null {
+    const worker = this.table.workers.find(searcher.everyMatchesHandler());
     if (!worker) return null;
 
     const { dispatcher, table } = this;
@@ -65,16 +46,16 @@ export class TableEditorController {
     return new WorkerEditorController(worker.id, { dispatcher, table });
   }
 
-  findWorkers(...searchers: Searcher<WorkerData>[]): WorkerEditorController[] {
+  findWorkers(searcher: Searcher<WorkerData>): WorkerEditorController[] {
     const { table, dispatcher } = this;
 
     return this.table.workers
-      .filter(worker => searchers.every(searcher => searcher(worker)))
+      .filter(searcher.everyMatchesHandler())
       .map(worker => new WorkerEditorController(worker.id, { table, dispatcher }));
   }
 
-  findDuty(...searchers: Searcher<DutyData>[]): DutyEditorController | null {
-    const duty = this.table.duties.find(duty => searchers.every(seacher => seacher(duty)));
+  findDuty(searcher: Searcher<DutyData>): DutyEditorController | null {
+    const duty = this.table.duties.find(searcher.everyMatchesHandler());
     if (!duty) return null;
 
     const { dispatcher, table } = this;
@@ -82,11 +63,11 @@ export class TableEditorController {
     return new DutyEditorController(duty.id, { dispatcher, table });
   }
 
-  findDuties(...searchers: Searcher<DutyData>[]): DutyEditorController[] {
+  findDuties(searcher: Searcher<DutyData>): DutyEditorController[] {
     const { table, dispatcher } = this;
 
     return this.table.duties
-      .filter(duty => searchers.every(searcher => searcher(duty)))
+      .filter(searcher.everyMatchesHandler())
       .map(duty => new DutyEditorController(duty.id, { table, dispatcher }));
   }
 
