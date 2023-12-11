@@ -73,7 +73,7 @@ export function createModalContext<M extends ModalLike<any>>(Modal: M) {
 export class ModalHandler<P> {
   constructor(private context: InternModalContext<P>) { }
 
-  open(props?: P) {
+  open(props: P = {} as P) {
     if (props) {
       this.context.setProps(props);
     }

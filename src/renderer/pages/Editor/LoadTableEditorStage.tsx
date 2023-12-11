@@ -1,55 +1,16 @@
 import React from "react";
 import { Squares } from 'react-activity';
-import { AppError, api } from "../../api";
-import { LoadTableFormData, LoadTableStage } from "../../components/LoadTableStage";
-import { useLoading } from "../../hooks";
+import { LoadTableStage } from "../../components/LoadTableStage";
 import { StyledLinedBorder } from "../../pages/Generator/DataCollectStage.styles";
-import { TableEditorController } from "../../state/controllers/editor/table";
-import { sleep } from "../../utils";
+import { useLoadEditorStage } from "./LoadTableEditorStage.hooks";
 
 export function LoadTableEditorStage() {
-  const { listen, loading } = useLoading();
-  const tableLoader = TableEditorController.useEditorLoader();
-
-  async function loadPreGenerateEditor(data: LoadTableFormData) {
-    await sleep();
-
-    const result = await api.editor.load({
-      ordinaryTable: {
-        filePath: data.ordinaryTable.filePath,
-        sheetName: data.ordinaryTable.sheetName,
-      },
-      extraDutyTable: {
-        filePath: data.tableToEdit.filePath,
-        sheetName: data.tableToEdit.sheetName,
-      },
-    });
-
-    if (!result.ok) {
-      AppError.log(result.error);
-      return false;
-    }
-
-    const tableResponse = await api.editor.createEditor();
-
-    if (tableResponse.ok === false) {
-      AppError.log(tableResponse.error);
-      return false;
-    }
-
-    tableLoader.load(tableResponse.data);
-
-    return true;
-  }
-
-  async function handleSubmit(data: LoadTableFormData): Promise<boolean> {
-    return listen(loadPreGenerateEditor(data));
-  }
+  const self = useLoadEditorStage();
 
   return (
     <StyledLinedBorder>
-      <LoadTableStage title="Escolha Escala à Editar" onSubmit={handleSubmit} />
-      <Squares color={`#15ff00${loading ? 'ff' : '00'}`} />
+      <LoadTableStage title="Escolha Escala à Editar" onSubmit={self.handleSubmit} />
+      <Squares color={`#15ff00${self.loading ? 'ff' : '00'}`} />
     </StyledLinedBorder>
   );
 }

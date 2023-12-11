@@ -16,7 +16,7 @@ export function EditTableStage() {
   const saveModal = useSaveTableModal();
   const rulesModal = useRulesModal();
   const changeEditor = EditorRouterContext.useNavigate();
-  const tableController = new TableEditorController();
+  const tableController = TableEditorController.useOptional();
 
   function handleSaveAs() {
     saveModal.open();
@@ -28,11 +28,15 @@ export function EditTableStage() {
 
   useEffect(() => {
     return () => {
+      if (tableController === null) return;
+      
       tableController.clear();
     }
   }, []);
 
   async function handlePrev() {
+    if (tableController === null) return;
+
     await editor.clear();
     tableController.clear();
 
