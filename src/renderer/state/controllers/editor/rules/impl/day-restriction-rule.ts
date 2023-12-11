@@ -24,7 +24,7 @@ export class DayRestrictionRule extends EditorRule {
     if (nextDayRestriction === DayRestriction.LICENCE) {
       const dutyEnd = dutyController.endsAt();
 
-      if (dutyEnd > HOURS_PER_DAY) return false;
+      if (dutyEnd > HOURS_PER_DAY) return true;
     }
 
     return false;
