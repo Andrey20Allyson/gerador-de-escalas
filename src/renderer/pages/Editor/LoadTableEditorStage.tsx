@@ -1,29 +1,15 @@
-import { TableData } from "../../../app/api/table-reactive-edition/table";
+import React from "react";
+import { Squares } from 'react-activity';
 import { AppError, api } from "../../api";
 import { LoadTableFormData, LoadTableStage } from "../../components/LoadTableStage";
-import { useStage } from "../../contexts/stages";
-import { useLoading, useTableData } from "../../hooks";
+import { useLoading } from "../../hooks";
 import { StyledLinedBorder } from "../../pages/Generator/DataCollectStage.styles";
 import { TableEditorController } from "../../state/controllers/editor/table";
 import { sleep } from "../../utils";
-import React from "react";
-import { Squares } from 'react-activity';
 
 export function LoadTableEditorStage() {
-  const { next } = useStage();
   const { listen, loading } = useLoading();
-  const tableResponse = useTableData();
   const tableLoader = TableEditorController.useEditorLoader();
-
-  if (tableResponse.status === 'success') {
-    loadState(tableResponse.data);
-  }
-  
-  async function loadState(table: TableData) {
-    tableLoader.load(table);
-    await sleep();
-    next();
-  } 
 
   async function loadPreGenerateEditor(data: LoadTableFormData) {
     await sleep();
@@ -44,13 +30,20 @@ export function LoadTableEditorStage() {
       return false;
     }
 
+    const tableResponse = await api.editor.createEditor();
+
+    if (tableResponse.ok === false) {
+      AppError.log(tableResponse.error);
+      return false;
+    }
+
+    tableLoader.load(tableResponse.data);
+
     return true;
   }
 
-  async function handleSubmit(data: LoadTableFormData) {
-    const loadPreGenerateEditorPromise = loadPreGenerateEditor(data);
-
-    return listen(loadPreGenerateEditorPromise);
+  async function handleSubmit(data: LoadTableFormData): Promise<boolean> {
+    return listen(loadPreGenerateEditor(data));
   }
 
   return (

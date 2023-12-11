@@ -9,7 +9,7 @@ import { WorkerEditorController } from "./worker";
 
 export function currentTableFromRootSelector(state: RootState) {
   const table = currentTableSelector(tableEditorSelector(state));
-  if (table === null) throw new Error(`Table editor has't initialized yet!`);
+  if (table === null) throw new Error(`Table editor hasn't initialized yet!`);
 
   return table;
 }
@@ -112,24 +112,34 @@ export class TableEditorController {
   }
 
   undo() {
-
+    this.dispatcher(editorActions.undo());
   }
 
   redo() {
-
+    this.dispatcher(editorActions.redo());
   }
 
   clear() {
-    
+    this.dispatcher(editorActions.clear());
+  }
+
+  static useOptional() {
+    const table = useAppSelector(state => currentTableSelector(state.tableEditor));
+    const dispatcher = useAppDispatch();
+
+    const controller = table ? new TableEditorController({ dispatcher, table }) : null;
+
+    return controller;
   }
 
   static useEditorLoader() {
     const dispatcher = useAppDispatch();
-    
+    const isLoaded = useAppSelector(state => currentTableSelector(state.tableEditor)) !== null;
+
     function load(table: TableData) {
       dispatcher(editorActions.initialize({ tableData: table }));
     }
 
-    return { load };
+    return { load, isLoaded };
   }
 }

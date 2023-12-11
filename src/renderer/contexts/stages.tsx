@@ -75,7 +75,7 @@ export function StageRouter(props: StageRouterProps) {
 
   useEffect(() => {
     setStages(props.stages);
-  });
+  }, []);
 
   const Stage = stages.at(index) ?? (() => undefined);
 

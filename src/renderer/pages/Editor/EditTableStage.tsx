@@ -1,31 +1,28 @@
-import { EditorTypeSelect } from "../../components/EditorTypeSelect";
-import { useRulesModal } from "../../components/RulesModal";
-import { useSaveTableModal } from "../../components/SaveTableModal";
 import React, { useEffect } from "react";
 import { AiOutlineSave } from "react-icons/ai";
 import { BsArrowReturnLeft, BsGear } from 'react-icons/bs';
 import { GoTriangleDown } from 'react-icons/go';
-import { useStage } from "../../contexts/stages";
-import { StyledEditTableStageBody, StyledSelector, StyledToolsSection } from "./EditTableStage.styles";
+import { editor } from "../../api";
+import { EditorTypeSelect } from "../../components/EditorTypeSelect";
 import { EditorRouterContext } from "../../components/EditorTypeSelect/context";
+import { useRulesModal } from "../../components/RulesModal";
+import { useSaveTableModal } from "../../components/SaveTableModal";
+import { useStage } from "../../contexts/stages";
 import { TableEditorController } from "../../state/controllers/editor/table";
+import { StyledEditTableStageBody, StyledSelector, StyledToolsSection } from "./EditTableStage.styles";
 
 export function EditTableStage() {
   const { prev } = useStage();
   const saveModal = useSaveTableModal();
   const rulesModal = useRulesModal();
-  const tableController = new TableEditorController();
   const changeEditor = EditorRouterContext.useNavigate();
+  const tableController = new TableEditorController();
 
   function handleSaveAs() {
-    if (!tableController) return;
-
     saveModal.open();
   }
 
   function handleOpenRulesModal() {
-    if (!tableController) return;
-
     rulesModal.open();
   }
 
@@ -36,6 +33,9 @@ export function EditTableStage() {
   }, []);
 
   async function handlePrev() {
+    await editor.clear();
+    tableController.clear();
+
     prev();
   }
 
