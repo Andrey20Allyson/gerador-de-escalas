@@ -17,6 +17,10 @@ export interface RemoveRelationshipPayload {
   id: number;
 }
 
+export interface RemoveRelationshipsPayload {
+  ids: Iterable<number>;
+}
+
 export interface SetRulePayload {
   rule: keyof WorkerInsertionRulesState;
   value: boolean;
@@ -31,25 +35,19 @@ const initialState: TableEditorState = {
   history: [],
 };
 
+const HISTORY_CAPACITY = 256;
+
 export function pushToHistory(state: TableEditorState, newData: TableData) {
   state.history = [
     newData,
     ...state.undoIndex === 0
       ? state.history
       : state.history.slice(state.undoIndex),
-  ];
+  ].slice(0, HISTORY_CAPACITY);
 
   state.undoIndex = 0;
 
   return newData;
-}
-
-export function canUndo(state: TableEditorState) {
-  return state.undoIndex < state.history.length;
-}
-
-export function canRedo(state: TableEditorState) {
-  return state.undoIndex > 0;
 }
 
 export const tableEditorSlice = createSlice({
@@ -97,6 +95,19 @@ export const tableEditorSlice = createSlice({
 
       pushToHistory(state, newData);
     },
+    removeRelationships(state, action: PayloadAction<RemoveRelationshipsPayload>) {
+      const current = currentTableSelector(state);
+      if (current === null) return;
+
+      const ids = Array.from(action.payload.ids);
+
+      const newData: TableData = {
+        ...current,
+        dutyAndWorkerRelationships: current.dutyAndWorkerRelationships.filter(relationship => !ids.includes(relationship.id)),
+      };
+
+      pushToHistory(state, newData);
+    },
     setRule(state, action: PayloadAction<SetRulePayload>) {
       const current = currentTableSelector(state);
       if (current === null) return;
@@ -107,12 +118,22 @@ export const tableEditorSlice = createSlice({
       };
     },
     undo(state) {
-      if (!canUndo(state)) return;
+      const lastIndex = state.history.length - 1;
 
+      if (state.undoIndex >= lastIndex) {
+        state.undoIndex = lastIndex;
+      
+        return;
+      }
+      
       state.undoIndex++;
     },
     redo(state) {
-      if (!canRedo(state)) return;
+      if (state.undoIndex <= 0) {
+        state.undoIndex = 0;
+
+        return;
+      }
 
       state.undoIndex--;
     }

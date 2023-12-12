@@ -2,13 +2,17 @@ import { DutyData, TableData, WorkerData } from "../../../../app/api/table-react
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "../../../utils";
 import { Searcher } from "../../../utils/searcher";
-import { currentTableSelector, editorActions, tableEditorSelector } from "../../slices/table-editor";
+import { TableEditorState, currentTableSelector, editorActions, tableEditorSelector } from "../../slices/table-editor";
 import { RootState } from "../../store";
 import { DutyEditorController } from "./duty";
 import { WorkerEditorController } from "./worker";
 
 export function currentTableFromRootSelector(state: RootState) {
-  const table = currentTableSelector(tableEditorSelector(state));
+  return currentTableOrThrow(tableEditorSelector(state));
+}
+
+export function currentTableOrThrow(state: TableEditorState) {
+  const table = currentTableSelector(state);
   if (table === null) throw new Error(`Table editor hasn't initialized yet!`);
 
   return table;
@@ -21,19 +25,24 @@ export interface EditorControllerOptions {
   table?: TableData;
 }
 
-export interface TableEditorControllerOptions extends EditorControllerOptions { }
+export interface TableEditorControllerOptions extends EditorControllerOptions {
+  state?: TableEditorState;
+}
 
 export class TableEditorController {
   dispatcher: DispatcherType;
+  state: TableEditorState;
   table: TableData;
 
   constructor(options: TableEditorControllerOptions = {}) {
     const {
-      table = useAppSelector(currentTableFromRootSelector),
+      state = useAppSelector(tableEditorSelector),
+      table = currentTableOrThrow(state),
       dispatcher = useAppDispatch(),
     } = options;
 
     this.dispatcher = dispatcher;
+    this.state = state;
     this.table = table;
   }
 
@@ -109,6 +118,14 @@ export class TableEditorController {
 
   load(data: TableData) {
     this.dispatcher(editorActions.initialize({ tableData: data }));
+  }
+
+  canUndo() {
+    return this.state.undoIndex < this.state.history.length - 1;
+  }
+  
+  canRedo() {
+    return this.state.undoIndex > 0;
   }
 
   undo() {

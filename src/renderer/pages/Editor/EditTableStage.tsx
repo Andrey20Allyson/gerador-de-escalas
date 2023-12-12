@@ -10,6 +10,8 @@ import { useSaveTableModal } from "../../components/SaveTableModal";
 import { useStage } from "../../contexts/stages";
 import { TableEditorController } from "../../state/controllers/editor/table";
 import { StyledEditTableStageBody, StyledSelector, StyledToolsSection } from "./EditTableStage.styles";
+import { UndoButton } from "../../components/RedoNUndoButtons/Undo";
+import { RedoButton } from "../../components/RedoNUndoButtons/Redo";
 
 export function EditTableStage() {
   const { prev } = useStage();
@@ -29,7 +31,7 @@ export function EditTableStage() {
   useEffect(() => {
     return () => {
       if (tableController === null) return;
-      
+
       tableController.clear();
     }
   }, []);
@@ -46,6 +48,8 @@ export function EditTableStage() {
   return (
     <StyledEditTableStageBody>
       <StyledToolsSection>
+        <UndoButton />
+        <RedoButton />
         <button onClick={handlePrev}><BsArrowReturnLeft />Voltar</button>
         <button onClick={handleSaveAs}><AiOutlineSave />Salvar</button>
         <button onClick={handleOpenRulesModal}><BsGear />Regras</button>

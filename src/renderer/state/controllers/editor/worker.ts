@@ -38,10 +38,10 @@ export class WorkerEditorController {
   }
 
   leaveAll() {
-    for (const duty of this.duties()) {
-      this.leave(duty.id);      
-    }
-
+    const ids = this.relationships().map(relationship => relationship.id);
+    
+    this.dispatcher(editorActions.removeRelationships({ ids }));
+    
     return this;
   }
 
