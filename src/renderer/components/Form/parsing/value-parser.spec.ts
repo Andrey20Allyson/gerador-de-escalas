@@ -1,7 +1,7 @@
-import { describe, expect, test } from 'vitest';
-import { ValueParser } from './value-parser';
-import { Result } from './utils';
+import { describe, expect, test } from '@jest/globals';
 import { parsers } from '.';
+import { Result } from './utils';
+import { ValueParser } from './value-parser';
 
 export class TestParser extends ValueParser<string, number, { MY_MESSAGE: string }> {
   constructor() {

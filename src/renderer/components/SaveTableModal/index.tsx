@@ -1,23 +1,22 @@
-import { SerializationMode } from "@gde/app/api/ipc";
-import { TableEditor } from "@gde/app/api/table-edition";
-import { AppError, editor } from "@gde/renderer/api";
-import { createModalContext } from "@gde/renderer/contexts/modal";
-import { saveFile } from "@gde/renderer/utils";
+import { TableEditorController } from "../../state/controllers/editor/table";
+import { SerializationMode } from "../../../app/api/ipc";
+import { TableEditor } from "../../../app/api/table-edition";
+import { AppError, editor } from "../../api";
+import { createModalContext } from "../../contexts/modal";
+import { saveFile } from "../../utils";
 import React from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import styled from "styled-components";
 
-export interface SaveTableModalProps {
-  table: TableEditor;
-}
+export interface SaveTableModalProps { }
 
 export function SaveTableModal(props: SaveTableModalProps) {
-  const { table } = props;
+  const tableController = new TableEditorController();
 
   const handler = useSaveTableModal();
 
   async function serialize(mode: SerializationMode) {
-    const saveResponse = await editor.save(table.data);
+    const saveResponse = await editor.save(tableController.table);
     if (!saveResponse.ok) return saveResponse;
 
     return editor.serialize(mode);
@@ -51,7 +50,7 @@ export function SaveTableModal(props: SaveTableModalProps) {
   return (
     <StyledSaveTableModal>
       <section className='head'>
-        <AiOutlineCloseCircle color='#f00' size={25} onClick={handleClose}/>
+        <AiOutlineCloseCircle color='#f00' size={25} onClick={handleClose} />
       </section>
       <section className='body'>
         <h1>Escolha um formato para salvar</h1>

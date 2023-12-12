@@ -1,15 +1,17 @@
-import { DayEditor, DutyEditor, TableEditor, WorkerEditor } from "@gde/app/api/table-edition";
-import { AvaliableWorkers } from "@gde/renderer/components/AvaliableWorkers";
-import { useDutySelectModal } from "@gde/renderer/components/DutySelectModal";
-import { dutyTitles } from "@gde/renderer/components/DutyTableGrid/utils";
-import { createModalContext } from "@gde/renderer/contexts/modal";
-import { useRerender } from "@gde/renderer/hooks";
-import { ColoredText } from "@gde/renderer/pages/Generator/WorkerEditionStage.styles";
-import { ElementList, IterProps } from "@gde/renderer/utils/react-iteration";
 import React, { useState } from "react";
 import { AiOutlineCloseCircle, AiOutlineDoubleLeft, AiOutlineDoubleRight, AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 import { FaCalendarAlt } from "react-icons/fa";
 import { HiUserRemove } from "react-icons/hi";
+import { AvaliableWorkers } from "../../components/AvaliableWorkers";
+import { useDutySelectModal } from "../../components/DutySelectModal";
+import { dutyTitles } from "../../components/DutyTableGrid/utils";
+import { createModalContext } from "../../contexts/modal";
+import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
+import { DutyEditorController } from "../../state/controllers/editor/duty";
+import { DutySearcher } from "../../state/controllers/editor/searchers/duty";
+import { TableEditorController } from "../../state/controllers/editor/table";
+import { WorkerEditorController } from "../../state/controllers/editor/worker";
+import { ElementList, IterProps } from "../../utils/react-iteration";
 import {
   StyledDayViewModal,
   StyledDayViewNavigation,
@@ -26,72 +28,41 @@ import {
 } from "./styles";
 import { genderComponentMap, graduationTextColorMap } from "./utils";
 
-export interface DayViewModalProps {
-  dutyIndex?: number;
-  dayIndex?: number;
-  table: TableEditor;
-  onUpdate?: () => void;
+export interface DutyViewModalProps {
+  dutyId: number;
 }
 
-export function DayEditionModal(props: DayViewModalProps) {
+export function DutyEditionModal(props: DutyViewModalProps) {
+  const { dutyId: startDutyId } = props;
+
+  const [dutyId, setDutyId] = useState(startDutyId);
+  const dutyController = new DutyEditorController(dutyId);
+  const { duty } = dutyController;
+
   const modal = useDayEditionModal();
-  const { dutyIndex: startDutyIndex = 0, dayIndex: startDayIndex = 0, table, onUpdate } = props;
 
-  const [dutyIndex, setDutyIndex] = useState(startDutyIndex);
-  const [dayIndex, setDayIndex] = useState(startDayIndex);
-
-  const rerender = useRerender();
-  const day = table.getDay(dayIndex);
-  const duty = day.getDuty(dutyIndex);
-
-  const dutyViewContent = duty.numOfWorkers() > 0
-    ? <ElementList communProps={{ duty, onUpdate: update }} iter={duty.iterWorkers()} Component={WorkerCard} />
+  const dutyViewContent = dutyController.size() > 0
+    ? <ElementList communProps={{ dutyId }} iter={dutyController.workerIds()} Component={WorkerCard} />
     : <StyledEmpityDutyMessage>Esse turno não possui componentes.</StyledEmpityDutyMessage>;
-
-  function update() {
-    onUpdate?.();
-    rerender();
-  }
 
   function handleClose() {
     modal.close();
   }
 
   function nextDay() {
-    const nextDayIndex = (dayIndex + 1) % table.numOfDays();
-
-    setDayIndex(nextDayIndex);
+    setDutyId(dutyController.nextDay().duty.id);
   }
 
   function prevDay() {
-    const prevDayIndex = dayIndex - 1;
-    const normalizedPrevDayIndex = (prevDayIndex < 0 ? table.numOfDays() + prevDayIndex : prevDayIndex) % table.numOfDays();
-
-    setDayIndex(normalizedPrevDayIndex);
+    setDutyId(dutyController.prevDay().duty.id);
   }
 
   function nextDuty() {
-    const limit = day.numOfDuties();
-    let nextDutyIndex = dutyIndex + 1;
-
-    if (nextDutyIndex >= limit) {
-      nextDay();
-      nextDutyIndex = 0;
-    }
-
-    setDutyIndex(nextDutyIndex);
+    setDutyId(dutyController.next().duty.id);
   }
 
   function prevDuty() {
-    let last = day.numOfDuties() - 1;
-    let prevDutyIndex = dutyIndex - 1;
-
-    if (prevDutyIndex < 0) {
-      prevDay();
-      prevDutyIndex = last;
-    }
-
-    setDutyIndex(prevDutyIndex);
+    setDutyId(dutyController.prev().duty.id);
   }
 
   return (
@@ -102,7 +73,7 @@ export function DayEditionModal(props: DayViewModalProps) {
           <AiOutlineDoubleLeft onClick={prevDay} />
           <AiOutlineLeft onClick={prevDuty} />
           <StyledModalTitle>
-            Dia {day.data.index + 1}
+            Dia {duty.day + 1}
           </StyledModalTitle>
           <AiOutlineRight onClick={nextDuty} />
           <AiOutlineDoubleRight onClick={nextDay} />
@@ -110,15 +81,15 @@ export function DayEditionModal(props: DayViewModalProps) {
         <AiOutlineCloseCircle onClick={handleClose} size={25} color="#cc0000" />
       </StyledModalHeader>
       <StyledModalBody>
-        <DutyEditionNavation day={day} duty={duty} onNavate={setDutyIndex} />
+        <DutyEditionNavation day={duty.day} selectedDutyIndex={duty.index} onNavigate={setDutyId} />
         <StyledModalTitle2>
-          Turno das {dutyTitles.at(dutyIndex)}
+          Turno das {dutyTitles.at(duty.index)}
         </StyledModalTitle2>
         <StyledDutyViewBody>
           <StyledDutyViewSlotSection>
             {dutyViewContent}
           </StyledDutyViewSlotSection>
-          <AvaliableWorkers duty={duty} onUpdate={update} />
+          <AvaliableWorkers dutyId={duty.id} />
         </StyledDutyViewBody>
       </StyledModalBody>
     </StyledDayViewModal>
@@ -128,29 +99,37 @@ export function DayEditionModal(props: DayViewModalProps) {
 export const {
   ModalProvider: DayEditionModalProvider,
   useModal: useDayEditionModal,
-} = createModalContext(DayEditionModal);
+} = createModalContext(DutyEditionModal);
 
 export interface DutyViewNavationProps {
-  duty: DutyEditor;
-  day: DayEditor;
-  onNavate?: (newIndex: number) => void;
+  day: number;
+  selectedDutyIndex: number;
+  onNavigate?: (id: number) => void;
 }
 
 export function DutyEditionNavation(props: DutyViewNavationProps) {
-  const { day, duty, onNavate } = props;
+  const { day, selectedDutyIndex, onNavigate } = props;
 
-  const dutyIndex = duty.data.index;
+  const tableController = new TableEditorController();
+  const dutyIds = tableController
+    .findDuties(DutySearcher.dayEquals(day))
+    .map(controller => controller.duty.id);
 
   return (
     <StyledDutyViewNavigation>
-      <ElementList iter={day.iterDuties()} Component={props => {
-        const { entry: duty } = props;
+      <ElementList iter={dutyIds} Component={props => {
+        const { entry: dutyId } = props;
 
-        const thisDutyIndex = duty.data.index;
+        const dutyController = new DutyEditorController(dutyId);
+        const { duty } = dutyController;
+
+        function handleNavigate() {
+          onNavigate?.(duty.id);
+        }
 
         return (
-          <StyledDutyViewNavButton selected={dutyIndex === thisDutyIndex} onClick={() => onNavate?.(thisDutyIndex)}>
-            {dutyTitles.at(thisDutyIndex)}
+          <StyledDutyViewNavButton selected={duty.index === selectedDutyIndex} onClick={handleNavigate}>
+            {dutyTitles.at(duty.index)}
           </StyledDutyViewNavButton>
         );
       }} />
@@ -159,29 +138,32 @@ export function DutyEditionNavation(props: DutyViewNavationProps) {
 }
 
 export interface WorkerViewProps {
-  onUpdate?: () => void;
-  duty: DutyEditor;
+  dutyId: number;
 }
 
-export function WorkerCard(props: IterProps<WorkerEditor, WorkerViewProps>) {
-  const { entry: worker, duty, onUpdate } = props;
-  const Gender = genderComponentMap[worker.data.gender];
-  const gradutationColor = graduationTextColorMap[worker.data.graduation];
+export function WorkerCard(props: IterProps<number, WorkerViewProps>) {
+  const { entry: workerId, dutyId } = props;
+  
+  const workerController = new WorkerEditorController(workerId);
+  const { worker } = workerController;
+
+  const Gender = genderComponentMap[worker.gender];
+  const gradutationColor = graduationTextColorMap[worker.graduation];
   const dutyModal = useDutySelectModal();
 
   function handleWorkerRemove() {
-    if (worker.unbindDuty(duty)) onUpdate?.();
+    workerController.leave(dutyId);
   }
 
   function handleOpenDutyModal() {
-    dutyModal.open({ worker, onUpdate });
+    dutyModal.open({ workerId });
   }
 
   return (
     <StyledWorkerViewBody>
-      {worker.data.name}
+      {worker.name}
       <section className='info'>
-        [<ColoredText color={gradutationColor}>{worker.data.graduation.toUpperCase()}</ColoredText>]
+        [<ColoredText color={gradutationColor}>{worker.graduation.toUpperCase()}</ColoredText>]
         <Gender />
         <HiUserRemove className="clickable" color='#c00000' onClick={handleWorkerRemove} />
         <FaCalendarAlt className='open-modal' onClick={handleOpenDutyModal} />

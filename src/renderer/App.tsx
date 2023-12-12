@@ -1,4 +1,4 @@
-import { AssetsErrorCode } from '@gde/app/api/assets.error';
+import { AssetsErrorCode } from '../app/api/assets.error';
 import React, { useState } from 'react';
 import './App.css';
 import { AppBody, BodyCard, StyledNavButton, TopNav } from './App.styles';

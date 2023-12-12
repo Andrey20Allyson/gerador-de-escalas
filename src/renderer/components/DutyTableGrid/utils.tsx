@@ -1,7 +1,9 @@
-import { DayEditor, DutyEditor, WorkerEditor } from "@gde/app/api/table-edition";
-import { iterRange } from "@gde/renderer/utils";
-import { ElementList, IterProps } from "@gde/renderer/utils/react-iteration";
 import React from "react";
+import { DutySearcher } from "../../state/controllers/editor/searchers/duty";
+import { TableEditorController } from "../../state/controllers/editor/table";
+import { WorkerEditorController } from "../../state/controllers/editor/worker";
+import { iterRange } from "../../utils";
+import { ElementList, IterProps } from "../../utils/react-iteration";
 import { StyledDay, StyledDayTitle, StyledDutiesContainer, StyledDuty, StyledDutyHeader, StyledDutySlot, StyledDutyTitle, StyledEmpityDutySlot } from "./styles";
 
 export const dutyTitles = [
@@ -13,53 +15,64 @@ export function EmpityDutySlot() {
   return <StyledEmpityDutySlot />;
 }
 
-export function WorkerView(props: IterProps<WorkerEditor>) {
-  const worker = props.entry;
+export function WorkerView(props: IterProps<number>) {
+  const workerController = new WorkerEditorController(props.entry);
+  const { worker } = workerController;
 
-  return <StyledDutySlot gender={worker.data.gender} graduation={worker.data.graduation} />;
+  return <StyledDutySlot gender={worker.gender} graduation={worker.graduation} />;
 }
+
+export type OnDutySelect = (dutyId: number) => void;
 
 export interface DutyViewProps {
-  onSelect?: (day: number, duty: number) => void;
+  onSelect?: OnDutySelect;
+  day: number;
 }
 
-export function DutyView(props: IterProps<DutyEditor, DutyViewProps>) {
-  const { onSelect } = props;
-  const duty = props.entry;
+export function DutyView(props: IterProps<number, DutyViewProps>) {
+  const { onSelect, day } = props;
+  const tableController = new TableEditorController();
+  const dutyController = tableController.findDuty(
+    DutySearcher
+      .dayEquals(day)
+      .indexEquals(props.entry)
+  );
+  if (!dutyController) throw new Error(`Can't find duty at day ${day} in index ${props.entry}!`);
+
+  const { duty } = dutyController;
+
+  const dutySize = dutyController.size();
 
   function handleSelect() {
-    if (onSelect) {
-      const dutyIndex = duty.index();
-      const dayIndex = duty.day.index();
-
-      onSelect(dayIndex, dutyIndex);
-    }
+    onSelect?.(duty.id);
   }
 
   return (
-    <StyledDuty className={`${duty.numOfWorkers() < 2 ? 'low-quantity' : ''}`} onClick={handleSelect}>
-      <ElementList Component={WorkerView} iter={duty.iterWorkers()}/>
-      <ElementList Component={EmpityDutySlot} iter={iterRange(0, 3 - duty.numOfWorkers())}/>
-      <StyledDutyTitle>{dutyTitles.at(duty.data.index) ?? 'N/A'}</StyledDutyTitle>
+    <StyledDuty className={`${dutySize < 2 ? 'low-quantity' : ''}`} onClick={handleSelect}>
+      <ElementList Component={WorkerView} iter={dutyController.workerIds()} />
+      <ElementList Component={EmpityDutySlot} iter={iterRange(0, 3 - dutySize)} />
+      <StyledDutyTitle>{dutyTitles.at(duty.index) ?? 'N/A'}</StyledDutyTitle>
     </StyledDuty>
   );
 }
 
 export interface DayViewProps {
-  onSelect?: DutyViewProps['onSelect'];
+  onSelect?: OnDutySelect;
 }
 
-export function DayView(props: IterProps<DayEditor, DayViewProps>) {
+export function DayView(props: IterProps<number, DayViewProps>) {
   const { onSelect } = props;
   const day = props.entry;
+
+  const tableController = new TableEditorController();
 
   return (
     <StyledDay>
       <StyledDutyHeader>
-        <StyledDayTitle>Dia {day.data.index + 1}</StyledDayTitle>
+        <StyledDayTitle>Dia {day + 1}</StyledDayTitle>
       </StyledDutyHeader>
       <StyledDutiesContainer>
-        <ElementList Component={DutyView} iter={day.iterDuties()} communProps={{ onSelect }} />
+        <ElementList Component={DutyView} iter={tableController.iterDutyIndexes()} communProps={{ onSelect, day }} />
       </StyledDutiesContainer>
     </StyledDay>
   );

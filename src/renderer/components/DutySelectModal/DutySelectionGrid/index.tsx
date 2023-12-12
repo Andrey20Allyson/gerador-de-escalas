@@ -1,23 +1,27 @@
-import { DayEditor, DutyEditor, WorkerEditor } from '@gde/app/api/table-edition';
-import { dutyTitles } from '@gde/renderer/components/DutyTableGrid/utils';
-import { getWeekDayLabel } from '@gde/renderer/utils';
-import { ElementList, IterProps } from '@gde/renderer/utils/react-iteration';
 import React from 'react';
 import { BsPeopleFill } from 'react-icons/bs';
 import styled from 'styled-components';
+import { OnDutySelect, dutyTitles } from '../../../components/DutyTableGrid/utils';
+import { DutySearcher } from '../../../state/controllers/editor/searchers/duty';
+import { TableEditorController } from '../../../state/controllers/editor/table';
+import { WorkerEditorController } from '../../../state/controllers/editor/worker';
+import { getWeekDayLabel } from '../../../utils';
+import { ElementList, IterProps } from '../../../utils/react-iteration';
+import { EditorRulesService as EditorRuleService } from '../../../state/controllers/editor/rules';
 
 export interface DutySelectionGridProps {
-  worker: WorkerEditor;
-  onDutySelected?: (duty: DutyEditor) => void;
+  workerId: number;
+  onDutySelected?: OnDutySelect;
 }
 
 export function DutySelectionGrid(props: DutySelectionGridProps) {
-  const { worker, onDutySelected } = props;
-  const table = worker.table;
+  const { workerId, onDutySelected } = props;
+
+  const tableController = new TableEditorController();
 
   return (
     <StyledDutySelectionGrid>
-      <ElementList Component={DayCard} communProps={{ onDutySelected, worker }} iter={table.iterDays()} />
+      <ElementList Component={DayCard} communProps={{ onDutySelected, workerId }} iter={tableController.iterDays()} />
     </StyledDutySelectionGrid>
   );
 }
@@ -31,21 +35,23 @@ const StyledDutySelectionGrid = styled.section`
 `;
 
 export interface DayCardProps {
-  onDutySelected?: DutySelectionGridProps['onDutySelected'];
-  worker: WorkerEditor;
+  onDutySelected?: OnDutySelect;
+  workerId: number;
 }
 
-export function DayCard(props: IterProps<DayEditor, DayCardProps>) {
-  const { onDutySelected, worker } = props;
+export function DayCard(props: IterProps<number, DayCardProps>) {
+  const { onDutySelected, workerId } = props;
   const day = props.entry;
 
-  const weekDayLabel = getWeekDayLabel(day.weekDayIndex());
+  const tableController = new TableEditorController();
+
+  const weekDayLabel = getWeekDayLabel(tableController.dayOfWeekFrom(day));
 
   return (
     <StyledDayCard>
-      Dia {day.index() + 1} - {weekDayLabel}
+      Dia {day + 1} - {weekDayLabel}
       <span className='duty-row'>
-        <ElementList Component={DutySelectButton} communProps={{ onDutySelected, worker }} iter={day.iterDuties()} />
+        <ElementList Component={DutySelectButton} communProps={{ onDutySelected, workerId, day }} iter={tableController.iterDutyIndexes()} />
       </span>
     </StyledDayCard>
   );
@@ -71,30 +77,45 @@ export const StyledDayCard = styled.span`
 `;
 
 export interface DutySelectButtonProps {
-  onDutySelected?: DayCardProps['onDutySelected'];
-  worker: WorkerEditor;
+  onDutySelected?: OnDutySelect;
+  day: number;
+  workerId: number;
 }
 
-export function DutySelectButton(props: IterProps<DutyEditor, DutySelectButtonProps>) {
-  const { onDutySelected, worker } = props;
-  const duty = props.entry;
+export function DutySelectButton(props: IterProps<number, DutySelectButtonProps>) {
+  const { onDutySelected, workerId, day, entry: index } = props;
 
-  const text = dutyTitles.at(duty.index());
-  const selected = worker.hasDuty(duty.address());
+  const tableController = new TableEditorController();
 
-  const canSelect = duty.canAddWorker(worker);
+  const dutyController = tableController.findDuty(
+    DutySearcher
+      .dayEquals(day)
+      .indexEquals(index),
+  );
+  if (!dutyController) throw new Error(`Can't find duty at day ${day} in index ${index}!`);
+
+  const { duty } = dutyController;
+  const dutySize = dutyController.size();
+
+  const workerController = new WorkerEditorController(workerId);
+
+  const text = dutyTitles.at(duty.index);
+  const selected = workerController.duties().some(workerDuty => workerDuty.id === duty.id);
+
+  const ruleService = new EditorRuleService();
+  const canSelect = ruleService.check(workerId, duty.id);
 
   function handleSelectDuty() {
     if (selected || canSelect) {
-      onDutySelected?.(duty);
+      onDutySelected?.(duty.id);
     }
   }
 
   return (
     <StyledDutySelectButton className={`${canSelect ? ' selectable' : ''}${selected ? ' selected' : ''}`} onClick={handleSelectDuty}>
       {text}
-      <span className={`worker-quantity-display${duty.numOfWorkers() < 2 ? ' low-quantity' : ''}`}>
-        {duty.numOfWorkers()}
+      <span className={`worker-quantity-display${dutySize < 2 ? ' low-quantity' : ''}`}>
+        {dutySize}
         <BsPeopleFill />
       </span>
     </StyledDutySelectButton>

@@ -1,66 +1,62 @@
-import { DutyEditor, WorkerEditor } from "@gde/app/api/table-edition";
-import { genderComponentMap } from "@gde/renderer/components/DayEditionModal/utils";
-import { DutyCard } from "@gde/renderer/components/DutyCard";
-import { useRulesModal } from "@gde/renderer/components/RulesModal";
-import { formatWorkerID } from "@gde/renderer/components/WorkerEditionCard/utils";
-import { createModalContext } from "@gde/renderer/contexts/modal";
-import { useRerender } from "@gde/renderer/hooks";
-import { ElementList } from "@gde/renderer/utils/react-iteration";
 import React from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { BsGearFill } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 import styled from "styled-components";
+import { genderComponentMap } from "../../components/DayEditionModal/utils";
+import { DutyCard } from "../../components/DutyCard";
+import { useRulesModal } from "../../components/RulesModal";
+import { formatWorkerID } from "../../components/WorkerEditionCard/utils";
+import { createModalContext } from "../../contexts/modal";
+import { TableEditorController } from "../../state/controllers/editor/table";
+import { WorkerEditorController } from "../../state/controllers/editor/worker";
+import { ElementList } from "../../utils/react-iteration";
 import { DutySelectionGrid } from "./DutySelectionGrid";
 
 export interface DutySelectModalProps {
-  worker: WorkerEditor;
+  workerId: number;
   idList?: number[];
-  onUpdate?: () => void;
 }
 
 export function DutySelectModal(props: DutySelectModalProps) {
-  const { worker, onUpdate } = props;
-  const table = worker.table;
+  const { workerId } = props;
+  const tableController = new TableEditorController();
+  const workerController = new WorkerEditorController(workerId);
+
+  const { worker } = workerController;
 
   const handler = useDutySelectModal();
   const rulesModal = useRulesModal();
-  const rerender = useRerender();
 
   function handleClose() {
     handler.close();
   }
 
-  const graduation = worker.graduation();
-  const upperCaseGraduation = graduation.toUpperCase();
-  const Gender = genderComponentMap[worker.gender()];
+  const upperCaseGraduation = worker.graduation.toUpperCase();
+  const Gender = genderComponentMap[worker.gender];
 
-  const formattedWorkerID = formatWorkerID(worker.id());
+  const formattedWorkerID = formatWorkerID(worker.workerId);
 
-  function handleExcludeDuty(dayIndex: number, dutyIndex: number) {
-    const duty = table.getDay(dayIndex).getDuty(dutyIndex);
-
-    if (worker.unbindDuty(duty)) update();
+  function handleExcludeDuty(dutyId: number) {
+    workerController.leave(dutyId);
   }
 
-  function handleAddDuty(duty: DutyEditor) {
-    if (worker.hasDuty(duty.address()) && worker.unbindDuty(duty)) return update();
-
-    if (worker.bindDuty(duty)) return update();
-  }
-
-  function update() {
-    onUpdate?.();
-    rerender();
+  function handleAddDuty(dutyId: number) {
+    const selected = workerController.duties().some(duty => duty.id === dutyId);
+    
+    if (selected) {
+      workerController.leave(dutyId);
+    } else {
+      workerController.enter(dutyId);
+    }
   }
 
   function handleClearDuties() {
-    worker.unbindAllDuties();
-    update();
+    workerController.leaveAll();
   }
 
   function handleChangeRules() {
-    rulesModal.open({ table });
+    rulesModal.open();
   }
 
   return (
@@ -73,7 +69,7 @@ export function DutySelectModal(props: DutySelectModalProps) {
         <div className='presentation'>
           <span className='worker-info'>
             <span className='name'>
-              {worker.name()}
+              {worker.name}
             </span>
             <span className='other-info'>
               <label className='title'>Matricula</label>
@@ -91,10 +87,10 @@ export function DutySelectModal(props: DutySelectModalProps) {
             <BsGearFill onClick={handleChangeRules}/>
           </span>
           <span className='duty-list'>
-            <ElementList Component={DutyCard} communProps={{ titleType: 'extence', onExcludeDuty: handleExcludeDuty }} iter={worker.iterDuties()} />
+            <ElementList Component={DutyCard} communProps={{ titleType: 'extence', onExcludeDuty: handleExcludeDuty }} iter={workerController.dutyIds()} />
           </span>
         </div>
-        <DutySelectionGrid onDutySelected={handleAddDuty} worker={worker} />
+        <DutySelectionGrid onDutySelected={handleAddDuty} workerId={worker.id} />
       </section>
     </StyledDutySelectModal>
   );

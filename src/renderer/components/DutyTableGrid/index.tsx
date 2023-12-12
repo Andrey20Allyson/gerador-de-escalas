@@ -1,20 +1,21 @@
-import { useDayEditionModal } from '@gde/renderer/components/DayEditionModal';
-import { EditorContext } from '@gde/renderer/components/EditorTypeSelect/context';
-import { firstMondayFromYearAndMonth, iterRange } from '@gde/renderer/utils';
-import { ElementList } from '@gde/renderer/utils/react-iteration';
+import { useDayEditionModal } from '../../components/DayEditionModal';
+import { firstMondayFromYearAndMonth, iterRange } from '../../utils';
+import { ElementList } from '../../utils/react-iteration';
 import React from 'react';
 import { StyledDayEditionGrid } from './styles';
 import { DayView } from './utils';
+import { TableEditorController } from '../../state/controllers/editor/table';
 
 export function DutyTableGrid() {
   const modal = useDayEditionModal();
-  const table = EditorContext.useEditorOrThrow();
+  const tableController = new TableEditorController();
+  const { table } = tableController;
 
-  function openModal(day: number, duty: number) {
-    modal.open({ table, dayIndex: day, dutyIndex: duty });
+  function openModal(dutyId: number) {
+    modal.open({ dutyId });
   }
 
-  const firstMonday = firstMondayFromYearAndMonth(table.data.year, table.data.month);
+  const firstMonday = firstMondayFromYearAndMonth(table.config.year, table.config.month);
   const firstSunday = (firstMonday + 7 - 1) % 7;
 
   return (
@@ -31,7 +32,7 @@ export function DutyTableGrid() {
         iter={iterRange(0, 7 - firstSunday)} />
       <ElementList
         Component={DayView}
-        iter={table.iterDays()}
+        iter={tableController.iterDays()}
         communProps={{
           onSelect: openModal,
         }} />

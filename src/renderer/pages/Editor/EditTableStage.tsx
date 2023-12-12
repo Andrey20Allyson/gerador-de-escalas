@@ -1,48 +1,73 @@
-import { editor } from "@gde/renderer/api";
-import { EditorTypeSelect } from "@gde/renderer/components/EditorTypeSelect";
-import { EditorContext } from "@gde/renderer/components/EditorTypeSelect/context";
-import { useRulesModal } from "@gde/renderer/components/RulesModal";
-import { useSaveTableModal } from "@gde/renderer/components/SaveTableModal";
-import { useStage } from "@gde/renderer/contexts/stages";
 import React, { useEffect } from "react";
 import { AiOutlineSave } from "react-icons/ai";
 import { BsArrowReturnLeft, BsGear } from 'react-icons/bs';
 import { GoTriangleDown } from 'react-icons/go';
+import { editor } from "../../api";
+import { EditorTypeSelect } from "../../components/EditorTypeSelect";
+import { EditorRouterContext } from "../../components/EditorTypeSelect/context";
+import { useRulesModal } from "../../components/RulesModal";
+import { useSaveTableModal } from "../../components/SaveTableModal";
+import { useStage } from "../../contexts/stages";
+import { TableEditorController } from "../../state/controllers/editor/table";
 import { StyledEditTableStageBody, StyledSelector, StyledToolsSection } from "./EditTableStage.styles";
+import { UndoButton } from "../../components/RedoNUndoButtons/Undo";
+import { RedoButton } from "../../components/RedoNUndoButtons/Redo";
+import { useKeyDownEvent } from "../../hooks";
+
+export const HISTORY_TRAVEL_CODE = 'KeyZ';
+
+export function isHistoryTravel(ev: KeyboardEvent) {
+  return ev.code === HISTORY_TRAVEL_CODE && ev.ctrlKey;
+}
 
 export function EditTableStage() {
   const { prev } = useStage();
   const saveModal = useSaveTableModal();
   const rulesModal = useRulesModal();
-  const table = EditorContext.useEditor();
-  const changeEditor = EditorContext.useNavigate();
-  const clearEditor = EditorContext.useClearEditor();
+  const changeEditor = EditorRouterContext.useNavigate();
+  const tableController = TableEditorController.useOptional();
 
   function handleSaveAs() {
-    if (!table) return;
-
-    saveModal.open({ table });
+    saveModal.open();
   }
 
   function handleOpenRulesModal() {
-    if (!table) return;
-
-    rulesModal.open({ table });
+    rulesModal.open();
   }
 
   useEffect(() => {
     return () => {
-      clearEditor();
+      if (tableController !== null) {
+        tableController.clear();
+      }
     }
   }, []);
 
+  useKeyDownEvent(ev => {
+    if (tableController === null) return;
+    if (!isHistoryTravel(ev)) return;
+
+    if (ev.shiftKey) {
+      tableController.redo();
+    } else {
+      tableController.undo();
+    }
+  });
+
   async function handlePrev() {
+    if (tableController === null) return;
+
+    await editor.clear();
+    tableController.clear();
+
     prev();
   }
 
   return (
     <StyledEditTableStageBody>
       <StyledToolsSection>
+        <UndoButton />
+        <RedoButton />
         <button onClick={handlePrev}><BsArrowReturnLeft />Voltar</button>
         <button onClick={handleSaveAs}><AiOutlineSave />Salvar</button>
         <button onClick={handleOpenRulesModal}><BsGear />Regras</button>

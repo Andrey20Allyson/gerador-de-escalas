@@ -1,5 +1,5 @@
 import { FormField } from "./form-field";
-import { ParserLike, Result } from "./parsing";
+import { ParserLike, Result } from "../parsing";
 
 export class ValuePipe<T> {
   constructor(

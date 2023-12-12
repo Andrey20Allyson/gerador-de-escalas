@@ -1,21 +1,23 @@
-import { DivugationTableFactory, TableFactory } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories";
+import { DivugationTableFactory, TableFactory as SerializationTableFactory } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories";
 import { DayListTableFactory } from '@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories/day-list-factory';
-import { ExtraDutyTable, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import { ExtraDutyTableV2, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import fs from 'fs/promises';
 import { AppAssets } from "../assets";
 import { IpcMapping, IpcMappingFactory } from "../mapping";
-import { TableEditor, TableEditorData } from "../table-edition";
+import { AppError, AppResponse, ErrorCode } from "../../base";
+import { TableData, TableFactory } from "../table-reactive-edition/table";
 import { ReadTablePayload, parseExtraTable, readTables } from "../utils/table";
-import { AppResponse, ErrorCode, AppError } from "../../base";
 
 export interface EditorHandlerFactoryData {
-  table: ExtraDutyTable;
+  table: ExtraDutyTableV2;
   workers: WorkerInfo[];
 }
 
 export type SerializationMode = 'payment' | 'divugation' | 'day-list';
 
 export class EditorHandler implements IpcMappingFactory {
+  readonly tableFactory = new TableFactory();
+
   constructor(
     readonly assets: AppAssets,
     public data?: EditorHandlerFactoryData
@@ -42,32 +44,29 @@ export class EditorHandler implements IpcMappingFactory {
     }
   }
 
-  createEditor(): AppResponse<TableEditorData, ErrorCode.DATA_NOT_LOADED> {
+  createEditor(): AppResponse<TableData, ErrorCode.DATA_NOT_LOADED> {
     const { data } = this;
     if (!data) return AppResponse.error('Shold load data before get editor!', ErrorCode.DATA_NOT_LOADED);
 
     const { table, workers } = data;
 
-    const editor = TableEditor.from(table, workers);
+    const tableDTO = this.tableFactory.toDTO(table, workers);
 
-    return AppResponse.ok(editor.data);
+    return AppResponse.ok(tableDTO);
   }
 
-  save(_: IpcMapping.IpcEvent, data: TableEditorData): AppResponse<void, ErrorCode.DATA_NOT_LOADED> {
+  save(_: IpcMapping.IpcEvent, data: TableData): AppResponse<void, ErrorCode.DATA_NOT_LOADED> {
     const { data: thisData } = this;
     if (!thisData) return AppResponse.error('Shold load data before save!', ErrorCode.DATA_NOT_LOADED);
 
     const { table, workers } = thisData;
-    const workerMap = WorkerInfo.createMap(workers);
 
-    const editor = new TableEditor(data);
-
-    editor.save(table, workerMap);
+    this.tableFactory.fromDTO(data, table, workers)
 
     return AppResponse.ok();
   }
 
-  getSerializer(mode: SerializationMode): TableFactory {
+  getSerializer(mode: SerializationMode): SerializationTableFactory {
     switch (mode) {
       case 'payment':
         return this.assets.serializer;

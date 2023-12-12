@@ -1,5 +1,5 @@
-import { useStage } from '@gde/renderer/contexts/stages';
-import { HeaderLabel } from '@gde/renderer/pages/Generator/WorkerEditionStage.styles';
+import { useStage } from '../contexts/stages';
+import { HeaderLabel } from '../pages/Generator/WorkerEditionStage.styles';
 import React, { useRef } from 'react';
 import { TableSheetSelect, TableSheetSelectState } from './TableSheetSelect';
 

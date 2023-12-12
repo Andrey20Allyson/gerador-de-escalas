@@ -1,4 +1,4 @@
-import { Gender, Graduation } from "@gde/renderer/extra-duty-lib";
+import { Gender, Graduation } from "../../extra-duty-lib";
 import React from "react";
 import { GrStatusUnknown } from "react-icons/gr";
 import { PiGenderFemaleBold, PiGenderMaleBold } from "react-icons/pi";

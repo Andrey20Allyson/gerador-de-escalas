@@ -1,4 +1,5 @@
-import { Result, ValueParser } from ".";
+import { Result } from "./utils";
+import { ValueParser } from './value-parser';
 
 export type BooleanParserEMM = {
   INVALID_TYPE: string;

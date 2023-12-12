@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, PropsWithChildren, useEffect } from "react";
-import { LoadBar } from "@gde/renderer/components/LoadBar";
+import { LoadBar } from "../components/LoadBar";
 
 export type StageComponent = () => React.JSX.Element;
 
@@ -75,7 +75,7 @@ export function StageRouter(props: StageRouterProps) {
 
   useEffect(() => {
     setStages(props.stages);
-  });
+  }, []);
 
   const Stage = stages.at(index) ?? (() => undefined);
 

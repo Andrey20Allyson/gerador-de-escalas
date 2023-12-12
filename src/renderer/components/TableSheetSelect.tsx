@@ -1,4 +1,4 @@
-import { AppError, api } from "@gde/renderer/api";
+import { AppError, api } from "../api";
 import React, { useState } from "react";
 
 export interface TableSheetSelectState {

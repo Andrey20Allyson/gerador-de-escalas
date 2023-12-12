@@ -1,25 +1,27 @@
-import { WorkerEditor } from "@gde/app/api/table-edition";
-import { genderComponentMap, graduationTextColor2Map } from "@gde/renderer/components/DayEditionModal/utils";
-import { DutyCard } from "@gde/renderer/components/DutyCard";
-import { useDutySelectModal } from "@gde/renderer/components/DutySelectModal";
-import { useRerender } from "@gde/renderer/hooks";
-import { ColoredText } from "@gde/renderer/pages/Generator/WorkerEditionStage.styles";
-import { sleep } from "@gde/renderer/utils";
-import { ElementList, IterProps } from "@gde/renderer/utils/react-iteration";
 import React, { useEffect, useState } from "react";
 import { FaCalendarAlt, FaTrash } from 'react-icons/fa';
+import { genderComponentMap, graduationTextColor2Map } from "../../components/DayEditionModal/utils";
+import { DutyCard } from "../../components/DutyCard";
+import { useDutySelectModal } from "../../components/DutySelectModal";
+import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
+import { WorkerEditorController } from "../../state/controllers/editor/worker";
+import { sleep } from "../../utils";
+import { ElementList, IterProps } from "../../utils/react-iteration";
 import { StyledWorkerEditionCard } from "./styles";
 import { formatWorkerID } from "./utils";
 
 export interface WorkerEditionCardProps {
-  onOpenModal?: (day: number, duty: number) => void;
+  onOpenModal?: (dutyId: number) => void;
 }
 
-export function WorkerEditionCard(props: IterProps<WorkerEditor, WorkerEditionCardProps>) {
+export function WorkerEditionCard(props: IterProps<number, WorkerEditionCardProps>) {
   const { onOpenModal } = props;
 
-  const worker = props.entry;
-  const rerender = useRerender();
+  const workerController = new WorkerEditorController(props.entry);
+  const { worker } = workerController;
+
+  const dutyIds = workerController.duties().map(duty => duty.id);
+  
   const [copiedID, setCopiedID] = useState(false);
   const dutyModal = useDutySelectModal();
 
@@ -39,25 +41,19 @@ export function WorkerEditionCard(props: IterProps<WorkerEditor, WorkerEditionCa
     };
   }, [copiedID]);
 
-  const duties = worker.iterDuties();
-
-  const graduation = worker.graduation();
+  const graduation = worker.graduation;
   const upperCaseGraduation = graduation.toUpperCase();
 
-  const Gender = genderComponentMap[worker.gender()];
+  const Gender = genderComponentMap[worker.gender];
 
-  const formattedWorkerID = formatWorkerID(worker.id());
+  const formattedWorkerID = formatWorkerID(worker.workerId);
 
-  function handleExcludeDuty(day: number, duty: number) {
-    const dutyEditor = worker.table.getDay(day).getDuty(duty);
-
-    if (worker.unbindDuty(dutyEditor)) rerender();
+  function handleExcludeDuty(dutyId: number) {
+    workerController.leave(dutyId);
   }
 
   function handleExcludeAllDuties() {
-    worker.unbindAllDuties();
-
-    rerender();
+    workerController.leaveAll();
   }
 
   async function handleCopyID() {
@@ -67,13 +63,13 @@ export function WorkerEditionCard(props: IterProps<WorkerEditor, WorkerEditionCa
   }
 
   function handleOpenDutySelection() {
-    dutyModal.open({ worker, onUpdate: rerender });
+    dutyModal.open({ workerId: worker.id });
   }
 
   return (
     <StyledWorkerEditionCard>
       <section className='presentation'>
-        <p className='name'>{worker.name()}</p>
+        <p className='name'>{worker.name}</p>
         <div className='info'>
           <Gender />
           <ColoredText className='graduation' color={graduationTextColor2Map[graduation]}>{upperCaseGraduation}</ColoredText>
@@ -88,7 +84,7 @@ export function WorkerEditionCard(props: IterProps<WorkerEditor, WorkerEditionCa
         </div>
       </section>
       <section className='duty-list'>
-        <ElementList Component={DutyCard} communProps={{ onExcludeDuty: handleExcludeDuty, onOpenModal }} iter={duties} />
+        <ElementList Component={DutyCard} communProps={{ onExcludeDuty: handleExcludeDuty, onOpenModal }} iter={dutyIds} />
       </section>
       <section className='commands'>
         <button className='add-duty-button' onClick={handleOpenDutySelection}>
