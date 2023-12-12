@@ -14,3 +14,4 @@ export {
 } from './state-hooks';
 
 export { useTableData } from './useTableData';
+export { useKeyDownEvent } from './useKeyDown';
