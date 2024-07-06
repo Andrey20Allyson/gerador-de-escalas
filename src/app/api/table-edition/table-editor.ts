@@ -1,5 +1,5 @@
-import type { ExtraDutyTable, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
-import { getNumOfDaysInMonth } from "@andrey-allyson/escalas-automaticas/dist/utils";
+import type { ExtraDutyTable, WorkerInfo } from "../../auto-schedule/extra-duty-lib";
+import { getNumOfDaysInMonth } from "../../auto-schedule/utils";
 import { DayEditor, DayEditorData } from "./day-editor";
 import { normalizeIndex } from "./utils";
 import { WorkerEditor, WorkerEditorData } from "./worker-editor";
@@ -112,7 +112,7 @@ export class TableEditor {
           .getDay(dutyEditor.day.index())
           .getDuty(dutyEditor.index())
 
-        duty.add(workerInfo, true);
+        duty.add(workerInfo);
       }
     }
 
@@ -123,15 +123,15 @@ export class TableEditor {
     const { year, month } = table.config;
 
     const editor = TableEditor.create({
-      dutiesPerDay: table.getDay(0).size,
+      dutiesPerDay: table.getDay(0).getSize(),
       month,
       year,
     });
 
     for (const workerInfo of workers) {
-      const { fullWorkerID, name, gender, graduation, daysOfWork, workTime } = workerInfo;
+      const { id, name, gender, graduation, daysOfWork, workTime } = workerInfo;
 
-      const worker = WorkerEditor.create(editor, fullWorkerID);
+      const worker = WorkerEditor.create(editor, id);
 
       worker.data.name = name;
       worker.data.gender = gender;
@@ -142,8 +142,8 @@ export class TableEditor {
         if (work) worker.ordinary.add(day);
       }
 
-      worker.ordinary.data.startsAt = workTime.startTime;
-      worker.ordinary.data.duration = workTime.totalTime;
+      worker.ordinary.data.startsAt = workTime.start;
+      worker.ordinary.data.duration = workTime.duration;
 
       editor.addWorker(worker.data);
     }
@@ -151,14 +151,14 @@ export class TableEditor {
     for (const day of table) {
       for (const duty of day) {
         const dutyEditor = editor
-          .getDay(day.day)
+          .getDay(day.index)
           .getDuty(duty.index);
   
         dutyEditor.setTime(duty.start, duty.end);
 
-        for (const [_, { fullWorkerID }] of duty) {   
-          const workerEditor = editor.getWorker(fullWorkerID);
-          if (!workerEditor) throw new Error(`Can't find worker data with id #${fullWorkerID}!`);
+        for (const [_, { id }] of duty) {   
+          const workerEditor = editor.getWorker(id);
+          if (!workerEditor) throw new Error(`Can't find worker data with id #${id}!`);
     
           workerEditor.addDuty(dutyEditor.address());
           dutyEditor.addWorker(workerEditor);

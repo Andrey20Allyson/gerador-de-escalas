@@ -2,11 +2,11 @@ import type {
   DayRestriction,
   ExtraDuty,
   ExtraDutyTableConfig,
-  ExtraDutyTableV2,
+  ExtraDutyTable,
   Gender,
   Graduation,
   WorkerInfo
-} from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+  } from "../../auto-schedule/extra-duty-lib";
 import { WorkerInsertionRulesState } from "../table-edition";
 
 export interface OrdinaryInfo {
@@ -62,7 +62,7 @@ export class TableFactory {
     readonly idGenerator: IdGenerator = new IdGenerator(),
   ) { }
 
-  createTableData(table: ExtraDutyTableV2): TableData {
+  createTableData(table: ExtraDutyTable): TableData {
 
     return {
       idCounters: this.idGenerator.counters,
@@ -87,7 +87,7 @@ export class TableFactory {
 
   createDutyData(duty: ExtraDuty): DutyData {
     return {
-      day: duty.day,
+      day: duty.day.index,
       id: this.idGenerator.next('duty'),
       index: duty.index,
     };
@@ -96,22 +96,22 @@ export class TableFactory {
   createWorkerData(worker: WorkerInfo): WorkerData {
     const { workTime, daysOfWork } = worker;
 
-    const endsAt = workTime.startTime + workTime.totalTime;
+    const endsAt = workTime.end;
 
     return {
-      workerId: worker.fullWorkerID,
+      workerId: worker.id,
       ordinary: {
         endsAt,
-        timeOffEnd: endsAt + workTime.totalTime,
+        timeOffEnd: workTime.offTimeEnd,
         isDailyWorker: daysOfWork.isDailyWorker,
-        startsAt: workTime.startTime,
-        duration: workTime.totalTime,
+        startsAt: workTime.start,
+        duration: workTime.duration,
       },
       restrictions: Array.from(daysOfWork.values()),
       gender: worker.gender,
       graduation: worker.graduation,
       id: this.idGenerator.next('worker'),
-      individualId: worker.config.individualRegistry,
+      individualId: worker.config.individualId,
       name: worker.name,
     };
   }
@@ -124,7 +124,7 @@ export class TableFactory {
     };
   }
 
-  toDTO(table: ExtraDutyTableV2, workers: WorkerInfo[]): TableData {
+  toDTO(table: ExtraDutyTable, workers: WorkerInfo[]): TableData {
     const tableData = this.createTableData(table);
 
     const workerDataMap: Map<number, WorkerData> = new Map();
@@ -134,7 +134,7 @@ export class TableFactory {
 
       tableData.workers.push(workerData);
 
-      workerDataMap.set(worker.fullWorkerID, workerData);
+      workerDataMap.set(worker.id, workerData);
     }
 
     for (const duty of table.iterDuties()) {
@@ -143,7 +143,7 @@ export class TableFactory {
       tableData.duties.push(dutyData);
 
       for (const [_, worker] of duty) {
-        const workerData = workerDataMap.get(worker.fullWorkerID);
+        const workerData = workerDataMap.get(worker.id);
         if (workerData === undefined) continue;
 
         tableData.dutyAndWorkerRelationships.push(this.createDutyAndWorkerRelationship(workerData.id, dutyData.id));
@@ -153,12 +153,12 @@ export class TableFactory {
     return tableData;
   }
 
-  fromDTO(tableData: TableData, table: ExtraDutyTableV2, workers: WorkerInfo[]): ExtraDutyTableV2 {
+  fromDTO(tableData: TableData, table: ExtraDutyTable, workers: WorkerInfo[]): ExtraDutyTable {
     table.clear();
 
     const dutyDataMap = new Map(tableData.duties.map(duty => [duty.id, duty]));
     const workerDataMap = new Map(tableData.workers.map(worker => [worker.id, worker]));
-    const workerInfoMap = new Map(workers.map(worker => [worker.fullWorkerID, worker]));
+    const workerInfoMap = new Map(workers.map(worker => [worker.id, worker]));
 
     for (const relationship of tableData.dutyAndWorkerRelationships) {
       const dutyData = dutyDataMap.get(relationship.dutyId);

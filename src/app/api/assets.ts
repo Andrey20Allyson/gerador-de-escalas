@@ -1,5 +1,5 @@
-import { MainTableFactory } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories";
-import { Holidays, WorkerRegistriesMap } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import { MainTableFactory } from "../auto-schedule/xlsx-builders";
+import { Holidays, WorkerRegistryMap } from "../auto-schedule/extra-duty-lib";
 import fs from 'fs/promises';
 import { AppError, AppResponse, ErrorCode, HolidayType, RegistryEntryType, WorkerRegistry, holidaySchema, workerRegistrySchema } from "../base";
 import { TypedDiskCache } from "../cache/typed-cache";
@@ -19,7 +19,7 @@ export interface AppAssetsServices {
 }
 
 export interface AppAssetsData {
-  workerRegistryMap: WorkerRegistriesMap,
+  workerRegistryMap: WorkerRegistryMap,
   serializer: MainTableFactory,
   holidays: Holidays,
 }
@@ -101,7 +101,7 @@ export class AppAssets {
 
     // TODO remove holidays from whole application
     const holidays = Holidays.from([]);
-    const workerRegistryMap = new WorkerRegistriesMap(registries);
+    const workerRegistryMap = new WorkerRegistryMap(registries);
     const serializer = new MainTableFactory(patternBuffer);
 
     this._data = {
@@ -122,7 +122,7 @@ export class AppAssets {
   private static normalizeWorkersId(registries: WorkerRegistry[]): WorkerRegistry[] {
     return registries.map(registry => ({
       ...registry,
-      workerID: registry.workerID.replace(AppAssets.DOT_REGEXP, ''),
+      workerID: registry.workerId.replace(AppAssets.DOT_REGEXP, ''),
     }));
   }
 }

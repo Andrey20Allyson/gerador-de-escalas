@@ -1,4 +1,4 @@
-import type { WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import type { WorkerInfo } from "../../auto-schedule/extra-duty-lib";
 
 export interface WorkerEditorDTO {
   readonly workerID: number;
@@ -54,8 +54,8 @@ export class WorkerEditor {
   }
 
   static from(parent: PreGenerateEditor, workerInfo: WorkerInfo) {
-    const { name, daysOfWork, fullWorkerID } = workerInfo;
-    const worker = WorkerEditor.create(parent, fullWorkerID);
+    const { name, daysOfWork, id } = workerInfo;
+    const worker = WorkerEditor.create(parent, id);
 
     const { data } = worker;
 
@@ -98,7 +98,7 @@ export class PreGenerateEditor {
 
   save(workers: WorkerInfo[]) {
     for (const workerInfo of workers) {
-      const worker = this.getWorker(workerInfo.fullWorkerID);
+      const worker = this.getWorker(workerInfo.id);
       if (!worker) throw new Error(`Invalid input, 'workers' arg have a not mapped worker!`);
       
       for (const { day, work } of worker.days()) {

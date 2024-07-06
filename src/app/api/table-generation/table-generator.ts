@@ -1,11 +1,12 @@
-import { ExtraDutyTableV2, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
-import { ParseOrdinaryPayload, parseOrdinary } from "../utils/table";
-import { MainTableFactory } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories";
-import { PreGenerateEditor, PreGenerateEditorDTO } from "./pre-generate-editor";
+import { MainTableFactory } from "../../auto-schedule/xlsx-builders";
+import { ExtraDutyTable, WorkerInfo } from "../../auto-schedule/extra-duty-lib";
+import { DefautlScheduleBuilder } from "../../auto-schedule/extra-duty-lib/builders/default-builder";
 import { AppResponse, ErrorCode } from "../../base";
+import { ParseOrdinaryPayload, parseOrdinary } from "../utils/table";
+import { PreGenerateEditor, PreGenerateEditorDTO } from "./pre-generate-editor";
 
 export interface GeneratedData {
-  table: ExtraDutyTableV2;
+  table: ExtraDutyTable;
   workers: WorkerInfo[];
 }
 
@@ -21,7 +22,7 @@ export class TableGenerator {
 
     const workers = parseOrdinary(payload);
 
-    const table = new ExtraDutyTableV2({ year, month });
+    const table = new ExtraDutyTable({ year, month });
 
     this.data = { table, workers };
   }
@@ -51,8 +52,8 @@ export class TableGenerator {
 
     table.clear();
 
-    table.tryAssignArrayMultipleTimes(workers, 7e3);
-    
+    new DefautlScheduleBuilder(7e3).build(table, workers);
+
     return AppResponse.ok();
   }
 

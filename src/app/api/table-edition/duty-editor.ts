@@ -1,4 +1,4 @@
-import type { Gender, Graduation } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import type { Gender, Graduation } from "../../auto-schedule/extra-duty-lib";
 import { DayEditor } from "./day-editor";
 import { DutyAddress } from "./duty-address";
 import { TableEditor } from "./table-editor";

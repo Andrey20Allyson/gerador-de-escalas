@@ -40,7 +40,7 @@ export class GeneratorHandler {
         buffer: await fs.readFile(filePath),
         sheetName,
       },
-      workerRegistryMap,
+      workerRegistryMap: workerRegistryMap,
       holidays,
       month,
       year,

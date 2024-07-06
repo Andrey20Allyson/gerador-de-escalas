@@ -1,7 +1,7 @@
 import { DutyEditorData, DutyEditor } from "./duty-editor";
 import { normalizeIndex } from "./utils";
 import { TableEditor } from "./table-editor";
-import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "@andrey-allyson/escalas-automaticas/dist/utils/week-days";
+import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "../../auto-schedule/utils/week-days";
 
 export interface DayEditorData {
   readonly index: number;

@@ -1,4 +1,4 @@
-import { io } from "@andrey-allyson/escalas-automaticas";
+import { io } from "../../auto-schedule";
 import { IpcMapping, IpcMappingFactory } from "../mapping";
 import { AppResponse } from "../../base";
 

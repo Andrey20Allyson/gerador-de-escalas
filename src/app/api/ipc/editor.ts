@@ -1,6 +1,6 @@
-import { DivugationTableFactory, TableFactory as SerializationTableFactory } from "@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories";
-import { DayListTableFactory } from '@andrey-allyson/escalas-automaticas/dist/auto-schedule/table-factories/day-list-factory';
-import { ExtraDutyTableV2, WorkerInfo } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
+import { DivugationTableFactory, TableFactory as SerializationTableFactory } from "../../auto-schedule/xlsx-builders";
+import { DayListTableFactory } from '../../auto-schedule/xlsx-builders/day-list-factory';
+import { ExtraDutyTable, WorkerInfo } from "../../auto-schedule/extra-duty-lib";
 import fs from 'fs/promises';
 import { AppAssets } from "../assets";
 import { IpcMapping, IpcMappingFactory } from "../mapping";
@@ -9,7 +9,7 @@ import { TableData, TableFactory } from "../table-reactive-edition/table";
 import { ReadTablePayload, parseExtraTable, readTables } from "../utils/table";
 
 export interface EditorHandlerFactoryData {
-  table: ExtraDutyTableV2;
+  table: ExtraDutyTable;
   workers: WorkerInfo[];
 }
 

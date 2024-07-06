@@ -1,6 +1,7 @@
-import { io } from "@andrey-allyson/escalas-automaticas";
-import { Holidays, WorkerRegistriesMap } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
-import { BookHandler, SheetHandler } from "@andrey-allyson/escalas-automaticas/dist/xlsx-handlers";
+import { io } from "../../auto-schedule";
+import { WorkerRegistry } from "../../auto-schedule/registries/worker-registry";
+import { Holidays, WorkerRegistryMap } from "../../auto-schedule/extra-duty-lib";
+import { BookHandler, SheetHandler } from "../../auto-schedule/xlsx-handlers";
 import fs from 'fs/promises';
 
 export interface InputTable {
@@ -14,13 +15,13 @@ export interface LoadTableInput {
 }
 
 export interface ParseTablePayload {
-  workerRegistryMap: WorkerRegistriesMap,
+  workerRegistryMap: WorkerRegistryMap,
   tables: LoadTableInput;
   holidays: Holidays;
 }
 
 export interface ParseOrdinaryPayload {
-  workerRegistryMap: WorkerRegistriesMap;
+  workerRegistryMap: WorkerRegistryMap;
   holidays: Holidays;
   table: InputTable;
   month: number;
@@ -32,7 +33,7 @@ export function parseOrdinary(payload: ParseOrdinaryPayload) {
   const { buffer, sheetName } = table;
 
   return io.parseWorkers(buffer, {
-    workerRegistryMap,
+    workerRegistries: workerRegistryMap,
     sheetName,
     holidays,
     month,
@@ -79,7 +80,7 @@ export function parseExtraTable(payload: ParseTablePayload) {
 
   const workers = io.parseWorkers(ordinaryTable.buffer, {
     sheetName: ordinaryTable.sheetName,
-    workerRegistryMap,
+    workerRegistries: workerRegistryMap,
     holidays,
     month,
     year,
