@@ -1,21 +1,18 @@
 import { MainTableFactory } from "../auto-schedule/xlsx-builders";
 import { Holidays, WorkerRegistryMap } from "../auto-schedule/extra-duty-lib";
 import fs from 'fs/promises';
-import { AppError, AppResponse, ErrorCode, HolidayType, RegistryEntryType, WorkerRegistry, holidaySchema, workerRegistrySchema } from "../base";
-import { TypedDiskCache } from "../cache/typed-cache";
-import { TypedLoader } from "../loaders/typed-loader";
+import { AppResponse, RegistryEntryType } from "../base";
 import { fromRoot } from "../path.utils";
-import { TypedRepository } from "../repositories/typed-repository";
-import CryptorWithPassword from "../cryptor/cryptor-with-password";
-import { CacheDecryptor, CacheEncryptor } from "../cache/cache-cryptor";
-import admin from 'firebase-admin';
-import { HOLIDAYS_COLLECTION_NAME, WORKER_REGISTRIES_COLLECTION_NAME } from "../firebase/collections";
+import admin, { firestore } from 'firebase-admin';
 import { FirestoreInitializer } from "../firebase";
 import { AssetsErrorCode } from "./assets.error";
+import { WorkerRegistry } from "../auto-schedule/registries/worker-registry";
+import { WorkerRegistryRepository } from "../auto-schedule/registries/worker-registry/worker-registry-repository";
+import CryptorWithPassword from "../cryptor/cryptor-with-password";
+import { Credential } from "firebase-admin/app";
 
 export interface AppAssetsServices {
-  readonly workerRegistry: WorkerRegistryService;
-  readonly holidays: HolidaysService;
+  readonly workerRegistry: WorkerRegistryServices;
 }
 
 export interface AppAssetsData {
@@ -76,8 +73,7 @@ export class AppAssets {
       const firestore = await initializer.getFirestore();
   
       this._services = {
-        holidays: new HolidaysService({ firestore, password }),
-        workerRegistry: new WorkerRegistryService({ firestore, password }),
+        workerRegistry: await WorkerRegistryServices.load({ firestore, password }),
       };
 
       return AppResponse.ok();
@@ -86,22 +82,18 @@ export class AppAssets {
     }
   }
 
-  async load() {
+  async load(): Promise<void> {
     const [
-      registries,
+      workerRegistryMap,
       patternBuffer,
     ] = await Promise.all([
-      this.services.workerRegistry.loader
-        .load()
-        .then(AppAssets.mapEntitiesData)
-        .then(AppAssets.normalizeWorkersId),
+      this.services.workerRegistry.repository.load(),
 
       fs.readFile(fromRoot('./assets/output-pattern.xlsx')),
     ]);
 
     // TODO remove holidays from whole application
     const holidays = Holidays.from([]);
-    const workerRegistryMap = new WorkerRegistryMap(registries);
     const serializer = new MainTableFactory(patternBuffer);
 
     this._data = {
@@ -132,74 +124,24 @@ export interface ServiceConfig {
   firestore: admin.firestore.Firestore;
 }
 
-export class WorkerRegistryService {
-  repository: TypedRepository<WorkerRegistry>;
-  cache: TypedDiskCache<WorkerRegistry>;
-  loader: TypedLoader<WorkerRegistry>;
-  cryptor: CryptorWithPassword;
+export class WorkerRegistryServices {
+  private constructor(
+    readonly repository: WorkerRegistryRepository,
+  ) { }
 
-  constructor(config: ServiceConfig) {
-    const {
-      firestore,
-      password,
-    } = config;
+  static async load(config: ServiceConfig): Promise<WorkerRegistryServices> {
+    const { firestore } = config
 
-    this.repository = new TypedRepository({
-      firestore,
-      collectionName: WORKER_REGISTRIES_COLLECTION_NAME,
-      schema: workerRegistrySchema,
+    const repositoryCollection = firestore.collection('worker-registries');
+
+    const repository = new WorkerRegistryRepository({
+      collection: repositoryCollection,
     });
 
-    this.cache = new TypedDiskCache({
-      prefix: WORKER_REGISTRIES_COLLECTION_NAME,
-      schema: workerRegistrySchema,
-    });
+    const services = new WorkerRegistryServices(
+      repository
+    );
 
-    this.cryptor = new CryptorWithPassword({ password });
-
-    this.cache
-      .appendPostSerialize(new CacheEncryptor(this.cryptor))
-      .appendPreParse(new CacheDecryptor(this.cryptor));
-
-    this.loader = new TypedLoader({
-      cache: this.cache,
-      repository: this.repository,
-    });
-  }
-}
-
-export class HolidaysService {
-  repository: TypedRepository<HolidayType>;
-  cache: TypedDiskCache<HolidayType>;
-  loader: TypedLoader<HolidayType>;
-  cryptor: CryptorWithPassword;
-
-  constructor(config: ServiceConfig) {
-    const {
-      firestore,
-      password,
-    } = config;
-
-    this.repository = new TypedRepository({
-      firestore,
-      collectionName: HOLIDAYS_COLLECTION_NAME,
-      schema: holidaySchema,
-    });
-
-    this.cache = new TypedDiskCache({
-      prefix: HOLIDAYS_COLLECTION_NAME,
-      schema: holidaySchema,
-    });
-
-    this.cryptor = new CryptorWithPassword({ password });
-
-    this.cache
-      .appendPostSerialize(new CacheEncryptor(this.cryptor))
-      .appendPreParse(new CacheDecryptor(this.cryptor));
-
-    this.loader = new TypedLoader({
-      cache: this.cache,
-      repository: this.repository,
-    });
+    return services;
   }
 }

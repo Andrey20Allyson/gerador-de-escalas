@@ -2,7 +2,6 @@ import { CollectionReference, Query, QueryDocumentSnapshot } from "firebase-admi
 import { readFile } from "fs/promises";
 import path from "path";
 import { config } from "../../config";
-import { adminFirestore } from "../../firebase";
 import { WorkerRegistryChunk, WorkerRegistryChunkData } from "./chunk";
 
 export class ChunkNotFoundError extends Error {
@@ -16,11 +15,9 @@ export class ChunkNotFoundError extends Error {
 }
 
 export class WorkerRegistryChunkStorage {
-  readonly collection: CollectionReference;
-
-  constructor() {
-    this.collection = adminFirestore.collection('worker-registries');
-  }
+  constructor(
+    readonly collection: CollectionReference,
+  ) { }
 
   cacheDirOf(idx: number): string {
     return path.resolve(

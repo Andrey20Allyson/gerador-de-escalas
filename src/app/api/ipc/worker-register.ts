@@ -1,6 +1,6 @@
-import { AppResponse, WorkerRegistry } from "../../base";
-import { TypedLoader } from "../../loaders/typed-loader";
-import { TypedRepository } from "../../repositories/typed-repository";
+import { WorkerRegistry, WorkerRegistryInit } from "../../auto-schedule/registries/worker-registry";
+import { WorkerRegistryRepository } from "../../auto-schedule/registries/worker-registry/worker-registry-repository";
+import { AppResponse } from "../../base";
 import { AppAssets } from "../assets";
 import { IpcMapping, IpcMappingFactory } from "../mapping";
 
@@ -13,42 +13,38 @@ export interface ListOptions {
 export class WorkerRegisterHandler implements IpcMappingFactory {
   constructor(readonly assets: AppAssets) { }
 
-  get loader(): TypedLoader<WorkerRegistry> {
-    return this.assets.services.workerRegistry.loader;
-  }
-
-  get repository(): TypedRepository<WorkerRegistry> {
+  get repository(): WorkerRegistryRepository {
     return this.assets.services.workerRegistry.repository;
   }
 
-  async create(_: IpcMapping.IpcEvent, worker: WorkerRegistry) {
-    const entry = await this.repository.create({ data: worker });
+  async create(_: IpcMapping.IpcEvent, worker: WorkerRegistryInit) {
+    const entry = await this.repository.create(worker);
 
     return AppResponse.ok(entry);
   }
 
-  async get(_: IpcMapping.IpcEvent, id: string) {
-    const entries = await this.loader.load();
+  async get(_: IpcMapping.IpcEvent, workerId: string) {
+    const entries = await this.repository.load();
 
-    const entry = entries.find(entry => entry.id === id);
+    const entry = entries.get(workerId);
 
     return AppResponse.ok(entry)
   }
 
   async list(_: IpcMapping.IpcEvent, options: ListOptions = {}) {
-    const entries = await this.loader.load();
+    const entries = await this.repository.list();
 
     return AppResponse.ok(entries.slice(options.offset, options.limit));
   }
 
-  async update(_: IpcMapping.IpcEvent, id: string, changes: Partial<WorkerRegistry>) {
-    const result = await this.repository.update({ id, data: changes });
+  async update(_: IpcMapping.IpcEvent, workerId: string, changes: Partial<WorkerRegistryInit>) {
+    const result = await this.repository.update(workerId, changes);
 
     return AppResponse.ok(result);
   }
 
-  async delete(_: IpcMapping.IpcEvent, id: string) {
-    const result = await this.repository.delete(id);
+  async delete(_: IpcMapping.IpcEvent, workerId: string) {
+    const result = await this.repository.delete(workerId);
 
     return AppResponse.ok(result);
   }

@@ -8,7 +8,7 @@ export class WorkerRegistryMap implements Iterable<WorkerRegistry> {
   private map: Map<string, WorkerRegistry>;
 
   constructor(registries: WorkerRegistry[]) {
-    const entries = registries.map(registry => WorkerRegistryMap._workerRegistriesToEntry(registry));
+    const entries = registries.map(registry => [registry.workerId, registry] as const);
 
     this.map = new Map(entries);
   }
@@ -35,9 +35,5 @@ export class WorkerRegistryMap implements Iterable<WorkerRegistry> {
 
   [Symbol.iterator](): Iterator<WorkerRegistry> {
     return this.map.values();
-  }
-
-  private static _workerRegistriesToEntry(registries: WorkerRegistry): [string, WorkerRegistry] {
-    return [registries.workerId, registries];
   }
 }

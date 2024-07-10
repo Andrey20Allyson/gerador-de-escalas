@@ -3,7 +3,6 @@ import { Query, QueryDocumentSnapshot, QuerySnapshot } from "firebase-admin/fire
 import fs from 'fs/promises';
 import { WorkerRegistry, WorkerRegistryInit } from ".";
 import { config } from "../../config";
-import { adminFirestore } from "../../firebase";
 import { ChunkNotFoundError, WorkerRegistryChunkStorage } from "./chunk-storage";
 
 export type WorkerRegistryChunkData = {
@@ -74,6 +73,12 @@ export class WorkerRegistryChunk {
     return this;
   }
 
+  findById(workerId: string): WorkerRegistry | null {
+    return this
+      .registries()
+      .find(registry => registry.workerId === workerId) ?? null;
+  }
+
   registries(): WorkerRegistry[];
   registries(oldRegistries: WorkerRegistry[]): WorkerRegistry[];
   registries(oldRegistries?: WorkerRegistry[]): WorkerRegistry[] {
@@ -128,7 +133,9 @@ export class WorkerRegistryChunk {
   async persist(): Promise<void> {
     if (this.changed() === false) return;
 
-    await adminFirestore.runTransaction(async transaction => {
+    const firestore = this._firestore();
+
+    await firestore.runTransaction(async transaction => {
       const doc = await transaction
         .get(this.query())
         .then(qs => this.snapshot(qs));
@@ -149,5 +156,9 @@ export class WorkerRegistryChunk {
     });
 
     await this.cache();
+  }
+
+  private _firestore(): FirebaseFirestore.Firestore {
+    return this.storage.collection.firestore;
   }
 }

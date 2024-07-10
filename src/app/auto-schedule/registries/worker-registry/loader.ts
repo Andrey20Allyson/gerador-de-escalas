@@ -1,10 +1,12 @@
 import { WorkerRegistry } from ".";
+import { adminFirestore } from "../../firebase";
 import { Loader } from "../loader";
 import { ChunkNotFoundError, WorkerRegistryChunkStorage } from "./chunk-storage";
 import { WorkerRegistryMap } from "./worker-registry-map";
 
 export interface FirebaseWorkerRegistryLoaderOptions {
   cacheOnly?: boolean;
+  collection?: FirebaseFirestore.CollectionReference;
 }
 
 export class FirebaseWorkerRegistryLoader implements Loader<WorkerRegistryMap> {
@@ -12,7 +14,9 @@ export class FirebaseWorkerRegistryLoader implements Loader<WorkerRegistryMap> {
   readonly cacheOnly: boolean;
 
   constructor(options?: FirebaseWorkerRegistryLoaderOptions) {
-    this.storage = new WorkerRegistryChunkStorage();
+    const collection = options?.collection ?? adminFirestore.collection('worker-registries');
+
+    this.storage = new WorkerRegistryChunkStorage(collection);
 
     this.cacheOnly = options?.cacheOnly ?? false;
   }
