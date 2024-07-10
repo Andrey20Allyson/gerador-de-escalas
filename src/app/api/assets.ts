@@ -3,13 +3,11 @@ import { Holidays, WorkerRegistryMap } from "../auto-schedule/extra-duty-lib";
 import fs from 'fs/promises';
 import { AppResponse, RegistryEntryType } from "../base";
 import { fromRoot } from "../path.utils";
-import admin, { firestore } from 'firebase-admin';
+import admin from 'firebase-admin';
 import { FirestoreInitializer } from "../firebase";
 import { AssetsErrorCode } from "./assets.error";
 import { WorkerRegistry } from "../auto-schedule/registries/worker-registry";
-import { WorkerRegistryRepository } from "../auto-schedule/registries/worker-registry/worker-registry-repository";
-import CryptorWithPassword from "../cryptor/cryptor-with-password";
-import { Credential } from "firebase-admin/app";
+import { WorkerRegistryRepository } from "../auto-schedule/registries/worker-registry/repository";
 
 export interface AppAssetsServices {
   readonly workerRegistry: WorkerRegistryServices;

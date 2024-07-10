@@ -2,7 +2,7 @@ import { WorkerRegistry } from ".";
 import { adminFirestore } from "../../firebase";
 import { Loader } from "../loader";
 import { ChunkNotFoundError, WorkerRegistryChunkStorage } from "./chunk-storage";
-import { WorkerRegistryMap } from "./worker-registry-map";
+import { WorkerRegistryMap } from "./map";
 
 export interface FirebaseWorkerRegistryLoaderOptions {
   cacheOnly?: boolean;

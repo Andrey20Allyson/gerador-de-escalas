@@ -4,7 +4,7 @@ export * from './extra-duty';
 export * from './holidays';
 export * from './work-time';
 export * from './worker-info';
-export * from '../../registries/worker-registry/worker-registry-map';
+export * from '../../registries/worker-registry/map';
 export * from './extra-duty-table';
 export * from './extra-events/extra-place';
 export * from './work-limit';

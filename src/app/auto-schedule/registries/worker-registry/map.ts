@@ -13,18 +13,14 @@ export class WorkerRegistryMap implements Iterable<WorkerRegistry> {
     this.map = new Map(entries);
   }
 
-  get(workerId: string): WorkerRegistry {
+  get(workerId: string): WorkerRegistry | undefined {
     const registry = this.map.get(workerId);
-
-    if (registry == null) {
-      throw new Error(`Can't find workerID "${workerId}"`);
-    }
 
     return registry;
   }
 
-  has(workerID: string) {
-    return this.map.has(workerID);
+  has(workerId: string) {
+    return this.map.has(workerId);
   }
 
   workers(): WorkerRegistry[] {

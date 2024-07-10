@@ -4,7 +4,6 @@ import { WorkerInfoParser } from '../extra-duty-lib/structs/worker-info/parser';
 import { Result, ResultError, ResultType } from "../utils";
 import { BookHandler, CellHandler, LineHander } from "../xlsx-handlers";
 import { ExcelTime } from "../xlsx-handlers/utils";
-import { WorkerRegistryStorage } from '../registries/worker-registry/storage';
 
 export enum WorkerInfoCollumns {
   NAME = 'd',
@@ -54,7 +53,7 @@ export function safeScrappeWorkersFromBook(workBook: XLSX.WorkBook, options: Scr
   const workerInfos: WorkerInfo[] = [];
   const parser = new WorkerInfoParser();
 
-  const workerRegistries = options.workerRegistries ? new WorkerRegistryStorage(options.workerRegistries.workers()) : undefined; 
+  const { workerRegistries } = options; 
 
   for (const line of sheet.iterLines(2)) {
     const cellsResult = line.safeGetCells(workersTableCollumns);
@@ -72,8 +71,13 @@ export function safeScrappeWorkersFromBook(workBook: XLSX.WorkBook, options: Scr
       workLimitCell,
     ] = typedCellsResult;
 
-    const workerRegistry = workerRegistries?.get(registrationCell.value, nameCell.value);
-    if (ResultError.isError(workerRegistry)) return workerRegistry;
+    const workerRegistry = workerRegistries?.get(registrationCell.value);
+    if (workerRegistries != null && workerRegistry == null) {
+      const id = registrationCell.value;
+      const name = nameCell.value;
+
+      return new ResultError(`Can't find the registry of worker with id "${id}"${name !== undefined ? ` and name "${name}"` : ''}.`)
+    }
 
     try {
       const worker = parser.parse({

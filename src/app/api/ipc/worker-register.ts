@@ -1,5 +1,5 @@
 import { WorkerRegistry, WorkerRegistryInit } from "../../auto-schedule/registries/worker-registry";
-import { WorkerRegistryRepository } from "../../auto-schedule/registries/worker-registry/worker-registry-repository";
+import { WorkerRegistryRepository } from "../../auto-schedule/registries/worker-registry/repository";
 import { AppResponse } from "../../base";
 import { AppAssets } from "../assets";
 import { IpcMapping, IpcMappingFactory } from "../mapping";
