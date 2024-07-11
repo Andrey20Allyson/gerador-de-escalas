@@ -33,11 +33,11 @@ export function DataCollectStage() {
     const { filePath, sheetName, month, year } = state;
     const newErrorState: DataCollectStageErrorState = {};
 
-    if (!filePath || !sheetName || !month || !year) {
+    if (!filePath || !sheetName || month === undefined || year === undefined) {
       if (!filePath) newErrorState.filePath = 'Escala do Mês é um campo obrigatório';
       if (!sheetName) newErrorState.sheetName = 'Nome da Aba é um Campo obrigatório';
-      if (!month) newErrorState.month = 'Mês é um Campo obrigatório';
-      if (!year) newErrorState.year = 'Mês é um Campo obrigatório';
+      if (month === undefined) newErrorState.month = 'Mês é um Campo obrigatório';
+      if (year === undefined) newErrorState.year = 'Mês é um Campo obrigatório';
 
       return setErrorState(newErrorState);
     }
