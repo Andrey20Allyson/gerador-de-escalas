@@ -1,7 +1,7 @@
 import { IpcMain } from "electron";
-import { separator } from "./utils";
-import { IpcMapping, IpcMappingFactory } from ".";
-import { AppResponse, AppError } from "../../base";
+import { IpcMapping, IpcMappingFactory, separator } from "./utils";
+import { AppError } from "./error";
+import { AppResponse } from "./response";
 
 export type HandlerType = { [K in string]: IpcMapping.HandlerFunction | HandlerType };
 export type IpcHandlerMapValue = {

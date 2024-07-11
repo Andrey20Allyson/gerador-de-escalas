@@ -1,13 +1,13 @@
 import { MainTableFactory } from "../auto-schedule/xlsx-builders";
 import { Holidays, WorkerRegistryMap } from "../auto-schedule/extra-duty-lib";
 import fs from 'fs/promises';
-import { AppResponse } from "../base";
 import { fromRoot } from "../path.utils";
 import admin from 'firebase-admin';
 import { FirestoreInitializer } from "../auto-schedule/firebase/app";
 import { AssetsErrorCode } from "./assets.error";
 import { WorkerRegistry } from "../auto-schedule/registries/worker-registry";
 import { WorkerRegistryRepository } from "../auto-schedule/registries/worker-registry/repository";
+import { AppResponse } from "./mapping/response";
 
 export interface AppAssetsServices {
   readonly workerRegistry: WorkerRegistryServices;

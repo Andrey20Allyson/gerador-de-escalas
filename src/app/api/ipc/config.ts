@@ -1,5 +1,5 @@
 import { AppAssets } from "../assets";
-import { IpcMapping, IpcMappingFactory } from "../mapping";
+import { IpcMappingFactory, IpcMapping } from "../mapping/utils";
 import { HolidaysRegisterHandler } from "./holidays-register";
 import { WorkerRegisterHandler } from "./worker-register";
 

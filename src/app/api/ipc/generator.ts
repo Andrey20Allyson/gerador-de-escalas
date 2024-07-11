@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
 import { AppAssets } from "../assets";
-import { IpcMapping } from '../mapping';
 import { TableGenerator } from "../table-generation/table-generator";
 import { PreGenerateEditorHandler } from './pre-generade-editor';
-import { AppResponse } from '../../base';
+import { AppResponse } from '../mapping/response';
+import { IpcMapping } from '../mapping/utils';
 
 export interface LoadPayload {
   sheetName: string;

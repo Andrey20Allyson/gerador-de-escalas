@@ -1,5 +1,5 @@
 import { IpcMainInvokeEvent } from 'electron';
-import { AppResponse } from '../../base';
+import { AppResponse } from './response';
 
 export const separator = '.';
 

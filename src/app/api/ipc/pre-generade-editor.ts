@@ -1,4 +1,4 @@
-import { IpcMapping, IpcMappingFactory } from "../mapping";
+import { IpcMappingFactory, IpcMapping } from "../mapping/utils";
 import { PreGenerateEditorDTO } from "../table-generation/pre-generate-editor";
 import { TableGenerator } from "../table-generation/table-generator";
 

@@ -1,4 +1,4 @@
-import { IpcMapping, IpcMappingFactory } from "../mapping";
+import { IpcMappingFactory, IpcMapping } from "../mapping/utils";
 
 export class HolidaysRegisterHandler implements IpcMappingFactory {
 

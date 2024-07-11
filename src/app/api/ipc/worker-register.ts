@@ -1,8 +1,8 @@
-import { WorkerRegistry, WorkerRegistryInit } from "../../auto-schedule/registries/worker-registry";
+import { WorkerRegistryInit } from "../../auto-schedule/registries/worker-registry";
 import { WorkerRegistryRepository } from "../../auto-schedule/registries/worker-registry/repository";
-import { AppResponse } from "../../base";
 import { AppAssets } from "../assets";
-import { IpcMapping, IpcMappingFactory } from "../mapping";
+import { AppResponse } from "../mapping/response";
+import { IpcMappingFactory, IpcMapping } from "../mapping/utils";
 
 export interface ListOptions {
   limit?: number;

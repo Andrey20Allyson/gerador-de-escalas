@@ -1,9 +1,10 @@
 import { MainTableFactory } from "../../auto-schedule/xlsx-builders";
 import { ExtraDutyTable, WorkerInfo } from "../../auto-schedule/extra-duty-lib";
 import { DefautlScheduleBuilder } from "../../auto-schedule/extra-duty-lib/builders/default-builder";
-import { AppResponse, ErrorCode } from "../../base";
 import { ParseOrdinaryPayload, parseOrdinary } from "../utils/table";
 import { PreGenerateEditor, PreGenerateEditorDTO } from "./pre-generate-editor";
+import { ErrorCode } from "../mapping/error";
+import { AppResponse } from "../mapping/response";
 
 export interface GeneratedData {
   table: ExtraDutyTable;

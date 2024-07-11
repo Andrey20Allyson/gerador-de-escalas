@@ -1,5 +1,4 @@
-import { IpcInvokerMapFromFactory, IpcMappingFactory } from ".";
-import { separator } from "./utils";
+import { IpcInvokerMapFromFactory, IpcMappingFactory, separator } from "./utils";
 
 export type IpcInvokerFunction = (...args: unknown[]) => unknown;
 

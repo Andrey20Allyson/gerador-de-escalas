@@ -1,6 +1,6 @@
 import { io } from "../../auto-schedule";
-import { IpcMapping, IpcMappingFactory } from "../mapping";
-import { AppResponse } from "../../base";
+import { AppResponse } from "../mapping/response";
+import { IpcMappingFactory, IpcMapping } from "../mapping/utils";
 
 export class UtilsHandler implements IpcMappingFactory {
   async getSheetNames(_: IpcMapping.IpcEvent, filePath: string) {

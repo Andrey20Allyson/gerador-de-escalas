@@ -3,10 +3,11 @@ import { DayListTableFactory } from '../../auto-schedule/xlsx-builders/day-list-
 import { ExtraDutyTable, WorkerInfo } from "../../auto-schedule/extra-duty-lib";
 import fs from 'fs/promises';
 import { AppAssets } from "../assets";
-import { IpcMapping, IpcMappingFactory } from "../mapping";
-import { AppError, AppResponse, ErrorCode } from "../../base";
 import { TableData, TableFactory } from "../table-reactive-edition/table";
 import { ReadTablePayload, parseExtraTable, readTables } from "../utils/table";
+import { ErrorCode, AppError } from "../mapping/error";
+import { AppResponse } from "../mapping/response";
+import { IpcMappingFactory, IpcMapping } from "../mapping/utils";
 
 export interface EditorHandlerFactoryData {
   table: ExtraDutyTable;
