@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import fs from 'fs/promises';
 import path from 'path';
-import CryptorWithPassword from '@app/cryptor/cryptor-with-password';
+import CryptorWithPassword from '../../src/app/auto-schedule/cryptor/cryptor-with-password';
 import { ProgramInitializer } from 'index';
 
 export class CryptorProgramInitializer implements ProgramInitializer {

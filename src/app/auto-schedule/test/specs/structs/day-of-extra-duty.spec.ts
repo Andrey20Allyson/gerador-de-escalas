@@ -3,9 +3,11 @@ import { DayOfExtraDuty } from '../../../extra-duty-lib';
 import { mock } from '../mocking/mocker';
 
 function verifyPrototype(value: unknown): DayOfExtraDuty {
-  if (value instanceof DayOfExtraDuty === false) expect.fail(`The day returned by table shold be instanceof '${DayOfExtraDuty.name}'`);
-
-  return value;
+  if (value instanceof DayOfExtraDuty) {
+    return value;
+  }
+  
+  expect.fail(`The day returned by table shold be instanceof '${DayOfExtraDuty.name}'`);
 }
 
 describe(DayOfExtraDuty.name, () => {
