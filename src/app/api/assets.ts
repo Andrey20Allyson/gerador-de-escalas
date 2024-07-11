@@ -1,10 +1,10 @@
 import { MainTableFactory } from "../auto-schedule/xlsx-builders";
 import { Holidays, WorkerRegistryMap } from "../auto-schedule/extra-duty-lib";
 import fs from 'fs/promises';
-import { AppResponse, RegistryEntryType } from "../base";
+import { AppResponse } from "../base";
 import { fromRoot } from "../path.utils";
 import admin from 'firebase-admin';
-import { FirestoreInitializer } from "../firebase";
+import { FirestoreInitializer } from "../auto-schedule/firebase/app";
 import { AssetsErrorCode } from "./assets.error";
 import { WorkerRegistry } from "../auto-schedule/registries/worker-registry";
 import { WorkerRegistryRepository } from "../auto-schedule/registries/worker-registry/repository";
@@ -103,10 +103,6 @@ export class AppAssets {
 
   reload() {
 
-  }
-
-  private static mapEntitiesData<T>(entities: RegistryEntryType<T>[]): T[] {
-    return entities.map(entity => entity.data as T);
   }
 
   private static normalizeWorkersId(registries: WorkerRegistry[]): WorkerRegistry[] {
