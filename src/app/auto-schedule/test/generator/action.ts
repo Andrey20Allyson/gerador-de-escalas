@@ -2,7 +2,6 @@ import fs from 'fs/promises';
 import path from "path";
 import { GenerateCommandOptions } from ".";
 import { parseWorkers } from "../../io/io";
-import { FirebaseWorkerRegistryLoader } from "../../registries/worker-registry/loader";
 import { MainTableFactory } from "../../xlsx-builders";
 import { ExtraDutyTable, ExtraEventName, WorkerInfo } from "../../extra-duty-lib";
 import { DefautlScheduleBuilder } from "../../extra-duty-lib/builders/default-builder";
@@ -11,6 +10,11 @@ import { Benchmarker, analyseResult } from "../../utils";
 import { Fancyfier, UnassignedWorkersMessageData } from "../../utils/fancyfier";
 import { MockFactory } from "./mock";
 import { RandomWorkerMockFactory } from "./mock/worker/random";
+import { WorkerRegistryRepository } from '../../registries/worker-registry/repository';
+import { FirestoreInitializer } from '../../firebase/app';
+import { env } from '../../utils/env';
+
+const KEY_DECRYPT_PASSWORD = env('KEY_DECRYPT_PASSWORD');
 
 function mockWorkers(year: number, month: number) {
   const workerMocker: MockFactory<WorkerInfo> = new RandomWorkerMockFactory({ month, year });
@@ -20,7 +24,12 @@ function mockWorkers(year: number, month: number) {
 
 async function loadWorkers(year: number, month: number, inputFile: string) {
   const inputBuffer = await fs.readFile(inputFile);
-  const loader = new FirebaseWorkerRegistryLoader({ cacheOnly: true });
+
+  const initializer = new FirestoreInitializer({ password: KEY_DECRYPT_PASSWORD });
+  const firestore = await initializer.getFirestore();
+  const collection = firestore.collection('worker-registries');
+
+  const loader = new WorkerRegistryRepository({ cacheOnly: true, collection });
   const workerRegistries = await loader.load();
 
   return parseWorkers(inputBuffer, {

@@ -5,6 +5,7 @@
 /assets/*
 /public/*
 /.cache/
+/.env
 
 !README.md
 !/public/assets

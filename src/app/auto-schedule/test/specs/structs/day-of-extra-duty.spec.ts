@@ -49,7 +49,7 @@ describe(DayOfExtraDuty.name, () => {
       const day = table.getDay(0);
       const pair = day.pair();
 
-      const sum = pair.daytime.length + pair.nighttime.length;
+      const sum = pair.daytime().length + pair.nighttime().length;
 
       expect(sum)
         .toStrictEqual(day.getSize());

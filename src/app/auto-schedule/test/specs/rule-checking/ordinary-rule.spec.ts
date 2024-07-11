@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { OrdinaryAssignmentRule } from "../../../extra-duty-lib/builders/rule-checking/rules";
 import { mock } from "../mocking/mocker";
 import { iterRange } from "../../../utils";
-import { WorkTime } from "../../../extra-duty-lib";
+import { WorkTime } from "../../../extra-duty-lib/structs/work-time";
 
 describe(OrdinaryAssignmentRule.name, () => {
   const checker = new OrdinaryAssignmentRule();

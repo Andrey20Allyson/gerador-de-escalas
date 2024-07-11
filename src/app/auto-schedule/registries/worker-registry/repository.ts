@@ -1,6 +1,5 @@
 import { WorkerRegistry, WorkerRegistryInit } from ".";
 import { ChunkNotFoundError, WorkerRegistryChunkStorage } from "./chunk-storage";
-import { FirebaseWorkerRegistryLoaderOptions } from "./loader";
 import { WorkerRegistryMap } from "./map";
 
 export interface WorkerRegistryRepositoryOptions {

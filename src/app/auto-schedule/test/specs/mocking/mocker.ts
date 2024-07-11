@@ -1,4 +1,7 @@
-import { DaysOfWork, ExtraDutyTable, ExtraDutyTableConfig, WorkTime, WorkerInfo, WorkerInfoConfig } from "../../../extra-duty-lib";
+import { WorkerInfo, WorkerInfoConfig } from "../../../extra-duty-lib/structs/worker-info";
+import { WorkTime } from "../../../extra-duty-lib/structs/work-time";
+import { ExtraDutyTable, ExtraDutyTableConfig } from "../../../extra-duty-lib/structs/extra-duty-table";
+import { DaysOfWork } from '../../../extra-duty-lib/structs/days-of-work';
 import { Month } from "../../../extra-duty-lib/structs/month";
 import { WorkerIdentifier } from "../../../extra-duty-lib/structs/worker-identifier";
 import { getYear } from "../../../utils";
