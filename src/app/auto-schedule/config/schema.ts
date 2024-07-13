@@ -4,7 +4,7 @@ export const AUTO_SCHEDULE_CONFIG_SCHEMA = z.object({
   firebase: z.object({
     key: z
       .string()
-      .default('input/firebase-key.json'),
+      .default('keys/firebase-key.aes'),
   }).default({}),
 
   registries: z.object({
