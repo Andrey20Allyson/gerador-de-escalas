@@ -1,9 +1,10 @@
 import * as XLSX from 'xlsx';
-import { ExtraDutyTable, Holidays, WorkerInfo, WorkerRegistryMap } from "../extra-duty-lib";
+import { ExtraDutyTable, Holidays, WorkerInfo } from "../extra-duty-lib";
 import { WorkerInfoParser } from '../extra-duty-lib/structs/worker-info/parser';
 import { Result, ResultError, ResultType } from "../utils";
 import { BookHandler, CellHandler, LineHander } from "../xlsx-handlers";
 import { ExcelTime } from "../xlsx-handlers/utils";
+import { WorkerRegistryMap } from '../persistence/entities/worker-registry';
 
 export enum WorkerInfoCollumns {
   NAME = 'd',

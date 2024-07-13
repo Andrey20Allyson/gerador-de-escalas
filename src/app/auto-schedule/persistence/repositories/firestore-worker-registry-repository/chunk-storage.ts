@@ -1,7 +1,7 @@
 import { CollectionReference, Query, QueryDocumentSnapshot } from "firebase-admin/firestore";
 import { readFile } from "fs/promises";
 import path from "path";
-import { config } from "../../config";
+import { config } from "../../../config";
 import { WorkerRegistryChunk, WorkerRegistryChunkData } from "./chunk";
 
 export class ChunkNotFoundError extends Error {

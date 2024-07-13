@@ -1,10 +1,10 @@
-import { ExtraDutyTable, Holidays, WorkerInfo, WorkerRegistryMap } from './extra-duty-lib';
+import { ExtraDutyTable, Holidays, WorkerInfo } from './extra-duty-lib';
 import { JQScheduleBuilder } from './extra-duty-lib/builders/jq-schedule-builder';
+import { parseTable, parseWorkers, ScrappeTableOptions, serializeTable } from './io';
+import { WorkerRegistryMap } from './persistence/entities/worker-registry';
 import { getMonth, getYear } from './utils';
 import { analyseResult } from './utils/analyser';
 import { Benchmarker } from './utils/benchmark';
-import { parseTable, parseWorkers, serializeTable, ScrappeTableOptions } from './io';
-import { WorkerRegistry } from './registries/worker-registry';
 import { MainTableFactory } from './xlsx-builders/main-factory';
 
 export interface GenerateOptions extends GenerateFromWorkersOptions {
@@ -81,8 +81,8 @@ export function tableFrom(buffer: Buffer, workers: WorkerInfo[], options: Scrapp
   return parseTable(buffer, workers, options);
 }
 
-export * as io from './io';
-export * as serializers from './xlsx-builders';
 export * as lib from './extra-duty-lib';
-export * as excelHandles from './xlsx-handlers';
+export * as io from './io';
 export * as utils from './utils';
+export * as serializers from './xlsx-builders';
+export * as excelHandles from './xlsx-handlers';

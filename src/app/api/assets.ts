@@ -1,16 +1,19 @@
-import { MainTableFactory } from "../auto-schedule/xlsx-builders";
-import { Holidays, WorkerRegistryMap } from "../auto-schedule/extra-duty-lib";
 import fs from 'fs/promises';
-import { fromRoot } from "../path.utils";
-import admin from 'firebase-admin';
+import { Holidays } from "../auto-schedule/extra-duty-lib";
 import { FirestoreInitializer } from "../auto-schedule/firebase/app";
+import { WorkerRegistry, WorkerRegistryMap, WorkerRegistryRepository } from "../auto-schedule/persistence/entities/worker-registry";
+import { MainTableFactory } from "../auto-schedule/xlsx-builders";
+import { fromRoot } from "../path.utils";
 import { AssetsErrorCode } from "./assets.error";
-import { WorkerRegistry } from "../auto-schedule/registries/worker-registry";
-import { WorkerRegistryRepository } from "../auto-schedule/registries/worker-registry/repository";
 import { AppResponse } from "./mapping/response";
+import { FirestoreWorkerRegistryRepository } from '../auto-schedule/persistence/repositories/firestore-worker-registry-repository';
 
-export interface AppAssetsServices {
+export type AppAssetsServices = {
   readonly workerRegistry: WorkerRegistryServices;
+}
+
+export type WorkerRegistryServices = {
+  readonly repository: WorkerRegistryRepository;
 }
 
 export interface AppAssetsData {
@@ -67,11 +70,13 @@ export class AppAssets {
   async unlockServices(password: string): Promise<AppResponse<void, AssetsErrorCode.INCORRECT_PASSWORD>> {
     const initializer = new FirestoreInitializer({ password });
 
-    try {
+    try {  
       const firestore = await initializer.getFirestore();
-  
+
       this._services = {
-        workerRegistry: await WorkerRegistryServices.load({ firestore, password }),
+        workerRegistry: {
+          repository: new FirestoreWorkerRegistryRepository({ firestore }),
+        }
       };
 
       return AppResponse.ok();
@@ -103,39 +108,5 @@ export class AppAssets {
 
   reload() {
 
-  }
-
-  private static normalizeWorkersId(registries: WorkerRegistry[]): WorkerRegistry[] {
-    return registries.map(registry => ({
-      ...registry,
-      workerID: registry.workerId.replace(AppAssets.DOT_REGEXP, ''),
-    }));
-  }
-}
-
-export interface ServiceConfig {
-  password: string;
-  firestore: admin.firestore.Firestore;
-}
-
-export class WorkerRegistryServices {
-  private constructor(
-    readonly repository: WorkerRegistryRepository,
-  ) { }
-
-  static async load(config: ServiceConfig): Promise<WorkerRegistryServices> {
-    const { firestore } = config
-
-    const repositoryCollection = firestore.collection('worker-registries');
-
-    const repository = new WorkerRegistryRepository({
-      collection: repositoryCollection,
-    });
-
-    const services = new WorkerRegistryServices(
-      repository
-    );
-
-    return services;
   }
 }

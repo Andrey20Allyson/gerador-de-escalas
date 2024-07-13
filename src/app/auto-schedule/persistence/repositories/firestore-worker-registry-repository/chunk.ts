@@ -1,8 +1,8 @@
 import clone from "clone";
 import { Query, QueryDocumentSnapshot, QuerySnapshot } from "firebase-admin/firestore";
 import fs from 'fs/promises';
-import { WorkerRegistry, WorkerRegistryInit } from ".";
-import { config } from "../../config";
+import { WorkerRegistry, WorkerRegistryInit } from "../../entities/worker-registry";
+import { config } from "../../../config";
 import { ChunkNotFoundError, WorkerRegistryChunkStorage } from "./chunk-storage";
 
 export type WorkerRegistryChunkData = {

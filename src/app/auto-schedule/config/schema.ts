@@ -13,3 +13,9 @@ export const AUTO_SCHEDULE_CONFIG_SCHEMA = z.object({
       .default('.cache/auto-schedule/'),
   }).default({}),
 });
+
+export function parseConfig(config: unknown) {
+  return AUTO_SCHEDULE_CONFIG_SCHEMA.parse(config)
+}
+
+export type AutoScheduleConfig = z.infer<typeof AUTO_SCHEDULE_CONFIG_SCHEMA>;

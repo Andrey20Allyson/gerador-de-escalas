@@ -1,5 +1,4 @@
-import { WorkerRegistryInit } from "../../auto-schedule/registries/worker-registry";
-import { WorkerRegistryRepository } from "../../auto-schedule/registries/worker-registry/repository";
+import { WorkerRegistryInit, WorkerRegistryRepository } from "../../auto-schedule/persistence/entities/worker-registry";
 import { AppAssets } from "../assets";
 import { AppResponse } from "../mapping/response";
 import { IpcMappingFactory, IpcMapping } from "../mapping/utils";

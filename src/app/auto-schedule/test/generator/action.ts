@@ -10,7 +10,7 @@ import { Benchmarker, analyseResult } from "../../utils";
 import { Fancyfier, UnassignedWorkersMessageData } from "../../utils/fancyfier";
 import { MockFactory } from "./mock";
 import { RandomWorkerMockFactory } from "./mock/worker/random";
-import { WorkerRegistryRepository } from '../../registries/worker-registry/repository';
+import { FirestoreWorkerRegistryRepository } from '../../persistence/repositories/firestore-worker-registry-repository';
 import { FirestoreInitializer } from '../../firebase/app';
 import { env } from '../../utils/env';
 
@@ -27,9 +27,8 @@ async function loadWorkers(year: number, month: number, inputFile: string) {
 
   const initializer = new FirestoreInitializer({ password: KEY_DECRYPT_PASSWORD });
   const firestore = await initializer.getFirestore();
-  const collection = firestore.collection('worker-registries');
 
-  const loader = new WorkerRegistryRepository({ cacheOnly: true, collection });
+  const loader = new FirestoreWorkerRegistryRepository({ cacheOnly: true, firestore });
   const workerRegistries = await loader.load();
 
   return parseWorkers(inputBuffer, {

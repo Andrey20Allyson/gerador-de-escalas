@@ -1,7 +1,23 @@
-import { WorkerRegistry } from '.';
+export type WorkerRegistryGender = 'F' | 'M';
 
-export interface ScrappeRegistriesOptions {
-  sheetName?: string;
+export type WorkerRegistry = WorkerRegistryInit & {
+  readonly createdAtVersion: number;
+}
+
+export type WorkerRegistryInit = {
+  readonly workerId: string;
+  readonly name: string;
+  readonly gender: WorkerRegistryGender;
+  readonly individualId: string;
+  readonly isCoordinator?: boolean;
+}
+
+export interface WorkerRegistryRepository {
+  create(registry: WorkerRegistryInit): Promise<WorkerRegistry>;
+  update(workerId: string, changes: Partial<WorkerRegistryInit>): Promise<void>;
+  delete(workerId: string): Promise<void>;
+  list(): Promise<WorkerRegistry[]>;
+  load(): Promise<WorkerRegistryMap>;
 }
 
 export class WorkerRegistryMap implements Iterable<WorkerRegistry> {

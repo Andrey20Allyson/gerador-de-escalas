@@ -1,18 +1,19 @@
-import { WorkerRegistry, WorkerRegistryInit } from ".";
+import { WorkerRegistry, WorkerRegistryInit, WorkerRegistryMap, WorkerRegistryRepository } from "../../entities/worker-registry";
 import { ChunkNotFoundError, WorkerRegistryChunkStorage } from "./chunk-storage";
-import { WorkerRegistryMap } from "./map";
 
 export interface WorkerRegistryRepositoryOptions {
-    collection: FirebaseFirestore.CollectionReference;
+    firestore: FirebaseFirestore.Firestore;
     cacheOnly?: boolean;
 }
 
-export class WorkerRegistryRepository {
+export class FirestoreWorkerRegistryRepository implements WorkerRegistryRepository {
     readonly cacheOnly: boolean;
     readonly storage: WorkerRegistryChunkStorage;
 
     constructor(options: WorkerRegistryRepositoryOptions) {
-        this.storage = new WorkerRegistryChunkStorage(options.collection);
+        const collection = options.firestore.collection('worker-registries');
+
+        this.storage = new WorkerRegistryChunkStorage(collection);
 
         this.cacheOnly = options.cacheOnly ?? false;
     }
