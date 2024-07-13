@@ -7,11 +7,16 @@ export const AUTO_SCHEDULE_CONFIG_SCHEMA = z.object({
       .default('keys/firebase-key.aes'),
   }).default({}),
 
-  registries: z.object({
-    cacheDir: z
-      .string()
-      .default('.cache/auto-schedule/'),
-  }).default({}),
+  rules: z.object({
+    use: z.string(),
+  }).array().default([
+    { use: 'builtin.all' },
+  ]),
+
+  repositories: z.object({
+    tag: z.string(),
+    config: z.object({}),
+  }).array().default([])
 });
 
 export function parseConfig(config: unknown) {

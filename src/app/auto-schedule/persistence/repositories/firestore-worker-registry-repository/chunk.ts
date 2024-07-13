@@ -2,8 +2,10 @@ import clone from "clone";
 import { Query, QueryDocumentSnapshot, QuerySnapshot } from "firebase-admin/firestore";
 import fs from 'fs/promises';
 import { WorkerRegistry, WorkerRegistryInit } from "../../entities/worker-registry";
-import { config } from "../../../config";
 import { ChunkNotFoundError, WorkerRegistryChunkStorage } from "./chunk-storage";
+import { firestoreWorkerRegistryRepositoryConfig } from './config' 
+
+const CACHE_DIR = firestoreWorkerRegistryRepositoryConfig.cacheDir;
 
 export type WorkerRegistryChunkData = {
   readonly idx: number;
@@ -112,8 +114,8 @@ export class WorkerRegistryChunk {
   }
 
   async cache(): Promise<void> {
-    await fs.access(config.registries.cacheDir)
-      .catch(() => fs.mkdir(config.registries.cacheDir, { recursive: true }));
+    await fs.access(CACHE_DIR)
+      .catch(() => fs.mkdir(CACHE_DIR, { recursive: true }));
 
     await fs.writeFile(this.storage.cacheDirOf(this._data.idx), JSON.stringify(this._data));
   }

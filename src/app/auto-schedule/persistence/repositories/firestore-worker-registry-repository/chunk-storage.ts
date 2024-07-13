@@ -1,8 +1,10 @@
 import { CollectionReference, Query, QueryDocumentSnapshot } from "firebase-admin/firestore";
 import { readFile } from "fs/promises";
 import path from "path";
-import { config } from "../../../config";
 import { WorkerRegistryChunk, WorkerRegistryChunkData } from "./chunk";
+import { firestoreWorkerRegistryRepositoryConfig } from "./config";
+
+const CACHE_DIR = firestoreWorkerRegistryRepositoryConfig.cacheDir;
 
 export class ChunkNotFoundError extends Error {
   constructor(idx: number) {
@@ -21,7 +23,7 @@ export class WorkerRegistryChunkStorage {
 
   cacheDirOf(idx: number): string {
     return path.resolve(
-      config.registries.cacheDir,
+      CACHE_DIR,
       `worker-registries.chunk-${idx}.json`,
     );
   }

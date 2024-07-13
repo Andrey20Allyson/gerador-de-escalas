@@ -1,0 +1,8 @@
+rules:
+  - use: 'builtin.all'
+
+repositories:
+  - tag: 'repository.worker-registry.firestore'
+    config: 
+      cacheDir: '.cache/auto-schedule/'
+      collectionName: 'worker-registries'

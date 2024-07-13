@@ -1,14 +1,15 @@
 import fs from "fs";
 import path from "path";
+import YAML from 'yaml';
 import { AutoScheduleConfig, parseConfig } from "./schema";
 
 const CONFIG_PATH = path.resolve(
   process.cwd(),
-  `auto-schedule.config.json`,
+  `auto-schedule.config.yml`,
 );
 
 const configBuffer = readConfigFile(CONFIG_PATH);
-export const config = parseConfig(JSON.parse(configBuffer));
+export const autoScheduleConfig = parseConfig(YAML.parse(configBuffer));
 
 type RecursivePartial<T> = { [K in keyof T]?: T[K] extends object ? RecursivePartial<T[K]> : T[K] };
 
