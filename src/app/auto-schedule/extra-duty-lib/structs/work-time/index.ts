@@ -21,10 +21,17 @@ export class WorkTime implements Clonable<WorkTime> {
       && this.duration === workTime.duration;
   }
 
-  static from(start: number, end: number): WorkTime {
+  static fromRange(start: number, end: number): WorkTime {
+    if (end > start) {
+      return new WorkTime(
+        start,
+        end - start,
+      );
+    }
+
     return new WorkTime(
       start,
-      end < start ? start - end : end - start,
+      24 + end - start,
     );
   }
 }

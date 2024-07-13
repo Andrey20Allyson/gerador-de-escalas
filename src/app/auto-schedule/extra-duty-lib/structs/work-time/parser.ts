@@ -26,10 +26,7 @@ export class WorkTimeParser implements IWorkTimeParser {
     const parsedStart = Number(start);
     const parsedEnd = Number(end) + this.getOvertime(hourly);
 
-    return new WorkTime(
-      parsedStart,
-      parsedEnd < parsedStart ? parsedStart - parsedEnd : parsedEnd - parsedStart,
-    );
+    return WorkTime.fromRange(parsedStart, parsedEnd);
   }
 
   private getOvertime(text: string) {
