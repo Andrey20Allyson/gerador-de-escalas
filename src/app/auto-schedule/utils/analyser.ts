@@ -18,6 +18,7 @@ export function numberToColoredString(value: number) {
 
 export function analyseResult(table: ExtraDutyTable, colors = true) {
   let analysisText = new Text();
+  const initialEventName = table.config.currentPlace;
 
   analysisText.writeLn(chalk.underline(`[ Numero de funcionários em cada turno do dia ]`));
 
@@ -50,6 +51,8 @@ export function analyseResult(table: ExtraDutyTable, colors = true) {
 
     analysisText.writeLn(chalk.gray(`  Dia(${formatedDay}) => [${formatedDutySizesList.join('] | [')}]`));
   }
+
+  table.config.currentPlace = initialEventName;
 
   return analysisText.read();
 }

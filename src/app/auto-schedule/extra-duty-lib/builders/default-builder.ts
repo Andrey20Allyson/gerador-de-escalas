@@ -6,8 +6,8 @@ import { SupportToCHScheduleBuilder } from "./support-to-city-hall-schedule-buil
 export class DefautlScheduleBuilder extends StackScheduleBuilder {
   constructor(tries: number) {
     super([
-      new SupportToCHScheduleBuilder(tries),
-      new JBDaytimeScheduleBuilder(tries),
+      // new SupportToCHScheduleBuilder(tries),
+      // new JBDaytimeScheduleBuilder(tries),
       new JQScheduleBuilder(tries),
     ]);
   }

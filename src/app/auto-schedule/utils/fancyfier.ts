@@ -58,6 +58,7 @@ export class Fancyfier {
   private _stringifyFreeWorkerMessage(data: UnassignedWorkersMessageData) {
     const { table, workers, places } = data;
     const message = new Text();
+    const initialEventName = table.config.currentPlace; 
 
     message.writeLn(`[ Unassigned Workers ]`);
 
@@ -86,6 +87,8 @@ export class Fancyfier {
         .tab()
         .writeLn(chalk.greenBright(`All Workers Has Assigned!`))
     }
+
+    table.config.currentPlace = initialEventName;
 
     return message.toString();
   }

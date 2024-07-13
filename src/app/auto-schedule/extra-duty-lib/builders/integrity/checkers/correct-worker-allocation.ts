@@ -31,6 +31,10 @@ export class CorrectWorkerAllocationChecker implements IntegrityChecker {
 
       const penality = this.calculatePenality(integrity.table.limiter.positionsLeftOf(worker));
 
+      if (penality <= 0) {
+        continue;
+      }
+
       integrity.registry(new IntegrityWarning(`workers hasn't correctly allocated`, penality));
     }
   }

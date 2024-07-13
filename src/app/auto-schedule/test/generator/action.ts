@@ -70,8 +70,9 @@ export async function generate(options: GenerateCommandOptions) {
   const analisysString = analyseResult(table);
   console.log(analisysString);
 
-  const integrity = new DefaultTableIntegrityAnalyser()
-    .analyse(table);
+  const analyser = new DefaultTableIntegrityAnalyser();
+
+  const integrity = analyser.analyse(table);
 
   const fancyfier = new Fancyfier();
   fancyfier.log(new UnassignedWorkersMessageData(table, workers, [
