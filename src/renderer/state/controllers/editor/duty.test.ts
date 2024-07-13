@@ -2,6 +2,7 @@ import { expect, test } from '@jest/globals';
 import { DutyData, TableData } from '../../../../app/api/table-reactive-edition/table';
 import { DispatcherType, TableEditorController } from './table';
 import { DutySearcher } from './searchers/duty';
+import { ExtraEventName } from '../../../../app/auto-schedule/extra-duty-lib';
 
 function mockDuties(numOfDays: number, dutiesPerDay: number): DutyData[] {
   const duties: DutyData[] = [];
@@ -40,7 +41,10 @@ function mockTable(): TableData {
       year: 2023,
       dutyDuration: 12,
       dutyMinDistance: 4,
-      dutyInterval: 12,
+      // dutyInterval: 12,
+      extraEvents: {},
+      currentPlace: ExtraEventName.JIQUIA,
+      dutyOffTimeToOrdinary: 12,
       dutiesPerDay,
       dutyPositionSize: 2,
       firstDutyTime: 7

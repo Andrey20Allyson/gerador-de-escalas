@@ -1,5 +1,5 @@
-import { Gender } from "@andrey-allyson/escalas-automaticas/dist/extra-duty-lib";
 import { WorkerData } from "../../../../../app/api/table-reactive-edition/table";
+import { Gender } from "../../../../extra-duty-lib";
 import { Searcher } from "../../../../utils/searcher";
 
 export class WorkerSearcher extends Searcher<WorkerData> {

@@ -1,5 +1,4 @@
-import { AppError, WorkerRegistry } from "../../../app/base";
-import { api } from "../../api";
+import { api, AppError } from "../../api";
 import { RegistryGrid } from "../../components/RegistryGrid";
 import { RegistrySearch } from "../../components/RegistrySearch";
 import { WorkerRegisterForm } from "../../components/WorkerRegisterForm";
@@ -10,6 +9,7 @@ import React from "react";
 import { AiOutlineSave } from "react-icons/ai";
 import styled from "styled-components";
 import { WorkerRegistriesProvider, useWorkerRegistriesService } from "./workers.ctx";
+import { WorkerRegistry, WorkerRegistryInit } from "../../../app/auto-schedule/persistence/entities/worker-registry";
 
 export default function ConfigurationPage() {
   return (
@@ -22,7 +22,7 @@ export default function ConfigurationPage() {
 export function Configuration() {
   const service = useWorkerRegistriesService();
 
-  async function createWorker(workerRegistry: WorkerRegistry) {
+  async function createWorker(workerRegistry: WorkerRegistryInit) {
     const result = await api.config.workers.create(workerRegistry);
 
     if (!result.ok) {

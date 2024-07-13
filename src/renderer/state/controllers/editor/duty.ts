@@ -1,4 +1,4 @@
-import { firstMondayFromYearAndMonth, dayOfWeekFrom } from "@andrey-allyson/escalas-automaticas/dist/utils";
+import { firstMondayFromYearAndMonth, dayOfWeekFrom } from "../../../utils";
 import { DutyAndWorkerRelationship, DutyData, TableData, WorkerData } from "../../../../app/api/table-reactive-edition/table";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { editorActions } from "../../slices/table-editor";

@@ -37,7 +37,7 @@ export function createRouteState<R extends RoutesLike, K extends keyof R = keyof
     is(name) {
       return thisName === name;
     },
-  };
+  } as RouteState<R, K>;
 }
 
 export type InferRouteNames<T extends RouterContext<any>> = T extends RouterContext<infer R> ? keyof R : never;

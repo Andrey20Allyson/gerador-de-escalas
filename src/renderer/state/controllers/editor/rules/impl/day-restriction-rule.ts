@@ -1,4 +1,4 @@
-import { DaysOfWeek } from "@andrey-allyson/escalas-automaticas/dist/utils";
+import { DayOfWeek } from "../../../../../utils";
 import { DutyEditorController } from "../../duty";
 import { WorkerEditorController } from "../../worker";
 import { EditorRule } from "../rule";
@@ -35,7 +35,7 @@ export class DayRestrictionRule extends EditorRule {
 
     if (
       worker.ordinary.isDailyWorker
-      && dutyController.dayOfWeek() === DaysOfWeek.FRIDAY
+      && dutyController.dayOfWeek() === DayOfWeek.FRIDAY
       && dutyController.startsAt() >= 18
     ) {
       return true;

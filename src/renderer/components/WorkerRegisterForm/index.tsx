@@ -1,13 +1,13 @@
-import { WorkerRegistry } from "../../../app/base";
-import Form, { FormController } from "../../components/Form";
-import { parsers } from "../Form/parsing";
-import { CPFParser } from "../Form/parsing/cpf";
 import React from "react";
 import { AiOutlineCloudUpload, AiOutlineDelete } from "react-icons/ai";
 import styled from "styled-components";
+import { WorkerRegistryInit } from "../../../app/auto-schedule/persistence/entities/worker-registry";
+import Form, { FormController } from "../../components/Form";
+import { parsers } from "../Form/parsing";
+import { CPFParser } from "../Form/parsing/cpf";
 
 export interface WorkerRegisterFormProps {
-  onSubmit?: (worker: WorkerRegistry) => void;
+  onSubmit?: (worker: WorkerRegistryInit) => void;
 }
 
 const NAME_PARSER = parsers.string();
@@ -22,23 +22,23 @@ export function WorkerRegisterForm(props: WorkerRegisterFormProps) {
   function handleSubmit(controller: FormController) {
     const [
       nameField,
-      workerIDField,
-      individualIDField,
+      workerIdField,
+      individualIdField,
       genderField,
       isCoordinatorField,
     ] = controller.fields(['name', 'workerID', 'individualID', 'gender', 'isCoordinator']);
 
     try {
       const name = nameField.pipe(NAME_PARSER).unwrap();
-      const workerID = workerIDField.pipe(parsers.string()).unwrap();
-      const individualID = individualIDField.pipe(CPF_PARSER).unwrap();
+      const workerId = workerIdField.pipe(parsers.string()).unwrap();
+      const individualId = individualIdField.pipe(CPF_PARSER).unwrap();
       const gender = genderField.pipe(GENDER_PARSER).unwrap();
       const isCoordinator = isCoordinatorField.pipe(parsers.boolean()).unwrap();
 
       onSubmit?.({
         name,
-        workerID,
-        individualID,
+        workerId,
+        individualId,
         gender,
         isCoordinator,
       });

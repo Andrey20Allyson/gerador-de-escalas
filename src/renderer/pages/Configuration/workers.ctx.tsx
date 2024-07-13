@@ -1,10 +1,11 @@
-import { AppError, RegistryEntryType, WorkerRegistry } from "../../../app/base";
+import { AppError } from "../../../app/api/mapping/error";
+import { WorkerRegistry } from "../../../app/auto-schedule/persistence/entities/worker-registry";
 import { api } from "../../api";
 import { AtonHook } from "../../utils/state";
 import React, { PropsWithChildren, createContext, useContext, useEffect } from "react";
 
 class WorkerRegistriesService {
-  private _registries = new AtonHook<RegistryEntryType<WorkerRegistry>[]>([]);
+  private _registries = new AtonHook<WorkerRegistry[]>([]);
   private _error = new AtonHook<AppError<unknown> | null>(null);
   private _loading = new AtonHook<boolean>(true);
 
@@ -27,7 +28,7 @@ class WorkerRegistriesService {
     this._loading.set(false);
   }
 
-  list(): RegistryEntryType<WorkerRegistry>[] {
+  list(): WorkerRegistry[] {
     return this._registries.get();
   }
 

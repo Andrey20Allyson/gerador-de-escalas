@@ -1,27 +1,24 @@
-import { AppError, RegistryEntryType, WorkerRegistry } from "../../../app/base";
-import { api } from "../../api";
+import { api, AppError } from "../../api";
 import { useWorkerRegistriesService } from "../../pages/Configuration/workers.ctx";
 import { IterProps } from "../../utils/react-iteration";
 import React from "react";
 import { GoPencil, GoTrash } from "react-icons/go";
 import { StyledWorkerRegistryView } from "./styles";
+import { WorkerRegistry } from "../../../app/auto-schedule/persistence/entities/worker-registry";
 
-export function WorkerRegistryView(props: IterProps<RegistryEntryType<WorkerRegistry>>) {
+export function WorkerRegistryView(props: IterProps<WorkerRegistry>) {
   const service = useWorkerRegistriesService();
 
   const {
-    data: {
-      isCoordinator,
-      individualID,
-      workerID,
-      gender,
-      name,
-    },
-    id
+    isCoordinator,
+    individualId,
+    workerId,
+    gender,
+    name,
   } = props.entry;
 
   async function handleDelete() {
-    const result = await api.config.workers.delete(id);
+    const result = await api.config.workers.delete(workerId);
 
     if (!result.ok) {
       AppError.log(result.error);
@@ -38,13 +35,13 @@ export function WorkerRegistryView(props: IterProps<RegistryEntryType<WorkerRegi
         <p>
           Matrícula:
           <strong>
-            {workerID}
+            {workerId}
           </strong>
         </p>
         <p>
           CPF:
           <strong>
-            {individualID}
+            {individualId}
           </strong>
         </p>
         <p>
