@@ -34,4 +34,8 @@ export class WorkTime implements Clonable<WorkTime> {
       24 + end - start,
     );
   }
+
+  static fromDailyWorker() {
+    return WorkTime.fromRange(7, 16);
+  }
 }

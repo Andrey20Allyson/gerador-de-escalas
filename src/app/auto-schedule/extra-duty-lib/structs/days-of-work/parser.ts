@@ -1,5 +1,5 @@
 import { DaysOfWork } from ".";
-import { DEFAULT_LICENSE_INTERVAL_PARSER, LicenseIntervalParser } from "./license-interval";
+import { LicenseInterval } from "./license-interval";
 
 export interface DaysOfWorkParseData {
   name?: string;
@@ -7,6 +7,7 @@ export interface DaysOfWorkParseData {
   post: string;
   year: number;
   month: number;
+  license?: LicenseInterval | null;
 }
 
 export interface PeriodicParsingOptions {
@@ -19,7 +20,6 @@ export interface PeriodicParsingConfig {
 
 export interface DaysOfWorkParserConfig {
   daysOfWorkRegExp?: RegExp;
-  licenceIntervalParser?: LicenseIntervalParser;
   periodic?: PeriodicParsingOptions;
 }
 
@@ -30,12 +30,10 @@ export interface IDaysOfWorkParser {
 export const DEFAULT_DAYS_OF_WORK_REGEXP = /\(DIAS:[^\d]*([^]*)\)/;
 
 export class DaysOfWorkParser implements IDaysOfWorkParser {
-  readonly licenseIntervalParser: LicenseIntervalParser;
   readonly daysOfWorkRegExp: RegExp;
   readonly periodic: PeriodicParsingConfig;
 
   constructor(config: DaysOfWorkParserConfig = {}) {
-    this.licenseIntervalParser = config.licenceIntervalParser ?? DEFAULT_LICENSE_INTERVAL_PARSER;
     this.daysOfWorkRegExp = config.daysOfWorkRegExp ?? DEFAULT_DAYS_OF_WORK_REGEXP;
     this.periodic = {
       daySeparator: config.periodic?.daySeparator ?? ',',
@@ -46,18 +44,21 @@ export class DaysOfWorkParser implements IDaysOfWorkParser {
     const {
       hourly,
       month,
-      post,
       year,
+      license,
     } = data;
+
+    if (license != null) {
+      const daysOfWork = DaysOfWork.fromDailyWorker(year, month);
+
+      daysOfWork.applyLicenseInterval(license);
+
+      return daysOfWork;
+    }
 
     const daysOfWork = this.isDailyWorker(hourly)
       ? DaysOfWork.fromDailyWorker(year, month)
       : this.parsePeriodic(data);
-
-    const licenseInterval = this.licenseIntervalParser.parse(post)
-    if (licenseInterval !== null) {
-      daysOfWork.applyLicenseInterval(licenseInterval);
-    }
 
     return daysOfWork;
   }

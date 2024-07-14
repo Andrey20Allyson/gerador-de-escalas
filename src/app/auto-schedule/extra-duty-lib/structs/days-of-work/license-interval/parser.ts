@@ -1,8 +1,8 @@
 import { LicenseInterval } from ".";
 import { DEFAULT_DAY_PARSER, DayParser } from "../../day/parser";
 
-export const DEFAULT_MEDICAL_LICENSE_REGEXP = /LICENÇA MÉDICA \((DE (\d{2}\/\d{2}\/\d{2}) )?ATÉ (\d{2}\/\d{2}\/\d{2})\)/;
-export const DEFAULT_PREMIUM_LICENSE_REGEXP = /LICENÇA PRÊMIO \((DE (\d{2}\/\d{2}\/\d{2}) )?ATÉ (\d{2}\/\d{2}\/\d{2})\)/;
+export const DEFAULT_MEDICAL_LICENSE_REGEXP = /LICENÇA MÉDICA \((DE (\d{2}\/\d{2}\/\d{2,4}) )?ATÉ (\d{2}\/\d{2}\/\d{2,4})\)/;
+export const DEFAULT_PREMIUM_LICENSE_REGEXP = /LICENÇA PRÊMIO \((DE (\d{2}\/\d{2}\/\d{2,4}) )?ATÉ (\d{2}\/\d{2}\/\d{2,4})\)/;
 
 export interface LicenseIntervalParserConfig {
   dayParser?: DayParser;

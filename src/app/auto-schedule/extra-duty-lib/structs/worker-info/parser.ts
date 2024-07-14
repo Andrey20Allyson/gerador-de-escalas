@@ -2,6 +2,7 @@ import { Gender, Graduation, WorkerInfo } from ".";
 import { parseNumberOrThrow } from "../../../utils";
 import { Parser } from "../base/parser";
 import { DEFAULT_DAYS_OF_WORK_PARSER, DaysOfWork } from "../days-of-work";
+import { LicenseInterval, LicenseIntervalParser } from "../days-of-work/license-interval";
 import { WorkLimit } from "../work-limit";
 import { WorkLimitParser } from "../work-limit/parser";
 import { WorkTime } from "../work-time";
@@ -27,6 +28,11 @@ export interface WorkerInfoParserOptions {
   workTimeParser?: Parser<WorkerInfoParseData, WorkTime>;
   identifierParser?: Parser<WorkerInfoParseData, WorkerIdentifier>;
   workLimitParser?: Parser<WorkerInfoParseData, WorkLimit>;
+  licenseParser?: Parser<string, LicenseInterval | null>;
+}
+
+export interface LicenseOption {
+  license?: LicenseInterval | null;
 }
 
 export class WorkerInfoParser {
@@ -41,24 +47,32 @@ export class WorkerInfoParser {
     'SI': 'sub-insp',
   };
 
-  readonly daysOfWorkParser: Parser<WorkerInfoParseData, DaysOfWork>;
-  readonly workTimeParser: Parser<WorkerInfoParseData, WorkTime>;
+  readonly daysOfWorkParser: Parser<WorkerInfoParseData & LicenseOption, DaysOfWork>;
+  readonly workTimeParser: Parser<WorkerInfoParseData & LicenseOption, WorkTime>;
   readonly identifierParser: Parser<WorkerInfoParseData, WorkerIdentifier>;
   readonly workLimitParser: Parser<WorkerInfoParseData, WorkLimit>;
+  readonly licenseParser: Parser<string, LicenseInterval | null>;
 
   constructor(options?: WorkerInfoParserOptions) {
     this.daysOfWorkParser = options?.daysOfWorkParser ?? DEFAULT_DAYS_OF_WORK_PARSER;
     this.workTimeParser = options?.workTimeParser ?? new WorkTimeParser();
     this.identifierParser = options?.identifierParser ?? new WorkerIdentifierParser();
     this.workLimitParser = options?.workLimitParser ?? new WorkLimitParser();
+    this.licenseParser = options?.licenseParser ?? new LicenseIntervalParser();
   }
 
   parse(data: WorkerInfoParseData): WorkerInfo | null {
     if (['FÉRIAS', 'DISP. MÉDICA MÊS'].some(skipLabel => data.post.includes(skipLabel))) return null;
     if (['LICENÇA PRÊMIO', 'LIC. PRÊMIO'].some(skipLabel => data.hourly.trim().toUpperCase() === skipLabel)) return null;
 
-    const workTime = this.workTimeParser.parse(data);
-    const daysOfWork = this.daysOfWorkParser.parse(data);
+    const license = this.licenseParser.parse(data.hourly);
+    const workTime = this.workTimeParser.parse({ ...data, license });
+    const daysOfWork = this.daysOfWorkParser.parse({ ...data, license });
+
+    if (daysOfWork.hasDaysOff() === false) {
+      return null;
+    }
+
     const identifier = this.identifierParser.parse(data);
     const limit = this.workLimitParser.parse(data);
 

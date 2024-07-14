@@ -1,8 +1,10 @@
 import { WorkTime } from ".";
+import { LicenseInterval } from "../days-of-work/license-interval";
 
 export interface ParseWorkTimeData {
   readonly name?: string;
   readonly hourly: string;
+  readonly license?: LicenseInterval | null;
 }
 
 export interface IWorkTimeParser {
@@ -16,7 +18,11 @@ export class WorkTimeParser implements IWorkTimeParser {
   readonly workTimeRegexp = DEFAULT_WORK_TIME_REGEXP;
 
   parse(data: ParseWorkTimeData): WorkTime {
-    const { hourly, name } = data;
+    const { hourly, name, license } = data;
+
+    if (license != null) {
+      return WorkTime.fromDailyWorker();
+    }
 
     const matches = this.workTimeRegexp.exec(hourly);
     if (!matches) throw new Error(`Can't parse workTime of "${name}"`);
