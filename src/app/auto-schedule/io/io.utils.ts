@@ -54,14 +54,24 @@ export function safeScrappeWorkersFromBook(workBook: XLSX.WorkBook, options: Scr
   const workerInfos: WorkerInfo[] = [];
   const parser = new WorkerInfoParser();
 
-  const { workerRegistries } = options; 
+  const { workerRegistries } = options;
+
+  const errors: ResultError[] = [];
 
   for (const line of sheet.iterLines(2)) {
     const cellsResult = line.safeGetCells(workersTableCollumns);
-    if (ResultError.isError(cellsResult)) return cellsResult;
+
+    if (ResultError.isError(cellsResult)) {
+      errors.push(cellsResult);
+      continue;
+    }
 
     const typedCellsResult = CellHandler.safeTypeAll(cellsResult, workersTableCellTypes);
-    if (ResultError.isError(typedCellsResult)) return typedCellsResult;
+    
+    if (ResultError.isError(typedCellsResult)) {
+      errors.push(typedCellsResult);
+      continue;
+    }
 
     const [
       nameCell,
@@ -77,7 +87,10 @@ export function safeScrappeWorkersFromBook(workBook: XLSX.WorkBook, options: Scr
       const id = registrationCell.value;
       const name = nameCell.value;
 
-      return new ResultError(`Can't find the registry of worker with id "${id}"${name !== undefined ? ` and name "${name}"` : ''}.`)
+      const error = new ResultError(`Can't find the registry of worker with id "${id}"${name !== undefined ? ` and name "${name}"` : ''}.`);
+
+      errors.push(error);
+      continue;
     }
 
     try {
@@ -102,8 +115,16 @@ export function safeScrappeWorkersFromBook(workBook: XLSX.WorkBook, options: Scr
 
       workerInfos.push(worker);
     } catch (e) {
-      return ResultError.create(e);
+      errors.push(ResultError.create(e));
+
+      continue;
     }
+  }
+
+  if (errors.length > 0) {
+    const message = errors.map(error => `\n - ${error.name}: ${error.message}`).join('');
+    
+    return ResultError.create(message)
   }
 
   return workerInfos;

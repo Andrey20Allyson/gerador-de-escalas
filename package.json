@@ -25,6 +25,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "vitest",
+    "generator": "tsx src/app/auto-schedule/cli",
     "test:renderer": "jest",
     "start": "electron-forge start",
     "package": "electron-forge package",
