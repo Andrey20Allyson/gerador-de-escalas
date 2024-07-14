@@ -1,9 +1,8 @@
 import { program } from 'commander';
-import { z } from 'zod';
-import { DEFAULT_MONTH_PARSER } from '../extra-duty-lib/structs/month';
 import { OptionInfoBuilder, loadCommand } from './lib';
 import { generate, generateOptionsSchema } from './actions/generate';
 import { bench, benchOptionsSchema } from './actions/bench/bench';
+import { upload, uploadWorkersOptionsSchema } from './actions/upload-workers';
 
 loadCommand({
   schema: generateOptionsSchema,
@@ -45,6 +44,19 @@ loadCommand({
       .hint('low|mid|high'),
   },
   action: bench,
+});
+
+loadCommand({
+  schema: uploadWorkersOptionsSchema,
+  command: 'upload:workers',
+  aliases: ['upw'],
+  description: 'Uploads one or more WorkerRegistry',
+  optionInfos: {
+    input: OptionInfoBuilder
+      .alias('i')
+      .describe('Input file, a .json that implements a Array<WorkerRegistryInit>'),
+  },
+  action: upload,
 });
 
 program.parse();
