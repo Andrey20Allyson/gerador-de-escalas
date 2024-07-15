@@ -97,8 +97,8 @@ export async function generate(options: GenerateCommandOptions) {
   const fancyfier = new Fancyfier();
   fancyfier.log(new UnassignedWorkersMessageData(table, workers, [
     ExtraEventName.JIQUIA,
-    ExtraEventName.JARDIM_BOTANICO_DAYTIME,
-    ExtraEventName.SUPPORT_TO_CITY_HALL,
+    // ExtraEventName.JARDIM_BOTANICO_DAYTIME,
+    // ExtraEventName.SUPPORT_TO_CITY_HALL,
   ]));
 
   fancyfier.log(beckmarker);
@@ -106,7 +106,7 @@ export async function generate(options: GenerateCommandOptions) {
   console.log(`pode ser utilizado: ${integrity.isCompliant()}`);
 
   if (outputFile) {
-    const pattern = await fs.readFile('input/output-pattern.xlsx');
+    const pattern = await fs.readFile('assets/output-pattern.xlsx');
 
     const factory = new MainTableFactory(pattern);
 
