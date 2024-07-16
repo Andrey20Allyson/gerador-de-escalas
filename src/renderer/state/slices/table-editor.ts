@@ -62,7 +62,7 @@ export const tableEditorSlice = createSlice({
       state.undoIndex = 0;
     },
     addRelationship(state, action: PayloadAction<AddRelationshipPayload>) {
-      const current = currentTableSelector(state);
+      const current = currentTableSelector(state as TableEditorState);
       if (current === null) return;
 
       const idGenerator = new IdGenerator(current.idCounters);
@@ -82,10 +82,10 @@ export const tableEditorSlice = createSlice({
         ]
       };
 
-      pushToHistory(state, newData);
+      pushToHistory(state as TableEditorState, newData);
     },
     removeRelationship(state, action: PayloadAction<RemoveRelationshipPayload>) {
-      const current = currentTableSelector(state);
+      const current = currentTableSelector(state as TableEditorState);
       if (current === null) return;
 
       const newData: TableData = {
@@ -93,10 +93,10 @@ export const tableEditorSlice = createSlice({
         dutyAndWorkerRelationships: current.dutyAndWorkerRelationships.filter(relationship => relationship.id !== action.payload.id)
       }
 
-      pushToHistory(state, newData);
+      pushToHistory(state as TableEditorState, newData);
     },
     removeRelationships(state, action: PayloadAction<RemoveRelationshipsPayload>) {
-      const current = currentTableSelector(state);
+      const current = currentTableSelector(state as TableEditorState);
       if (current === null) return;
 
       const ids = Array.from(action.payload.ids);
@@ -106,10 +106,10 @@ export const tableEditorSlice = createSlice({
         dutyAndWorkerRelationships: current.dutyAndWorkerRelationships.filter(relationship => !ids.includes(relationship.id)),
       };
 
-      pushToHistory(state, newData);
+      pushToHistory(state as TableEditorState, newData);
     },
     setRule(state, action: PayloadAction<SetRulePayload>) {
-      const current = currentTableSelector(state);
+      const current = currentTableSelector(state as TableEditorState);
       if (current === null) return;
 
       current.rules = {

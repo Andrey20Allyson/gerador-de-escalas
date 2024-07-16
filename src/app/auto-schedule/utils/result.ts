@@ -7,7 +7,11 @@ const CreateError = Symbol();
 
 export class ResultError {
   readonly type = ResultErrorType;
-  constructor(readonly message?: string, readonly name: string = this.constructor.name) { }
+  readonly name: string;
+
+  constructor(readonly message?: string, name?: string) {
+    this.name = name ?? this.constructor.name;
+  }
 
   [CreateError]() {
     const error = new Error(this.message);
