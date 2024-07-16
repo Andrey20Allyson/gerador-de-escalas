@@ -12,7 +12,7 @@ export class CorrectWorkerAllocationChecker implements IntegrityChecker {
   ) { }
 
   calculatePenality(workerPositionsLeft: number) {
-    return this.basePenality * (1.4 * workerPositionsLeft ** 2)
+    return this.basePenality * (1.3 * workerPositionsLeft ** 2)
   }
 
   isWorkerInsuficient(duty: ExtraDuty) {
@@ -28,12 +28,9 @@ export class CorrectWorkerAllocationChecker implements IntegrityChecker {
 
     for (const worker of integrity.table.workers()) {
       if (worker.daysOfWork.hasDaysOff() === false) continue;
+      if (integrity.table.limiter.positionsLeftOf(worker) <= 0) continue;
 
       const penality = this.calculatePenality(integrity.table.limiter.positionsLeftOf(worker));
-
-      if (penality <= 0) {
-        continue;
-      }
 
       integrity.registry(new IntegrityWarning(`workers hasn't correctly allocated`, penality));
     }

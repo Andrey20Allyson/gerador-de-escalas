@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { ExtraDutyTable, ExtraEventName } from "../../../extra-duty-lib";
-import { ScheduleAssignerV1 } from "../../../extra-duty-lib/builders/assigners/assigner-v1";
 import { AssignmentRuleStack } from "../../../extra-duty-lib/builders/rule-checking";
 import {
   BusyWorkerAssignmentRule,
@@ -18,6 +17,7 @@ import { Month } from "../../../extra-duty-lib/structs/month";
 import { Benchmarker, enumerate, iterRange } from "../../../utils";
 import { RandomWorkerMockFactory } from "../../mock/worker/random";
 import { ProgressBar } from "./progress-bar";
+import { MultiStepScheduleAssigner } from "../../../extra-duty-lib/builders/assigners/multi-step-assigner";
 
 export const benchOptionsSchema = z.object({
   times: z.number({ coerce: true }).default(1),
@@ -71,7 +71,10 @@ export function bench(options: BenchActionOptions) {
     );
   }
 
-  const assigner = new ScheduleAssignerV1(ruleStack);
+  const assigner = new MultiStepScheduleAssigner(
+    ruleStack,
+    MultiStepScheduleAssigner.defaultSteps(),
+  );
 
   const benchmarker = new Benchmarker();
 

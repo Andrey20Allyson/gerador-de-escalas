@@ -14,6 +14,7 @@ import { MockFactory } from "../../mock";
 import { RandomWorkerMockFactory } from "../../mock/worker/random";
 import { z } from "zod";
 import { DEFAULT_MONTH_PARSER } from "../../../extra-duty-lib/structs/month";
+import { MultiEventScheduleBuilder } from '../../../extra-duty-lib/builders/multi-event-schedule-builder';
 
 export const generateOptionsSchema = z.object({
   mode: z
@@ -81,7 +82,7 @@ export async function generate(options: GenerateCommandOptions) {
 
   const tableAssignBenchmark = beckmarker.start('talbe assign');
 
-  const builder = new DefautlScheduleBuilder(tries);
+  const builder = MultiEventScheduleBuilder.default({ tries });
 
   builder.build(table, workers);
 
@@ -90,7 +91,10 @@ export async function generate(options: GenerateCommandOptions) {
   const analisysString = analyseResult(table);
   console.log(analisysString);
 
-  const analyser = new DefaultTableIntegrityAnalyser();
+  const analyser = new DefaultTableIntegrityAnalyser(undefined, [
+    ExtraEventName.JIQUIA,
+    // ExtraEventName.JARDIM_BOTANICO_DAYTIME,
+  ]);
 
   const integrity = analyser.analyse(table);
 
