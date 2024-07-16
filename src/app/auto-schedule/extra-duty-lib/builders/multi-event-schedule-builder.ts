@@ -34,6 +34,10 @@ export class MultiEventScheduleBuilder implements ScheduleBuilder {
     ];
 
     const steps: AssingOptions[] = [{
+      onlyWorkersWhere: worker => worker.workTime.duration === 24,
+      fullDay: true,
+      max: 2,
+    }, {
       onlyWorkersWhere: worker => worker.isDailyWorker() && Math.random() > .5,
       passDutyWhen: duty => duty.start !== 19,
       events: ExtraEventName.JIQUIA,

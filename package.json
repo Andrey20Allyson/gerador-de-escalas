@@ -24,7 +24,7 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "test": "vitest",
+    "test:auto-schedule": "vitest --dir src/app/auto-schedule/specs",
     "generator": "tsx src/app/auto-schedule/cli",
     "test:renderer": "jest",
     "start": "electron-forge start",

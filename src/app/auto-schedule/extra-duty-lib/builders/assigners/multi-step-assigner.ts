@@ -41,6 +41,10 @@ export interface AssingOptions {
    */
   readonly inPairs?: boolean;
   /**
+   * @default false
+   */
+  readonly fullDay?: boolean;
+  /**
    * The minimun of workers per duty 
    * @default 1
    */
@@ -139,14 +143,32 @@ export class MultiStepScheduleAssigner extends BaseScheduleAssigner {
     }
   }
 
+  private _assignFullDay(day: DayOfExtraDuty, workers: WorkerInfo[], options: AssingOptions) {
+    const duties = day.pair().all();
+
+    for (const worker of workers) {
+      const passDuty = duties.someIsFull() || options.passDutyPairWhen?.(duties) === true;
+      if (passDuty) return;
+
+      this.assignWorker(worker, duties);
+
+      if (duties.someIsFull()) return;
+    }
+  }
+
   private _assignInDays(days: DayOfExtraDuty[], workers: WorkerInfo[], options: AssingOptions) {
-    const { inPairs = true } = options;
+    const { inPairs = true, fullDay = false } = options;
 
     for (const day of days) {
       removeFromArrayWhere(workers, worker => this._isWorkerFree(worker, day.table) === false);
       if (workers.length === 0) break;
 
       if (options.passDayWhen?.(day) === true) {
+        continue;
+      }
+
+      if (fullDay) {
+        this._assignFullDay(day, workers, options);
         continue;
       }
 
@@ -228,6 +250,10 @@ export class MultiStepScheduleAssigner extends BaseScheduleAssigner {
 
   static defaultSteps(): AssingOptions[] {
     return [{
+      onlyWorkersWhere: worker => worker.workTime.duration === 24,
+      fullDay: true,
+      max: 2,
+    }, {
       onlyWorkersWhere: worker => worker.isDailyWorker() && Math.random() > .5,
       passDutyWhen: duty => duty.start !== 19,
       events: ExtraEventName.JIQUIA,
