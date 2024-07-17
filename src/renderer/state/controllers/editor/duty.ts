@@ -3,6 +3,7 @@ import { DutyAndWorkerRelationship, DutyData, TableData, WorkerData } from "../.
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { editorActions } from "../../slices/table-editor";
 import { DispatcherType, EditorControllerOptions, currentTableFromRootSelector } from "./table";
+import { DutyFormatter } from "../../formatters/editor/duty";
 
 export interface IDutyEditor {
   remove(workerId: number): this;
@@ -18,6 +19,7 @@ export class DutyEditorController implements IDutyEditor {
   readonly dispatcher: DispatcherType;
   readonly table: TableData;
   readonly duty: DutyData;
+  readonly format: DutyFormatter;
 
   constructor(dutyId: number);
   constructor(dutyId: number, options: DutyEditorControllerOptions);
@@ -34,6 +36,8 @@ export class DutyEditorController implements IDutyEditor {
     if (duty === undefined) throw new Error(`Duty with id ${dutyId} can't be found!`);
 
     this.duty = duty;
+
+    this.format = new DutyFormatter(duty);
   }
 
   remove(workerId: number): this {

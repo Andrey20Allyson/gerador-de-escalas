@@ -6,11 +6,6 @@ import { iterRange } from "../../utils";
 import { ElementList, IterProps } from "../../utils/react-iteration";
 import { StyledDay, StyledDayTitle, StyledDutiesContainer, StyledDuty, StyledDutyHeader, StyledDutySlot, StyledDutyTitle, StyledEmpityDutySlot } from "./styles";
 
-export const dutyTitles = [
-  '7 as 19h',
-  '19 as 7h',
-];
-
 export function EmpityDutySlot() {
   return <StyledEmpityDutySlot />;
 }
@@ -51,7 +46,7 @@ export function DutyView(props: IterProps<number, DutyViewProps>) {
     <StyledDuty className={`${dutySize < 2 ? 'low-quantity' : ''}`} onClick={handleSelect}>
       <ElementList Component={WorkerView} iter={dutyController.workerIds()} />
       <ElementList Component={EmpityDutySlot} iter={iterRange(0, 3 - dutySize)} />
-      <StyledDutyTitle>{dutyTitles.at(duty.index) ?? 'N/A'}</StyledDutyTitle>
+      <StyledDutyTitle>{dutyController.format.title()}</StyledDutyTitle>
     </StyledDuty>
   );
 }

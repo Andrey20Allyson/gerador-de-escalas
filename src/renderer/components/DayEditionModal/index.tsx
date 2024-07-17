@@ -4,7 +4,6 @@ import { FaCalendarAlt } from "react-icons/fa";
 import { HiUserRemove } from "react-icons/hi";
 import { AvaliableWorkers } from "../../components/AvaliableWorkers";
 import { useDutySelectModal } from "../../components/DutySelectModal";
-import { dutyTitles } from "../../components/DutyTableGrid/utils";
 import { createModalContext } from "../../contexts/modal";
 import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
 import { DutyEditorController } from "../../state/controllers/editor/duty";
@@ -83,7 +82,7 @@ export function DutyEditionModal(props: DutyViewModalProps) {
       <StyledModalBody>
         <DutyEditionNavation day={duty.day} selectedDutyIndex={duty.index} onNavigate={setDutyId} />
         <StyledModalTitle2>
-          Turno das {dutyTitles.at(duty.index)}
+          Turno das {dutyController.format.title()}
         </StyledModalTitle2>
         <StyledDutyViewBody>
           <StyledDutyViewSlotSection>
@@ -129,7 +128,7 @@ export function DutyEditionNavation(props: DutyViewNavationProps) {
 
         return (
           <StyledDutyViewNavButton selected={duty.index === selectedDutyIndex} onClick={handleNavigate}>
-            {dutyTitles.at(duty.index)}
+            {dutyController.format.title()}
           </StyledDutyViewNavButton>
         );
       }} />

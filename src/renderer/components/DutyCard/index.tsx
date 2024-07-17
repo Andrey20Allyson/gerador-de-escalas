@@ -1,4 +1,3 @@
-import { dutyTitles } from "../../components/DutyTableGrid/utils";
 import { DutyEditorController } from "../../state/controllers/editor/duty";
 import { BackgroundColor } from "../../styles";
 import { IterProps } from "../../utils/react-iteration";
@@ -38,7 +37,7 @@ export function DutyCard(props: IterProps<number, DutyCardProps>) {
 
   switch (titleType) {
     case 'extence':
-      title = `Dia ${day + 1} - Turno das ${dutyTitles.at(duty.index)}`;
+      title = `Dia ${day + 1} - Turno das ${dutyController.format.title()}`;
       break;
     case 'numeric':
       title = `Dia ${day + 1} - ${dutyMessageMap.get(duty.index) ?? '?'}`

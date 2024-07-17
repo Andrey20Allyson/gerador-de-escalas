@@ -1,7 +1,7 @@
 import React from 'react';
 import { BsPeopleFill } from 'react-icons/bs';
 import styled from 'styled-components';
-import { OnDutySelect, dutyTitles } from '../../../components/DutyTableGrid/utils';
+import { OnDutySelect } from '../../../components/DutyTableGrid/utils';
 import { DutySearcher } from '../../../state/controllers/editor/searchers/duty';
 import { TableEditorController } from '../../../state/controllers/editor/table';
 import { WorkerEditorController } from '../../../state/controllers/editor/worker';
@@ -99,7 +99,7 @@ export function DutySelectButton(props: IterProps<number, DutySelectButtonProps>
 
   const workerController = new WorkerEditorController(workerId);
 
-  const text = dutyTitles.at(duty.index);
+  const title = dutyController.format.title();
   const selected = workerController.duties().some(workerDuty => workerDuty.id === duty.id);
 
   const ruleService = new EditorRuleService();
@@ -113,7 +113,7 @@ export function DutySelectButton(props: IterProps<number, DutySelectButtonProps>
 
   return (
     <StyledDutySelectButton className={`${canSelect ? ' selectable' : ''}${selected ? ' selected' : ''}`} onClick={handleSelectDuty}>
-      {text}
+      {title}
       <span className={`worker-quantity-display${dutySize < 2 ? ' low-quantity' : ''}`}>
         {dutySize}
         <BsPeopleFill />
