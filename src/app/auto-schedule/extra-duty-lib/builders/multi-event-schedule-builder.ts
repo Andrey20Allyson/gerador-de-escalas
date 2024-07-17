@@ -37,11 +37,11 @@ export class MultiEventScheduleBuilder implements ScheduleBuilder {
       onlyWorkersWhere: worker => worker.workTime.duration === 24,
       fullDay: true,
       max: 2,
-    }, {
-      onlyWorkersWhere: worker => worker.isDailyWorker() && Math.random() > .5,
-      passDutyWhen: duty => duty.start !== 19,
-      events: ExtraEventName.JIQUIA,
-      inPairs: false,
+    // }, {
+    //   onlyWorkersWhere: worker => worker.isDailyWorker() && Math.random() > .5,
+    //   passDutyWhen: duty => duty.start !== 19,
+    //   events: ExtraEventName.JIQUIA,
+    //   inPairs: false,
     }, {
       onlyWorkersWhere: worker => worker.isDailyWorker(),
       passDayWhen: day => day.date.isWeekEnd() === false,
@@ -51,7 +51,7 @@ export class MultiEventScheduleBuilder implements ScheduleBuilder {
     }, {
       onlyWorkersWhere: worker => worker.isDailyWorker(),
       events,
-      inPairs: false,
+      // inPairs: false,
     }, {
       onlyWorkersWhere: worker => worker.isInsp(),
       events,
@@ -70,7 +70,7 @@ export class MultiEventScheduleBuilder implements ScheduleBuilder {
     }, {
       events,
       min: 2,
-      inPairs: false,
+      // inPairs: false,
       dutyMinDistance: 2,
     }, {
       events,
@@ -80,7 +80,7 @@ export class MultiEventScheduleBuilder implements ScheduleBuilder {
     }, {
       events,
       min: 3,
-      inPairs: false,
+      // inPairs: false,
       dutyMinDistance: 1,
     }];
 
