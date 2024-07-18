@@ -1,9 +1,13 @@
-import { DutyData } from "../../../../../app/api/table-reactive-edition/table";
+import { DayData, DutyData } from "../../../../../app/api/table-reactive-edition/table";
 import { Searcher } from "../../../../utils/searcher";
 
 export class DutySearcher extends Searcher<DutyData> {
-  dayEquals(day: number): this {
-    return this.addStep(duty => duty.day === day);
+  dayEquals(day: DayData): this {
+    return this.addStep(duty => duty.day.key === day.key);
+  }
+
+  dayIndexEquals(index: number): DutySearcher {
+    return this.addStep(duty => duty.day.index === index);
   }
   
   indexEquals(index: number): this {
@@ -14,8 +18,12 @@ export class DutySearcher extends Searcher<DutyData> {
     return this.addStep(duty => duty.id === id);
   }
 
-  static dayEquals(day: number): DutySearcher {
+  static dayEquals(day: DayData): DutySearcher {
     return new DutySearcher().dayEquals(day);
+  }
+
+  static dayIndexEquals(index: number): DutySearcher {
+    return new DutySearcher().dayIndexEquals(index);
   }
 
   static indexEquals(index: number): DutySearcher {

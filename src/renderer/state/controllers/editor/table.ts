@@ -1,4 +1,4 @@
-import { DutyData, TableData, WorkerData } from "../../../../app/api/table-reactive-edition/table";
+import { DayData, DutyData, TableData, WorkerData } from "../../../../app/api/table-reactive-edition/table";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "../../../utils";
 import { Searcher } from "../../../utils/searcher";
@@ -104,9 +104,9 @@ export class TableEditorController {
     return this.workers().map(worker => worker.id);
   }
 
-  *iterDays(): Iterable<number> {
-    for (let day = 0; day < this.table.config.numOfDays; day++) {
-      yield day;
+  *iterDays(): Iterable<DayData> {
+    for (const day of this.table.days) {
+      return day;
     }
   }
 

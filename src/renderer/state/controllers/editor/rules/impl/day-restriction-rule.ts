@@ -19,7 +19,7 @@ export class DayRestrictionRule extends EditorRule {
   private dutyCollidesWithNextDayLicence(workerController: WorkerEditorController, dutyController: DutyEditorController): boolean {
     const { worker } = workerController;
     const { day } = dutyController.duty;
-    const nextDayRestriction = worker.restrictions.at(day + 1) ?? DayRestriction.NONE;
+    const nextDayRestriction = worker.restrictions.at(day.index + 1) ?? DayRestriction.NONE;
 
     if (nextDayRestriction === DayRestriction.LICENCE) {
       const dutyEnd = dutyController.endsAt();
@@ -47,7 +47,7 @@ export class DayRestrictionRule extends EditorRule {
   private testThisDayRestriction(workerController: WorkerEditorController, dutyController: DutyEditorController): boolean {
     const { worker } = workerController;
     const { day } = dutyController.duty;
-    const restriction = worker.restrictions.at(day) ?? DayRestriction.NONE;
+    const restriction = worker.restrictions.at(day.index) ?? DayRestriction.NONE;
 
     return restriction === DayRestriction.NONE;
   }
@@ -55,7 +55,7 @@ export class DayRestrictionRule extends EditorRule {
   private testNextDayRestriction(workerController: WorkerEditorController, dutyController: DutyEditorController): boolean {
     const { worker } = workerController;
     const { day } = dutyController.duty;
-    const restriction = worker.restrictions.at(day + 1) ?? DayRestriction.NONE;
+    const restriction = worker.restrictions.at(day.index + 1) ?? DayRestriction.NONE;
 
     if (restriction === DayRestriction.ORDINARY_WORK) {
       const dutyTimeOffEnd = dutyController.timeOffEnd();
@@ -70,7 +70,7 @@ export class DayRestrictionRule extends EditorRule {
   private testPrevDayRestriction(workerController: WorkerEditorController, dutyController: DutyEditorController): boolean {
     const { worker } = workerController;
     const { day } = dutyController.duty;
-    const restriction = worker.restrictions.at(day - 1) ?? DayRestriction.NONE;
+    const restriction = worker.restrictions.at(day.index - 1) ?? DayRestriction.NONE;
 
     if (restriction === DayRestriction.ORDINARY_WORK) {
       const ordinaryTimeOffEnd = worker.ordinary.timeOffEnd;

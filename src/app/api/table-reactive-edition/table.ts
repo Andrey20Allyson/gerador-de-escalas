@@ -5,7 +5,8 @@ import type {
   ExtraDutyTable,
   Gender,
   Graduation,
-  WorkerInfo
+  WorkerInfo,
+  DayOfExtraDuty
   } from "../../auto-schedule/extra-duty-lib";
 import { WorkerInsertionRulesState } from "../table-edition";
 
@@ -28,10 +29,20 @@ export interface WorkerData {
   readonly ordinary: OrdinaryInfo;
 }
 
+export interface DayData {
+  readonly key: string;
+  readonly index: number;
+  readonly day: number;
+  readonly month: number;
+  readonly year: number;
+}
+
 export interface DutyData {
   readonly id: number;
-  readonly day: number;
+  readonly day: DayData;
+  readonly key: string;
   readonly index: number;
+  readonly active: boolean;
 }
 
 export interface TableConfig extends ExtraDutyTableConfig {
@@ -50,6 +61,7 @@ export interface TableData {
   idCounters: Record<string, number>;
   workers: WorkerData[];
   duties: DutyData[];
+  days: DayData[];
   rules: WorkerInsertionRulesState;
   dutyAndWorkerRelationships: DutyAndWorkerRelationship[];
   readonly config: TableConfig;
@@ -68,6 +80,7 @@ export class TableFactory {
       idCounters: this.idGenerator.counters,
       duties: [],
       workers: [],
+      days: [],
       rules: {
         femaleRule: true,
         inspRule: true,
@@ -85,11 +98,33 @@ export class TableFactory {
     };
   }
 
-  createDutyData(duty: ExtraDuty): DutyData {
+  createDayData(dutyDay: DayOfExtraDuty): DayData {
+    const day = dutyDay.date;
+    
     return {
-      day: duty.day.index,
-      id: this.idGenerator.next('duty'),
-      index: duty.index,
+      key: day.toString(),
+      index: dutyDay.index,
+      day: day.index,
+      month: day.month,
+      year: day.year,
+    };
+  }
+
+  createDutyData(duty: ExtraDuty): DutyData {
+    const index = duty.index;
+
+    const day = this.createDayData(duty.day);
+    
+    const key = `${index}:${day.key}`;
+
+    const id = this.idGenerator.next('duty');
+    
+    return {
+      id,
+      day,
+      key,
+      index,
+      active: duty.isActive(),
     };
   }
 
@@ -137,16 +172,22 @@ export class TableFactory {
       workerDataMap.set(worker.id, workerData);
     }
 
-    for (const duty of table.iterDuties()) {
-      const dutyData = this.createDutyData(duty);
+    for (const day of table) {
+      const dayData = this.createDayData(day);
 
-      tableData.duties.push(dutyData);
+      tableData.days.push(dayData);
 
-      for (const [_, worker] of duty) {
-        const workerData = workerDataMap.get(worker.id);
-        if (workerData === undefined) continue;
+      for (const duty of day) {
+        const dutyData = this.createDutyData(duty);
 
-        tableData.dutyAndWorkerRelationships.push(this.createDutyAndWorkerRelationship(workerData.id, dutyData.id));
+        tableData.duties.push(dutyData);
+
+        for (const [_, worker] of duty) {
+          const workerData = workerDataMap.get(worker.id);
+          if (workerData === undefined) continue;
+
+          tableData.dutyAndWorkerRelationships.push(this.createDutyAndWorkerRelationship(workerData.id, dutyData.id));
+        }
       }
     }
 
@@ -169,7 +210,7 @@ export class TableFactory {
       if (workerInfo === undefined) continue;
 
       table
-        .getDay(dutyData.day)
+        .getDay(dutyData.day.index)
         .getDuty(dutyData.index)
         .add(workerInfo);
     }

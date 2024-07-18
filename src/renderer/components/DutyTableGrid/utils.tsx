@@ -5,6 +5,7 @@ import { WorkerEditorController } from "../../state/controllers/editor/worker";
 import { iterRange } from "../../utils";
 import { ElementList, IterProps } from "../../utils/react-iteration";
 import { StyledDay, StyledDayTitle, StyledDutiesContainer, StyledDuty, StyledDutyHeader, StyledDutySlot, StyledDutyTitle, StyledEmpityDutySlot } from "./styles";
+import { DayData } from "../../../app/api/table-reactive-edition/table";
 
 export function EmpityDutySlot() {
   return <StyledEmpityDutySlot />;
@@ -21,7 +22,7 @@ export type OnDutySelect = (dutyId: number) => void;
 
 export interface DutyViewProps {
   onSelect?: OnDutySelect;
-  day: number;
+  day: DayData;
 }
 
 export function DutyView(props: IterProps<number, DutyViewProps>) {
@@ -55,7 +56,7 @@ export interface DayViewProps {
   onSelect?: OnDutySelect;
 }
 
-export function DayView(props: IterProps<number, DayViewProps>) {
+export function DayView(props: IterProps<DayData, DayViewProps>) {
   const { onSelect } = props;
   const day = props.entry;
 
@@ -64,7 +65,7 @@ export function DayView(props: IterProps<number, DayViewProps>) {
   return (
     <StyledDay>
       <StyledDutyHeader>
-        <StyledDayTitle>Dia {day + 1}</StyledDayTitle>
+        <StyledDayTitle>Dia {day.day + 1}</StyledDayTitle>
       </StyledDutyHeader>
       <StyledDutiesContainer>
         <ElementList Component={DutyView} iter={tableController.iterDutyIndexes()} communProps={{ onSelect, day }} />

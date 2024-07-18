@@ -71,9 +71,9 @@ export class DutyEditorController implements IDutyEditor {
     const dayShift = Math.floor((count + dutyIdx) / dutyLimit);
 
     const nextIdx = (dutyIdx + dutyLimit + count % dutyLimit) % dutyLimit;
-    const nextDay = (day + dayShift + numOfDays) % numOfDays;
+    const nextDay = (day.index + dayShift + numOfDays) % numOfDays;
 
-    const duty = this.table.duties.find(duty => duty.day === nextDay && duty.index === nextIdx);
+    const duty = this.table.duties.find(duty => duty.day.index === nextDay && duty.index === nextIdx);
     if (!duty) throw new Error(`Can't find duty at day ${nextDay} in duty index ${nextIdx}`);
 
     const { table, dispatcher } = this;
@@ -87,7 +87,7 @@ export class DutyEditorController implements IDutyEditor {
 
     const firstMonday = firstMondayFromYearAndMonth(year, month);
 
-    return dayOfWeekFrom(firstMonday, day);
+    return dayOfWeekFrom(firstMonday, day.index);
   }
 
   startsAt() {
@@ -145,8 +145,8 @@ export class DutyEditorController implements IDutyEditor {
     const { dutiesPerDay } = this.table.config;
     const duty = this.duty;
 
-    const posA = duty.index + duty.day * dutiesPerDay;
-    const posB = otherDuty.index + otherDuty.day * dutiesPerDay;
+    const posA = duty.index + duty.day.index * dutiesPerDay;
+    const posB = otherDuty.index + otherDuty.day.index * dutiesPerDay;
     const distance = Math.abs(posA - posB);
 
     return distance;
@@ -167,7 +167,7 @@ export class DutyEditorController implements IDutyEditor {
 
   static find(day: number, index: number): DutyData {
     const table = useAppSelector(currentTableFromRootSelector);
-    const duty = table.duties.find(duty => duty.day === day && duty.index === index);
+    const duty = table.duties.find(duty => duty.day.index === day && duty.index === index);
     if (!duty) throw new Error(`Can't find duty at day ${day} in index ${index}`);
 
     return duty;

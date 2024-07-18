@@ -11,7 +11,15 @@ function mockDuties(numOfDays: number, dutiesPerDay: number): DutyData[] {
   for (let day = 0; day < numOfDays; day++) {
     for (let index = 0; index < dutiesPerDay; index++) {
       duties.push({
-        day,
+        day: {
+          key: '',
+          index: day,
+          day,
+          month: 0,
+          year: 0,
+        },
+        active: true,
+        key: '',
         index,
         id: idCount++,
       });
@@ -32,6 +40,7 @@ function mockTable(): TableData {
       ordinaryRule: true,
       timeOffRule: true,
     },
+    days: [],
     duties: mockDuties(numOfDays, dutiesPerDay),
     config: {
       workerCapacity: 5,
@@ -64,7 +73,7 @@ test('#next method shild return next duty', () => {
 
   const dutyController = tableController.findDuty(
     DutySearcher
-      .dayEquals(0)
+      .dayIndexEquals(0)
       .indexEquals(1)
   );
   if (!dutyController) throw new Error(`Can't find duty`);
