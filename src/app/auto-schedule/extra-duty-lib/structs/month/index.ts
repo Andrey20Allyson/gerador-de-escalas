@@ -65,6 +65,18 @@ export class Month {
     return `${this.index + 1}/${this.year}`;
   }
 
+  static calculate(year: number, index: number): Month {
+    const lastIndex = 11;
+
+    if (index > lastIndex) {
+      return Month.calculate(year + 1, index - lastIndex - 1);
+    } else if (index < 0) {
+      return Month.calculate(year - 1, index + lastIndex + 1)
+    }
+
+    return new Month(year, index);
+  }
+
   static isValidIndex(month: number) {
     return month >= 0 && month < 12 && isInteger(month);
   }

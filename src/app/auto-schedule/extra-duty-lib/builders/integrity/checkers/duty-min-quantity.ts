@@ -31,6 +31,7 @@ export class DutyMinQuantityChecker implements IntegrityChecker {
       }
 
       if (integrity.table.config.currentPlace === ExtraEventName.JARDIM_BOTANICO_DAYTIME && duty.isNighttime()) continue;
+      if (duty.isActive() === false) continue;
       if (duty.getSize() >= 2) continue;
 
       const dutyQuantityPenality = -this.calculateDutyPontuation(duty, integrity.table.month.getFirstMonday());

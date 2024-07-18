@@ -76,6 +76,37 @@ export class Day {
     return isWeekEnd(this.getWeekDay());
   }
 
+  toString(): string {
+    const day = this.index + 1;
+    const month = this.month + 1;
+
+    const formattedDay = day.toString().padStart(2, '0');
+    const formattedMonth = month.toString().padStart(2, '0');
+    const formattedYear = this.year.toString();
+    
+    return `${formattedDay}/${formattedMonth}/${formattedYear}`;
+  }
+
+  static calculate(year: number, month: number, index: number): Day {
+    if (month < 0 || month > 11) {
+      const calculatedMonth = Month.calculate(year, month);
+      
+      return Day.calculate(calculatedMonth.year, calculatedMonth.index, index);
+    }
+
+    const lastIndex = Day.lastOf(year, month);
+    
+    if (index > lastIndex) {
+      return Day.calculate(year, month + 1, index - lastIndex - 1);
+    } else if (index < 0) {
+      const previousMonthLastIndex = Day.lastOf(year, month - 1);
+
+      return Day.calculate(year, month - 1, index + previousMonthLastIndex + 1);
+    }
+
+    return new Day(year, month, index);
+  }
+
   static fromLastOf(year: number, month: number): Day {
     return new Day(
       year,

@@ -38,7 +38,7 @@ export class ExtraDutyTable implements Iterable<DayOfExtraDuty> {
     this.config = ExtraDutyTable.createConfigFrom(config);
 
     this.month = new Month(this.config.year, this.config.month);
-    this.width = this.month.getNumOfDays();
+    this.width = this.month.getNumOfDays() + 1;
     this.days = DayOfExtraDuty.daysFrom(this);
     this.limiter = new PositionLimiter(this);
 

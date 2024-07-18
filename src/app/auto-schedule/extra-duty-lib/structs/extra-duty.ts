@@ -7,6 +7,7 @@ import { WorkingPlaceStorage } from "./working-place-storage";
 export class ExtraDuty implements Iterable<[string, WorkerInfo]> {
   readonly offTimeEnd: number;
   private readonly _isNightly: boolean;
+  private _actived: boolean;
   readonly start: number;
   readonly end: number;
   readonly firstMonday: number;
@@ -24,12 +25,25 @@ export class ExtraDuty implements Iterable<[string, WorkerInfo]> {
 
     this.workers = new WorkingPlaceStorage();
 
+    this._actived = true;
     this.start = this.config.firstDutyTime + this.config.dutyDuration * index;
     this.end = this.start + this.config.dutyDuration;
     this.offTimeEnd = this.end + this.config.dutyOffTimeToOrdinary;
     this._isNightly = this.start >= 18 || this.start < 7;
     this.firstMonday = firstMondayFromYearAndMonth(this.config.year, this.config.month);
     this.weekDay = dayOfWeekFrom(this.firstMonday, this.day.index);
+  }
+
+  isActive() {
+    return this._actived;
+  }
+
+  desactivate() {
+    this._actived = false;
+  }
+
+  activate() {
+    this._actived = true;
   }
 
   isNighttime(): boolean {
@@ -143,6 +157,20 @@ export class ExtraDuty implements Iterable<[string, WorkerInfo]> {
 
     for (let i = 0; i < duties.length; i++) {
       duties[i] = new ExtraDuty(i, day);
+    }
+
+    if (day.index === 0) {
+      const firstDuty = duties.at(0)!;
+
+      firstDuty.desactivate();
+    }
+
+    if (day.month.index > day.table.month.index) {
+      for (let i = 1; i < duties.length; i++) {
+        const duty = duties.at(i)!;
+
+        duty.desactivate()
+      }
     }
 
     return duties;

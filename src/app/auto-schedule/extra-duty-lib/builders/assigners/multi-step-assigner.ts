@@ -17,6 +17,7 @@ import {
   OrdinaryAssignmentRule,
   TimeOffAssignmentRule,
 } from "../rule-checking/rules";
+import { DesactivedDutyAssignmentRule } from "../rule-checking/rules/desactived-duty-rule";
 import { ExtraEventAllowedTimeRule } from "../rule-checking/rules/extra-event-allowed-time-rule";
 import { ExtraEventAllowedWeekdaysRule } from "../rule-checking/rules/extra-event-allowed-weekdays-rule";
 import { ExtraEventStartDayRule } from "../rule-checking/rules/extra-event-start-day";
@@ -235,6 +236,7 @@ export class MultiStepScheduleAssigner extends BaseScheduleAssigner {
 
   static defaultChecker(): AssignmentRuleStack {
     return new AssignmentRuleStack([
+      new DesactivedDutyAssignmentRule(),
       new BusyWorkerAssignmentRule(),
       new DutyLimitAssignmentRule(),
       new FemaleAssignmentRule(),

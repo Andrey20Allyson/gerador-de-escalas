@@ -16,6 +16,8 @@ export class CorrectWorkerAllocationChecker implements IntegrityChecker {
   }
 
   isWorkerInsuficient(duty: ExtraDuty) {
+    if (duty.isActive() === false) return false;
+
     if (this.extraEventAllowedTimeRule.canAssign(undefined, duty) === false) return true;
 
     return duty.getSize() < 2;

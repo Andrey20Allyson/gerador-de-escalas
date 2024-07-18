@@ -77,11 +77,11 @@ export class DayOfExtraDuty implements Iterable<ExtraDuty> {
     readonly table: ExtraDutyTable,
   ) {
     this.config = table.config;
-    this.month = table.month;
+    this.date = Day.calculate(table.month.year, table.month.index, this.index);
+    this.month = new Month(this.date.year, this.date.month);
     this.weekDay = dayOfWeekFrom(this.month.getFirstMonday(), this.index);
-    this.date = new Day(this.month.year, this.month.index, this.index);
-
-    this.size = this.getMaxDuties();
+    
+    this.size = this.calculateSize();
 
     this.duties = ExtraDuty.dutiesFrom(this);
   }
@@ -101,7 +101,7 @@ export class DayOfExtraDuty implements Iterable<ExtraDuty> {
   }
 
   at(index: number): ExtraDuty | undefined {
-    const maxDuties = this.getMaxDuties();
+    const maxDuties = this.getSize();
 
     if (index < 0) {
       const dayIndex = this.index + Math.floor(index / maxDuties);
@@ -138,7 +138,7 @@ export class DayOfExtraDuty implements Iterable<ExtraDuty> {
   }
 
   getDuty(dutyIndex: number): ExtraDuty {
-    const maxDuties = this.getMaxDuties();
+    const maxDuties = this.getSize();
     if (dutyIndex < 0 || dutyIndex >= maxDuties) throw new Error(`Out of bount trying access item ${dutyIndex}, limit: ${maxDuties}`);
 
     const duty = this.duties.at(dutyIndex);
@@ -167,7 +167,7 @@ export class DayOfExtraDuty implements Iterable<ExtraDuty> {
     return this.index >= this.table.width - 1;
   }
 
-  private getMaxDuties() {
+  private calculateSize() {
     return Math.floor(24 / this.config.dutyDuration);
   }
 
