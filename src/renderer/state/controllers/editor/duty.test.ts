@@ -11,7 +11,7 @@ function mockDuties(numOfDays: number, dutiesPerDay: number): DutyData[] {
   for (let day = 0; day < numOfDays; day++) {
     for (let index = 0; index < dutiesPerDay; index++) {
       duties.push({
-        day: {
+        date: {
           key: '',
           index: day,
           day,
@@ -80,6 +80,6 @@ test('#next method shild return next duty', () => {
 
   const nextDutyController = dutyController.next();
 
-  expect(nextDutyController.duty.day).toEqual(1);
+  expect(nextDutyController.duty.date).toEqual(1);
   expect(nextDutyController.duty.index).toEqual(0);
 });

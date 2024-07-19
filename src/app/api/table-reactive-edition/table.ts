@@ -29,7 +29,7 @@ export interface WorkerData {
   readonly ordinary: OrdinaryInfo;
 }
 
-export interface DayData {
+export interface DateData {
   readonly key: string;
   readonly index: number;
   readonly day: number;
@@ -39,7 +39,7 @@ export interface DayData {
 
 export interface DutyData {
   readonly id: number;
-  readonly day: DayData;
+  readonly date: DateData;
   readonly key: string;
   readonly index: number;
   readonly active: boolean;
@@ -61,7 +61,7 @@ export interface TableData {
   idCounters: Record<string, number>;
   workers: WorkerData[];
   duties: DutyData[];
-  days: DayData[];
+  days: DateData[];
   rules: WorkerInsertionRulesState;
   dutyAndWorkerRelationships: DutyAndWorkerRelationship[];
   readonly config: TableConfig;
@@ -98,7 +98,7 @@ export class TableFactory {
     };
   }
 
-  createDayData(dutyDay: DayOfExtraDuty): DayData {
+  createDayData(dutyDay: DayOfExtraDuty): DateData {
     const day = dutyDay.date;
     
     return {
@@ -121,7 +121,7 @@ export class TableFactory {
     
     return {
       id,
-      day,
+      date: day,
       key,
       index,
       active: duty.isActive(),
@@ -210,7 +210,7 @@ export class TableFactory {
       if (workerInfo === undefined) continue;
 
       table
-        .getDay(dutyData.day.index)
+        .getDay(dutyData.date.index)
         .getDuty(dutyData.index)
         .add(workerInfo);
     }

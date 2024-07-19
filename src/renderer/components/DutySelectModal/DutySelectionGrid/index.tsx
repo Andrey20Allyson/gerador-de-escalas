@@ -8,6 +8,7 @@ import { WorkerEditorController } from '../../../state/controllers/editor/worker
 import { getWeekDayLabel } from '../../../utils';
 import { ElementList, IterProps } from '../../../utils/react-iteration';
 import { EditorRulesService as EditorRuleService } from '../../../state/controllers/editor/rules';
+import { DateData } from '../../../../app/api/table-reactive-edition/table';
 
 export interface DutySelectionGridProps {
   workerId: number;
@@ -39,19 +40,19 @@ export interface DayCardProps {
   workerId: number;
 }
 
-export function DayCard(props: IterProps<number, DayCardProps>) {
+export function DayCard(props: IterProps<DateData, DayCardProps>) {
   const { onDutySelected, workerId } = props;
-  const day = props.entry;
+  const date = props.entry;
 
   const tableController = new TableEditorController();
 
-  const weekDayLabel = getWeekDayLabel(tableController.dayOfWeekFrom(day));
+  const weekDayLabel = getWeekDayLabel(tableController.dayOfWeekFrom(date.day));
 
   return (
     <StyledDayCard>
-      Dia {day + 1} - {weekDayLabel}
+      Dia {date.day + 1} - {weekDayLabel}
       <span className='duty-row'>
-        <ElementList Component={DutySelectButton} communProps={{ onDutySelected, workerId, day }} iter={tableController.iterDutyIndexes()} />
+        <ElementList Component={DutySelectButton} communProps={{ onDutySelected, workerId, date: date }} iter={tableController.iterDutyIndexes()} />
       </span>
     </StyledDayCard>
   );
@@ -78,21 +79,21 @@ export const StyledDayCard = styled.span`
 
 export interface DutySelectButtonProps {
   onDutySelected?: OnDutySelect;
-  day: number;
+  date: DateData;
   workerId: number;
 }
 
 export function DutySelectButton(props: IterProps<number, DutySelectButtonProps>) {
-  const { onDutySelected, workerId, day, entry: index } = props;
+  const { onDutySelected, workerId, date, entry: index } = props;
 
   const tableController = new TableEditorController();
 
   const dutyController = tableController.findDuty(
     DutySearcher
-      .dayEquals(day)
+      .dayEquals(date)
       .indexEquals(index),
   );
-  if (!dutyController) throw new Error(`Can't find duty at day ${day} in index ${index}!`);
+  if (!dutyController) throw new Error(`Can't find duty at day ${date} in index ${index}!`);
 
   const { duty } = dutyController;
   const dutySize = dutyController.size();

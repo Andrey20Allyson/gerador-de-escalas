@@ -5,7 +5,7 @@ import { WorkerEditorController } from "../../state/controllers/editor/worker";
 import { iterRange } from "../../utils";
 import { ElementList, IterProps } from "../../utils/react-iteration";
 import { StyledDay, StyledDayTitle, StyledDutiesContainer, StyledDuty, StyledDutyHeader, StyledDutySlot, StyledDutyTitle, StyledEmpityDutySlot } from "./styles";
-import { DayData } from "../../../app/api/table-reactive-edition/table";
+import { DateData } from "../../../app/api/table-reactive-edition/table";
 
 export function EmpityDutySlot() {
   return <StyledEmpityDutySlot />;
@@ -22,18 +22,18 @@ export type OnDutySelect = (dutyId: number) => void;
 
 export interface DutyViewProps {
   onSelect?: OnDutySelect;
-  day: DayData;
+  date: DateData;
 }
 
 export function DutyView(props: IterProps<number, DutyViewProps>) {
-  const { onSelect, day } = props;
+  const { onSelect, date } = props;
   const tableController = new TableEditorController();
   const dutyController = tableController.findDuty(
     DutySearcher
-      .dayEquals(day)
+      .dayEquals(date)
       .indexEquals(props.entry)
   );
-  if (!dutyController) throw new Error(`Can't find duty at day ${day} in index ${props.entry}!`);
+  if (!dutyController) throw new Error(`Can't find duty at day ${date} in index ${props.entry}!`);
 
   const { duty } = dutyController;
 
@@ -56,19 +56,19 @@ export interface DayViewProps {
   onSelect?: OnDutySelect;
 }
 
-export function DayView(props: IterProps<DayData, DayViewProps>) {
+export function DayView(props: IterProps<DateData, DayViewProps>) {
   const { onSelect } = props;
-  const day = props.entry;
+  const date = props.entry;
 
   const tableController = new TableEditorController();
 
   return (
     <StyledDay>
       <StyledDutyHeader>
-        <StyledDayTitle>Dia {day.day + 1}</StyledDayTitle>
+        <StyledDayTitle>Dia {date.day + 1}</StyledDayTitle>
       </StyledDutyHeader>
       <StyledDutiesContainer>
-        <ElementList Component={DutyView} iter={tableController.iterDutyIndexes()} communProps={{ onSelect, day }} />
+        <ElementList Component={DutyView} iter={tableController.iterDutyIndexes()} communProps={{ onSelect, date: date }} />
       </StyledDutiesContainer>
     </StyledDay>
   );

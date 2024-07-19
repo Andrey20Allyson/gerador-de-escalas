@@ -66,14 +66,14 @@ export class DutyEditorController implements IDutyEditor {
     const dutyLimit = this.table.config.dutyCapacity;
     const numOfDays = this.table.config.numOfDays;
     const dutyIdx = this.duty.index;
-    const day = this.duty.day;
+    const day = this.duty.date;
 
     const dayShift = Math.floor((count + dutyIdx) / dutyLimit);
 
     const nextIdx = (dutyIdx + dutyLimit + count % dutyLimit) % dutyLimit;
     const nextDay = (day.index + dayShift + numOfDays) % numOfDays;
 
-    const duty = this.table.duties.find(duty => duty.day.index === nextDay && duty.index === nextIdx);
+    const duty = this.table.duties.find(duty => duty.date.index === nextDay && duty.index === nextIdx);
     if (!duty) throw new Error(`Can't find duty at day ${nextDay} in duty index ${nextIdx}`);
 
     const { table, dispatcher } = this;
@@ -83,7 +83,7 @@ export class DutyEditorController implements IDutyEditor {
 
   dayOfWeek() {
     const { year, month } = this.table.config;
-    const { day } = this.duty;
+    const { date: day } = this.duty;
 
     const firstMonday = firstMondayFromYearAndMonth(year, month);
 
@@ -145,8 +145,8 @@ export class DutyEditorController implements IDutyEditor {
     const { dutiesPerDay } = this.table.config;
     const duty = this.duty;
 
-    const posA = duty.index + duty.day.index * dutiesPerDay;
-    const posB = otherDuty.index + otherDuty.day.index * dutiesPerDay;
+    const posA = duty.index + duty.date.index * dutiesPerDay;
+    const posB = otherDuty.index + otherDuty.date.index * dutiesPerDay;
     const distance = Math.abs(posA - posB);
 
     return distance;
@@ -167,7 +167,7 @@ export class DutyEditorController implements IDutyEditor {
 
   static find(day: number, index: number): DutyData {
     const table = useAppSelector(currentTableFromRootSelector);
-    const duty = table.duties.find(duty => duty.day.index === day && duty.index === index);
+    const duty = table.duties.find(duty => duty.date.index === day && duty.index === index);
     if (!duty) throw new Error(`Can't find duty at day ${day} in index ${index}`);
 
     return duty;

@@ -26,6 +26,7 @@ import {
   StyledWorkerViewBody,
 } from "./styles";
 import { genderComponentMap, graduationTextColorMap } from "./utils";
+import { DateData } from "../../../app/api/table-reactive-edition/table";
 
 export interface DutyViewModalProps {
   dutyId: number;
@@ -72,7 +73,7 @@ export function DutyEditionModal(props: DutyViewModalProps) {
           <AiOutlineDoubleLeft onClick={prevDay} />
           <AiOutlineLeft onClick={prevDuty} />
           <StyledModalTitle>
-            Dia {duty.day + 1}
+            Dia {duty.date.day + 1}
           </StyledModalTitle>
           <AiOutlineRight onClick={nextDuty} />
           <AiOutlineDoubleRight onClick={nextDay} />
@@ -80,7 +81,7 @@ export function DutyEditionModal(props: DutyViewModalProps) {
         <AiOutlineCloseCircle onClick={handleClose} size={25} color="#cc0000" />
       </StyledModalHeader>
       <StyledModalBody>
-        <DutyEditionNavation day={duty.day} selectedDutyIndex={duty.index} onNavigate={setDutyId} />
+        <DutyEditionNavation day={duty.date} selectedDutyIndex={duty.index} onNavigate={setDutyId} />
         <StyledModalTitle2>
           Turno das {dutyController.format.title()}
         </StyledModalTitle2>
@@ -101,7 +102,7 @@ export const {
 } = createModalContext(DutyEditionModal);
 
 export interface DutyViewNavationProps {
-  day: number;
+  day: DateData;
   selectedDutyIndex: number;
   onNavigate?: (id: number) => void;
 }

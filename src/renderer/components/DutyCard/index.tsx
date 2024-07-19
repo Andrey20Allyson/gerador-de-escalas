@@ -23,7 +23,7 @@ export function DutyCard(props: IterProps<number, DutyCardProps>) {
 
   const dutyController = new DutyEditorController(props.entry);
   const duty = dutyController.duty;
-  const { day } = duty;
+  const { date } = duty;
 
   function handleOpenModal() {
     onOpenModal?.(duty.id);
@@ -37,10 +37,10 @@ export function DutyCard(props: IterProps<number, DutyCardProps>) {
 
   switch (titleType) {
     case 'extence':
-      title = `Dia ${day + 1} - Turno das ${dutyController.format.title()}`;
+      title = `Dia ${date.day + 1} - Turno das ${dutyController.format.title()}`;
       break;
     case 'numeric':
-      title = `Dia ${day + 1} - ${dutyMessageMap.get(duty.index) ?? '?'}`
+      title = `Dia ${date.day + 1} - ${dutyMessageMap.get(duty.index) ?? '?'}`
       break;
   }
 

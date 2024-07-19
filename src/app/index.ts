@@ -4,10 +4,10 @@ import { fromRoot } from './path.utils';
 
 async function createWindow() {
   const window = new BrowserWindow({
-    width: 1100,
-    minWidth: 1100,
-    height: 700,
-    minHeight: 700,
+    width: 1400,
+    minWidth: 1400,
+    height: 900,
+    minHeight: 900,
     autoHideMenuBar: true,
     // titleBarStyle: 'hidden',
     icon: fromRoot('./public/assets/images/brasao.png'),
