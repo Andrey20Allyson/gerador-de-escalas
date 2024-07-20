@@ -6,6 +6,7 @@ import { iterRange } from "../../utils";
 import { ElementList, IterProps } from "../../utils/react-iteration";
 import { StyledDay, StyledDayTitle, StyledDutiesContainer, StyledDuty, StyledDutyHeader, StyledDutySlot, StyledDutyTitle, StyledEmpityDutySlot } from "./styles";
 import { DateData } from "../../../app/api/table-reactive-edition/table";
+import { DateFormatter } from "../../state/formatters/editor/day";
 
 export function EmpityDutySlot() {
   return <StyledEmpityDutySlot />;
@@ -43,11 +44,17 @@ export function DutyView(props: IterProps<number, DutyViewProps>) {
     onSelect?.(duty.id);
   }
 
+  const dutyClass = duty.active
+    ? dutySize < 2
+      ? 'low-quantity'
+      : ''
+    : 'disabled';
+
   return (
-    <StyledDuty className={`${dutySize < 2 ? 'low-quantity' : ''}`} onClick={handleSelect}>
+    <StyledDuty className={dutyClass} onClick={duty.active ? handleSelect : undefined}>
       <ElementList Component={WorkerView} iter={dutyController.workerIds()} />
       <ElementList Component={EmpityDutySlot} iter={iterRange(0, 3 - dutySize)} />
-      <StyledDutyTitle>{dutyController.format.title()}</StyledDutyTitle>
+      <StyledDutyTitle>{dutyController.format.hours()}</StyledDutyTitle>
     </StyledDuty>
   );
 }
@@ -62,10 +69,12 @@ export function DayView(props: IterProps<DateData, DayViewProps>) {
 
   const tableController = new TableEditorController();
 
+  const dateFormatter = new DateFormatter(tableController.table, date);
+
   return (
     <StyledDay>
       <StyledDutyHeader>
-        <StyledDayTitle>Dia {date.day + 1}</StyledDayTitle>
+        <StyledDayTitle>{dateFormatter.day()}</StyledDayTitle>
       </StyledDutyHeader>
       <StyledDutiesContainer>
         <ElementList Component={DutyView} iter={tableController.iterDutyIndexes()} communProps={{ onSelect, date: date }} />

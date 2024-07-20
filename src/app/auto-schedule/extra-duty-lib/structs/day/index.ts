@@ -87,6 +87,20 @@ export class Day {
     return `${formattedDay}/${formattedMonth}/${formattedYear}`;
   }
 
+  equalsTo(day: Day) {
+    return this.index === day.index &&
+      this.month === day.month &&
+      this.year === day.year;
+  }
+
+  static fromDate(date: Date) {
+    return new Day(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate() - 1,
+    );
+  }
+
   static calculate(year: number, month: number, index: number): Day {
     if (month < 0 || month > 11) {
       const calculatedMonth = Month.calculate(year, month);

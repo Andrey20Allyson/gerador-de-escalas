@@ -131,6 +131,10 @@ export class ExtraDutyTable implements Iterable<DayOfExtraDuty> {
     return this.days.at(day) ?? new DayOfExtraDuty(day, this);
   }
 
+  findDay(date: Day): DayOfExtraDuty | undefined {
+    return this.days.find(dutyDay => dutyDay.date.equalsTo(date))
+  }
+
   getDuty(dayIndex: number, dutyIndex: number): ExtraDuty {
     return this
       .getDay(dayIndex)

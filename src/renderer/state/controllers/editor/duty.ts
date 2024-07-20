@@ -37,7 +37,7 @@ export class DutyEditorController implements IDutyEditor {
 
     this.duty = duty;
 
-    this.format = new DutyFormatter(duty);
+    this.format = new DutyFormatter(table, duty);
   }
 
   remove(workerId: number): this {
@@ -62,8 +62,8 @@ export class DutyEditorController implements IDutyEditor {
     return this;
   }
 
-  shift(count: number) {
-    const dutyLimit = this.table.config.dutyCapacity;
+  shift(count: number, startDutyId?: number): DutyEditorController {
+    const dutyLimit = this.table.config.dutiesPerDay;
     const numOfDays = this.table.config.numOfDays;
     const dutyIdx = this.duty.index;
     const day = this.duty.date;
@@ -77,8 +77,18 @@ export class DutyEditorController implements IDutyEditor {
     if (!duty) throw new Error(`Can't find duty at day ${nextDay} in duty index ${nextIdx}`);
 
     const { table, dispatcher } = this;
+    
+    const dutyController = new DutyEditorController(duty.id, { table, dispatcher });
+    
+    if (dutyController.isActive() === false) {
+      if (duty.id === startDutyId) {
+        throw new Error(`Can't find a active duty`);
+      }
+      
+      return dutyController.shift(count, duty.id);
+    }
 
-    return new DutyEditorController(duty.id, { table, dispatcher });
+    return dutyController;
   }
 
   dayOfWeek() {
@@ -124,6 +134,10 @@ export class DutyEditorController implements IDutyEditor {
 
   size(): number {
     return this.relationships().length;
+  }
+
+  isActive(): boolean {
+    return this.duty.active;
   }
 
   workerIds(): number[] {

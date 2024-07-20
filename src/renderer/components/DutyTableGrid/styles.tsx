@@ -97,6 +97,16 @@ export const StyledDuty = styled.div`
     }
   }
   
+  &.disabled {
+    border: 1px solid #0003;
+    background-color: #f8f8f8;
+    opacity: .4;
+    
+    &:hover {
+      background-color: #f8f8f8;
+    }
+  }
+
   &:hover {
     background-color: #d3d3d3;
   }

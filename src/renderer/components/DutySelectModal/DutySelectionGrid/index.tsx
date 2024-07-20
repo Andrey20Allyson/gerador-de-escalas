@@ -100,7 +100,7 @@ export function DutySelectButton(props: IterProps<number, DutySelectButtonProps>
 
   const workerController = new WorkerEditorController(workerId);
 
-  const title = dutyController.format.title();
+  const title = dutyController.format.hours();
   const selected = workerController.duties().some(workerDuty => workerDuty.id === duty.id);
 
   const ruleService = new EditorRuleService();

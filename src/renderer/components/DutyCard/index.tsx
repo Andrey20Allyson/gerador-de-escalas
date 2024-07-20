@@ -15,7 +15,9 @@ export interface DutyCardProps {
 
 const dutyMessageMap = new Map([
   [0, 'D'],
+  [1, 'D'],
   [1, 'N'],
+  [0, 'N'],
 ]);
 
 export function DutyCard(props: IterProps<number, DutyCardProps>) {
@@ -37,7 +39,7 @@ export function DutyCard(props: IterProps<number, DutyCardProps>) {
 
   switch (titleType) {
     case 'extence':
-      title = `Dia ${date.day + 1} - Turno das ${dutyController.format.title()}`;
+      title = `Dia ${date.day + 1} - Turno das ${dutyController.format.hours()}`;
       break;
     case 'numeric':
       title = `Dia ${date.day + 1} - ${dutyMessageMap.get(duty.index) ?? '?'}`

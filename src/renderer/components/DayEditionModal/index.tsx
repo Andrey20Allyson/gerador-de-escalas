@@ -73,7 +73,7 @@ export function DutyEditionModal(props: DutyViewModalProps) {
           <AiOutlineDoubleLeft onClick={prevDay} />
           <AiOutlineLeft onClick={prevDuty} />
           <StyledModalTitle>
-            Dia {duty.date.day + 1}
+            {dutyController.format.day()}
           </StyledModalTitle>
           <AiOutlineRight onClick={nextDuty} />
           <AiOutlineDoubleRight onClick={nextDay} />
@@ -83,7 +83,7 @@ export function DutyEditionModal(props: DutyViewModalProps) {
       <StyledModalBody>
         <DutyEditionNavation day={duty.date} selectedDutyIndex={duty.index} onNavigate={setDutyId} />
         <StyledModalTitle2>
-          Turno das {dutyController.format.title()}
+          Turno das {dutyController.format.hours()}
         </StyledModalTitle2>
         <StyledDutyViewBody>
           <StyledDutyViewSlotSection>
@@ -129,7 +129,7 @@ export function DutyEditionNavation(props: DutyViewNavationProps) {
 
         return (
           <StyledDutyViewNavButton selected={duty.index === selectedDutyIndex} onClick={handleNavigate}>
-            {dutyController.format.title()}
+            {dutyController.format.hours()}
           </StyledDutyViewNavButton>
         );
       }} />

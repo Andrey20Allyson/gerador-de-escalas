@@ -5,6 +5,7 @@ import { Result, ResultError, ResultType } from "../utils";
 import { BookHandler, CellHandler, LineHander } from "../xlsx-handlers";
 import { ExcelTime } from "../xlsx-handlers/utils";
 import { WorkerRegistryMap } from '../persistence/entities/worker-registry';
+import { Day } from '../extra-duty-lib/structs/day';
 
 export enum WorkerInfoCollumns {
   NAME = 'd',
@@ -176,7 +177,10 @@ export function scrappeTable(buffer: Buffer, workers: WorkerInfo[], options: Scr
     const date = new Date(1900, 0, dateCell.value - 1);
     const startTime = ExcelTime.parse(startTimeCell.value);
 
-    const dayOfDuty = table.getDay(date.getDate() - 1);
+    const day = Day.fromDate(date);
+
+    const dayOfDuty = table.findDay(day);
+    if (dayOfDuty == null) throw new Error(`Can't find day of duty from ${day.toString()}`);
 
     const { firstDutyTime, dutyDuration } = dayOfDuty.config;
     const startHour = startTime.hours;
