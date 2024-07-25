@@ -12,6 +12,8 @@ import { TableEditorController } from "../../state/controllers/editor/table";
 import { WorkerEditorController } from "../../state/controllers/editor/worker";
 import { ElementList } from "../../utils/react-iteration";
 import { DutySelectionGrid } from "./DutySelectionGrid";
+import { Scrollable } from "../Scrollable";
+import { OrdinaryFormatter } from "../../state/formatters/editor/ordinary";
 
 export interface DutySelectModalProps {
   workerId: number;
@@ -59,6 +61,8 @@ export function DutySelectModal(props: DutySelectModalProps) {
     rulesModal.open();
   }
 
+  const ordinaryFormatter = new OrdinaryFormatter(worker.ordinary);
+
   return (
     <StyledDutySelectModal>
       <section className='head'>
@@ -80,15 +84,19 @@ export function DutySelectModal(props: DutySelectModalProps) {
               <span className='gender'>
                 <Gender />
               </span>
+              <label>Expediente Ord.</label>
+              <label>{ordinaryFormatter.officeHour()}</label>
+              <label>Horas Ord.</label>
+              <label>{ordinaryFormatter.duration()}</label>
             </span>
           </span>
           <span className='options-box'>
             <FaTrash onClick={handleClearDuties}/>
             <BsGearFill onClick={handleChangeRules}/>
           </span>
-          <span className='duty-list'>
+          <Scrollable className='duty-list'>
             <ElementList Component={DutyCard} communProps={{ titleType: 'extence', onExcludeDuty: handleExcludeDuty }} iter={workerController.dutyIds()} />
-          </span>
+          </Scrollable>
         </div>
         <DutySelectionGrid onDutySelected={handleAddDuty} workerId={worker.id} />
       </section>

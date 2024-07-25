@@ -15,9 +15,9 @@ export interface LoadTableInput {
 }
 
 export interface ParseTablePayload {
-  workerRegistryMap: WorkerRegistryMap,
+  workerRegistryMap?: WorkerRegistryMap,
   tables: LoadTableInput;
-  holidays: Holidays;
+  holidays?: Holidays;
 }
 
 export interface ParseOrdinaryPayload {
