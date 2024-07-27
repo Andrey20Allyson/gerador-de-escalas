@@ -4,7 +4,7 @@ import { dayOfWeekFrom, enumerate, iterReverse } from "../utils";
 import { Day } from '../extra-duty-lib/structs/day';
 
 export function toDutyDesc(start: number, end: number) {
-  const prefix = start < 18 ? 'Diurno' : 'Noturno';
+  const prefix = start >= 7 && start < 18 ? 'Diurno' : 'Noturno';
 
   return `${prefix} (${start.toString().padStart(2, '0')} ÀS ${end.toString().padStart(2, '0')}h)`;
 }
@@ -94,16 +94,16 @@ class DayGridFromatter {
         grid.numOfNightly++;
       }
     }
-    
+
     return grid;
   }
 
   private _toDayGridEntry(duty: WorkerDuty, worker: WorkerInfo): DayGridEntry {
     const normalizedDutyStartTime = duty.start % 24;
     const normalizedDutyEndTime = duty.end % 24;
-  
+
     const namePrefix = graduationPrefixMap[worker.graduation];
-  
+
     return {
       duty: toDutyDesc(normalizedDutyStartTime, normalizedDutyEndTime),
       id: parseWorkerID(worker.id),
@@ -141,79 +141,63 @@ class WorkerDuty {
   }
 }
 
-function formatDay(day: DayOfExtraDuty): DayGrid {
-  const dutyPair = day.pair();
-  const duties = dutyPair.all();
-  const workers = duties.workers();
-  const daytime = dutyPair.daytime();
-  const nighttime = dutyPair.nighttime();
+class WorkerDutiesBuilder {
+  build(day: DayOfExtraDuty): WorkerDuty[] {
+    const dutyPair = day.pair();
+    const duties = dutyPair.all();
+    const workers = duties.workers();
 
-  const workerDuties = workers.flatMap(worker => {
-    const workerDuties: WorkerDuty[] = [];
-    
-    for (let i = 0; i < duties.length; i++) {
-      let duty = duties.at(i)!;
+    const workerDuties = workers.flatMap(worker => {
+      const workerDuties: WorkerDuty[] = [];
 
-      if (duty.has(worker) === false) {
-        continue;
-      }
+      for (let i = 0; i < duties.length; i++) {
+        let duty = duties.at(i)!;
 
-      const date = duty.day.date;
-      const start = duty.start;
-      let end = duty.end;
-
-      while (duty.has(worker)) {
-        end = duty.end;
-
-        const nextDuty = duty.next();
-        
-        if (nextDuty == null) {
-          break;
+        if (duty.has(worker) === false) {
+          continue;
         }
-        
-        duty = nextDuty;
-        i++;
+
+        const date = duty.day.date;
+        const start = duty.start;
+        let end = duty.end;
+
+        while (duty.has(worker)) {
+          end = duty.end;
+
+          const nextDuty = duty.next();
+
+          if (nextDuty == null) {
+            break;
+          }
+
+          duty = nextDuty;
+          i++;
+        }
+
+        workerDuties.push(new WorkerDuty(
+          worker,
+          start,
+          end,
+          date,
+        ));
       }
 
-      workerDuties.push(new WorkerDuty(
-        worker,
-        start,
-        end,
-        date,
-      ));
-    }
+      return workerDuties;
+    }).sort((a, b) => a.compare(b));
 
     return workerDuties;
-  }).sort((a, b) => a.compare(b));
-
-  const formatter = new DayGridFromatter();
-  
-  return formatter.format(day, workerDuties);
+  }
 }
 
 export function* iterGrids(table: ExtraDutyTable): Iterable<DayGrid> {
   for (const day of table) {
-    const weekDay = dayOfWeekFrom(table.month.getFirstMonday(), day.index);
+    const builder = new WorkerDutiesBuilder();
 
-    const weekDayName = weekDayNames.at(weekDay) ?? 'Unknow';
+    const workerDuties = builder.build(day);
 
-    const title = `Dia ${parseDayIndex(day.index)} (${weekDayName})`;
+    const formatter = new DayGridFromatter();
 
-    const grid: DayGrid = { title, entries: [], numOfDiurnal: 0, numOfNightly: 0 };
-
-    for (const duty of day) {
-      for (const [_, worker] of duty) {
-        grid.entries.push(toDayGridEntry(day, duty, worker));
-
-        if (duty.start < 18 && duty.start >= 7) {
-          grid.numOfDiurnal++;
-        } else {
-          grid.numOfNightly++;
-        }
-      }
-    }
-
-    yield grid;
+    yield formatter.format(day, workerDuties);
   }
 }
 
