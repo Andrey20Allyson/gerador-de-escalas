@@ -25,6 +25,22 @@ export class ExtraDutyArray extends Array<ExtraDuty> {
     return this;
   }
 
+  workers(): WorkerInfo[] {
+    const workers = new Map<number, WorkerInfo>();
+
+    for (const duty of this) {
+      for (const [_, worker] of duty) {
+        if (workers.has(worker.id)) {
+          continue;
+        }
+
+        workers.set(worker.id, worker);
+      }
+    }
+
+    return Array.from(workers.values());
+  }
+
   static fromIter(iterable: Iterable<ExtraDuty>): ExtraDutyArray {
     return new this(...iterable);
   }

@@ -1,6 +1,7 @@
 import ExcelJS from 'exceljs';
 import { DayOfExtraDuty, ExtraDuty, ExtraDutyTable, ExtraDutyTableEntry, Graduation, WorkerInfo } from "../extra-duty-lib";
 import { dayOfWeekFrom, enumerate, iterReverse } from "../utils";
+import { Day } from '../extra-duty-lib/structs/day';
 
 export function toDutyDesc(start: number, end: number) {
   const prefix = start < 18 ? 'Diurno' : 'Noturno';
@@ -72,6 +73,122 @@ export const weekDayNames = [
 
 export function fromExcelDim(dim: number) {
   return dim ** 2 / (dim - .71);
+}
+
+class DayGridFromatter {
+  format(day: DayOfExtraDuty, workerDuties: WorkerDuty[]): DayGrid {
+    const weekDay = day.date.getWeekDay();
+
+    const weekDayName = weekDayNames.at(weekDay) ?? 'Unknow';
+
+    const title = `Dia ${day.date} (${weekDayName})`;
+
+    const grid: DayGrid = { title, entries: [], numOfDiurnal: 0, numOfNightly: 0 };
+
+    for (const duty of workerDuties) {
+      grid.entries.push(this._toDayGridEntry(duty, duty.worker));
+
+      if (duty.start < 18 && duty.start >= 7) {
+        grid.numOfDiurnal++;
+      } else {
+        grid.numOfNightly++;
+      }
+    }
+    
+    return grid;
+  }
+
+  private _toDayGridEntry(duty: WorkerDuty, worker: WorkerInfo): DayGridEntry {
+    const normalizedDutyStartTime = duty.start % 24;
+    const normalizedDutyEndTime = duty.end % 24;
+  
+    const namePrefix = graduationPrefixMap[worker.graduation];
+  
+    return {
+      duty: toDutyDesc(normalizedDutyStartTime, normalizedDutyEndTime),
+      id: parseWorkerID(worker.id),
+      name: `${namePrefix} ${worker.name}`,
+    };
+  }
+}
+
+class WorkerDuty {
+  constructor(
+    readonly worker: WorkerInfo,
+    readonly start: number,
+    public end: number,
+    readonly date: Day,
+  ) { }
+
+  compare(other: WorkerDuty) {
+    if (this.date.isBefore(other.date)) {
+      return -1;
+    }
+
+    if (this.date.isAfter(other.date)) {
+      return 1;
+    }
+
+    if (this.start < other.start) {
+      return -1;
+    }
+
+    if (this.start > other.start) {
+      return 1;
+    }
+
+    return 0;
+  }
+}
+
+function formatDay(day: DayOfExtraDuty): DayGrid {
+  const dutyPair = day.pair();
+  const duties = dutyPair.all();
+  const workers = duties.workers();
+  const daytime = dutyPair.daytime();
+  const nighttime = dutyPair.nighttime();
+
+  const workerDuties = workers.flatMap(worker => {
+    const workerDuties: WorkerDuty[] = [];
+    
+    for (let i = 0; i < duties.length; i++) {
+      let duty = duties.at(i)!;
+
+      if (duty.has(worker) === false) {
+        continue;
+      }
+
+      const date = duty.day.date;
+      const start = duty.start;
+      let end = duty.end;
+
+      while (duty.has(worker)) {
+        end = duty.end;
+
+        const nextDuty = duty.next();
+        
+        if (nextDuty == null) {
+          break;
+        }
+        
+        duty = nextDuty;
+        i++;
+      }
+
+      workerDuties.push(new WorkerDuty(
+        worker,
+        start,
+        end,
+        date,
+      ));
+    }
+
+    return workerDuties;
+  }).sort((a, b) => a.compare(b));
+
+  const formatter = new DayGridFromatter();
+  
+  return formatter.format(day, workerDuties);
 }
 
 export function* iterGrids(table: ExtraDutyTable): Iterable<DayGrid> {
