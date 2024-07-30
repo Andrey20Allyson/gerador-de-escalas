@@ -3,6 +3,7 @@ import { OptionInfoBuilder, loadCommand } from './lib';
 import { generate, generateOptionsSchema } from './actions/generate';
 import { bench, benchOptionsSchema } from './actions/bench/bench';
 import { upload, uploadWorkersOptionsSchema } from './actions/upload-workers';
+import { transformWorkers, transformWorkersOptionsSchema } from './actions/transform-workers';
 
 loadCommand({
   schema: generateOptionsSchema,
@@ -58,5 +59,18 @@ loadCommand({
   },
   action: upload,
 });
+
+loadCommand({
+  schema: transformWorkersOptionsSchema,
+  command: 'transform:workers',
+  aliases: ['tfw'],
+  description: 'Runs a script that update persisted workers',
+  optionInfos: {
+    source: OptionInfoBuilder
+      .alias('s')
+      .describe('Input source file, a .js exports by default a Transformer'),
+  },
+  action: transformWorkers,
+})
 
 program.parse();

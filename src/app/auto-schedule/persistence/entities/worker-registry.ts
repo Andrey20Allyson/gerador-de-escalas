@@ -4,12 +4,25 @@ export type WorkerRegistry = WorkerRegistryInit & {
   readonly createdAtVersion: number;
 }
 
+export type AllowedInterval = { 
+  readonly start: number;
+  readonly end: number;
+}
+
+export type WorkerRegistryAllowedIntervalsRule = {
+  readonly tag: 'allowed-intervals';
+  readonly intervals: AllowedInterval[];
+}
+
+export type WorkerRegistryRule = WorkerRegistryAllowedIntervalsRule;
+
 export type WorkerRegistryInit = {
   readonly workerId: string;
   readonly name: string;
   readonly gender: WorkerRegistryGender;
   readonly individualId: string;
   readonly isCoordinator?: boolean;
+  readonly rules?: WorkerRegistryRule[];
 }
 
 export interface WorkerRegistryRepository {
