@@ -9,13 +9,23 @@ export class AllowedIntervalAssignmentRule implements AssignmentRule {
 
     return rules.flatMap(rule => rule.intervals);
   }
+
+  protected _isHourIntoInterval(hour: number, interval: AllowedInterval): boolean {
+    const { start, end } = interval;
+    
+    if (start > end) {
+      return hour >= start || hour <= end;
+    }
+
+    return hour >= start && hour <= end; 
+  }
   
   canAssign(worker: WorkerInfo, duty: ExtraDuty): boolean {
     const intervals = this._getIntervals(worker);
     if (intervals == null) return true;
 
     for (const interval of intervals) {
-      if (duty.start >= interval.start && duty.start <= interval.end) {
+      if (this._isHourIntoInterval(duty.start, interval)) {
         return true;
       }
     }
