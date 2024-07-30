@@ -166,7 +166,7 @@ class WorkerDutiesBuilder {
 
           const nextDuty = duty.next();
 
-          if (nextDuty == null) {
+          if (nextDuty == null || duty.isDaytime() !== nextDuty.isDaytime()) {
             break;
           }
 
@@ -299,7 +299,7 @@ export async function serializeTableToDivugation(table: ExtraDutyTable, sheetNam
   dutyCollumn.width = fromExcelDim(20);
 
   const nameCollumn = sheet.getColumn(2);
-  nameCollumn.width = fromExcelDim(55);
+  nameCollumn.width = fromExcelDim(54);
 
   const idCollumn = sheet.getColumn(3);
   idCollumn.width = fromExcelDim(14);
