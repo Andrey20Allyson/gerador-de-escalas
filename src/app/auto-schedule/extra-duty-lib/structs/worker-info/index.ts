@@ -1,3 +1,4 @@
+import { WorkerRegistryRule, WorkerRegistryRuleTag } from '../../../persistence/entities/worker-registry';
 import { DaysOfWork } from '../days-of-work';
 import { Limitable } from "../limitable";
 import { WorkLimit } from "../work-limit";
@@ -26,6 +27,7 @@ export type Graduation = 'sub-insp' | 'insp' | 'gcm';
 export type Gender = 'N/A' | 'female' | 'male';
 
 export class WorkerInfo implements Limitable, Clonable<WorkerInfo> {
+  protected readonly _rules: Map<WorkerRegistryRuleTag, WorkerRegistryRule[]>;
   readonly id: number;
   readonly limit: WorkLimit;
   readonly identifier: WorkerIdentifier;
@@ -46,6 +48,36 @@ export class WorkerInfo implements Limitable, Clonable<WorkerInfo> {
     this.gender = config.gender;
     
     this.id = this.identifier.id;
+
+    this._rules = new Map();
+  }
+
+  addRules(rules: Iterable<WorkerRegistryRule> = []): void {
+    for (const rule of rules) {
+      let ruleStack = this._rules.get(rule.tag);
+
+      if (ruleStack == null) {
+        ruleStack = [];
+
+        this._rules.set(rule.tag, ruleStack);
+      }
+      
+      ruleStack.push(rule);
+    }
+  }
+
+  getRuleStack<Rule extends WorkerRegistryRule = WorkerRegistryRule>(tag: Rule['tag']): Array<Rule> | undefined {
+    const ruleStack = this._rules.get(tag) as Array<Rule> | undefined;
+
+    return ruleStack;
+  }
+
+  *iterRules(): Iterable<WorkerRegistryRule> {
+    for (const ruleStack of this._rules.values()) {
+      for (const rule of ruleStack) {
+        yield rule;
+      }
+    }
   }
 
   isGraduate() {
@@ -79,6 +111,8 @@ export class WorkerInfo implements Limitable, Clonable<WorkerInfo> {
     };
 
     const clone = new WorkerInfo(config);
+
+    clone.addRules(this.iterRules())
 
     return clone;
   }

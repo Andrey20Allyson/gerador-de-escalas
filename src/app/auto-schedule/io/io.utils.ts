@@ -114,6 +114,8 @@ export function safeScrappeWorkersFromBook(workBook: XLSX.WorkBook, options: Scr
         worker.daysOfWork.addHolidays(options.holidays, options.month);
       }
 
+      worker.addRules(workerRegistry?.rules);
+
       workerInfos.push(worker);
     } catch (e) {
       errors.push(ResultError.create(e));

@@ -15,6 +15,7 @@ export type WorkerRegistryAllowedIntervalsRule = {
 }
 
 export type WorkerRegistryRule = WorkerRegistryAllowedIntervalsRule;
+export type WorkerRegistryRuleTag = WorkerRegistryRule['tag'];
 
 export type WorkerRegistryInit = {
   readonly workerId: string;
