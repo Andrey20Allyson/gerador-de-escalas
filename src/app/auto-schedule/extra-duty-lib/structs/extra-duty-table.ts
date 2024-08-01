@@ -196,7 +196,7 @@ export class ExtraDutyTable implements Iterable<DayOfExtraDuty> {
           allowedWeekdays: [
             DayOfWeek.FRIDAY,
             DayOfWeek.SATURDAY,
-            DayOfWeek.SUMDAY,
+            DayOfWeek.SUNDAY,
           ],
           eventStartDay: new Day(2024, 0, 11),
         }),

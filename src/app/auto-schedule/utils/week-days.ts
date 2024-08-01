@@ -7,7 +7,7 @@ export const thisMonthFirstMonday = firstMonday(date.getDay(), date.getDate() - 
 export const thisMonthWeekends = Array.from(iterWeekendsFromThisMonth());
 
 export enum DayOfWeek {
-  SUMDAY,
+  SUNDAY,
   MONDAY,
   TUESDAY,
   WEDNESDAY,
@@ -16,7 +16,7 @@ export enum DayOfWeek {
   SATURDAY
 }
 
-const weekEnds = new Uint8Array([DayOfWeek.SATURDAY, DayOfWeek.SUMDAY]); 
+const weekEnds = new Uint8Array([DayOfWeek.SATURDAY, DayOfWeek.SUNDAY]); 
 export function isWeekEnd(weekDay: DayOfWeek): boolean {
   return weekEnds.includes(weekDay);
 }

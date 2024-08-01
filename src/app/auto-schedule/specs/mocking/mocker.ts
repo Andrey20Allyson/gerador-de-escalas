@@ -16,13 +16,14 @@ export interface WorkerMockOptions extends Partial<WorkerInfoConfig> {
 }
 
 export interface WorkerAndDutyMockOptions {
+  month?: Month;
   table?: Partial<ExtraDutyTableConfig>;
   worker?: WorkerMockOptions;
   duty?: DutyMockOptions;
 }
 
 export function mock(options?: WorkerAndDutyMockOptions) {
-  const month = mock.month();
+  const month = options?.month ?? mock.month();
   const table = new ExtraDutyTable({ month: month.index, year: month.year, ...options?.table });
 
   const duty = table
@@ -37,7 +38,7 @@ export function mock(options?: WorkerAndDutyMockOptions) {
     ...options?.worker
   });
 
-  return { table, duty, worker };
+  return { table, duty, worker, month };
 }
 
 export module mock {
