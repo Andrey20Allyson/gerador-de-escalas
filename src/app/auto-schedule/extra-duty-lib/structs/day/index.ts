@@ -87,6 +87,29 @@ export class Day {
     return `${formattedDay}/${formattedMonth}/${formattedYear}`;
   }
 
+  prev(offset: number = 1): Day {
+    const { year, month } = this;
+    const prevIndex = this.index - offset;
+
+    if (prevIndex >= 0) {
+      return new Day(year, month, prevIndex);
+    }
+
+    return Day.calculate(year, month, prevIndex);
+  }
+
+  next(offset: number = 1): Day {
+    const { year, month } = this;
+    const nextIndex = this.index + offset;
+    const lastIndex = this._month.getNumOfDays() - 1;
+
+    if (nextIndex <= lastIndex) {
+      return new Day(year, month, nextIndex);
+    }
+
+    return Day.calculate(year, month, nextIndex);
+  }
+
   equalsTo(day: Day) {
     return this.index === day.index &&
       this.month === day.month &&

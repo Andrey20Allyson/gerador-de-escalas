@@ -22,6 +22,7 @@ import { DesactivedDutyAssignmentRule } from "../rule-checking/rules/desactived-
 import { ExtraEventAllowedTimeRule } from "../rule-checking/rules/extra-event-allowed-time-rule";
 import { ExtraEventAllowedWeekdaysRule } from "../rule-checking/rules/extra-event-allowed-weekdays-rule";
 import { ExtraEventStartDayRule } from "../rule-checking/rules/extra-event-start-day";
+import { FreeWeekendAssignmentRule } from "../rule-checking/rules/free-weekend-rule";
 import { BaseScheduleAssigner } from "./base-assigner";
 
 export interface AssingOptions {
@@ -249,6 +250,7 @@ export class MultiStepScheduleAssigner extends BaseScheduleAssigner {
       new OrdinaryAssignmentRule(),
       new TimeOffAssignmentRule(),
       new AllowedIntervalAssignmentRule(),
+      new FreeWeekendAssignmentRule(),
     ]);
   }
 
