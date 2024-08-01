@@ -15,7 +15,7 @@ export const WORK_TIME_PARSE_TESTS: WorkTimeParseTestEntry[] = [{
   input: '07 ÀS 16h 2ª/6ª',
   expectedResult: WorkTime.fromRange(7, 16),
 },{
-  input: '01 ÀS 22h ..',
+  input: '01 ÀS 22h.. 2ª/6ª',
   expectedResult: WorkTime.fromRange(1, 24),
 },{
   input: '09 ÀS 09h 2ª/6ª .',

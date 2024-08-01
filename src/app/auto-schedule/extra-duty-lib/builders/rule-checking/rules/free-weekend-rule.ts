@@ -4,16 +4,8 @@ import { Day } from "../../../structs/day";
 import { AssignmentRule } from "../assignment-rule";
 
 export class FreeWeekendAssignmentRule implements AssignmentRule {
-  protected _seekPrevWeekday(day: Day, weekday: DayOfWeek): Day {
-    const currentWeekday = day.getWeekDay() as number;
-    const calculatedWeekday = currentWeekday <= weekday ? currentWeekday + 7 : currentWeekday;
-    const distance = calculatedWeekday - weekday;
-    
-    return day.prev(distance);
-  }
-
   protected _hasOrdinaryOnPrevThursdayOrFriday(worker: WorkerInfo, day: Day): boolean {
-    const prevFriday = this._seekPrevWeekday(day, DayOfWeek.FRIDAY);
+    const prevFriday = day.seekPrevWeekday(DayOfWeek.FRIDAY);
     const prevThursday = prevFriday.prev();
     const currentMonth = worker.daysOfWork.month;
     

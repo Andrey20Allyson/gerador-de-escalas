@@ -57,6 +57,14 @@ export class Day {
     );
   }
 
+  seekPrevWeekday(weekday: DayOfWeek): Day {
+    const currentWeekday = this.getWeekDay() as number;
+    const calculatedWeekday = currentWeekday <= weekday ? currentWeekday + 7 : currentWeekday;
+    const distance = calculatedWeekday - weekday;
+    
+    return this.prev(distance);
+  }
+
   subIndex(days: number): Day {
     return new Day(
       this.year,
