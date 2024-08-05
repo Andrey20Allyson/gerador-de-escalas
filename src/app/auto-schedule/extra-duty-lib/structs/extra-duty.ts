@@ -64,6 +64,18 @@ export class ExtraDuty implements Iterable<[string, WorkerInfo]> {
     return this;
   }
 
+  calculateTimeoffStart() {
+    const { dutyPositionSize, dutyDuration } = this.config;
+  
+    return this.start - dutyDuration * dutyPositionSize;
+  }
+
+  calculateTimeoffEnd() {
+    const { dutyPositionSize, dutyDuration } = this.config;
+
+    return this.end + dutyDuration * dutyPositionSize;
+  }
+
   iterPlaces(): Iterable<string> {
     return this.workers.iterPlaceNames();    
   }

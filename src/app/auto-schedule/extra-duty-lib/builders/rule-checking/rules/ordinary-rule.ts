@@ -140,7 +140,7 @@ export class OrdinaryAssignmentRule implements AssignmentRule {
       return workTime.end - 24 > duty.start;
     }
 
-    return workTime.offTimeEnd - 24 > duty.start;
+    return workTime.end > duty.calculateTimeoffStart() + 24;
   }
 
   collidesWithTomorrowWork(worker: WorkerInfo, duty: ExtraDuty) {
@@ -156,7 +156,7 @@ export class OrdinaryAssignmentRule implements AssignmentRule {
       return duty.end > workTime.start + 24;
     }
 
-    return duty.offTimeEnd > workTime.start + 24;
+    return duty.calculateTimeoffEnd() > workTime.start + 24;
   }
 
   isDailyWorkerAtFridayAtNight(worker: WorkerInfo, duty: ExtraDuty) {
