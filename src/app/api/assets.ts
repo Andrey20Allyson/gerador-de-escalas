@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import { Holidays } from "../auto-schedule/extra-duty-lib";
 import { FirestoreInitializer } from "../auto-schedule/firebase/app";
-import { WorkerRegistry, WorkerRegistryMap, WorkerRegistryRepository } from "../auto-schedule/persistence/entities/worker-registry";
+import { WorkerRegistryMap, WorkerRegistryRepository } from "../auto-schedule/persistence/entities/worker-registry";
 import { MainTableFactory } from "../auto-schedule/xlsx-builders";
 import { fromRoot } from "../path.utils";
 import { AssetsErrorCode } from "./assets.error";
@@ -35,7 +35,6 @@ export class AppAssetsServicesLockedError extends Error {
 }
 
 export class AppAssets {
-  private static readonly DOT_REGEXP = /\./g;
   private _data: AppAssetsData | null = null;
   private _services: AppAssetsServices | null = null;
 

@@ -43,6 +43,8 @@ export interface DutyData {
   readonly key: string;
   readonly index: number;
   readonly active: boolean;
+  readonly start: number;
+  readonly end: number;
 }
 
 export interface TableConfig extends ExtraDutyTableConfig {
@@ -125,6 +127,8 @@ export class TableFactory {
       key,
       index,
       active: duty.isActive(),
+      start: duty.start,
+      end: duty.end,
     };
   }
 

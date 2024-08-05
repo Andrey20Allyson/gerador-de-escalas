@@ -14,10 +14,10 @@ export interface DutyCardProps {
 }
 
 const dutyMessageMap = new Map([
-  [0, 'D'],
-  [1, 'D'],
-  [1, 'N'],
-  [0, 'N'],
+  [0, 'N2'],
+  [1, 'D1'],
+  [2, 'D2'],
+  [3, 'N1'],
 ]);
 
 export function DutyCard(props: IterProps<number, DutyCardProps>) {

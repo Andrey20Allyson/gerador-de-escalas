@@ -106,6 +106,8 @@ export function DutySelectButton(props: IterProps<number, DutySelectButtonProps>
   const ruleService = new EditorRuleService();
   const canSelect = ruleService.check(workerId, duty.id);
 
+  const isAtOrdinary = workerController.hasOrdinaryAt(duty);
+
   function handleSelectDuty() {
     if (selected || canSelect) {
       onDutySelected?.(duty.id);
@@ -113,7 +115,7 @@ export function DutySelectButton(props: IterProps<number, DutySelectButtonProps>
   }
 
   return (
-    <StyledDutySelectButton className={`${canSelect ? ' selectable' : ''}${selected ? ' selected' : ''}`} onClick={handleSelectDuty}>
+    <StyledDutySelectButton className={`${canSelect ? ' selectable' : ''}${selected ? ' selected' : ''}${isAtOrdinary ? ' ordinary' : ''}`} onClick={handleSelectDuty}>
       {title}
       <span className={`worker-quantity-display${dutySize < 2 ? ' low-quantity' : ''}`}>
         {dutySize}
@@ -166,5 +168,10 @@ const StyledDutySelectButton = styled.button`
     &:hover {
       background-color: #4fca6394
     }
+  }
+
+  &.ordinary {
+    border-color: #1189a7c5;
+    background-color: #43c8e9;
   }
 `;

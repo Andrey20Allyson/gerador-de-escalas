@@ -18,6 +18,8 @@ function mockDuties(numOfDays: number, dutiesPerDay: number): DutyData[] {
           month: 0,
           year: 0,
         },
+        end: 7,
+        start: 13,
         active: true,
         key: '',
         index,

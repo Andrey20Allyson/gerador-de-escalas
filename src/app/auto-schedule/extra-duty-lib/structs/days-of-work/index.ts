@@ -1,7 +1,7 @@
 import { enumerate, firstMondayFromYearAndMonth, getNumOfDaysInMonth, isBusinessDay } from "../../../utils";
-import { Holidays } from "../holidays";
-import { Clonable } from "../worker-info";
-import { LicenseInterval } from "./license-interval";
+import type { Holidays } from "../holidays";
+import type { Clonable } from "../worker-info";
+import type { LicenseInterval } from "./license-interval";
 
 export class DaySearch {
   constructor(

@@ -1,4 +1,5 @@
 import { TableData, WorkerData, DutyData } from "../../../../app/api/table-reactive-edition/table";
+import { DayRestriction } from "../../../../app/auto-schedule/extra-duty-lib";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { editorActions } from "../../slices/table-editor";
 import { EditorControllerOptions, DispatcherType, currentTableFromRootSelector } from "./table";
@@ -94,6 +95,24 @@ export class WorkerEditorController {
 
       return new WorkerEditorController(dutyId, options);
     });
+  }
+  
+  hasOrdinaryAt(duty: DutyData): boolean {
+    const { ordinary, restrictions } = this.worker;
+
+    if (restrictions[duty.date.index] === DayRestriction.ORDINARY_WORK) {
+      if (duty.start >= ordinary.startsAt && duty.start < ordinary.endsAt) {
+        return true;
+      }
+    }
+
+    if (restrictions[duty.date.index - 1] === DayRestriction.ORDINARY_WORK) {
+      if (duty.start + 24 >= ordinary.startsAt && duty.start + 24 < ordinary.endsAt) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   static all() {
