@@ -3,10 +3,10 @@ import { DateFormatter } from "./day";
 
 export class DutyFormatter {
   private readonly _dutyHours = [
-    '1 as 7h',
-    '7 as 13h',
-    '13 as 19h',
-    '19 as 1h',
+    '01:00',
+    '07:00',
+    '13:00',
+    '19:00',
   ];
 
   constructor(

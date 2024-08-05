@@ -93,7 +93,7 @@ export const StyledEditTableStageBody = styled.section`
   &>.editor-section {
     flex: 1;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: stretch;
+    justify-content: start;
   }
 `;

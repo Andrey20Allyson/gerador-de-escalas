@@ -29,15 +29,18 @@ export const StyledExpandDayButton = styled.button`
 `;
 
 export const StyledDayEditionGrid = styled.div`
+  flex: 1;
   display: grid;
   gap: .3rem;
   grid-template-columns: repeat(7, 1fr);
   background-color: #fcfcfc;
-  padding: .5rem;
+  padding: .5rem 1.5rem;
   border-radius: .3rem;
 
   &>p {
     margin: 0;
+    height: fit-content;
+    align-self: flex-end;
     text-align: center;
     border-bottom: 1px solid #0003;
     user-select: none;
@@ -45,11 +48,9 @@ export const StyledDayEditionGrid = styled.div`
 `;
 
 export const StyledDay = styled.div`
-  height: 9vh;
-  width: 10vw;
+  flex: 1;
   min-height: 4.5rem;
   min-width: 8rem;
-  max-height: 5rem;
   background-color: #f1f1f1;
   border: 1px solid #0003;
   /* box-shadow: -.1rem .1rem .2rem #0004; */
@@ -68,6 +69,8 @@ export const StyledDayTitle = styled.h3`
 
 export const StyledDutiesContainer = styled.div`
   display: flex;
+  justify-content: end;
+  align-items: end;
   gap: .2rem;
   flex: 1;
 `;
@@ -75,6 +78,7 @@ export const StyledDutiesContainer = styled.div`
 export const StyledDuty = styled.div`
   background-color: #f8f8f8;
   flex: 1;
+  max-height: 3rem;
   display: flex;
   flex-direction: column-reverse;
   border: 1px solid #0003;
@@ -125,6 +129,7 @@ export const StyledDutyHeader = styled.section`
 
 export const StyledDutyTitle = styled.h4`
   margin: 0;
+  flex: 1;
   text-align: center;
   font-size: .6rem;
 `;
