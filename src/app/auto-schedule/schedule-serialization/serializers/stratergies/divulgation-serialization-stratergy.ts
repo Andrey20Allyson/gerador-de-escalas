@@ -15,7 +15,7 @@ export class DivulgationSerializationStratergy implements SerializationStratergy
   readonly boldFont: Partial<ExcelJS.Font> = { bold: true };
   readonly centerHorizontalAlignment: Partial<ExcelJS.Alignment> = { horizontal: 'center' };
 
-  constructor(readonly sheetName: string) { }
+  constructor(readonly sheetName: string = 'DADOS') { }
 
   async execute(table: ExtraDutyTable): Promise<Buffer> {
     const book = new ExcelJS.Workbook();

@@ -1,7 +1,6 @@
 import path from "path";
 import fs from "fs/promises";
 import { ExtraDutyTable, ExtraEventName, WorkerInfo } from "../../../extra-duty-lib";
-import { DefautlScheduleBuilder } from "../../../extra-duty-lib/builders/default-builder";
 import { DefaultTableIntegrityAnalyser } from "../../../extra-duty-lib/builders/integrity";
 import { FirestoreInitializer } from "../../../firebase/app";
 import { parseWorkers } from "../../../io";
@@ -9,12 +8,13 @@ import { FirestoreWorkerRegistryRepository } from "../../../persistence/reposito
 import { Benchmarker, analyseResult } from "../../../utils";
 import { env } from "../../../utils/env";
 import { Fancyfier, UnassignedWorkersMessageData } from "../../../utils/fancyfier";
-import { MainTableFactory } from "../../../xlsx-builders";
 import { MockFactory } from "../../mock";
 import { RandomWorkerMockFactory } from "../../mock/worker/random";
 import { z } from "zod";
 import { DEFAULT_MONTH_PARSER } from "../../../extra-duty-lib/structs/month";
 import { MultiEventScheduleBuilder } from '../../../extra-duty-lib/builders/multi-event-schedule-builder';
+import { SerializationContext } from "../../../schedule-serialization/serializers/serialization-context";
+import { DivulgationSerializationStratergy } from "../../../schedule-serialization/serializers/stratergies/divulgation-serialization-stratergy";
 
 export const generateOptionsSchema = z.object({
   mode: z
@@ -99,22 +99,16 @@ export async function generate(options: GenerateCommandOptions) {
   const integrity = analyser.analyse(table);
 
   const fancyfier = new Fancyfier();
-  fancyfier.log(new UnassignedWorkersMessageData(table, workers, [
-    ExtraEventName.JIQUIA,
-    // ExtraEventName.JARDIM_BOTANICO_DAYTIME,
-    // ExtraEventName.SUPPORT_TO_CITY_HALL,
-  ]));
+  fancyfier.log(new UnassignedWorkersMessageData(table, workers, [ExtraEventName.JIQUIA]));
 
   fancyfier.log(beckmarker);
   fancyfier.log(integrity);
   console.log(`pode ser utilizado: ${integrity.isCompliant()}`);
 
   if (outputFile) {
-    const pattern = await fs.readFile('assets/output-pattern.xlsx');
-
-    const factory = new MainTableFactory(pattern);
-
-    const outBuffer = await factory.generate(table, { sheetName: 'DADOS' });
+    const outBuffer = await SerializationContext
+      .using(DivulgationSerializationStratergy)
+      .serialize(table);
 
     const outputFileWithExt = path.extname(outputFile) === '.xlsx'
       ? outputFile
