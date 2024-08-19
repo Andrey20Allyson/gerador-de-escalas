@@ -5,6 +5,8 @@ import { ParseOrdinaryPayload, parseOrdinary } from "../utils/table";
 import { PreGenerateEditor, PreGenerateEditorDTO } from "./pre-generate-editor";
 import { ErrorCode } from "../mapping/error";
 import { AppResponse } from "../mapping/response";
+import { SerializationContext } from "../../auto-schedule/schedule-serialization/serializers/serialization-context";
+import { SerializationStratergy } from "../../auto-schedule/schedule-serialization/serializers/serialization-stratergy";
 
 export interface GeneratedData {
   table: ExtraDutyTable;
@@ -12,7 +14,11 @@ export interface GeneratedData {
 }
 
 export class TableGenerator {
-  constructor(public data?: GeneratedData) { }
+  readonly serializer: SerializationContext;
+
+  constructor(public data?: GeneratedData) {
+    this.serializer = new SerializationContext();
+  }
 
   clear() {
     delete this.data;
@@ -58,10 +64,11 @@ export class TableGenerator {
     return AppResponse.ok();
   }
 
-  async serialize(serializer: MainTableFactory): Promise<AppResponse<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
+  async serialize(stratergy: SerializationStratergy): Promise<AppResponse<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
     if (!this.data) return AppResponse.error(`Can't serialize before load data!`, ErrorCode.DATA_NOT_LOADED);
     
-    const buffer = await serializer.generate(this.data.table, { sheetName: 'DADOS' });
+    this.serializer.setStratergy(stratergy);
+    const buffer = await this.serializer.serialize(this.data.table);
 
     return AppResponse.ok(buffer.buffer)
   }

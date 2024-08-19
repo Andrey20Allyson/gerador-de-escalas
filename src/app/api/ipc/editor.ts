@@ -8,6 +8,10 @@ import { ReadTablePayload, parseExtraTable, readTables } from "../utils/table";
 import { ErrorCode, AppError } from "../mapping/error";
 import { AppResponse } from "../mapping/response";
 import { IpcMappingFactory, IpcMapping } from "../mapping/utils";
+import { PaymentSerializationStratergy } from "../../auto-schedule/schedule-serialization/serializers/stratergies/payment-serialization-stratergy";
+import { SerializationStratergy } from "../../auto-schedule/schedule-serialization/serializers/serialization-stratergy";
+import { DivulgationSerializationStratergy } from "../../auto-schedule/schedule-serialization/serializers/stratergies/divulgation-serialization-stratergy";
+import { SerializationContext } from "../../auto-schedule/schedule-serialization/serializers/serialization-context";
 
 export interface EditorHandlerFactoryData {
   table: ExtraDutyTable;
@@ -18,11 +22,14 @@ export type SerializationMode = 'payment' | 'divugation' | 'day-list';
 
 export class EditorHandler implements IpcMappingFactory {
   readonly tableFactory = new TableFactory();
+  readonly serializator: SerializationContext;
 
   constructor(
     readonly assets: AppAssets,
     public data?: EditorHandlerFactoryData
-  ) { }
+  ) {
+    this.serializator = new SerializationContext();
+  }
 
   clear() {
     delete this.data;
@@ -67,14 +74,14 @@ export class EditorHandler implements IpcMappingFactory {
     return AppResponse.ok();
   }
 
-  getSerializer(mode: SerializationMode): SerializationTableFactory {
+  getSerializationStratergy(mode: SerializationMode): SerializationStratergy {
     switch (mode) {
       case 'payment':
-        return this.assets.serializer;
+        return new PaymentSerializationStratergy(this.assets.paymentPatternBuffer, 'DADOS');
       case 'divugation':
-        return new DivugationTableFactory();
+        return new DivulgationSerializationStratergy('DADOS');
       case 'day-list':
-        return new DayListTableFactory();
+        throw new Error(`Serialization mode '${mode}' not mapped!`);
       default:
         throw new Error(`Serialization mode '${mode}' not mapped!`);
     }
@@ -84,9 +91,11 @@ export class EditorHandler implements IpcMappingFactory {
     const table = this.data?.table;
     if (!table) return AppResponse.error('Shold load data before serialize!', ErrorCode.DATA_NOT_LOADED);
 
-    const serializer = this.getSerializer(mode);
+    const stratergy = this.getSerializationStratergy(mode);
 
-    const buffer = await serializer.generate(table, { sheetName: 'DADOS' });
+    this.serializator.setStratergy(stratergy);
+
+    const buffer = await this.serializator.serialize(table);
 
     return AppResponse.ok(buffer.buffer);
   }

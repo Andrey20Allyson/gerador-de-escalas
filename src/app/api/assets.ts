@@ -7,6 +7,8 @@ import { fromRoot } from "../path.utils";
 import { AssetsErrorCode } from "./assets.error";
 import { AppResponse } from "./mapping/response";
 import { FirestoreWorkerRegistryRepository } from '../auto-schedule/persistence/repositories/firestore-worker-registry-repository';
+import { SerializationStratergy } from '../auto-schedule/schedule-serialization/serializers/serialization-stratergy';
+import { DivulgationSerializationStratergy } from '../auto-schedule/schedule-serialization/serializers/stratergies/divulgation-serialization-stratergy';
 
 export type AppAssetsServices = {
   readonly workerRegistry: WorkerRegistryServices;
@@ -17,9 +19,10 @@ export type WorkerRegistryServices = {
 }
 
 export interface AppAssetsData {
-  workerRegistryMap: WorkerRegistryMap,
-  serializer: MainTableFactory,
-  holidays: Holidays,
+  workerRegistryMap: WorkerRegistryMap;
+  serializationStratergy: SerializationStratergy;
+  patternBuffer: Buffer;
+  holidays: Holidays;
 }
 
 export class AppAssetsNotLoadedError extends Error {
@@ -54,8 +57,12 @@ export class AppAssets {
     return this.data.workerRegistryMap;
   }
 
-  get serializer() {
-    return this.data.serializer;
+  get serializationStratergy() {
+    return this.data.serializationStratergy;
+  }
+
+  get paymentPatternBuffer() {
+    return this.data.patternBuffer;
   }
 
   get holidays() {
@@ -96,11 +103,12 @@ export class AppAssets {
 
     // TODO remove holidays from whole application
     const holidays = Holidays.from([]);
-    const serializer = new MainTableFactory(patternBuffer);
+    const serializationStratergy = new DivulgationSerializationStratergy('DADOS');
 
     this._data = {
       holidays,
-      serializer,
+      patternBuffer,
+      serializationStratergy,
       workerRegistryMap,
     };
   }

@@ -50,7 +50,7 @@ export class GeneratorHandler {
   }
 
   serialize() {
-    return this.generator.serialize(this.assets.serializer);
+    return this.generator.serialize(this.assets.serializationStratergy);
   }
 
   handler() {
