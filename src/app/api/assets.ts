@@ -9,6 +9,8 @@ import { AppResponse } from "./mapping/response";
 import { FirestoreWorkerRegistryRepository } from '../auto-schedule/persistence/repositories/firestore-worker-registry-repository';
 import { SerializationStratergy } from '../auto-schedule/schedule-serialization/serializers/serialization-stratergy';
 import { DivulgationSerializationStratergy } from '../auto-schedule/schedule-serialization/serializers/stratergies/divulgation-serialization-stratergy';
+import { env } from '../auto-schedule/utils/env';
+import { AppError } from './mapping/error';
 
 export type AppAssetsServices = {
   readonly workerRegistry: WorkerRegistryServices;
@@ -42,6 +44,20 @@ export class AppAssets {
   private _services: AppAssetsServices | null = null;
 
   constructor() { }
+
+  async unlockWithEnv(): Promise<void> {
+    const password = env.optional('KEY_DECRYPT_PASSWORD');
+    if (password == null) {
+      return;
+    }
+
+    const unlockResult = await this.unlockServices(password);
+    if (unlockResult.ok === false) {
+      return;
+    }
+
+    await this.load();
+  }
 
   private get data() {
     if (this._data === null) throw new AppAssetsNotLoadedError();

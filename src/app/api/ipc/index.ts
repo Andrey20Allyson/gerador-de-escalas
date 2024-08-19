@@ -32,7 +32,9 @@ export class APIHandler implements IpcMappingFactory {
     return AppResponse.ok();
   }
 
-  isServicesLocked() {
+  async isServicesLocked() {
+    await this.assets.unlockWithEnv();
+
     const isLocked = this.assets.isServicesLocked();
 
     return AppResponse.ok(isLocked);

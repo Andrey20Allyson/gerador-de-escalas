@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 
 dotenv.config()
 
-export function env(key: string) {
+export function env(key: string): string {
     const variable = process.env[key];
     
     if (variable == null) {
@@ -10,4 +10,16 @@ export function env(key: string) {
     }
 
     return variable;
+}
+
+export module env {
+  export function optional(key: string): string | null {
+    const variable = process.env[key];
+
+    if (variable == null) {
+      return null;
+    }
+
+    return variable;
+  } 
 }
