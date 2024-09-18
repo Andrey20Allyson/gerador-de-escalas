@@ -8,7 +8,6 @@ import { useLoading } from './hooks';
 import { useServiceUnlocker } from './hooks/useServiceUnlocker';
 import Configuration from './pages/Configuration';
 import Editor from './pages/Editor';
-import Generator from './pages/Generator';
 import UnlockPage from './pages/Unlock';
 
 type RouteCallback = () => React.JSX.Element;
@@ -42,13 +41,12 @@ function createRoutes<R extends RoutesType>(routes: R): R {
 }
 
 const AppRoutes = createRoutes({
-  Generator,
   Editor,
   Configuration,
 });
 
 export default function App() {
-  const { Router, navigate, route } = useRoutes(AppRoutes, 'Generator');
+  const { Router, navigate, route } = useRoutes(AppRoutes, 'Editor');
   const services = useServiceUnlocker();
   const { listen, loading } = useLoading();
 
@@ -70,7 +68,7 @@ export default function App() {
     <Providers>
       <AppBody>
         <TopNav>
-          <StyledNavButton selected={route === 'Generator'} onClick={() => navigate('Generator')}>Gerador</StyledNavButton>
+          {/* <StyledNavButton selected={route === 'Generator'} onClick={() => navigate('Generator')}>Gerador</StyledNavButton> */}
           <StyledNavButton selected={route === 'Editor'} onClick={() => navigate('Editor')}>Editor</StyledNavButton>
           <StyledNavButton selected={route === 'Configuration'} onClick={() => navigate('Configuration')}>Configurações</StyledNavButton>
         </TopNav>

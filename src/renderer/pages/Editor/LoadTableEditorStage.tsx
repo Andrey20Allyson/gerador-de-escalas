@@ -9,7 +9,7 @@ export function LoadTableEditorStage() {
 
   return (
     <StyledLinedBorder>
-      <LoadTableStage title="Escolha Escala à Editar" onSubmit={self.handleSubmit} />
+      <LoadTableStage title="Escolha Uma Planilha" onSubmit={self.handleSubmit} />
       <Squares color={`#15ff00${self.loading ? 'ff' : '00'}`} />
     </StyledLinedBorder>
   );

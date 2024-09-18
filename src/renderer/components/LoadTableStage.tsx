@@ -4,8 +4,7 @@ import React, { useRef } from 'react';
 import { TableSheetSelect, TableSheetSelectState } from './TableSheetSelect';
 
 export interface LoadTableFormData {
-  ordinaryTable: TableSheetSelectState;
-  tableToEdit: TableSheetSelectState;
+  selectedTable: TableSheetSelectState;
 }
 
 export interface LoadTableStageProps {
@@ -14,22 +13,19 @@ export interface LoadTableStageProps {
 }
 
 export function LoadTableStage(props: LoadTableStageProps) {
-  const tableToEditStateRef = useRef<TableSheetSelectState>();
-  const ordinaryTableStateRef = useRef<TableSheetSelectState>();
+  const selectedTableStateRef = useRef<TableSheetSelectState>();
   const { next } = useStage();
 
   async function handleSubmit() {
-    const tableToEditState = tableToEditStateRef.current;
-    const ordinaryTableState = ordinaryTableStateRef.current;
+    const selectedTableState = selectedTableStateRef.current;
 
-    if (!tableToEditState || !ordinaryTableState) return alert('Algum(s) dos campos obrigatórios não foram preenchidos');
+    if (!selectedTableState) return alert('Algum(s) dos campos obrigatórios não foram preenchidos');
 
-    const result = props.onSubmit?.({
-      ordinaryTable: ordinaryTableState,
-      tableToEdit: tableToEditState,
+    const successPromise = props.onSubmit?.({
+      selectedTable: selectedTableState,
     }) ?? true;
 
-    const success = result instanceof Promise ? await result : result;
+    const success = await successPromise;
 
     if (success) next();
   }
@@ -39,14 +35,9 @@ export function LoadTableStage(props: LoadTableStageProps) {
       <HeaderLabel>{props.title}</HeaderLabel>
       <div className="form-body">
         <TableSheetSelect
-          fileInputTitle='Escala Ordinária'
+          fileInputTitle='Planilha'
           selectTitle='Nome da Aba'
-          onChange={state => ordinaryTableStateRef.current = state}
-        />
-        <TableSheetSelect
-          fileInputTitle='Escala Da Extra'
-          selectTitle='Nome da Aba'
-          onChange={state => tableToEditStateRef.current = state}
+          onChange={state => selectedTableStateRef.current = state}
         />
       </div>
       <input type='button' value='Proximo' onClick={handleSubmit} />

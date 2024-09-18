@@ -9,14 +9,9 @@ export interface InputTable {
   sheetName: string;
 }
 
-export interface LoadTableInput {
-  ordinaryTable: InputTable;
-  extraDutyTable: InputTable;
-}
-
 export interface ParseTablePayload {
   workerRegistryMap?: WorkerRegistryMap,
-  tables: LoadTableInput;
+  table: InputTable;
   holidays?: Holidays;
 }
 
@@ -47,34 +42,26 @@ export interface ReadTableConfig {
 }
 
 export interface ReadTablePayload {
-  ordinaryTable: ReadTableConfig;
-  extraDutyTable: ReadTableConfig;
+  table: ReadTableConfig;
 }
 
 export interface FileSystemLike extends Pick<typeof fs, 'readFile'> { }
 
-export async function readTables(payload: ReadTablePayload, fs: FileSystemLike): Promise<LoadTableInput> {
-  const { extraDutyTable, ordinaryTable } = payload;
+export async function readTables(payload: ReadTablePayload, fs: FileSystemLike): Promise<InputTable> {
+  const { table } = payload;
   
   return {
-    extraDutyTable: {
-      buffer: await fs.readFile(extraDutyTable.filePath),
-      sheetName: extraDutyTable.sheetName,
-    },
-    ordinaryTable: {
-      buffer: await fs.readFile(ordinaryTable.filePath),
-      sheetName: ordinaryTable.sheetName,
-    },
+    buffer: await fs.readFile(table.filePath),
+    sheetName: table.sheetName,
   };
 }
 
 export function parseExtraTable(payload: ParseTablePayload) {
-  const { holidays, workerRegistryMap, tables } = payload;
-  const { ordinaryTable, extraDutyTable: tableToEdit } = tables;
+  const { holidays, workerRegistryMap, table: excelTable } = payload;
 
   const sheet = BookHandler
-    .parse(tableToEdit.buffer)
-    .getSheet(tableToEdit.sheetName);
+    .parse(excelTable.buffer)
+    .getSheet(excelTable.sheetName);
 
   const { year, month } = extractYearAndMonthFromBook(sheet);
 
