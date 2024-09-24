@@ -1,14 +1,33 @@
 import { ExtraDutyTable } from "../../extra-duty-lib";
+import { ClassLike } from "../../utils/types";
 import { DeserializationStratergy } from "./deserialization-stratergy";
 
 export class DeserializationContext {
-  constructor(private stratergy: DeserializationStratergy) { }
+  private _stratergy?: DeserializationStratergy;
+
+  constructor() { }
 
   setStratergy(stratergy: DeserializationStratergy): void {
-    this.stratergy = stratergy;
+    this._stratergy = stratergy;
   }
 
   deserialize(buffer: Buffer): Promise<ExtraDutyTable> {
-    return this.stratergy.execute(buffer);
+    if (this._stratergy == null) {
+      throw new Error(`Stratergy hasn't initialized yet, please set a stratergy`);
+    }
+    
+    return this._stratergy.execute(buffer);
+  }
+
+  static using(stratergy: DeserializationStratergy | ClassLike<DeserializationStratergy>) {
+    let stratergyInstance = typeof stratergy === 'function'
+      ? new stratergy()
+      : stratergy;
+
+    const context = new DeserializationContext();
+
+    context.setStratergy(stratergyInstance);
+
+    return context;
   }
 }

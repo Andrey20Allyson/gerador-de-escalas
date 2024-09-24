@@ -193,6 +193,20 @@ export class DaysOfWork implements Clonable<DaysOfWork> {
     return daysOfWork;
   }
 
+  static fromRestrictionArray(restrictions: DayRestriction[], year: number, month: number): DaysOfWork {
+    const daysOfWork = new this(year, month);
+
+    if (restrictions.length !== daysOfWork.length) {
+      throw new Error(`Invalid input, restrictions array must be the same size of number of days in that month`);
+    }
+
+    for (let i = 0; i < daysOfWork.length; i++) {
+      daysOfWork.set(i, restrictions[i]!);
+    }
+
+    return daysOfWork;
+  }
+
   static fromDailyWorker(year: number, month: number) {
     const daysInThisMonth = getNumOfDaysInMonth(month, year);
     const daysOfWork = new this(year, month, false, true);
