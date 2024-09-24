@@ -1,9 +1,8 @@
-import clone from "clone";
 import { Query, QueryDocumentSnapshot, QuerySnapshot } from "firebase-admin/firestore";
 import fs from 'fs/promises';
 import { WorkerRegistry, WorkerRegistryInit } from "../../entities/worker-registry";
 import { ChunkNotFoundError, WorkerRegistryChunkStorage } from "./chunk-storage";
-import { firestoreWorkerRegistryRepositoryConfig } from './config' 
+import { firestoreWorkerRegistryRepositoryConfig } from './config';
 
 const CACHE_DIR = firestoreWorkerRegistryRepositoryConfig.cacheDir;
 
@@ -32,7 +31,7 @@ export class WorkerRegistryChunk {
     data: WorkerRegistryChunkData,
     readonly storage: WorkerRegistryChunkStorage,
   ) {
-    this._data = clone(data);
+    this._data = structuredClone(data);
   }
 
   index() {

@@ -110,9 +110,9 @@ export async function generate(options: GenerateCommandOptions) {
       .using(DivulgationSerializationStratergy)
       .serialize(table);
 
-    const outputFileWithExt = path.extname(outputFile) === '.xlsx'
-      ? outputFile
-      : outputFile + '.xlsx';
+    const outputFileWithExt = path.extname(outputFile) === ''
+      ? outputFile + '.xlsx'
+      : outputFile;
 
     fs.writeFile(path.resolve(outputFileWithExt), outBuffer);
   }

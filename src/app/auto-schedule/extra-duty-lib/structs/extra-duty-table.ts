@@ -1,4 +1,3 @@
-import clone from 'clone';
 import { DayOfExtraDuty, ExtraDuty, WorkerInfo } from '.';
 import { DayOfWeek, thisMonth, thisYear } from '../../utils';
 import { ExtraEventName } from './extra-events/extra-place';
@@ -6,6 +5,7 @@ import { Month } from './month';
 import { PositionLimiter } from './position-limiter';
 import { ExtraEventConfig, ExtraEventConfigBuilder } from './extra-events/extra-event-config';
 import { Day } from './day';
+import _ from 'lodash';
 
 export interface ExtraDutyTableConfig {
   readonly dutyDuration: number;
@@ -92,7 +92,7 @@ export class ExtraDutyTable implements Iterable<DayOfExtraDuty> {
   }
 
   clone(): ExtraDutyTable {
-    return clone(this);
+    return _.cloneDeep(this);
   }
 
   [Symbol.iterator](): Iterator<DayOfExtraDuty> {

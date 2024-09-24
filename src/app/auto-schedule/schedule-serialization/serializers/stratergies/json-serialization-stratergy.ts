@@ -1,4 +1,4 @@
-import { ExtraDuty, ExtraDutyTable, ExtraDutyTableEntry, WorkerInfo } from "../../../extra-duty-lib";
+import { ExtraDutyTable, ExtraDutyTableEntry, WorkerInfo } from "../../../extra-duty-lib";
 import { SerializationStratergy } from "../serialization-stratergy";
 
 export class JsonSerializationStratergy implements SerializationStratergy {
@@ -32,7 +32,7 @@ export class JsonSerializationStratergy implements SerializationStratergy {
       post: worker.config.post,
       graduation: worker.graduation,
       gender: worker.gender,
-      ordinaryDays: Array.from(worker.daysOfWork.entries()),
+      ordinaryDays: Array.from(worker.daysOfWork.values()),
       ordinaryStartHour: worker.workTime.start,
       ordinaryDurationHour: worker.workTime.duration,
       limits: Array.from(worker.limit.iter()),
@@ -40,10 +40,10 @@ export class JsonSerializationStratergy implements SerializationStratergy {
   }
 
   protected _extraDutyTableEntryIntoObject(duty: ExtraDutyTableEntry) {
-    return {
-      workerId: duty.worker.id,
-      dayIndex: duty.day.index,
-      dutyIndex: duty.duty.index,
-    };
+    return [
+      duty.day.index,
+      duty.duty.index,
+      duty.worker.id,
+    ];
   }
 }

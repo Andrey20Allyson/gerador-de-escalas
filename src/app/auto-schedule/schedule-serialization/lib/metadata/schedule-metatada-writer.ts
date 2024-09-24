@@ -1,18 +1,18 @@
-import { ExtraDutyTable, WorkerInfo } from "../../../extra-duty-lib";
+import { ExtraDutyTable } from "../../../extra-duty-lib";
 import ExcelJS from 'exceljs';
+import { JsonSerializationStratergy } from "../../serializers/stratergies/json-serialization-stratergy";
 
-class ScheduleMetadataWriter {
+export class ScheduleMetadataWriter {
   constructor(readonly workbook: ExcelJS.Workbook) { }
 
-  write(table: ExtraDutyTable, workers: WorkerInfo[]) {
-    const metadataSheet = this.workbook.addWorksheet('__META__');
+  async write(table: ExtraDutyTable) {
+    const metadataSheet = this.workbook.addWorksheet('__ASG_META__', { state: 'veryHidden' });
 
-
-
-    metadataSheet.getCell(1, 1).value = 
+    const buffer = await new JsonSerializationStratergy().execute(table);
+    metadataSheet.getCell(1, 1).value = buffer.toString('utf-8');
   }
 
   static into(workbook: ExcelJS.Workbook) {
-
+    return new ScheduleMetadataWriter(workbook);
   }
 }

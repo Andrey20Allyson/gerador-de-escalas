@@ -4,6 +4,7 @@ import { enumerate } from "../../../utils";
 import { SerializationStratergy } from "../serialization-stratergy";
 import { DayGrid, DayGridFromatter } from './utils/day-grid-formatter';
 import { WorkerDutiesBuilder } from './utils/worker-duties-builder';
+import { ScheduleMetadataWriter } from '../../lib/metadata/schedule-metatada-writer';
 
 export class DivulgationSerializationStratergy implements SerializationStratergy {
   readonly label = ['TURNO', 'NOME', 'MATRÍCULA'];
@@ -101,6 +102,8 @@ export class DivulgationSerializationStratergy implements SerializationStratergy
 
     const idCollumn = sheet.getColumn(3);
     idCollumn.width = fromExcelDim(14);
+
+    await ScheduleMetadataWriter.into(book).write(table);
 
     const arrayBuffer = await book.xlsx.writeBuffer();
 

@@ -38,7 +38,7 @@ export interface DayRestrictionArray extends Iterable<DayRestriction>, RelativeI
 }
 
 export class DaysOfWork implements Clonable<DaysOfWork> {
-  private readonly days: DayRestrictionArray;
+  private days: DayRestrictionArray;
   private numOfDaysOff: number;
 
   readonly length: number;

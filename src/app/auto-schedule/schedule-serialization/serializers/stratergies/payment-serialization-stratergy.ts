@@ -1,5 +1,6 @@
 import { ExtraDuty, ExtraDutyTable, ExtraDutyTableEntry, ExtraEventName, Graduation } from "../../../extra-duty-lib";
 import { enumerate } from "../../../utils";
+import { ScheduleMetadataWriter } from "../../lib/metadata/schedule-metatada-writer";
 import { SerializationStratergy } from "../serialization-stratergy";
 import ExcelJS from 'exceljs';
 
@@ -83,6 +84,8 @@ export class PaymentSerializationStratergy implements SerializationStratergy {
       endTimeCell.value = rowData.endTime;
       IRCell.value = rowData.individualRegistry;
     }
+
+    await ScheduleMetadataWriter.into(book).write(table);
 
     return Buffer.from(await book.xlsx.writeBuffer());
   }

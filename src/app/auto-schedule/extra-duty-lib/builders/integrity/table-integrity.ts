@@ -1,4 +1,4 @@
-import clone from "clone";
+import _ from "lodash";
 import { ExtraDutyTable } from "../../structs";
 import { IntegrityFailure } from "./inconsistences/failure";
 import { IntegrityWarning } from "./inconsistences/warning";
@@ -31,7 +31,7 @@ export class TableIntegrity {
   }
 
   clone(): TableIntegrity {
-    return clone(this);
+    return _.cloneDeep(this);
   }
 
   private _addWarningPenality(penality: number) {

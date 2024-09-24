@@ -2,7 +2,6 @@ import { z } from "zod";
 import { FirestoreInitializer } from "../../../firebase/app";
 import { FirestoreWorkerRegistryRepository } from "../../../persistence/repositories/firestore-worker-registry-repository";
 import { env } from "../../../utils/env";
-import clone from "clone";
 import { WorkerRegistry } from "../../../persistence/entities/worker-registry";
 import path from "path";
 
@@ -43,7 +42,7 @@ async function transform(transformer: Transformer) {
       continue;
     }
 
-    const mutWorker = clone(worker);
+    const mutWorker = structuredClone(worker);
 
     const transformedWorker = transformer.fn(mutWorker) as WorkerRegistry;
 
