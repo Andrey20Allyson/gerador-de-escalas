@@ -44,7 +44,7 @@ function mockWorkers(month: Month) {
   return workerMocker.array(28);
 }
 
-async function loadWorkers(year: number, month: number, inputFile: string) {
+async function loadWorkers(month: Month, inputFile: string) {
   const inputBuffer = await fs.readFile(inputFile);
 
   const initializer = new FirestoreInitializer({
@@ -61,7 +61,6 @@ async function loadWorkers(year: number, month: number, inputFile: string) {
   return parseWorkers(inputBuffer, {
     workerRegistries,
     month,
-    year,
   });
 }
 
@@ -77,9 +76,7 @@ export async function generate(options: GenerateCommandOptions) {
   const beckmarker = new Benchmarker({ metric: "sec" });
 
   let workers =
-    mode === "mock"
-      ? mockWorkers(month)
-      : await loadWorkers(month.year, month.index, inputFile);
+    mode === "mock" ? mockWorkers(month) : await loadWorkers(month, inputFile);
 
   const table = new ExtraDutyTable({
     month: month,
