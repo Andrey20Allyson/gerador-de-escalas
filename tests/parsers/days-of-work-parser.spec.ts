@@ -5,20 +5,18 @@ import { iterRange } from "src/utils";
 import { createRandomHourly } from "tests/mocking/days-of-work-parser.mock";
 
 function testParsePeriodic(index?: number) {
-  const now = new Date();
-  const month = now.getMonth();
-  const year = now.getFullYear();
+  const month = Month.now();
 
   const post = "Unknown";
   const name = "John Due";
 
   const parser = new DaysOfWorkParser({ periodic: { daySeparator: "," } });
-  const mock = createRandomHourly(new Month(year, month));
+  const mock = createRandomHourly(month);
 
   const daysOfOrdinarySet = new Set(mock.daysOfOrdinary);
 
   test(`test #${index} : Shold parse '${mock.text}'`, () => {
-    const parsed = parser.parse({ hourly: mock.text, month, post, year, name });
+    const parsed = parser.parse({ hourly: mock.text, month, post, name });
 
     for (const dayOfWork of parsed.entries()) {
       if (daysOfOrdinarySet.has(dayOfWork.day)) {
@@ -32,19 +30,17 @@ function testParsePeriodic(index?: number) {
 }
 
 function testErrorOnParsePeriodic(index?: number) {
-  const now = new Date();
-  const month = now.getMonth();
-  const year = now.getFullYear();
+  const month = Month.now();
 
   const post = "Unknown";
   const name = "John Due";
 
   const parser = new DaysOfWorkParser({ periodic: { daySeparator: ";" } });
-  const mock = createRandomHourly(new Month(year, month));
+  const mock = createRandomHourly(month);
 
   test(`test $${index} : Shold throw`, () => {
     expect(() =>
-      parser.parse({ hourly: mock.text, month, post, year, name }),
+      parser.parse({ hourly: mock.text, month, post, name }),
     ).toThrow();
   });
 }

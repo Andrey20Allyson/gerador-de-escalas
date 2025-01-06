@@ -4,6 +4,7 @@ import {
   WorkLimit,
   WorkerInfo,
   WorkerIdentifier,
+  Month,
 } from "src/lib/structs";
 import { randomIntFromInterval } from "src/utils";
 import { randomDaysOfWork } from "./days-of-work";
@@ -18,8 +19,7 @@ export type RandomWorkerMock = {
 };
 
 export interface RandomWorkerMockFactoryConfig {
-  month?: number;
-  year?: number;
+  month?: Month;
 }
 
 export class RandomWorkerMockFactory extends MockFactory<WorkerInfo> {
@@ -28,12 +28,12 @@ export class RandomWorkerMockFactory extends MockFactory<WorkerInfo> {
   }
 
   create(): WorkerInfo {
-    const { month, year } = this.config;
+    const { month } = this.config;
 
     const gender = randomGender();
     const name = randomName(gender);
     const graduation = randomGrad();
-    const daysOfWork = randomDaysOfWork({ month, year });
+    const daysOfWork = randomDaysOfWork({ month });
     const workTime = randomWorkTime(daysOfWork.isDailyWorker);
     const identifier = new WorkerIdentifier(
       randomIntFromInterval(0, 999_999),

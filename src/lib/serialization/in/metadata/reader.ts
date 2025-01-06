@@ -11,7 +11,7 @@ export class ScheduleMetadataReader {
   }
 
   async read(): Promise<ExtraDutyTable> {
-    const sheet = this.book.getSheet("__ASG_META__");
+    const sheet = this.getMetadataSheet();
     if (sheet == null) {
       throw new Error();
     }
@@ -22,6 +22,16 @@ export class ScheduleMetadataReader {
     const table = await this.deserializer.deserialize(metadataBuffer);
 
     return table;
+  }
+
+  hasMetadata() {
+    const sheet = this.getMetadataSheet();
+
+    return sheet != null;
+  }
+
+  private getMetadataSheet() {
+    return this.book.getSheet("__ASG_META__");
   }
 
   static from(book: BookHandler) {

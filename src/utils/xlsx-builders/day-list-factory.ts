@@ -74,13 +74,13 @@ export class DayListTableFactory implements TableFactory {
 
     let actualRow = 1;
 
-    const { year, month } = table.config;
+    const { month } = table.config;
 
-    const monthName = monthNames.at(month)?.toUpperCase();
+    const monthName = monthNames.at(month.index)?.toUpperCase();
     if (!monthName) throw new Error(`Invalid month index '${month}'`);
 
     const titleCell = sheet.getCell(actualRow++, 1);
-    titleCell.value = `EXTRA JIQUIÁ BRIGADA AMBIENTAL DE 1 Á ${table.width} DE ${monthName} - ${year}`;
+    titleCell.value = `EXTRA JIQUIÁ BRIGADA AMBIENTAL DE 1 Á ${table.width} DE ${monthName} - ${month.year}`;
     titleCell.style.alignment = centerHorizontalAlignment;
     titleCell.style.fill = titleFill;
     titleCell.style.font = boldFont;

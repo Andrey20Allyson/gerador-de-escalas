@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { WorkerInfo, WorkerInfoParser } from "src/lib/structs";
+import { Month, WorkerInfo, WorkerInfoParser } from "src/lib/structs";
 import { randomIntFromInterval } from "src/utils";
 
 describe(WorkerInfoParser.name, () => {
@@ -14,8 +14,10 @@ describe(WorkerInfoParser.name, () => {
         worker = parser.parse({
           grad: "CGM",
           hourly: licenseStr,
-          month: randomIntFromInterval(0, 11),
-          year: randomIntFromInterval(2000, 3000),
+          month: new Month(
+            randomIntFromInterval(2000, 3000),
+            randomIntFromInterval(0, 11),
+          ),
           name: "John Due",
           post: licenseStr,
           workerId: "14242-43",

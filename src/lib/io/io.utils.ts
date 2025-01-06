@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx";
-import { ExtraDutyTable, Holidays, WorkerInfo } from "src/lib/structs";
+import { ExtraDutyTable, Holidays, Month, WorkerInfo } from "src/lib/structs";
 import { WorkerInfoParser } from "src/lib/structs/worker-info/parser";
 import { Result, ResultError, ResultType } from "src/utils";
 import { BookHandler, CellHandler, LineHander } from "src/utils/xlsx-handlers";
@@ -42,8 +42,7 @@ export function scrappeWorkersFromBook(
 }
 
 export interface ScrappeWorkersOptions {
-  year: number;
-  month: number;
+  month: Month;
   sheetName?: string;
   holidays?: Holidays;
   workerRegistries?: WorkerRegistryMap;
@@ -116,18 +115,9 @@ export function safeScrappeWorkersFromBook(
         grad: gradCell.value,
         post: postCell.value ?? "",
         month: options.month,
-        year: options.year,
       });
 
       if (!worker) continue;
-
-      if (
-        options.month &&
-        options.holidays &&
-        worker.daysOfWork.isDailyWorker
-      ) {
-        worker.daysOfWork.addHolidays(options.holidays, options.month);
-      }
 
       worker.addRules(workerRegistry?.rules);
 
@@ -180,8 +170,7 @@ export function scrappeTable(
   const year = sheet.at("c", 6).as("number").value;
 
   const table = new ExtraDutyTable({
-    month,
-    year,
+    month: new Month(year, month),
   });
 
   const workerMap = WorkerInfo.mapFrom(workers);

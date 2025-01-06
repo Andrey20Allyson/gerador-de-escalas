@@ -16,7 +16,7 @@ describe(InspAssignmentRule.name, () => {
   });
 
   test(`Shold retrun false if is trying to assign a 'insp' in a duty that already have a 'insp'`, () => {
-    const { duty, worker } = mock({
+    const { duty, worker, table } = mock({
       worker: {
         graduation: "insp",
       },
@@ -24,32 +24,32 @@ describe(InspAssignmentRule.name, () => {
 
     duty.add(worker);
 
-    const inspWorker = mock.worker({ graduation: "insp" });
+    const inspWorker = mock.worker({ graduation: "insp", table });
 
     expect(checker.canAssign(inspWorker, duty)).toBeFalsy();
   });
 
   test(`Shold return true if is trying to assign a 'insp' in a duty that only have non 'insp'`, () => {
-    const { duty, worker } = mock({
+    const { duty, worker, table } = mock({
       worker: {
         graduation: "insp",
       },
     });
 
-    duty.add(mock.worker({ graduation: "sub-insp" }));
-    duty.add(mock.worker({ graduation: "gcm" }));
+    duty.add(mock.worker({ graduation: "sub-insp", table }));
+    duty.add(mock.worker({ graduation: "gcm", table }));
 
     expect(checker.canAssign(worker, duty)).toBeTruthy();
   });
 
   test(`Shold return true if is trying to assing a non 'insp' in a duty that have a 'insp'`, () => {
-    const { duty, worker } = mock({
+    const { duty, worker, table } = mock({
       worker: {
         graduation: "sub-insp",
       },
     });
 
-    duty.add(mock.worker({ graduation: "insp" }));
+    duty.add(mock.worker({ graduation: "insp", table }));
 
     expect(checker.canAssign(worker, duty)).toBeTruthy();
   });

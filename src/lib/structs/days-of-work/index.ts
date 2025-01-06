@@ -7,6 +7,7 @@ import {
 import type { Holidays } from "../holidays";
 import type { Clonable } from "../worker-info";
 import type { LicenseInterval } from "./license-interval";
+import { Month } from "../month";
 
 export class DaySearch {
   constructor(
@@ -51,12 +52,11 @@ export class DaysOfWork implements Clonable<DaysOfWork> {
   readonly length: number;
 
   constructor(
-    readonly year: number,
-    readonly month: number,
+    readonly month: Month,
     startWorking = false,
     readonly isDailyWorker: boolean = false,
   ) {
-    const arrayLenth = getNumOfDaysInMonth(month, year);
+    const arrayLenth = month.getNumOfDays();
 
     this.days = new Uint8Array(arrayLenth).fill(
       startWorking ? DayRestriction.ORDINARY_WORK : DayRestriction.NONE,
@@ -68,12 +68,7 @@ export class DaysOfWork implements Clonable<DaysOfWork> {
   }
 
   clone() {
-    const clone = new DaysOfWork(
-      this.year,
-      this.month,
-      false,
-      this.isDailyWorker,
-    );
+    const clone = new DaysOfWork(this.month, false, this.isDailyWorker);
 
     for (let i = 0; i < this.days.length; i++) {
       clone.set(i, this.get(i));
@@ -159,7 +154,10 @@ export class DaysOfWork implements Clonable<DaysOfWork> {
   }
 
   applyLicenseInterval(licenseInterval: LicenseInterval) {
-    for (const day of licenseInterval.iterDaysInMonth(this.year, this.month)) {
+    for (const day of licenseInterval.iterDaysInMonth(
+      this.month.year,
+      this.month.index,
+    )) {
       this.license(day);
     }
   }
@@ -203,12 +201,12 @@ export class DaysOfWork implements Clonable<DaysOfWork> {
     return this.days.at(day) ?? DayRestriction.NONE;
   }
 
-  static fromAllDays(year: number, month: number) {
-    return new this(year, month, true);
+  static fromAllDays(month: Month) {
+    return new this(month, true);
   }
 
-  static fromDays(days: number[], year: number, month: number): DaysOfWork {
-    const daysOfWork = new this(year, month);
+  static fromDays(days: number[], month: Month): DaysOfWork {
+    const daysOfWork = new this(month);
 
     for (const day of days) {
       daysOfWork.work(day);
@@ -219,10 +217,9 @@ export class DaysOfWork implements Clonable<DaysOfWork> {
 
   static fromRestrictionArray(
     restrictions: DayRestriction[],
-    year: number,
-    month: number,
+    month: Month,
   ): DaysOfWork {
-    const daysOfWork = new this(year, month);
+    const daysOfWork = new this(month);
 
     if (restrictions.length !== daysOfWork.length) {
       throw new Error(
@@ -237,11 +234,11 @@ export class DaysOfWork implements Clonable<DaysOfWork> {
     return daysOfWork;
   }
 
-  static fromDailyWorker(year: number, month: number) {
-    const daysInThisMonth = getNumOfDaysInMonth(month, year);
-    const daysOfWork = new this(year, month, false, true);
+  static fromDailyWorker(month: Month) {
+    const daysInThisMonth = month.getNumOfDays();
+    const daysOfWork = new this(month, false, true);
 
-    const firstMonday = firstMondayFromYearAndMonth(year, month);
+    const firstMonday = month.getFirstMonday();
 
     for (let i = 0; i < daysInThisMonth; i++) {
       if (isBusinessDay(firstMonday, i)) {

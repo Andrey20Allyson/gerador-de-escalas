@@ -5,6 +5,7 @@ import {
   ExtraEventName,
   WorkerInfo,
   DEFAULT_MONTH_PARSER,
+  Month,
 } from "src/lib/structs";
 import { DefaultTableIntegrityAnalyser } from "src/lib/builders/integrity";
 import { FirestoreInitializer } from "src/infra/firebase";
@@ -35,10 +36,9 @@ export type GenerateCommandOptions = z.infer<typeof generateOptionsSchema>;
 
 const KEY_DECRYPT_PASSWORD = env("KEY_DECRYPT_PASSWORD");
 
-function mockWorkers(year: number, month: number) {
+function mockWorkers(month: Month) {
   const workerMocker: MockFactory<WorkerInfo> = new RandomWorkerMockFactory({
     month,
-    year,
   });
 
   return workerMocker.array(28);
@@ -78,12 +78,11 @@ export async function generate(options: GenerateCommandOptions) {
 
   let workers =
     mode === "mock"
-      ? mockWorkers(month.year, month.index)
+      ? mockWorkers(month)
       : await loadWorkers(month.year, month.index, inputFile);
 
   const table = new ExtraDutyTable({
-    year: month.year,
-    month: month.index,
+    month: month,
   });
 
   const tableAssignBenchmark = beckmarker.start("talbe assign");

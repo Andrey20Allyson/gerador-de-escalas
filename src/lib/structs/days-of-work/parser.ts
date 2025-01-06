@@ -1,12 +1,12 @@
 import { DaysOfWork } from ".";
+import { Month } from "../month";
 import { LicenseInterval } from "./license-interval";
 
 export interface DaysOfWorkParseData {
   name?: string;
   hourly: string;
   post: string;
-  year: number;
-  month: number;
+  month: Month;
   license?: LicenseInterval | null;
 }
 
@@ -42,10 +42,10 @@ export class DaysOfWorkParser implements IDaysOfWorkParser {
   }
 
   parse(data: DaysOfWorkParseData): DaysOfWork {
-    const { hourly, month, year, license } = data;
+    const { hourly, month, license } = data;
 
     if (license != null) {
-      const daysOfWork = DaysOfWork.fromDailyWorker(year, month);
+      const daysOfWork = DaysOfWork.fromDailyWorker(month);
 
       daysOfWork.applyLicenseInterval(license);
 
@@ -53,7 +53,7 @@ export class DaysOfWorkParser implements IDaysOfWorkParser {
     }
 
     const daysOfWork = this.isDailyWorker(hourly)
-      ? DaysOfWork.fromDailyWorker(year, month)
+      ? DaysOfWork.fromDailyWorker(month)
       : this.parsePeriodic(data);
 
     return daysOfWork;
@@ -64,7 +64,7 @@ export class DaysOfWorkParser implements IDaysOfWorkParser {
   }
 
   parsePeriodic(data: DaysOfWorkParseData): DaysOfWork {
-    const { name = "unknown", hourly, year, month } = data;
+    const { name = "unknown", hourly, month } = data;
 
     const matches = this.daysOfWorkRegExp.exec(hourly);
     if (!matches) {
@@ -80,7 +80,7 @@ export class DaysOfWorkParser implements IDaysOfWorkParser {
       .split(this.periodic.daySeparator)
       .map((val) => this.parseToNumber(val) - 1);
 
-    return DaysOfWork.fromDays(days, year, month);
+    return DaysOfWork.fromDays(days, month);
   }
 
   parseToNumber(value: string): number {

@@ -12,13 +12,14 @@ import { WorkTime } from "../work-time";
 import { WorkTimeParser } from "../work-time/parser";
 import { WorkerIdentifier } from "../worker-identifier";
 import { WorkerIdentifierParser } from "../worker-identifier/parser";
+import { Month } from "../month";
 
 export interface WorkerInfoParseData {
+  month: Month;
+
   name: string;
   post: string;
   grad: string;
-  year: number;
-  month: number;
   hourly: string;
   gender?: string;
   workerId: string;

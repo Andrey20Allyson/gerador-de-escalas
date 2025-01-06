@@ -56,11 +56,11 @@ export class MainTableFactory implements TableFactory {
 
     const yearCell = sheet.getCell("C6");
 
-    yearCell.value = table.config.year;
+    yearCell.value = table.config.month.year;
 
     const monthCell = sheet.getCell("C7");
 
-    monthCell.value = table.config.month + 1;
+    monthCell.value = table.config.month.index + 1;
 
     for (const [i, rowData] of enumerate(iterRows(table))) {
       const row = sheet.getRow(i + 15);

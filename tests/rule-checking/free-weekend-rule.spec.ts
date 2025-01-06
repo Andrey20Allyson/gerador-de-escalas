@@ -1,8 +1,8 @@
-import { describe, expect, test } from "vitest";
 import { FreeWeekendAssignmentRule } from "src/lib/builders/rule-checking/rules/free-weekend-rule";
-import { mock } from "../mocking/mocker";
 import { DaysOfWork, WorkTime } from "src/lib/structs";
 import { Month } from "src/lib/structs/month";
+import { describe, expect, test } from "vitest";
+import { mock } from "../mocking/mocker";
 
 describe(FreeWeekendAssignmentRule, () => {
   test(`Should block assignment of 24h workers on weekend days if he had ordinary on past thursday or friday`, () => {
@@ -17,7 +17,8 @@ describe(FreeWeekendAssignmentRule, () => {
 
     const denitedWorker1 = mock.worker({
       workTime: new WorkTime(7, 24),
-      daysOfWork: DaysOfWork.fromDays([14], month.year, month.index),
+      daysOfWork: DaysOfWork.fromDays([14], month),
+      table,
     });
 
     expect(rule.canAssign(denitedWorker1, dutyAtSaturday)).toBeFalsy();
@@ -25,7 +26,8 @@ describe(FreeWeekendAssignmentRule, () => {
 
     const denitedWorker2 = mock.worker({
       workTime: new WorkTime(7, 24),
-      daysOfWork: DaysOfWork.fromDays([15], month.year, month.index),
+      daysOfWork: DaysOfWork.fromDays([15], month),
+      table,
     });
 
     expect(rule.canAssign(denitedWorker2, dutyAtSaturday)).toBeFalsy();
@@ -33,7 +35,8 @@ describe(FreeWeekendAssignmentRule, () => {
 
     const allowedWorker = mock.worker({
       workTime: new WorkTime(7, 24),
-      daysOfWork: DaysOfWork.fromDays([9, 13], month.year, month.index),
+      daysOfWork: DaysOfWork.fromDays([9, 13], month),
+      table,
     });
 
     expect(rule.canAssign(allowedWorker, dutyAtSaturday)).toBeTruthy();

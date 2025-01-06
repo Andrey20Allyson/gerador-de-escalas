@@ -109,8 +109,8 @@ export function* iterRows(table: ExtraDutyTable): Iterable<ExtraXLSXTableRow> {
       const startTime = (entry.duty.start % 24) / 24;
       const endTime = (entry.duty.end % 24) / 24;
       const date = new Date(
-        entry.day.config.year,
-        entry.day.config.month,
+        entry.day.config.month.year,
+        entry.day.config.month.index,
         entry.day.index + 1,
       );
 

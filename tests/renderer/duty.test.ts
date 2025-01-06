@@ -8,7 +8,7 @@ import {
   TableEditorController,
 } from "src/renderer/state/controllers/editor/table";
 import { DutySearcher } from "src/renderer/state/controllers/editor/searchers/duty";
-import { ExtraEventName } from "src/lib/structs";
+import { ExtraEventName, Month } from "src/lib/structs";
 
 function mockDuties(numOfDays: number, dutiesPerDay: number): DutyData[] {
   const duties: DutyData[] = [];
@@ -53,9 +53,8 @@ function mockTable(): TableData {
     config: {
       workerCapacity: 5,
       dutyCapacity: 3,
-      month: 11,
+      month: new Month(2023, 11),
       numOfDays,
-      year: 2023,
       dutyDuration: 12,
       dutyMinDistance: 4,
       // dutyInterval: 12,
@@ -90,6 +89,6 @@ test("#next method shild return next duty", () => {
 
   const nextDutyController = dutyController.next();
 
-  expect(nextDutyController.duty.date).toEqual(1);
+  expect(nextDutyController.duty.date.index).toEqual(1);
   expect(nextDutyController.duty.index).toEqual(0);
 });

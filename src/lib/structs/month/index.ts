@@ -8,6 +8,7 @@ import {
   thisYear,
 } from "src/utils";
 import { Year } from "../year";
+import { Day } from "../day";
 
 export class Month {
   private _numOfDays: number | null = null;
@@ -41,6 +42,14 @@ export class Month {
       this._firstMonday = firstMondayFromYearAndMonth(this.year, this.index);
 
     return this._firstMonday;
+  }
+
+  getDay(index: number) {
+    return new Day(this.year, this.index, index);
+  }
+
+  getLastDay() {
+    return new Day(this.year, this.index, this.getNumOfDays() - 1);
   }
 
   *iterWeekends() {

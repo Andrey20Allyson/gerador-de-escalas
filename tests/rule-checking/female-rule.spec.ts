@@ -16,10 +16,10 @@ describe(FemaleAssignmentRule.name, () => {
   });
 
   test(`Shold return true if duty have a 'male' and is trying assign a 'female'`, () => {
-    const { duty } = mock();
+    const { duty, table } = mock();
 
-    const maleWorker = mock.worker({ gender: "male" });
-    const femaleWorker = mock.worker({ gender: "female" });
+    const maleWorker = mock.worker({ gender: "male", table });
+    const femaleWorker = mock.worker({ gender: "female", table });
 
     duty.add(maleWorker);
 

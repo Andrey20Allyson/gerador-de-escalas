@@ -36,8 +36,7 @@ export class JsonDeserializationStratergy implements Deserializer {
 
     const daysOfWork = DaysOfWork.fromRestrictionArray(
       object.ordinaryDays,
-      month.year,
-      month.index,
+      month,
     );
 
     const worker = new WorkerInfo({

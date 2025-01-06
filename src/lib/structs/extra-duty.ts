@@ -30,10 +30,7 @@ export class ExtraDuty implements Iterable<[string, WorkerInfo]> {
     this.end = this.start + this.config.dutyDuration;
     this.offTimeEnd = this.end + this.config.dutyOffTimeToOrdinary;
     this._isNightly = this.start >= 18 || this.start < 7;
-    this.firstMonday = firstMondayFromYearAndMonth(
-      this.config.year,
-      this.config.month,
-    );
+    this.firstMonday = this.config.month.getFirstMonday();
     this.weekDay = dayOfWeekFrom(this.firstMonday, this.day.index);
   }
 

@@ -7,9 +7,9 @@ import { Serializer } from "../serializer";
 
 export class JsonSerializationStratergy implements Serializer {
   async serialize(table: ExtraDutyTable): Promise<Buffer> {
-    const workers = table
-      .workers()
-      .map((worker) => this._workerIntoObject(worker));
+    const workers = Array.from(table.workers.values(), (worker) => {
+      return this._workerIntoObject(worker);
+    });
 
     const schedule = Array.from(table.entries()).map((entry) =>
       this._extraDutyTableEntryIntoObject(entry),

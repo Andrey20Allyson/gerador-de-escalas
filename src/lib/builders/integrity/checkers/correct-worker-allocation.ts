@@ -31,7 +31,7 @@ export class CorrectWorkerAllocationChecker implements IntegrityChecker {
 
     if (!isWorkerInsuficient) return;
 
-    for (const worker of integrity.table.workers()) {
+    for (const worker of integrity.table.workers.values()) {
       if (worker.daysOfWork.hasDaysOff() === false) continue;
       if (integrity.table.limiter.positionsLeftOf(worker) <= 0) continue;
 

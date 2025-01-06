@@ -13,8 +13,7 @@ import _ from "lodash";
 export interface ExtraDutyTableConfig {
   readonly dutyDuration: number;
   readonly firstDutyTime: number;
-  readonly month: number;
-  readonly year: number;
+  readonly month: Month;
   readonly extraEvents: Record<string, ExtraEventConfig>;
   dutyOffTimeToOrdinary: number;
   dutyPositionSize: number;
@@ -32,6 +31,7 @@ export interface ExtraDutyTableEntry {
 export class ExtraDutyTable implements Iterable<DayOfExtraDuty> {
   private _savedConfig: ExtraDutyTableConfig | null = null;
   readonly days: readonly DayOfExtraDuty[];
+  readonly workers: Map<WorkerInfo["id"], WorkerInfo>;
   readonly config: ExtraDutyTableConfig;
   readonly limiter: PositionLimiter;
   readonly width: number;
@@ -40,12 +40,23 @@ export class ExtraDutyTable implements Iterable<DayOfExtraDuty> {
   constructor(config?: Partial<ExtraDutyTableConfig>) {
     this.config = ExtraDutyTable.createConfigFrom(config);
 
-    this.month = new Month(this.config.year, this.config.month);
+    this.month = this.config.month;
     this.width = this.month.getNumOfDays() + 1;
     this.days = DayOfExtraDuty.daysFrom(this);
     this.limiter = new PositionLimiter(this);
+    this.workers = new Map();
 
     this._validateConfig();
+  }
+
+  addWorker(worker: WorkerInfo) {
+    this.workers.set(worker.id, worker);
+  }
+
+  addWorkers(workers: Iterable<WorkerInfo>) {
+    for (const worker of workers) {
+      this.addWorker(worker);
+    }
   }
 
   *iterDuties(): Iterable<ExtraDuty> {
@@ -113,16 +124,6 @@ export class ExtraDutyTable implements Iterable<DayOfExtraDuty> {
     }
   }
 
-  workers() {
-    const workersSet = new Set<WorkerInfo>();
-
-    for (const entry of this.entries()) {
-      workersSet.add(entry.worker);
-    }
-
-    return Array.from(workersSet);
-  }
-
   clear(place?: string) {
     for (const day of this) {
       day.clear(place);
@@ -188,8 +189,7 @@ export class ExtraDutyTable implements Iterable<DayOfExtraDuty> {
       dutyDuration: partialConfig?.dutyDuration ?? 6,
       dutyOffTimeToOrdinary: partialConfig?.dutyOffTimeToOrdinary ?? 12,
       dutyCapacity: partialConfig?.dutyCapacity ?? 2,
-      month: partialConfig?.month ?? thisMonth,
-      year: partialConfig?.year ?? thisYear,
+      month: partialConfig?.month ?? Month.now(),
       extraEvents: {
         [ExtraEventName.JARDIM_BOTANICO_DAYTIME]:
           ExtraEventConfigBuilder.default({

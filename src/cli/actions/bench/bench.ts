@@ -44,10 +44,10 @@ export type BenchActionOptions = z.infer<typeof benchOptionsSchema>;
 export function bench(options: BenchActionOptions) {
   const { times, weight } = options;
 
-  const { year, index: month } = Month.now();
+  const month = Month.now();
 
-  const table = new ExtraDutyTable({ month, year, dutyMinDistance: 6 });
-  const workers = new RandomWorkerMockFactory({ year, month }).array(27);
+  const table = new ExtraDutyTable({ month, dutyMinDistance: 6 });
+  const workers = new RandomWorkerMockFactory({ month }).array(27);
 
   let ruleStack = new AssignmentRuleStack([
     new DutyLimitAssignmentRule(),

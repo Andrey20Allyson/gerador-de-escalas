@@ -83,7 +83,7 @@ describe(OrdinaryAssignmentRule.name, () => {
     const { table, worker } = mock({
       worker: {
         workTime: new WorkTime(7, 24),
-        daysOfWork: DaysOfWork.fromDays([5], month.year, month.index),
+        daysOfWork: DaysOfWork.fromDays([5], month),
       },
       month,
     });

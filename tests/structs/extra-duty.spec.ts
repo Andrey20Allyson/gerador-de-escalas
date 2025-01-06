@@ -5,11 +5,11 @@ import { mock } from "../mocking/mocker";
 describe(ExtraDuty.name, () => {
   describe(ExtraDuty.prototype.getSize.name, () => {
     test(`Shold return the number of workers in the duty`, () => {
-      const { duty } = mock();
+      const { duty, table } = mock();
 
-      duty.add(mock.worker());
-      duty.add(mock.worker());
-      duty.add(mock.worker());
+      duty.add(mock.worker({ table }));
+      duty.add(mock.worker({ table }));
+      duty.add(mock.worker({ table }));
 
       expect(duty.getSize()).toStrictEqual(3);
     });

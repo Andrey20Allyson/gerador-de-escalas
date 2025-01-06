@@ -1,43 +1,44 @@
-import { describe, expect, test } from "vitest";
-import { DaysOfWork } from "src/lib/structs";
 import { LicenseAssignmentRule } from "src/lib/builders/rule-checking/rules";
-import { Day } from "src/lib/structs/day";
+import { DaysOfWork } from "src/lib/structs";
 import { LicenseInterval } from "src/lib/structs/days-of-work/license-interval";
+import { describe, expect, test } from "vitest";
 import { mock } from "../mocking/mocker";
 
 describe(LicenseAssignmentRule.name, () => {
   const checker = new LicenseAssignmentRule();
 
   test(`Shold return false if worker has at license at same day of duty`, () => {
-    const { duty } = mock();
-    const { year, month } = duty.config;
+    const { duty, table } = mock();
+    const { month } = duty.config;
 
     const worker = mock.worker({
-      daysOfWork: new DaysOfWork(year, month, false, false),
+      daysOfWork: new DaysOfWork(month, false, false),
+      table,
     });
 
     worker.daysOfWork.applyLicenseInterval(
-      new LicenseInterval(null, Day.fromLastOf(year, month)),
+      new LicenseInterval(null, month.getLastDay()),
     );
 
     expect(checker.canAssign(worker, duty)).toBeFalsy();
   });
 
   test(`Shold return true if duty don't collides with worker license`, () => {
-    const { duty } = mock({
+    const { duty, table } = mock({
       duty: {
         dayIndex: 12,
       },
     });
 
-    const { year, month } = duty.config;
+    const { month } = duty.config;
 
     const worker = mock.worker({
-      daysOfWork: new DaysOfWork(year, month, false, false),
+      daysOfWork: new DaysOfWork(month, false, false),
+      table,
     });
 
     worker.daysOfWork.applyLicenseInterval(
-      new LicenseInterval(null, new Day(year, month, 10)),
+      new LicenseInterval(null, month.getDay(10)),
     );
 
     expect(checker.canAssign(worker, duty)).toBeTruthy();

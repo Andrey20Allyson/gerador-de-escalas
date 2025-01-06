@@ -57,11 +57,11 @@ export class PaymentSerializationStratergy implements Serializer {
 
     const yearCell = sheet.getCell("C6");
 
-    yearCell.value = table.config.year;
+    yearCell.value = table.month.year;
 
     const monthCell = sheet.getCell("C7");
 
-    monthCell.value = table.config.month + 1;
+    monthCell.value = table.month.index + 1;
 
     for (const [i, rowData] of enumerate(iterRows(table))) {
       const row = sheet.getRow(i + 15);
@@ -199,8 +199,8 @@ function* iterRows(table: ExtraDutyTable): Iterable<ExtraXLSXTableRow> {
       const startTime = (entry.duty.start % 24) / 24;
       const endTime = (entry.duty.end % 24) / 24;
       const date = new Date(
-        entry.day.config.year,
-        entry.day.config.month,
+        entry.day.month.year,
+        entry.day.month.index,
         entry.day.index + 1,
       );
 

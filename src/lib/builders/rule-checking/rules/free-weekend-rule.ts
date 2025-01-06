@@ -10,7 +10,7 @@ export class FreeWeekendAssignmentRule implements AssignmentRule {
   ): boolean {
     const prevFriday = day.seekPrevWeekday(DayOfWeek.FRIDAY);
     const prevThursday = prevFriday.prev();
-    const currentMonth = worker.daysOfWork.month;
+    const currentMonth = worker.daysOfWork.month.index;
 
     if (prevFriday.month === currentMonth) {
       const worksOnFriday = worker.daysOfWork.workOn(prevFriday.index);
@@ -32,10 +32,17 @@ export class FreeWeekendAssignmentRule implements AssignmentRule {
   }
 
   canAssign(worker: WorkerInfo, duty: ExtraDuty): boolean {
-    if (worker.workTime.duration !== 24) return true;
+    const isntFullDayWorker = worker.workTime.duration !== 24;
+
+    if (isntFullDayWorker) {
+      return true;
+    }
 
     const isWeekend = duty.day.date.isWeekEnd();
-    if (!isWeekend) return true;
+
+    if (!isWeekend) {
+      return true;
+    }
 
     const hasOrdinaryOnPrevThursdayOrFriday =
       this._hasOrdinaryOnPrevThursdayOrFriday(worker, duty.day.date);

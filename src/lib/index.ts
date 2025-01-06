@@ -1,4 +1,4 @@
-import { ExtraDutyTable, Holidays, WorkerInfo } from "src/lib/structs";
+import { ExtraDutyTable, Holidays, Month, WorkerInfo } from "src/lib/structs";
 import { JQScheduleBuilder } from "./builders/jq-schedule-builder";
 import {
   parseTable,
@@ -22,8 +22,7 @@ export function generate(
   data: Buffer,
   options: GenerateOptions = {},
 ): Promise<Buffer> {
-  const month = options.month ?? getMonth();
-  const year = options.year ?? getYear();
+  const month = options.month ?? Month.now();
 
   const workersParseProcess = options.benchmarker?.start("parse workers");
   const workers = parseWorkers(data, {
@@ -31,7 +30,6 @@ export function generate(
     sheetName: options.inputSheetName,
     holidays: options.holidays,
     month,
-    year,
   });
   workersParseProcess?.end();
 
@@ -39,9 +37,8 @@ export function generate(
 }
 
 export interface GenerateFromWorkersOptions extends GenerateFromTableOptions {
-  month?: number;
+  month?: Month;
   tries?: number;
-  year?: number;
 
   onAnalyse?: (message: string) => void;
 }
@@ -50,13 +47,13 @@ export function generateFromWorkers(
   workers: WorkerInfo[],
   options: GenerateFromWorkersOptions = {},
 ): Promise<Buffer> {
-  const month = options.month ?? getMonth();
-  const year = options.year ?? getYear();
-
   const assignArrayProcess = options.benchmarker?.start(
     "assign workers to table",
   );
-  const table = new ExtraDutyTable({ month, year });
+
+  const table = new ExtraDutyTable({
+    month: options.month,
+  });
 
   new JQScheduleBuilder(options.tries ?? 7000).build(table, workers);
 

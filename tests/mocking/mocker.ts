@@ -16,20 +16,20 @@ export interface DutyMockOptions {
 
 export interface WorkerMockOptions extends Partial<WorkerInfoConfig> {
   month?: Month;
+  table: ExtraDutyTable;
 }
 
 export interface WorkerAndDutyMockOptions {
   month?: Month;
   table?: Partial<ExtraDutyTableConfig>;
-  worker?: WorkerMockOptions;
+  worker?: Omit<WorkerMockOptions, "table">;
   duty?: DutyMockOptions;
 }
 
 export function mock(options?: WorkerAndDutyMockOptions) {
   const month = options?.month ?? mock.month();
   const table = new ExtraDutyTable({
-    month: month.index,
-    year: month.year,
+    month,
     ...options?.table,
   });
 
@@ -38,7 +38,8 @@ export function mock(options?: WorkerAndDutyMockOptions) {
     .getDuty(options?.duty?.dutyIndex ?? 0);
 
   const worker = mock.worker({
-    month: new Month(table.config.year, table.config.month),
+    month: table.month,
+    table,
     ...options?.worker,
   });
 
@@ -52,10 +53,10 @@ export module mock {
     return new Month(getYear(), 0);
   }
 
-  export function worker(options?: WorkerMockOptions): WorkerInfo {
+  export function worker(options: WorkerMockOptions): WorkerInfo {
     const month = options?.month ?? mock.month();
 
-    return new WorkerInfo({
+    const worker = new WorkerInfo({
       name: "John Due",
       post: "N/A",
       graduation: "gcm",
@@ -63,8 +64,12 @@ export module mock {
       individualId: 0,
       gender: "N/A",
       workTime: new WorkTime(7, 12),
-      daysOfWork: DaysOfWork.fromDays([], month.year, month.index),
+      daysOfWork: DaysOfWork.fromDays([], month),
       ...options,
     });
+
+    options.table.addWorker(worker);
+
+    return worker;
   }
 }
