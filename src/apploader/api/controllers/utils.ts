@@ -1,10 +1,13 @@
-import { io } from "src/lib";
+import { BookHandler } from "src/utils/xlsx-handlers";
 import { AppResponse } from "../mapping/response";
 import { IpcMappingFactory, IpcMapping } from "../mapping/utils";
+import fs from "node:fs/promises";
 
 export class UtilsHandler implements IpcMappingFactory {
   async getSheetNames(_: IpcMapping.IpcEvent, filePath: string) {
-    const sheetNames = await io.loadSheetNames(filePath);
+    const buffer = await fs.readFile(filePath);
+    const book = BookHandler.parse(buffer);
+    const sheetNames = book.sheetNames;
 
     return AppResponse.ok(sheetNames);
   }

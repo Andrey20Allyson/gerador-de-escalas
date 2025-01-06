@@ -165,9 +165,10 @@ export class TableFactory {
     };
   }
 
-  toDTO(table: ExtraDutyTable, workers: WorkerInfo[]): TableData {
+  toDTO(table: ExtraDutyTable): TableData {
     const tableData = this.createTableData(table);
 
+    const workers = table.getWorkerList();
     const workerDataMap: Map<number, WorkerData> = new Map();
 
     for (const worker of workers) {
@@ -202,11 +203,8 @@ export class TableFactory {
     return tableData;
   }
 
-  fromDTO(
-    tableData: TableData,
-    table: ExtraDutyTable,
-    workers: WorkerInfo[],
-  ): ExtraDutyTable {
+  fromDTO(tableData: TableData, table: ExtraDutyTable): ExtraDutyTable {
+    const workers = table.getWorkerList();
     table.clear();
 
     const dutyDataMap = new Map(

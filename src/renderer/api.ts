@@ -1,4 +1,4 @@
-import { APIHandler } from "../apploader/api/ipc";
+import { APIHandler } from "../apploader/api/controllers";
 import { IpcInvokerProxyFactory } from "../apploader/api/mapping/renderer";
 
 const factory = new IpcInvokerProxyFactory((path, ...args) => {

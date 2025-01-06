@@ -1,9 +1,12 @@
-import { ExtraDutyTable, WorkerInfo } from "src/lib/structs";
-import fs from "fs/promises";
+import { ExtraDutyTable, Month } from "src/lib/structs";
+import fs from "node:fs/promises";
 import { AppAssets } from "../assets";
 import { TableData, TableFactory } from "../table-reactive-edition/table";
-import { ReadTablePayload, parseExtraTable, readTables } from "../utils/table";
-import { ErrorCode, AppError } from "../mapping/error";
+import {
+  ErrorCode,
+  AppError,
+  DeserializationErrorCode,
+} from "../mapping/error";
 import { AppResponse } from "../mapping/response";
 import { IpcMappingFactory, IpcMapping } from "../mapping/utils";
 import {
@@ -11,21 +14,35 @@ import {
   PaymentSerializationStratergy,
   Serializer,
 } from "src/lib/serialization";
+import { WorkerRegistryRepository } from "src/lib/persistence/entities";
+import {
+  DeserializeWithoutMetadataAndMonthError,
+  OrdinaryDeserializer,
+} from "src/lib/serialization/in/impl/ordinary-deserializer";
 
 export interface EditorHandlerFactoryData {
   table: ExtraDutyTable;
-  workers: WorkerInfo[];
 }
 
 export type SerializationMode = "payment" | "divugation" | "day-list";
 
+export interface LoadOrdinaryPayload {
+  path: string;
+  month: number;
+  year: number;
+}
+
 export class EditorHandler implements IpcMappingFactory {
   readonly tableFactory = new TableFactory();
+  readonly workerRegistryRepository: WorkerRegistryRepository;
 
   constructor(
     readonly assets: AppAssets,
     public data?: EditorHandlerFactoryData,
-  ) {}
+  ) {
+    this.workerRegistryRepository =
+      this.assets.services.workerRegistry.repository;
+  }
 
   clear() {
     delete this.data;
@@ -33,18 +50,32 @@ export class EditorHandler implements IpcMappingFactory {
 
   async load(
     _: IpcMapping.IpcEvent,
-    payload: ReadTablePayload,
-  ): Promise<AppResponse<void, ErrorCode.INVALID_INPUT>> {
+    path: string,
+  ): Promise<
+    AppResponse<
+      void,
+      ErrorCode.INVALID_INPUT | DeserializationErrorCode.INEXISTENT_METADATA
+    >
+  > {
     try {
-      const tables = await readTables(payload, fs);
-      const { workerRegistryMap } = this.assets;
+      const buffer = await fs.readFile(path);
 
-      const { table, workers } = parseExtraTable({ tables, workerRegistryMap });
+      const deserializer = new OrdinaryDeserializer();
 
-      this.data = { table, workers };
+      const table = await deserializer.deserialize(buffer);
+
+      this.data = { table };
 
       return AppResponse.ok();
     } catch (error) {
+      if (error instanceof DeserializeWithoutMetadataAndMonthError) {
+        return AppResponse.error(
+          error.message,
+          DeserializationErrorCode.INEXISTENT_METADATA,
+          error.stack,
+        );
+      }
+
       const appError = AppError.parse(error);
 
       return AppResponse.error(
@@ -55,6 +86,24 @@ export class EditorHandler implements IpcMappingFactory {
     }
   }
 
+  async loadOrdinary(
+    _: IpcMapping.IpcEvent,
+    payload: LoadOrdinaryPayload,
+  ): Promise<AppResponse<void, ErrorCode.UNKNOW>> {
+    const buffer = await fs.readFile(payload.path);
+
+    const deserializer = new OrdinaryDeserializer({
+      month: new Month(payload.year, payload.month),
+      workerRegistryRepository: this.workerRegistryRepository,
+    });
+
+    const table = await deserializer.deserialize(buffer);
+
+    this.data = { table };
+
+    return AppResponse.ok();
+  }
+
   createEditor(): AppResponse<TableData, ErrorCode.DATA_NOT_LOADED> {
     const { data } = this;
     if (!data)
@@ -63,9 +112,9 @@ export class EditorHandler implements IpcMappingFactory {
         ErrorCode.DATA_NOT_LOADED,
       );
 
-    const { table, workers } = data;
+    const { table } = data;
 
-    const tableDTO = this.tableFactory.toDTO(table, workers);
+    const tableDTO = this.tableFactory.toDTO(table);
 
     return AppResponse.ok(tableDTO);
   }
@@ -81,9 +130,9 @@ export class EditorHandler implements IpcMappingFactory {
         ErrorCode.DATA_NOT_LOADED,
       );
 
-    const { table, workers } = thisData;
+    const { table } = thisData;
 
-    this.tableFactory.fromDTO(data, table, workers);
+    this.tableFactory.fromDTO(data, table);
 
     return AppResponse.ok();
   }

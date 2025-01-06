@@ -125,12 +125,12 @@ export class TableEditor {
   }
 
   static from(table: ExtraDutyTable, workers: WorkerInfo[]) {
-    const { year, month } = table.config;
+    const { month } = table.config;
 
     const editor = TableEditor.create({
       dutiesPerDay: table.getDay(0).getSize(),
-      month,
-      year,
+      month: month.index,
+      year: month.year,
     });
 
     for (const workerInfo of workers) {

@@ -1,5 +1,5 @@
 import { TableEditorController } from "../../state/controllers/editor/table";
-import { SerializationMode } from "../../../apploader/api/ipc";
+import { SerializationMode } from "../../../apploader/api/controllers";
 import { TableEditor } from "../../../apploader/api/table-edition";
 import { AppError, editor } from "../../api";
 import { createModalContext } from "../../contexts/modal";

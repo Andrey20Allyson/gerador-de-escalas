@@ -9,6 +9,10 @@ export enum FSErrorCode {
   WRITE = "file-system:write-error",
 }
 
+export enum DeserializationErrorCode {
+  INEXISTENT_METADATA = "deserialization:inexistent-metadata",
+}
+
 export type AppError<TCode = ErrorCode.UNKNOW> = {
   code: TCode | ErrorCode.UNKNOW;
   callstack?: string;
