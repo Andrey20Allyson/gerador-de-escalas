@@ -1,8 +1,18 @@
-import { Query, QueryDocumentSnapshot, QuerySnapshot } from "firebase-admin/firestore";
-import fs from 'fs/promises';
-import { WorkerRegistry, WorkerRegistryInit } from "../../entities/worker-registry";
-import { ChunkNotFoundError, WorkerRegistryChunkStorage } from "./chunk-storage";
-import { firestoreWorkerRegistryRepositoryConfig } from './config';
+import {
+  Query,
+  QueryDocumentSnapshot,
+  QuerySnapshot,
+} from "firebase-admin/firestore";
+import fs from "fs/promises";
+import {
+  WorkerRegistry,
+  WorkerRegistryInit,
+} from "../../entities/worker-registry";
+import {
+  ChunkNotFoundError,
+  WorkerRegistryChunkStorage,
+} from "./chunk-storage";
+import { firestoreWorkerRegistryRepositoryConfig } from "./config";
 
 const CACHE_DIR = firestoreWorkerRegistryRepositoryConfig.cacheDir;
 
@@ -15,7 +25,7 @@ export type WorkerRegistryChunkData = {
 
 export type WorkerRegistryChunkVersion = {
   version: number;
-}
+};
 
 export type RegistryChangeInfo = {
   readonly registry: WorkerRegistry;
@@ -75,9 +85,10 @@ export class WorkerRegistryChunk {
   }
 
   findById(workerId: string): WorkerRegistry | null {
-    return this
-      .registries()
-      .find(registry => registry.workerId === workerId) ?? null;
+    return (
+      this.registries().find((registry) => registry.workerId === workerId) ??
+      null
+    );
   }
 
   registries(): WorkerRegistry[];
@@ -86,17 +97,31 @@ export class WorkerRegistryChunk {
     const registries = oldRegistries ?? this._data.workers;
 
     return registries
-      .filter(registry => this._remotions.has(registry.workerId) === false || this._data.version < registry.createdAtVersion)
+      .filter(
+        (registry) =>
+          this._remotions.has(registry.workerId) === false ||
+          this._data.version < registry.createdAtVersion,
+      )
       .concat(Array.from(this._insertions.values()))
-      .map(registry => this._data.version < registry.createdAtVersion ? registry : (this._updates.get(registry.workerId) ?? registry));
+      .map((registry) =>
+        this._data.version < registry.createdAtVersion
+          ? registry
+          : (this._updates.get(registry.workerId) ?? registry),
+      );
   }
 
   snapshot(): Promise<QueryDocumentSnapshot<WorkerRegistryChunkData>>;
-  snapshot(querySnapshot: QuerySnapshot<WorkerRegistryChunkData>): Promise<QueryDocumentSnapshot<WorkerRegistryChunkData>>;
-  async snapshot(querySnapshot?: QuerySnapshot<WorkerRegistryChunkData>): Promise<QueryDocumentSnapshot<WorkerRegistryChunkData>> {
-    const _querySnapshot = querySnapshot ?? await this.query().get();
+  snapshot(
+    querySnapshot: QuerySnapshot<WorkerRegistryChunkData>,
+  ): Promise<QueryDocumentSnapshot<WorkerRegistryChunkData>>;
+  async snapshot(
+    querySnapshot?: QuerySnapshot<WorkerRegistryChunkData>,
+  ): Promise<QueryDocumentSnapshot<WorkerRegistryChunkData>> {
+    const _querySnapshot = querySnapshot ?? (await this.query().get());
 
-    return _querySnapshot.docs.at(0) ?? ChunkNotFoundError.reject(this._data.idx);
+    return (
+      _querySnapshot.docs.at(0) ?? ChunkNotFoundError.reject(this._data.idx)
+    );
   }
 
   async reload(): Promise<void> {
@@ -107,22 +132,28 @@ export class WorkerRegistryChunk {
 
   query(): Query<WorkerRegistryChunkData> {
     return this.storage.collection
-      .where('type', '==', this._data.type)
-      .where('idx', '==', this._data.idx)
+      .where("type", "==", this._data.type)
+      .where("idx", "==", this._data.idx)
       .limit(1) as Query<WorkerRegistryChunkData>;
   }
 
   async cache(): Promise<void> {
-    await fs.access(CACHE_DIR)
+    await fs
+      .access(CACHE_DIR)
       .catch(() => fs.mkdir(CACHE_DIR, { recursive: true }));
 
-    await fs.writeFile(this.storage.cacheDirOf(this._data.idx), JSON.stringify(this._data));
+    await fs.writeFile(
+      this.storage.cacheDirOf(this._data.idx),
+      JSON.stringify(this._data),
+    );
   }
 
   changed(): boolean {
-    return this._insertions.size > 0
-      || this._remotions.size > 0
-      || this._updates.size > 0;
+    return (
+      this._insertions.size > 0 ||
+      this._remotions.size > 0 ||
+      this._updates.size > 0
+    );
   }
 
   clearChanges() {
@@ -136,10 +167,10 @@ export class WorkerRegistryChunk {
 
     const firestore = this._firestore();
 
-    await firestore.runTransaction(async transaction => {
+    await firestore.runTransaction(async (transaction) => {
       const doc = await transaction
         .get(this.query())
-        .then(qs => this.snapshot(qs));
+        .then((qs) => this.snapshot(qs));
 
       const data = doc.data();
 

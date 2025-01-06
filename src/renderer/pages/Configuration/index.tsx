@@ -8,8 +8,14 @@ import { ElementList } from "../../utils/react-iteration";
 import React from "react";
 import { AiOutlineSave } from "react-icons/ai";
 import styled from "styled-components";
-import { WorkerRegistriesProvider, useWorkerRegistriesService } from "./workers.ctx";
-import { WorkerRegistry, WorkerRegistryInit } from "../../../apploader/auto-schedule/persistence/entities/worker-registry";
+import {
+  WorkerRegistriesProvider,
+  useWorkerRegistriesService,
+} from "./workers.ctx";
+import {
+  WorkerRegistry,
+  WorkerRegistryInit,
+} from "../../../apploader/auto-schedule/persistence/entities/worker-registry";
 
 export default function ConfigurationPage() {
   return (
@@ -36,7 +42,10 @@ export function Configuration() {
   return (
     <StyledConfiguration>
       <StyledToolsSection>
-        <button><AiOutlineSave />Salvar</button>
+        <button>
+          <AiOutlineSave />
+          Salvar
+        </button>
       </StyledToolsSection>
       <div className="body">
         <WorkerRegisterForm onSubmit={createWorker} />
@@ -46,20 +55,18 @@ export function Configuration() {
           <WorkerRegistryGrid />
         </section>
       </div>
-    </StyledConfiguration >
+    </StyledConfiguration>
   );
 }
 
-export interface WorkerRegistryListProps { }
+export interface WorkerRegistryListProps {}
 
 export function WorkerRegistryGrid(props: WorkerRegistryListProps) {
   const service = useWorkerRegistriesService();
 
   return (
     <RegistryGrid>
-      <ElementList
-        Component={WorkerRegistryView}
-        iter={service.list()} />
+      <ElementList Component={WorkerRegistryView} iter={service.list()} />
     </RegistryGrid>
   );
 }
@@ -76,14 +83,14 @@ export const StyledConfiguration = styled.div`
   flex-direction: column;
   display: flex;
 
-  &>.body {
+  & > .body {
     flex: 2;
     display: flex;
-    padding: .75rem;
+    padding: 0.75rem;
     box-sizing: border-box;
-    gap: .75rem;
-  
-    &>.search-section {
+    gap: 0.75rem;
+
+    & > .search-section {
       flex: 1;
       display: flex;
       flex-direction: column;

@@ -4,7 +4,7 @@ export class LicenseInterval {
   constructor(
     readonly start: Day | null,
     readonly end: Day,
-  ) { }
+  ) {}
 
   *iterDaysInMonth(year: number, month: number): Iterable<number> {
     const first = this.getFirstDayInMonth(year, month);
@@ -42,4 +42,4 @@ export class LicenseInterval {
   }
 }
 
-export * from './parser';
+export * from "./parser";

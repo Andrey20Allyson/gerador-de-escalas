@@ -20,11 +20,11 @@ export abstract class IntegrityInconsistence {
       this._messages = [];
     }
 
-    if (typeof this._messages === 'string') {
+    if (typeof this._messages === "string") {
       this._messages = [this._messages];
     }
 
-    if (typeof messageOrMessages === 'string') {
+    if (typeof messageOrMessages === "string") {
       this._messages.push(messageOrMessages);
       return;
     }
@@ -35,7 +35,7 @@ export abstract class IntegrityInconsistence {
   }
 
   getMessages(): readonly string[] {
-    if (typeof this._messages === 'string') {
+    if (typeof this._messages === "string") {
       return [this._messages];
     }
 

@@ -1,14 +1,19 @@
-import { ExtraDutyTable, ExtraDutyTableEntry, WorkerInfo } from "../../../extra-duty-lib";
+import {
+  ExtraDutyTable,
+  ExtraDutyTableEntry,
+  WorkerInfo,
+} from "../../../extra-duty-lib";
 import { SerializationStratergy } from "../serialization-stratergy";
 
 export class JsonSerializationStratergy implements SerializationStratergy {
   async execute(table: ExtraDutyTable): Promise<Buffer> {
     const workers = table
       .workers()
-      .map(worker => this._workerIntoObject(worker));
+      .map((worker) => this._workerIntoObject(worker));
 
-    const schedule = Array.from(table.entries())
-      .map(entry => this._extraDutyTableEntryIntoObject(entry));
+    const schedule = Array.from(table.entries()).map((entry) =>
+      this._extraDutyTableEntryIntoObject(entry),
+    );
 
     const object = {
       meta: table.config,
@@ -40,10 +45,6 @@ export class JsonSerializationStratergy implements SerializationStratergy {
   }
 
   protected _extraDutyTableEntryIntoObject(duty: ExtraDutyTableEntry) {
-    return [
-      duty.day.index,
-      duty.duty.index,
-      duty.worker.id,
-    ];
+    return [duty.day.index, duty.duty.index, duty.worker.id];
   }
 }

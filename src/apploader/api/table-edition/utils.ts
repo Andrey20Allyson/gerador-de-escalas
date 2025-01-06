@@ -1,6 +1,8 @@
 export class IndexError extends Error {
   constructor(index: number, size: number) {
-    super(`Index out of bounds, tried access element #${index} from Array with ${size} elements!`);
+    super(
+      `Index out of bounds, tried access element #${index} from Array with ${size} elements!`,
+    );
   }
 }
 

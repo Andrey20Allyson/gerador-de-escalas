@@ -1,11 +1,17 @@
-import { DayOfWeek, isMonday, iterRandom, random, removeFromArrayWhere } from "../../../utils";
+import {
+  DayOfWeek,
+  isMonday,
+  iterRandom,
+  random,
+  removeFromArrayWhere,
+} from "../../../utils";
 import {
   DayOfExtraDuty,
   ExtraDuty,
   ExtraDutyArray,
   ExtraDutyTable,
   ExtraEventName,
-  WorkerInfo
+  WorkerInfo,
 } from "../../structs";
 import { AssignmentRule, AssignmentRuleStack } from "../rule-checking";
 import {
@@ -27,7 +33,7 @@ import { BaseScheduleAssigner } from "./base-assigner";
 export interface AssingOptions {
   /**
    * Filter the allowed workers for the assignment
-   * @param worker 
+   * @param worker
    * @returns The permition to assign the worker
    */
   readonly onlyWorkersWhere?: (worker: WorkerInfo) => boolean;
@@ -47,7 +53,7 @@ export interface AssingOptions {
    */
   readonly fullDay?: boolean;
   /**
-   * The minimun of workers per duty 
+   * The minimun of workers per duty
    * @default 1
    */
   readonly min?: number;
@@ -70,7 +76,12 @@ export class MultiStepScheduleAssigner extends BaseScheduleAssigner {
   ) {
     super(checker);
 
-    this._busyWorkerRule = busyWorkerRule ?? AssignmentRuleStack.find(this.checker, rule => rule instanceof BusyWorkerAssignmentRule);
+    this._busyWorkerRule =
+      busyWorkerRule ??
+      AssignmentRuleStack.find(
+        this.checker,
+        (rule) => rule instanceof BusyWorkerAssignmentRule,
+      );
   }
 
   useStep(...options: AssingOptions[]): MultiStepScheduleAssigner {
@@ -114,13 +125,18 @@ export class MultiStepScheduleAssigner extends BaseScheduleAssigner {
     return this._busyWorkerRule.canAssign(worker, table);
   }
 
-  private _assignInPair(day: DayOfExtraDuty, workers: WorkerInfo[], options: AssingOptions) {
+  private _assignInPair(
+    day: DayOfExtraDuty,
+    workers: WorkerInfo[],
+    options: AssingOptions,
+  ) {
     const pair = isMonday(day.index, day.table.month.getFirstMonday())
       ? day.pair()
       : iterRandom(day.pair());
 
     for (const duties of pair) {
-      const passDuty = duties.someIsFull() || options.passDutyPairWhen?.(duties) === true;
+      const passDuty =
+        duties.someIsFull() || options.passDutyPairWhen?.(duties) === true;
       if (passDuty) continue;
 
       for (const worker of iterRandom(workers)) {
@@ -131,7 +147,11 @@ export class MultiStepScheduleAssigner extends BaseScheduleAssigner {
     }
   }
 
-  private _assignInDay(day: DayOfExtraDuty, workers: WorkerInfo[], options: AssingOptions) {
+  private _assignInDay(
+    day: DayOfExtraDuty,
+    workers: WorkerInfo[],
+    options: AssingOptions,
+  ) {
     for (const duty of iterRandom(day)) {
       const passDuty = duty.isFull() || options.passDutyWhen?.(duty) === true;
 
@@ -145,11 +165,16 @@ export class MultiStepScheduleAssigner extends BaseScheduleAssigner {
     }
   }
 
-  private _assignFullDay(day: DayOfExtraDuty, workers: WorkerInfo[], options: AssingOptions) {
+  private _assignFullDay(
+    day: DayOfExtraDuty,
+    workers: WorkerInfo[],
+    options: AssingOptions,
+  ) {
     const duties = day.pair().all();
 
     for (const worker of workers) {
-      const passDuty = duties.someIsFull() || options.passDutyPairWhen?.(duties) === true;
+      const passDuty =
+        duties.someIsFull() || options.passDutyPairWhen?.(duties) === true;
       if (passDuty) return;
 
       this.assignWorker(worker, duties);
@@ -158,11 +183,18 @@ export class MultiStepScheduleAssigner extends BaseScheduleAssigner {
     }
   }
 
-  private _assignInDays(days: DayOfExtraDuty[], workers: WorkerInfo[], options: AssingOptions) {
+  private _assignInDays(
+    days: DayOfExtraDuty[],
+    workers: WorkerInfo[],
+    options: AssingOptions,
+  ) {
     const { inPairs = true, fullDay = false } = options;
 
     for (const day of days) {
-      removeFromArrayWhere(workers, worker => this._isWorkerFree(worker, day.table) === false);
+      removeFromArrayWhere(
+        workers,
+        (worker) => this._isWorkerFree(worker, day.table) === false,
+      );
       if (workers.length === 0) break;
 
       if (options.passDayWhen?.(day) === true) {
@@ -183,18 +215,23 @@ export class MultiStepScheduleAssigner extends BaseScheduleAssigner {
     }
   }
 
-  assignArray(table: ExtraDutyTable, workers: WorkerInfo[], options: AssingOptions): void {
+  assignArray(
+    table: ExtraDutyTable,
+    workers: WorkerInfo[],
+    options: AssingOptions,
+  ): void {
     const {
       min = 1,
       max = min,
       events: _events = [table.config.currentPlace],
     } = options;
 
-    const events = typeof _events === 'string' ? [_events] : _events;
+    const events = typeof _events === "string" ? [_events] : _events;
 
     table.saveConfig();
 
-    if (options.dutyMinDistance !== undefined) table.setDutyMinDistance(options.dutyMinDistance);
+    if (options.dutyMinDistance !== undefined)
+      table.setDutyMinDistance(options.dutyMinDistance);
 
     const filteredWorkers = options.onlyWorkersWhere
       ? workers.filter(options.onlyWorkersWhere)
@@ -202,12 +239,14 @@ export class MultiStepScheduleAssigner extends BaseScheduleAssigner {
 
     let days = Array.from(table);
 
-    const workersForEachEvent = events.reduce((rec, eventName) => {
-      rec[eventName] = Array
-        .from(filteredWorkers);
+    const workersForEachEvent = events.reduce(
+      (rec, eventName) => {
+        rec[eventName] = Array.from(filteredWorkers);
 
-      return rec;
-    }, {} as Record<string, WorkerInfo[]>);
+        return rec;
+      },
+      {} as Record<string, WorkerInfo[]>,
+    );
 
     for (let capacity = min; capacity <= max; capacity++) {
       table.setDutyCapacity(capacity);
@@ -217,11 +256,7 @@ export class MultiStepScheduleAssigner extends BaseScheduleAssigner {
 
         random.array(days, true);
 
-        this._assignInDays(
-          days,
-          workersForEachEvent[eventName]!,
-          options,
-        );
+        this._assignInDays(days, workersForEachEvent[eventName]!, options);
       }
     }
 
@@ -253,44 +288,55 @@ export class MultiStepScheduleAssigner extends BaseScheduleAssigner {
   }
 
   static defaultSteps(): AssingOptions[] {
-    return [{
-      onlyWorkersWhere: worker => worker.workTime.duration === 24,
-      fullDay: true,
-      max: 2,
-    }, {
-      onlyWorkersWhere: worker => worker.isDailyWorker() && Math.random() > .5,
-      passDutyWhen: duty => duty.start !== 19,
-      events: ExtraEventName.JIQUIA,
-      inPairs: false,
-      min: 1,
-    }, {
-      onlyWorkersWhere: worker => worker.isDailyWorker(),
-      passDayWhen: day => day.date.isWeekEnd() === false,
-      min: 3,
-      dutyMinDistance: 1,
-    }, {
-      onlyWorkersWhere: worker => worker.isDailyWorker(),
-      min: 2,
-      inPairs: false,
-    }, {
-      onlyWorkersWhere: worker => worker.isInsp(),
-      min: 1,
-    }, {
-      onlyWorkersWhere: worker => worker.isSubInsp(),
-      passDayWhen: day => day.isWeekDay(DayOfWeek.MONDAY),
-      min: 1,
-      max: 2,
-    }, {
-      passDayWhen: day => day.isWeekDay(DayOfWeek.MONDAY),
-      min: 1,
-      max: 2,
-    }, {
-      min: 2,
-      max: 3,
-    }, {
-      inPairs: false,
-      min: 2,
-      max: 3,
-    }];
+    return [
+      {
+        onlyWorkersWhere: (worker) => worker.workTime.duration === 24,
+        fullDay: true,
+        max: 2,
+      },
+      {
+        onlyWorkersWhere: (worker) =>
+          worker.isDailyWorker() && Math.random() > 0.5,
+        passDutyWhen: (duty) => duty.start !== 19,
+        events: ExtraEventName.JIQUIA,
+        inPairs: false,
+        min: 1,
+      },
+      {
+        onlyWorkersWhere: (worker) => worker.isDailyWorker(),
+        passDayWhen: (day) => day.date.isWeekEnd() === false,
+        min: 3,
+        dutyMinDistance: 1,
+      },
+      {
+        onlyWorkersWhere: (worker) => worker.isDailyWorker(),
+        min: 2,
+        inPairs: false,
+      },
+      {
+        onlyWorkersWhere: (worker) => worker.isInsp(),
+        min: 1,
+      },
+      {
+        onlyWorkersWhere: (worker) => worker.isSubInsp(),
+        passDayWhen: (day) => day.isWeekDay(DayOfWeek.MONDAY),
+        min: 1,
+        max: 2,
+      },
+      {
+        passDayWhen: (day) => day.isWeekDay(DayOfWeek.MONDAY),
+        min: 1,
+        max: 2,
+      },
+      {
+        min: 2,
+        max: 3,
+      },
+      {
+        inPairs: false,
+        min: 2,
+        max: 3,
+      },
+    ];
   }
 }

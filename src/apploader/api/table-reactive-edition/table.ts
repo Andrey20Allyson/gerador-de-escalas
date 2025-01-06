@@ -6,8 +6,8 @@ import type {
   Gender,
   Graduation,
   WorkerInfo,
-  DayOfExtraDuty
-  } from "../../auto-schedule/extra-duty-lib";
+  DayOfExtraDuty,
+} from "../../auto-schedule/extra-duty-lib";
 import { WorkerInsertionRulesState } from "../table-edition";
 
 export interface OrdinaryInfo {
@@ -72,12 +72,9 @@ export interface TableData {
 export class TableFactory {
   readonly BASE_WORKER_CAPACITY = 10;
 
-  constructor(
-    readonly idGenerator: IdGenerator = new IdGenerator(),
-  ) { }
+  constructor(readonly idGenerator: IdGenerator = new IdGenerator()) {}
 
   createTableData(table: ExtraDutyTable): TableData {
-
     return {
       idCounters: this.idGenerator.counters,
       duties: [],
@@ -94,7 +91,9 @@ export class TableFactory {
         dutyCapacity: 3,
         dutiesPerDay: Math.floor(24 / table.config.dutyDuration),
         numOfDays: table.width,
-        workerCapacity: Math.trunc(this.BASE_WORKER_CAPACITY / table.config.dutyPositionSize),
+        workerCapacity: Math.trunc(
+          this.BASE_WORKER_CAPACITY / table.config.dutyPositionSize,
+        ),
       },
       dutyAndWorkerRelationships: [],
     };
@@ -102,7 +101,7 @@ export class TableFactory {
 
   createDayData(dutyDay: DayOfExtraDuty): DateData {
     const day = dutyDay.date;
-    
+
     return {
       key: day.toString(),
       index: dutyDay.index,
@@ -116,11 +115,11 @@ export class TableFactory {
     const index = duty.index;
 
     const day = this.createDayData(duty.day);
-    
+
     const key = `${index}:${day.key}`;
 
-    const id = this.idGenerator.next('duty');
-    
+    const id = this.idGenerator.next("duty");
+
     return {
       id,
       date: day,
@@ -149,17 +148,20 @@ export class TableFactory {
       restrictions: Array.from(daysOfWork.values()),
       gender: worker.gender,
       graduation: worker.graduation,
-      id: this.idGenerator.next('worker'),
+      id: this.idGenerator.next("worker"),
       individualId: worker.config.individualId,
       name: worker.name,
     };
   }
 
-  createDutyAndWorkerRelationship(workerId: number, dutyId: number): DutyAndWorkerRelationship {
+  createDutyAndWorkerRelationship(
+    workerId: number,
+    dutyId: number,
+  ): DutyAndWorkerRelationship {
     return {
       dutyId,
       workerId,
-      id: this.idGenerator.next('duty-and-worker-relationship'),
+      id: this.idGenerator.next("duty-and-worker-relationship"),
     };
   }
 
@@ -190,7 +192,9 @@ export class TableFactory {
           const workerData = workerDataMap.get(worker.id);
           if (workerData === undefined) continue;
 
-          tableData.dutyAndWorkerRelationships.push(this.createDutyAndWorkerRelationship(workerData.id, dutyData.id));
+          tableData.dutyAndWorkerRelationships.push(
+            this.createDutyAndWorkerRelationship(workerData.id, dutyData.id),
+          );
         }
       }
     }
@@ -198,12 +202,20 @@ export class TableFactory {
     return tableData;
   }
 
-  fromDTO(tableData: TableData, table: ExtraDutyTable, workers: WorkerInfo[]): ExtraDutyTable {
+  fromDTO(
+    tableData: TableData,
+    table: ExtraDutyTable,
+    workers: WorkerInfo[],
+  ): ExtraDutyTable {
     table.clear();
 
-    const dutyDataMap = new Map(tableData.duties.map(duty => [duty.id, duty]));
-    const workerDataMap = new Map(tableData.workers.map(worker => [worker.id, worker]));
-    const workerInfoMap = new Map(workers.map(worker => [worker.id, worker]));
+    const dutyDataMap = new Map(
+      tableData.duties.map((duty) => [duty.id, duty]),
+    );
+    const workerDataMap = new Map(
+      tableData.workers.map((worker) => [worker.id, worker]),
+    );
+    const workerInfoMap = new Map(workers.map((worker) => [worker.id, worker]));
 
     for (const relationship of tableData.dutyAndWorkerRelationships) {
       const dutyData = dutyDataMap.get(relationship.dutyId);
@@ -213,10 +225,7 @@ export class TableFactory {
       const workerInfo = workerInfoMap.get(workerData.workerId);
       if (workerInfo === undefined) continue;
 
-      table
-        .getDay(dutyData.date.index)
-        .getDuty(dutyData.index)
-        .add(workerInfo);
+      table.getDay(dutyData.date.index).getDuty(dutyData.index).add(workerInfo);
     }
 
     return table;
@@ -224,9 +233,7 @@ export class TableFactory {
 }
 
 export class IdGenerator {
-  constructor(
-    readonly counters: Record<string, number> = {},
-  ) { }
+  constructor(readonly counters: Record<string, number> = {}) {}
 
   next(name: string) {
     let id = this.counters[name];

@@ -1,10 +1,12 @@
-import admin from 'firebase-admin';
-import pfs from 'node:fs/promises';
-import path from 'node:path';
-import CryptorWithPassword from '../src/utils/cryptor-with-password';
+import admin from "firebase-admin";
+import pfs from "node:fs/promises";
+import path from "node:path";
+import CryptorWithPassword from "../src/utils/cryptor-with-password";
 
-export const DEFAULT_FIREBASE_KEY_PATH = path.resolve('./keys/firebase-key.aes');
-export const DEFAULT_APP_NAME = 'main-app';
+export const DEFAULT_FIREBASE_KEY_PATH = path.resolve(
+  "./keys/firebase-key.aes",
+);
+export const DEFAULT_APP_NAME = "main-app";
 
 export interface FirestoreInitializerConfig {
   password: string;
@@ -33,15 +35,18 @@ export class FirestoreInitializer {
     const inputBuffer = await pfs.readFile(this.firebaseKeyPath);
     const decryptedBuffer = await this.cryptor.decrypt(inputBuffer);
 
-    const credentialJSON = JSON.parse(decryptedBuffer.toString('utf-8'));
+    const credentialJSON = JSON.parse(decryptedBuffer.toString("utf-8"));
 
     return admin.credential.cert(credentialJSON);
   }
 
   async initializeApp() {
-    const app = admin.initializeApp({
-      credential: await this.getCredentials(),
-    }, this.appName);
+    const app = admin.initializeApp(
+      {
+        credential: await this.getCredentials(),
+      },
+      this.appName,
+    );
 
     return app;
   }

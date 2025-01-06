@@ -6,25 +6,27 @@ interface LoadBarProps {
 }
 
 function loadBarBackgroundColor(props: LoadBarProps) {
-  return (props.actual ?? 0) >= props.steps ? '#00eeff' : '#337733';
+  return (props.actual ?? 0) >= props.steps ? "#00eeff" : "#337733";
 }
 
 export const LoadBar = styled.span<LoadBarProps>`
   width: 100%;
   height: 4px;
   margin-top: 2rem;
-  
+
   background-color: #d1d1d1;
-  
+
   display: flex;
-  
+
   &::after {
-    content: '';
+    content: "";
     border-radius: 4px;
-    transition: width 900ms, background-color 900ms;
+    transition:
+      width 900ms,
+      background-color 900ms;
     background-color: ${loadBarBackgroundColor};
-    box-shadow: -.1rem .1rem .2rem #0a380065;
+    box-shadow: -0.1rem 0.1rem 0.2rem #0a380065;
     height: 100%;
     width: ${(props) => ((props.actual ?? 0) / props.steps) * 100 + 2}%;
   }
-`
+`;

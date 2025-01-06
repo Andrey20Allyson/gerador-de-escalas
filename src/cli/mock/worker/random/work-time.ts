@@ -11,7 +11,7 @@ function morningWorkTime(): WorkTime {
 function dailyWorkerWorkTime(): WorkTime {
   const choice = Math.random();
 
-  const totalTime = choice < .5 ? 9 : 11;
+  const totalTime = choice < 0.5 ? 9 : 11;
 
   return new WorkTime(7, totalTime);
 }
@@ -23,7 +23,5 @@ export function randomWorkTime(isDailyWorker: boolean = false): WorkTime {
 
   const choice = Math.random();
 
-  return choice < .5
-    ? morningWorkTime()
-    : nightWorkTime();
+  return choice < 0.5 ? morningWorkTime() : nightWorkTime();
 }

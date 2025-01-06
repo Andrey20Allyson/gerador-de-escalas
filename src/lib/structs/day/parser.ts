@@ -13,12 +13,14 @@ export class DayParser {
   }
 
   parse(text: string): Day {
-    const numbers = text.split('/');
+    const numbers = text.split("/");
     if (numbers.length !== 3) {
-      throw new Error(`Invalid format, expected dd/mm/yy or dd/mm/yyyy recived ${text}`);
+      throw new Error(
+        `Invalid format, expected dd/mm/yy or dd/mm/yyyy recived ${text}`,
+      );
     }
 
-    const [day, month, year] = numbers.map(Number) as [number, number, number] ;
+    const [day, month, year] = numbers.map(Number) as [number, number, number];
 
     if (isNaN(day) || isNaN(month) || isNaN(year)) {
       throw new Error(`Expected numbers, recived ${text}`);

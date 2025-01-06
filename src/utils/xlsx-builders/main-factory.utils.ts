@@ -1,23 +1,29 @@
 import { exit } from "process";
-import { ExtraDuty, ExtraDutyTable, ExtraDutyTableEntry, ExtraEventName, Graduation } from "../extra-duty-lib";
+import {
+  ExtraDuty,
+  ExtraDutyTable,
+  ExtraDutyTableEntry,
+  ExtraEventName,
+  Graduation,
+} from "../extra-duty-lib";
 
 export enum OutputCollumns {
-  NAME = 'B',
-  REGISTRATION = 'C',
-  GRAD = 'H',
-  DATE = 'I',
-  START_TIME = 'J',
-  END_TIME = 'K',
-  ITIN = 'D',
-  EVENT = 'F',
-  LOCATION_CODE = 'E',
-  DETAILS = 'G',
+  NAME = "B",
+  REGISTRATION = "C",
+  GRAD = "H",
+  DATE = "I",
+  START_TIME = "J",
+  END_TIME = "K",
+  ITIN = "D",
+  EVENT = "F",
+  LOCATION_CODE = "E",
+  DETAILS = "G",
 }
 
 export const GRAD_SORT_MAP = new Map<string, number>([
-  ['GCM', 3],
-  ['SI', 2],
-  ['INSP', 1],
+  ["GCM", 3],
+  ["SI", 2],
+  ["INSP", 1],
 ]);
 
 export interface ExtraXLSXTableRow {
@@ -27,19 +33,22 @@ export interface ExtraXLSXTableRow {
   date: Date;
   event: string;
   startTime: number;
-  endTime: number
+  endTime: number;
   individualRegistry: number;
 }
 
 const PAYMENT_GRADUATION_MAP = new Map<Graduation, string>([
-  ['gcm', 'GCM'],
-  ['sub-insp', 'SI'],
-  ['insp', 'INSP'],
+  ["gcm", "GCM"],
+  ["sub-insp", "SI"],
+  ["insp", "INSP"],
 ]);
 
 export function parseGraduationToPayment(graduation: Graduation): string {
   const parsed = PAYMENT_GRADUATION_MAP.get(graduation);
-  if (parsed === undefined) throw new Error(`Payment Schedule generator can't find grad for '${graduation}'`);
+  if (parsed === undefined)
+    throw new Error(
+      `Payment Schedule generator can't find grad for '${graduation}'`,
+    );
 
   return parsed;
 }
@@ -47,17 +56,22 @@ export function parseGraduationToPayment(graduation: Graduation): string {
 export function eventFromDuty(duty: ExtraDuty): string {
   switch (duty.config.currentPlace) {
     case ExtraEventName.JARDIM_BOTANICO_DAYTIME:
-      return 'JARDIM BOTÂNICO APOIO AS AÇÔES DIURNAS';
+      return "JARDIM BOTÂNICO APOIO AS AÇÔES DIURNAS";
     case ExtraEventName.JIQUIA:
-      return 'PARQUE DO JIQUIÁ';
+      return "PARQUE DO JIQUIÁ";
     case ExtraEventName.SUPPORT_TO_CITY_HALL:
-      return 'EVENTOS DE APOIO A PREFEITURA';
+      return "EVENTOS DE APOIO A PREFEITURA";
   }
 
-  throw new Error(`Can't find a event name for place '${duty.config.currentPlace}'`);
+  throw new Error(
+    `Can't find a event name for place '${duty.config.currentPlace}'`,
+  );
 }
 
-export function sortByDaytimeAndNighttime(entry1: ExtraDutyTableEntry, entry2: ExtraDutyTableEntry): number {
+export function sortByDaytimeAndNighttime(
+  entry1: ExtraDutyTableEntry,
+  entry2: ExtraDutyTableEntry,
+): number {
   return +entry1.duty.isNighttime() - +entry2.duty.isNighttime();
 }
 
@@ -68,8 +82,10 @@ const EXTRA_EVENT_SORT_VALUES = new Map<string, number>([
 ]);
 
 function sortPlaceByCorrectOrder(placeA: string, placeB: string): number {
-  const a = EXTRA_EVENT_SORT_VALUES.get(placeA) ?? EXTRA_EVENT_SORT_VALUES.size + 1;
-  const b = EXTRA_EVENT_SORT_VALUES.get(placeB) ?? EXTRA_EVENT_SORT_VALUES.size + 1;
+  const a =
+    EXTRA_EVENT_SORT_VALUES.get(placeA) ?? EXTRA_EVENT_SORT_VALUES.size + 1;
+  const b =
+    EXTRA_EVENT_SORT_VALUES.get(placeB) ?? EXTRA_EVENT_SORT_VALUES.size + 1;
 
   return a - b;
 }
@@ -86,7 +102,8 @@ export function* iterRows(table: ExtraDutyTable): Iterable<ExtraXLSXTableRow> {
 
     entries.sort(sortByGrad);
 
-    if (place === ExtraEventName.JARDIM_BOTANICO_DAYTIME) entries.sort(sortByDaytimeAndNighttime);
+    if (place === ExtraEventName.JARDIM_BOTANICO_DAYTIME)
+      entries.sort(sortByDaytimeAndNighttime);
 
     for (const entry of entries) {
       const startTime = (entry.duty.start % 24) / 24;
@@ -123,9 +140,15 @@ export function getGradNum(grad: string) {
 }
 
 export function sortByGrad(a: ExtraDutyTableEntry, b: ExtraDutyTableEntry) {
-  return getGradNum(a.worker.config.graduation) - getGradNum(b.worker.config.graduation);
+  return (
+    getGradNum(a.worker.config.graduation) -
+    getGradNum(b.worker.config.graduation)
+  );
 }
 
-export function sortByRegistration(a: ExtraDutyTableEntry, b: ExtraDutyTableEntry) {
+export function sortByRegistration(
+  a: ExtraDutyTableEntry,
+  b: ExtraDutyTableEntry,
+) {
   return a.worker.id - b.worker.id;
 }

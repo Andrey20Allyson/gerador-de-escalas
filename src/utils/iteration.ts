@@ -15,7 +15,10 @@ export function* enumerate<T>(iter: Iterable<T>): Iterable<[number, T]> {
   }
 }
 
-export function iterRandomInRange(start: number, end: number): Iterable<number> {
+export function iterRandomInRange(
+  start: number,
+  end: number,
+): Iterable<number> {
   const array = Array.from(iterRange(start, end));
 
   return random.array(array, true)[Symbol.iterator]();
@@ -30,7 +33,7 @@ export function* iterReverse<T>(array: ArrayLike<T>): Iterable<T> {
 export function* iterRandom<T>(iter: Iterable<T> | ArrayLike<T>): Iterable<T> {
   if (!iter) return;
 
-  if ('length' in iter) {
+  if ("length" in iter) {
     for (const i of iterRandomInRange(0, iter.length)) {
       yield iter[i]!;
     }

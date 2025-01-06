@@ -1,8 +1,11 @@
-import { expect, test } from 'vitest';
-import { DutyData, TableData } from '../../../../apploader/api/table-reactive-edition/table';
-import { DispatcherType, TableEditorController } from './table';
-import { DutySearcher } from './searchers/duty';
-import { ExtraEventName } from '../../../../apploader/auto-schedule/extra-duty-lib';
+import { expect, test } from "vitest";
+import {
+  DutyData,
+  TableData,
+} from "../../../../apploader/api/table-reactive-edition/table";
+import { DispatcherType, TableEditorController } from "./table";
+import { DutySearcher } from "./searchers/duty";
+import { ExtraEventName } from "../../../../apploader/auto-schedule/extra-duty-lib";
 
 function mockDuties(numOfDays: number, dutiesPerDay: number): DutyData[] {
   const duties: DutyData[] = [];
@@ -12,7 +15,7 @@ function mockDuties(numOfDays: number, dutiesPerDay: number): DutyData[] {
     for (let index = 0; index < dutiesPerDay; index++) {
       duties.push({
         date: {
-          key: '',
+          key: "",
           index: day,
           day,
           month: 0,
@@ -21,7 +24,7 @@ function mockDuties(numOfDays: number, dutiesPerDay: number): DutyData[] {
         end: 7,
         start: 13,
         active: true,
-        key: '',
+        key: "",
         index,
         id: idCount++,
       });
@@ -58,7 +61,7 @@ function mockTable(): TableData {
       dutyOffTimeToOrdinary: 12,
       dutiesPerDay,
       dutyPositionSize: 2,
-      firstDutyTime: 7
+      firstDutyTime: 7,
     },
     dutyAndWorkerRelationships: [],
     idCounters: {},
@@ -66,17 +69,19 @@ function mockTable(): TableData {
   };
 }
 
-const dispatcherMock: DispatcherType = () => ({  }) as any;
+const dispatcherMock: DispatcherType = () => ({}) as any;
 
-test('#next method shild return next duty', () => {
+test("#next method shild return next duty", () => {
   const table: TableData = mockTable();
 
-  const tableController = new TableEditorController({ state: {history: [table], undoIndex: 1}, table, dispatcher: dispatcherMock });
+  const tableController = new TableEditorController({
+    state: { history: [table], undoIndex: 1 },
+    table,
+    dispatcher: dispatcherMock,
+  });
 
   const dutyController = tableController.findDuty(
-    DutySearcher
-      .dayIndexEquals(0)
-      .indexEquals(1)
+    DutySearcher.dayIndexEquals(0).indexEquals(1),
   );
   if (!dutyController) throw new Error(`Can't find duty`);
 

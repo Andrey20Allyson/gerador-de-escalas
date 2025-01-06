@@ -2,24 +2,24 @@ import styled from "styled-components";
 
 export const StyledWorkerRegistryView = styled.div`
   background-color: #fafafa;
-  border-radius: .3rem;
-  padding: .2rem .5rem;
+  border-radius: 0.3rem;
+  padding: 0.2rem 0.5rem;
   width: 20rem;
   display: flex;
-  box-shadow: -.2rem .2rem .3rem #0002;
+  box-shadow: -0.2rem 0.2rem 0.3rem #0002;
 
-  &>.left-col {
+  & > .left-col {
     display: flex;
     flex-direction: column;
-    gap: .2rem;
+    gap: 0.2rem;
     flex: 4;
 
-    &>h2 {
+    & > h2 {
       text-align: left;
       font-size: 1rem;
     }
 
-    &>p {
+    & > p {
       margin: 0;
       display: flex;
       flex: 1;
@@ -27,15 +27,15 @@ export const StyledWorkerRegistryView = styled.div`
     }
   }
 
-  &>.right-col {
-    flex: .5;
+  & > .right-col {
+    flex: 0.5;
     align-items: center;
-    padding: .5rem 0;
+    padding: 0.5rem 0;
     display: flex;
     flex-direction: column;
-    gap: .4rem;
+    gap: 0.4rem;
 
-    &>svg {
+    & > svg {
       cursor: pointer;
       font-size: 1.1rem;
       transition: all 300ms;

@@ -27,9 +27,9 @@ export class OrdinaryWorkHandler {
 
   collidesWithDuty(duty: DutyEditor): boolean {
     if (this.worker.isDailyWorker() && duty.isNightly()) return false;
-    
+
     const dayIndex = duty.day.index();
-    
+
     if (this.workAt(dayIndex)) return true;
 
     const prevDayIndex = dayIndex - 1;
@@ -38,13 +38,23 @@ export class OrdinaryWorkHandler {
     const ordinaryStart = this.data.startsAt;
     const ordinaryEnd = ordinaryStart + this.data.duration;
 
-    if (prevDayIndex >= 0 && this.workAt(prevDayIndex) && dutyTimeOffStart + 24 < ordinaryEnd) return true;
+    if (
+      prevDayIndex >= 0 &&
+      this.workAt(prevDayIndex) &&
+      dutyTimeOffStart + 24 < ordinaryEnd
+    )
+      return true;
 
     const lastDayIndex = this.table.numOfDays() - 1;
     const nextDayIndex = dayIndex + 1;
     const dutyTimeOffEnd = duty.data.endsAt + dutyDuration;
 
-    if (nextDayIndex <= lastDayIndex && this.workAt(nextDayIndex) && dutyTimeOffEnd - 24 > ordinaryStart) return true;
+    if (
+      nextDayIndex <= lastDayIndex &&
+      this.workAt(nextDayIndex) &&
+      dutyTimeOffEnd - 24 > ordinaryStart
+    )
+      return true;
 
     return false;
   }

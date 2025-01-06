@@ -1,3 +1,3 @@
 export enum AssetsErrorCode {
-  INCORRECT_PASSWORD = 'assets:incorrect-password'
+  INCORRECT_PASSWORD = "assets:incorrect-password",
 }

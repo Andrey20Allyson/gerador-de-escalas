@@ -1,4 +1,9 @@
-import { enumerate, firstMondayFromYearAndMonth, getNumOfDaysInMonth, isBusinessDay } from "../../../../utils";
+import {
+  enumerate,
+  firstMondayFromYearAndMonth,
+  getNumOfDaysInMonth,
+  isBusinessDay,
+} from "../../../../utils";
 import type { Holidays } from "../holidays";
 import type { Clonable } from "../worker-info";
 import type { LicenseInterval } from "./license-interval";
@@ -7,7 +12,7 @@ export class DaySearch {
   constructor(
     public past: number = 0,
     public next: number = 0,
-  ) { }
+  ) {}
 
   step() {
     this.past--;
@@ -31,7 +36,9 @@ export enum DayRestriction {
   LICENCE,
 }
 
-export interface DayRestrictionArray extends Iterable<DayRestriction>, RelativeIndexable<DayRestriction> {
+export interface DayRestrictionArray
+  extends Iterable<DayRestriction>,
+    RelativeIndexable<DayRestriction> {
   readonly length: number;
   values(): Iterable<DayRestriction>;
   [k: number]: DayRestriction;
@@ -43,11 +50,17 @@ export class DaysOfWork implements Clonable<DaysOfWork> {
 
   readonly length: number;
 
-  constructor(readonly year: number, readonly month: number, startWorking = false, readonly isDailyWorker: boolean = false) {
+  constructor(
+    readonly year: number,
+    readonly month: number,
+    startWorking = false,
+    readonly isDailyWorker: boolean = false,
+  ) {
     const arrayLenth = getNumOfDaysInMonth(month, year);
 
-    this.days = new Uint8Array(arrayLenth)
-      .fill(startWorking ? DayRestriction.ORDINARY_WORK : DayRestriction.NONE);
+    this.days = new Uint8Array(arrayLenth).fill(
+      startWorking ? DayRestriction.ORDINARY_WORK : DayRestriction.NONE,
+    );
 
     this.length = this.days.length;
 
@@ -55,7 +68,12 @@ export class DaysOfWork implements Clonable<DaysOfWork> {
   }
 
   clone() {
-    const clone = new DaysOfWork(this.year, this.month, false, this.isDailyWorker);
+    const clone = new DaysOfWork(
+      this.year,
+      this.month,
+      false,
+      this.isDailyWorker,
+    );
 
     for (let i = 0; i < this.days.length; i++) {
       clone.set(i, this.get(i));
@@ -116,7 +134,11 @@ export class DaysOfWork implements Clonable<DaysOfWork> {
 
   *entries(): Iterable<DayOfWork> {
     for (const [day, restriction] of enumerate(this.days)) {
-      yield { day, work: restriction === DayRestriction.ORDINARY_WORK, restriction };
+      yield {
+        day,
+        work: restriction === DayRestriction.ORDINARY_WORK,
+        restriction,
+      };
     }
   }
 
@@ -155,12 +177,14 @@ export class DaysOfWork implements Clonable<DaysOfWork> {
       search.step();
 
       if (search.past >= 0 && !this.workOn(search.past)) return search.past;
-      if (search.next < this.length && !this.workOn(search.next)) return search.next;
+      if (search.next < this.length && !this.workOn(search.next))
+        return search.next;
     }
   }
 
   notWork(day: number): void {
-    if (this.dayIs(day, DayRestriction.ORDINARY_WORK)) this.set(day, DayRestriction.NONE);
+    if (this.dayIs(day, DayRestriction.ORDINARY_WORK))
+      this.set(day, DayRestriction.NONE);
   }
 
   dayIs(day: number, restriction: DayRestriction): boolean {
@@ -193,11 +217,17 @@ export class DaysOfWork implements Clonable<DaysOfWork> {
     return daysOfWork;
   }
 
-  static fromRestrictionArray(restrictions: DayRestriction[], year: number, month: number): DaysOfWork {
+  static fromRestrictionArray(
+    restrictions: DayRestriction[],
+    year: number,
+    month: number,
+  ): DaysOfWork {
     const daysOfWork = new this(year, month);
 
     if (restrictions.length !== daysOfWork.length) {
-      throw new Error(`Invalid input, restrictions array must be the same size of number of days in that month`);
+      throw new Error(
+        `Invalid input, restrictions array must be the same size of number of days in that month`,
+      );
     }
 
     for (let i = 0; i < daysOfWork.length; i++) {
@@ -223,4 +253,4 @@ export class DaysOfWork implements Clonable<DaysOfWork> {
   }
 }
 
-export * from './parser';
+export * from "./parser";

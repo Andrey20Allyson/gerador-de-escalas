@@ -11,13 +11,11 @@ export interface WorkerRegisterFormProps {
 }
 
 const NAME_PARSER = parsers.string();
-const GENDER_PARSER = parsers.enum(['M', 'F']);
+const GENDER_PARSER = parsers.enum(["M", "F"]);
 const CPF_PARSER = parsers.string().then(new CPFParser());
 
 export function WorkerRegisterForm(props: WorkerRegisterFormProps) {
-  const {
-    onSubmit
-  } = props;
+  const { onSubmit } = props;
 
   function handleSubmit(controller: FormController) {
     const [
@@ -26,7 +24,13 @@ export function WorkerRegisterForm(props: WorkerRegisterFormProps) {
       individualIdField,
       genderField,
       isCoordinatorField,
-    ] = controller.fields(['name', 'workerID', 'individualID', 'gender', 'isCoordinator']);
+    ] = controller.fields([
+      "name",
+      "workerID",
+      "individualID",
+      "gender",
+      "isCoordinator",
+    ]);
 
     try {
       const name = nameField.pipe(NAME_PARSER).unwrap();
@@ -64,8 +68,13 @@ export function WorkerRegisterForm(props: WorkerRegisterFormProps) {
           </div>
         </Form.Row>
         <Form.Row contentJustify="start">
-          <Form.SubmitButton><AiOutlineCloudUpload />Registrar</Form.SubmitButton>
-          <Form.Button onClick={controller => controller.clear()}><AiOutlineDelete /> Resetar</Form.Button>
+          <Form.SubmitButton>
+            <AiOutlineCloudUpload />
+            Registrar
+          </Form.SubmitButton>
+          <Form.Button onClick={(controller) => controller.clear()}>
+            <AiOutlineDelete /> Resetar
+          </Form.Button>
         </Form.Row>
       </Form.Root>
     </StyledWorkerRegisterFormBody>
@@ -75,5 +84,4 @@ export function WorkerRegisterForm(props: WorkerRegisterFormProps) {
 export const StyledWorkerRegisterFormBody = styled.div`
   display: flex;
   flex-direction: column;
-
 `;

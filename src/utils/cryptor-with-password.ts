@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from "crypto";
 
 export type NumberRange = {
   start: number;
@@ -8,7 +8,7 @@ export type NumberRange = {
 export type PartialNumberRange = {
   start: number;
   end?: number;
-}
+};
 
 export interface CryptorWithPasswordConfig {
   password: string;
@@ -29,29 +29,34 @@ export class CryptorWithPasswordInitError extends Error {
 }
 
 export type CryptorWithPasswordDecryptErrorCause =
-  | 'unknown'
-  | 'probable-incorrect-password';
+  | "unknown"
+  | "probable-incorrect-password";
 
 export type CryptorWithPasswordDecryptErrorOptions = {
   cause?: CryptorWithPasswordDecryptErrorCause;
-}
+};
 
 export class CryptorWithPasswordDecryptError extends Error {
-  cause: CryptorWithPasswordDecryptErrorCause = 'unknown';
+  cause: CryptorWithPasswordDecryptErrorCause = "unknown";
 
-  constructor(message?: string, options?: CryptorWithPasswordDecryptErrorOptions) {
+  constructor(
+    message?: string,
+    options?: CryptorWithPasswordDecryptErrorOptions,
+  ) {
     super(message, options);
   }
 
   static probableIncorrectPasswordError(password: string) {
-    return new this(`probably the password "${password}" is incorrect`, { cause: 'probable-incorrect-password' });
+    return new this(`probably the password "${password}" is incorrect`, {
+      cause: "probable-incorrect-password",
+    });
   }
 }
 
 export default class CryptorWithPassword {
-  static readonly CRYPTOGRAPH_ALGORITHM = 'aes-256-cbc';
+  static readonly CRYPTOGRAPH_ALGORITHM = "aes-256-cbc";
   static readonly INITIALIZATION_VECTOR_SIZE = 16;
-  static readonly PBKD_DIGEST = 'sha256';
+  static readonly PBKD_DIGEST = "sha256";
   static readonly DEFAULT_KEY_GEN_ITERATIONS = 1e5;
   static readonly DEFAULT_SALT_SIZE = 16;
 
@@ -61,7 +66,8 @@ export default class CryptorWithPassword {
 
   constructor(config: CryptorWithPasswordConfig) {
     this.password = config.password;
-    this.keyGenIterations = config.keyGenIterations ?? CryptorWithPassword.DEFAULT_KEY_GEN_ITERATIONS;
+    this.keyGenIterations =
+      config.keyGenIterations ?? CryptorWithPassword.DEFAULT_KEY_GEN_ITERATIONS;
     this.saltSize = config.saltSize ?? CryptorWithPassword.DEFAULT_SALT_SIZE;
 
     if (this.password.length === 0) {
@@ -79,18 +85,25 @@ export default class CryptorWithPassword {
 
   async getKey(salt: Buffer): Promise<Buffer> {
     return new Promise((res, rej) => {
-      crypto.pbkdf2(this.password, salt, this.keyGenIterations, 32, CryptorWithPassword.PBKD_DIGEST, (err, key) => {
-        if (err) return rej(err);
+      crypto.pbkdf2(
+        this.password,
+        salt,
+        this.keyGenIterations,
+        32,
+        CryptorWithPassword.PBKD_DIGEST,
+        (err, key) => {
+          if (err) return rej(err);
 
-        res(key);
-      });
+          res(key);
+        },
+      );
     });
   }
 
   getSaltRange(): NumberRange {
     return {
       start: 0,
-      end: this.saltSize
+      end: this.saltSize,
     };
   }
 
@@ -101,7 +114,9 @@ export default class CryptorWithPassword {
     return { start, end };
   }
 
-  getEncryptedBufferRange(ivRange: NumberRange = this.getIVRange()): PartialNumberRange {
+  getEncryptedBufferRange(
+    ivRange: NumberRange = this.getIVRange(),
+  ): PartialNumberRange {
     const start = ivRange.end;
 
     return { start };
@@ -125,14 +140,13 @@ export default class CryptorWithPassword {
     const iv = this.generateIV();
     const key = await this.getKey(salt);
 
-    const cipher = crypto.createCipheriv(CryptorWithPassword.CRYPTOGRAPH_ALGORITHM, key, iv);
-
-    const encryptedBuffers = [
-      salt,
+    const cipher = crypto.createCipheriv(
+      CryptorWithPassword.CRYPTOGRAPH_ALGORITHM,
+      key,
       iv,
-      cipher.update(data),
-      cipher.final(),
-    ];
+    );
+
+    const encryptedBuffers = [salt, iv, cipher.update(data), cipher.final()];
 
     const encriptedBuffer = Buffer.concat(encryptedBuffers);
 
@@ -144,17 +158,20 @@ export default class CryptorWithPassword {
 
     const key = await this.getKey(salt);
 
-    const decipher = crypto.createDecipheriv(CryptorWithPassword.CRYPTOGRAPH_ALGORITHM, key, iv);
+    const decipher = crypto.createDecipheriv(
+      CryptorWithPassword.CRYPTOGRAPH_ALGORITHM,
+      key,
+      iv,
+    );
 
     const decryptedBuffers: Buffer[] = [];
 
     try {
-      decryptedBuffers.push(
-        decipher.update(encryptedBuffer),
-        decipher.final(),
-      );
+      decryptedBuffers.push(decipher.update(encryptedBuffer), decipher.final());
     } catch (error) {
-      throw CryptorWithPasswordDecryptError.probableIncorrectPasswordError(this.password);
+      throw CryptorWithPasswordDecryptError.probableIncorrectPasswordError(
+        this.password,
+      );
     }
 
     const decryptedBuffer = Buffer.concat(decryptedBuffers);

@@ -1,3 +1,3 @@
-export * from './analyser';
-export * from './default-analyser';
-export * from './table-integrity';
+export * from "./analyser";
+export * from "./default-analyser";
+export * from "./table-integrity";

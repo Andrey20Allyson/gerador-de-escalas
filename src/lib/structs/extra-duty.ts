@@ -30,7 +30,10 @@ export class ExtraDuty implements Iterable<[string, WorkerInfo]> {
     this.end = this.start + this.config.dutyDuration;
     this.offTimeEnd = this.end + this.config.dutyOffTimeToOrdinary;
     this._isNightly = this.start >= 18 || this.start < 7;
-    this.firstMonday = firstMondayFromYearAndMonth(this.config.year, this.config.month);
+    this.firstMonday = firstMondayFromYearAndMonth(
+      this.config.year,
+      this.config.month,
+    );
     this.weekDay = dayOfWeekFrom(this.firstMonday, this.day.index);
   }
 
@@ -66,7 +69,7 @@ export class ExtraDuty implements Iterable<[string, WorkerInfo]> {
 
   calculateTimeoffStart() {
     const { dutyPositionSize, dutyDuration } = this.config;
-  
+
     return this.start - dutyDuration * dutyPositionSize;
   }
 
@@ -77,7 +80,7 @@ export class ExtraDuty implements Iterable<[string, WorkerInfo]> {
   }
 
   iterPlaces(): Iterable<string> {
-    return this.workers.iterPlaceNames();    
+    return this.workers.iterPlaceNames();
   }
 
   gradQuantity(grad: Graduation): number {
@@ -85,7 +88,7 @@ export class ExtraDuty implements Iterable<[string, WorkerInfo]> {
   }
 
   graduateQuantity() {
-    return this.gradQuantity('insp') + this.gradQuantity('sub-insp');
+    return this.gradQuantity("insp") + this.gradQuantity("sub-insp");
   }
 
   genderQuantity(gender: Gender): number {
@@ -107,13 +110,15 @@ export class ExtraDuty implements Iterable<[string, WorkerInfo]> {
   next(count: number = 1): ExtraDuty | undefined {
     return this.day.at(this.index + count);
   }
-  
+
   prev(count: number = 1): ExtraDuty | undefined {
     return this.day.at(this.index - count);
   }
 
   *[Symbol.iterator](): Iterator<[string, WorkerInfo]> {
-    for (const [_, worker] of this.workers.placeFrom(this.config.currentPlace)) {
+    for (const [_, worker] of this.workers.placeFrom(
+      this.config.currentPlace,
+    )) {
       yield [worker.name, worker];
     }
   }
@@ -181,7 +186,7 @@ export class ExtraDuty implements Iterable<[string, WorkerInfo]> {
       for (let i = 1; i < duties.length; i++) {
         const duty = duties.at(i)!;
 
-        duty.desactivate()
+        duty.desactivate();
       }
     }
 

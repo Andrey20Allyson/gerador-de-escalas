@@ -1,6 +1,4 @@
-export type Result<V> =
-  | Result.Fail
-  | Result.Success<V>;
+export type Result<V> = Result.Fail | Result.Success<V>;
 
 export namespace Result {
   export type ErrorListenerFunction = (message: string) => void;
@@ -18,35 +16,38 @@ export namespace Result {
   };
 
   export type Fail = {
-    type: 'error';
+    type: "error";
     message: string;
   } & ResultBase<never>;
 
   export type Success<V> = {
-    type: 'value';
+    type: "value";
     value: V;
   } & ResultBase<V>;
 
   export function ok<V>(value: V): Success<V> {
     return {
-      unwrap: unwrap as ResultBase<V>['unwrap'],
-      onError: onError as ResultBase<V>['onError'],
-      type: 'value',
+      unwrap: unwrap as ResultBase<V>["unwrap"],
+      onError: onError as ResultBase<V>["onError"],
+      type: "value",
       value,
     };
   }
 
   export function error(message: string): Fail {
     return {
-      unwrap: unwrap as ResultBase<never>['unwrap'],
-      onError: onError as ResultBase<never>['onError'],
-      type: 'error',
+      unwrap: unwrap as ResultBase<never>["unwrap"],
+      onError: onError as ResultBase<never>["onError"],
+      type: "error",
       message,
     };
   }
 
-  function unwrap(this: Result<unknown>, listener?: ResultErrorListener): unknown {
-    if (this.type === 'error') {
+  function unwrap(
+    this: Result<unknown>,
+    listener?: ResultErrorListener,
+  ): unknown {
+    if (this.type === "error") {
       if (listener) this.onError(listener);
 
       throw new Error(this.message);
@@ -55,9 +56,12 @@ export namespace Result {
     return this.value;
   }
 
-  function onError(this: Result<unknown>, listener: ResultErrorListener): Result<unknown> {
-    if (this.type === 'error')
-      typeof listener === 'function'
+  function onError(
+    this: Result<unknown>,
+    listener: ResultErrorListener,
+  ): Result<unknown> {
+    if (this.type === "error")
+      typeof listener === "function"
         ? listener(this.message)
         : listener.onResultError(this.message);
 

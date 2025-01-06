@@ -1,9 +1,9 @@
-import { io } from '../auto-schedule';
-import { ipcMain } from 'electron';
-import fs from 'fs/promises';
-import { AppAssets } from './assets';
-import { APIHandler } from './ipc';
-import { IpcHandlerConsumer } from './mapping/app';
+import { io } from "../auto-schedule";
+import { ipcMain } from "electron";
+import fs from "fs/promises";
+import { AppAssets } from "./assets";
+import { APIHandler } from "./ipc";
+import { IpcHandlerConsumer } from "./mapping/app";
 
 io.setFileSystem(fs);
 

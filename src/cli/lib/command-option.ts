@@ -1,4 +1,3 @@
-
 export interface OptionInfo {
   readonly alias?: string;
   readonly description?: string;
@@ -6,7 +5,7 @@ export interface OptionInfo {
 }
 
 export class OptionInfoBuilder {
-  private constructor(private readonly optionInfo: OptionInfo = {}) { }
+  private constructor(private readonly optionInfo: OptionInfo = {}) {}
 
   describe(description: string) {
     return new OptionInfoBuilder({

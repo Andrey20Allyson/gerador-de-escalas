@@ -12,7 +12,7 @@ function CWPDECause(cause: CryptorWithPasswordDecryptErrorCause) {
 describe(CryptorWithPassword, () => {
   test(`Constructor shold throw a ${CryptorWithPasswordInitError.name} if password is empity`, () => {
     expect(() => new CryptorWithPassword({ password: "" })).toThrow(
-      CryptorWithPasswordInitError
+      CryptorWithPasswordInitError,
     );
   });
 
@@ -32,7 +32,7 @@ describe(CryptorWithPassword, () => {
   test(`Shold throw a ${
     CryptorWithPasswordDecryptError.name
   } with cause ${CWPDECause(
-    "probable-incorrect-password"
+    "probable-incorrect-password",
   )} if password is incorrect`, async () => {
     const cryptor1 = new CryptorWithPassword({
       password: "password123",
@@ -52,11 +52,11 @@ describe(CryptorWithPassword, () => {
       .catch((error) => {
         if (error instanceof CryptorWithPasswordDecryptError) {
           return expect(error.cause).toEqual(
-            "probable-incorrect-password" satisfies CryptorWithPasswordDecryptErrorCause
+            "probable-incorrect-password" satisfies CryptorWithPasswordDecryptErrorCause,
           );
         } else {
           expect.fail(
-            `Error don't is instance of ${CryptorWithPasswordDecryptError.name}`
+            `Error don't is instance of ${CryptorWithPasswordDecryptError.name}`,
           );
         }
       });

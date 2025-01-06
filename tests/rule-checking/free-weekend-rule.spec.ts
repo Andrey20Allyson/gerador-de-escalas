@@ -9,9 +9,9 @@ describe(FreeWeekendAssignmentRule, () => {
     const month = new Month(2024, 7);
 
     const rule = new FreeWeekendAssignmentRule();
-    
+
     const { table } = mock({ month });
-  
+
     const dutyAtSaturday = table.getDay(16).getDuty(1);
     const dutyAtSunday = table.getDay(17).getDuty(1);
 

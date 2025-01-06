@@ -1,5 +1,5 @@
 import React, { ChangeEvent, KeyboardEvent, useState } from "react";
-import { Dots } from 'react-activity';
+import { Dots } from "react-activity";
 import styled from "styled-components";
 
 export interface UnlockPageProps {
@@ -9,13 +9,9 @@ export interface UnlockPageProps {
 }
 
 export default function UnlockPage(props: UnlockPageProps) {
-  const {
-    onSubmit,
-    isLoading = false,
-    hasPasswordError = false,
-  } = props;
+  const { onSubmit, isLoading = false, hasPasswordError = false } = props;
 
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState("");
   const [hasPasswordEmpityError, setPasswordEmpityError] = useState(false);
 
   function handleChange(ev: ChangeEvent<HTMLInputElement>) {
@@ -32,7 +28,7 @@ export default function UnlockPage(props: UnlockPageProps) {
   }
 
   function handleKeyDown(ev: KeyboardEvent) {
-    if (ev.key === 'Enter') {
+    if (ev.key === "Enter") {
       submit();
     }
   }
@@ -42,12 +38,22 @@ export default function UnlockPage(props: UnlockPageProps) {
       <h1 className="title">Bem Vindo</h1>
       <label>
         Senha:
-        <input type="password" onChange={handleChange} onKeyDown={handleKeyDown} />
+        <input
+          type="password"
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+        />
       </label>
-      {hasPasswordEmpityError && <small className="error-message">senha não pode ser vazia!</small>}
-      {hasPasswordError && <small className="error-message">senha incorreta!</small>}
-      <button className="enter" onClick={submit}>Entrar</button>
-      {isLoading && <Dots color="#0caa17"/>}
+      {hasPasswordEmpityError && (
+        <small className="error-message">senha não pode ser vazia!</small>
+      )}
+      {hasPasswordError && (
+        <small className="error-message">senha incorreta!</small>
+      )}
+      <button className="enter" onClick={submit}>
+        Entrar
+      </button>
+      {isLoading && <Dots color="#0caa17" />}
     </StyledUnlockPage>
   );
 }
@@ -55,9 +61,9 @@ export default function UnlockPage(props: UnlockPageProps) {
 export const StyledUnlockPage = styled.div`
   display: flex;
   flex-direction: column;
-  gap: .2rem;
+  gap: 0.2rem;
   align-items: center;
-  
+
   & .title {
     margin-bottom: 2rem;
   }
@@ -69,16 +75,16 @@ export const StyledUnlockPage = styled.div`
   & .enter {
     background-color: #036b0a;
     color: #fff;
-    border-radius: .2rem;
+    border-radius: 0.2rem;
     border: none;
     cursor: pointer;
     transition: all 300ms;
-    padding: .3rem .4rem;
+    padding: 0.3rem 0.4rem;
 
     &:hover {
       background-color: #13921b;
     }
-    
+
     &:active {
       background-color: #035309;
     }
@@ -86,6 +92,6 @@ export const StyledUnlockPage = styled.div`
 
   & label {
     display: flex;
-    gap: .4rem;
+    gap: 0.4rem;
   }
 `;

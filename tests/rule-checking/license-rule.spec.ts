@@ -17,23 +17,19 @@ describe(LicenseAssignmentRule.name, () => {
     });
 
     worker.daysOfWork.applyLicenseInterval(
-      new LicenseInterval(
-        null,
-        Day.fromLastOf(year, month),
-      ),
+      new LicenseInterval(null, Day.fromLastOf(year, month)),
     );
 
-    expect(checker.canAssign(worker, duty))
-      .toBeFalsy();
+    expect(checker.canAssign(worker, duty)).toBeFalsy();
   });
 
   test(`Shold return true if duty don't collides with worker license`, () => {
     const { duty } = mock({
       duty: {
         dayIndex: 12,
-      }
+      },
     });
-    
+
     const { year, month } = duty.config;
 
     const worker = mock.worker({
@@ -41,13 +37,9 @@ describe(LicenseAssignmentRule.name, () => {
     });
 
     worker.daysOfWork.applyLicenseInterval(
-      new LicenseInterval(
-        null,
-        new Day(year, month, 10),
-      ),
+      new LicenseInterval(null, new Day(year, month, 10)),
     );
 
-    expect(checker.canAssign(worker, duty))
-      .toBeTruthy();
+    expect(checker.canAssign(worker, duty)).toBeTruthy();
   });
 });

@@ -3,13 +3,19 @@ import { ExtraDuty, ExtraEventName, WorkerInfo } from "../../../structs";
 import { AssignmentRule } from "../assignment-rule";
 
 export class OrdinaryAssignmentRule implements AssignmentRule {
-  private hasExtraFollowedByAOrdinary(worker: WorkerInfo, duty: ExtraDuty): boolean {
+  private hasExtraFollowedByAOrdinary(
+    worker: WorkerInfo,
+    duty: ExtraDuty,
+  ): boolean {
     const { day } = duty;
     const { workTime, daysOfWork } = worker;
 
     let unitedCount = 0;
 
-    if (daysOfWork.workOn(day.index - 1) && workTime.end - 24 - duty.start !== 0) {
+    if (
+      daysOfWork.workOn(day.index - 1) &&
+      workTime.end - 24 - duty.start !== 0
+    ) {
       unitedCount++;
     }
 
@@ -20,7 +26,7 @@ export class OrdinaryAssignmentRule implements AssignmentRule {
     if (unitedCount === 0) return false;
 
     const dutyBeforeOrdinary = day.table.findDuty(
-      otherDuty => {
+      (otherDuty) => {
         if (otherDuty.has(worker) === false) return false;
 
         if (daysOfWork.workOn(otherDuty.day.index)) {
@@ -40,13 +46,19 @@ export class OrdinaryAssignmentRule implements AssignmentRule {
     return dutyBeforeOrdinary !== undefined;
   }
 
-  private hasOrdinaryFollowedByAExtra(worker: WorkerInfo, duty: ExtraDuty): boolean {
+  private hasOrdinaryFollowedByAExtra(
+    worker: WorkerInfo,
+    duty: ExtraDuty,
+  ): boolean {
     const { day } = duty;
     const { workTime, daysOfWork } = worker;
 
     let unitedCount = 0;
 
-    if (daysOfWork.workOn(day.index + 1) && workTime.start + 24 - duty.end !== 0) {
+    if (
+      daysOfWork.workOn(day.index + 1) &&
+      workTime.start + 24 - duty.end !== 0
+    ) {
       unitedCount++;
     }
 
@@ -57,7 +69,7 @@ export class OrdinaryAssignmentRule implements AssignmentRule {
     if (unitedCount === 0) return false;
 
     const dutyBeforeOrdinary = day.table.findDuty(
-      otherDuty => {
+      (otherDuty) => {
         if (otherDuty.has(worker) === false) return false;
 
         if (daysOfWork.workOn(otherDuty.day.index)) {
@@ -80,8 +92,8 @@ export class OrdinaryAssignmentRule implements AssignmentRule {
   private hasOrdinaryAfter(worker: WorkerInfo, duty: ExtraDuty): boolean {
     const { day } = duty;
     const { daysOfWork } = worker;
-    const workTodayOrYesternay = daysOfWork.workOn(day.index)
-      || daysOfWork.workOn(day.index + 1);
+    const workTodayOrYesternay =
+      daysOfWork.workOn(day.index) || daysOfWork.workOn(day.index + 1);
 
     return workTodayOrYesternay;
   }
@@ -89,22 +101,27 @@ export class OrdinaryAssignmentRule implements AssignmentRule {
   private hasOrdinaryBefore(worker: WorkerInfo, duty: ExtraDuty): boolean {
     const { day } = duty;
     const { daysOfWork } = worker;
-    const workTodayOrYesternay = daysOfWork.workOn(day.index)
-      || daysOfWork.workOn(day.index - 1);
+    const workTodayOrYesternay =
+      daysOfWork.workOn(day.index) || daysOfWork.workOn(day.index - 1);
 
     return workTodayOrYesternay;
   }
 
   private hasntTimeoff(worker: WorkerInfo, duty: ExtraDuty) {
     const { currentPlace } = duty.config;
-    
-    if (currentPlace === ExtraEventName.JARDIM_BOTANICO_DAYTIME
-      || currentPlace === ExtraEventName.SUPPORT_TO_CITY_HALL) {
+
+    if (
+      currentPlace === ExtraEventName.JARDIM_BOTANICO_DAYTIME ||
+      currentPlace === ExtraEventName.SUPPORT_TO_CITY_HALL
+    ) {
       return true;
     }
 
     // TODO remove daily worker at extra with out timeoff from ordinary at jiquia
-    if (currentPlace === ExtraEventName.JIQUIA && worker.daysOfWork.isDailyWorker) {
+    if (
+      currentPlace === ExtraEventName.JIQUIA &&
+      worker.daysOfWork.isDailyWorker
+    ) {
       return true;
     }
 
@@ -117,9 +134,10 @@ export class OrdinaryAssignmentRule implements AssignmentRule {
 
     const { workTime } = worker;
 
-    if (this.hasntTimeoff(worker, duty)
-      && this.hasOrdinaryAfter(worker, duty) === false
-      && this.hasOrdinaryBefore(worker, duty) === false
+    if (
+      this.hasntTimeoff(worker, duty) &&
+      this.hasOrdinaryAfter(worker, duty) === false &&
+      this.hasOrdinaryBefore(worker, duty) === false
     ) {
       return duty.end > workTime.start && workTime.end > duty.start;
     }
@@ -133,9 +151,10 @@ export class OrdinaryAssignmentRule implements AssignmentRule {
 
     const { workTime } = worker;
 
-    if (this.hasntTimeoff(worker, duty)
-      && this.hasOrdinaryAfter(worker, duty) === false
-      && this.hasExtraFollowedByAOrdinary(worker, duty)
+    if (
+      this.hasntTimeoff(worker, duty) &&
+      this.hasOrdinaryAfter(worker, duty) === false &&
+      this.hasExtraFollowedByAOrdinary(worker, duty)
     ) {
       return workTime.end - 24 > duty.start;
     }
@@ -149,9 +168,10 @@ export class OrdinaryAssignmentRule implements AssignmentRule {
 
     const { workTime } = worker;
 
-    if (this.hasntTimeoff(worker, duty)
-      && this.hasOrdinaryBefore(worker, duty) === false
-      && this.hasOrdinaryFollowedByAExtra(worker, duty) === false
+    if (
+      this.hasntTimeoff(worker, duty) &&
+      this.hasOrdinaryBefore(worker, duty) === false &&
+      this.hasOrdinaryFollowedByAExtra(worker, duty) === false
     ) {
       return duty.end > workTime.start + 24;
     }
@@ -160,16 +180,20 @@ export class OrdinaryAssignmentRule implements AssignmentRule {
   }
 
   isDailyWorkerAtFridayAtNight(worker: WorkerInfo, duty: ExtraDuty) {
-    return worker.daysOfWork.isDailyWorker
-      && duty.isWeekDay(DayOfWeek.FRIDAY)
-      && duty.isNighttime();
+    return (
+      worker.daysOfWork.isDailyWorker &&
+      duty.isWeekDay(DayOfWeek.FRIDAY) &&
+      duty.isNighttime()
+    );
   }
 
   canAssign(worker: WorkerInfo, duty: ExtraDuty): boolean {
     if (this.isDailyWorkerAtFridayAtNight(worker, duty)) return false;
 
-    return !this.collidesWithTodayWork(worker, duty)
-      && !this.collidesWithTomorrowWork(worker, duty)
-      && !this.collidesWithYesterdayWork(worker, duty);
+    return (
+      !this.collidesWithTodayWork(worker, duty) &&
+      !this.collidesWithTomorrowWork(worker, duty) &&
+      !this.collidesWithYesterdayWork(worker, duty)
+    );
   }
 }

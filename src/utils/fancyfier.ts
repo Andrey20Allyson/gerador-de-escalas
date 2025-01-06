@@ -9,7 +9,7 @@ export class UnassignedWorkersMessageData {
     readonly table: ExtraDutyTable,
     readonly workers: WorkerInfo[],
     readonly places: string[],
-  ) { }
+  ) {}
 }
 
 export class Fancyfier {
@@ -18,30 +18,26 @@ export class Fancyfier {
 
     message.writeLn(`[ Table Integrity ]`);
 
-    if (integrity.failures.size > 0) message
-      .tab()
-      .writeLn(`[ ${chalk.red('Failures')} ]`);
+    if (integrity.failures.size > 0)
+      message.tab().writeLn(`[ ${chalk.red("Failures")} ]`);
 
     for (const [_, failure] of integrity.failures) {
-      message
-        .tab(2)
-        .write(chalk.red(failure.name));
+      message.tab(2).write(chalk.red(failure.name));
 
-      if (failure.accumulate > 0) message.write(` \u00d7 ${failure.accumulate}`);
+      if (failure.accumulate > 0)
+        message.write(` \u00d7 ${failure.accumulate}`);
 
       message.writeLn();
     }
 
-    if (integrity.warnings.size > 0) message
-      .tab()
-      .writeLn(`[ ${chalk.yellow('Warnings')} ]`);
+    if (integrity.warnings.size > 0)
+      message.tab().writeLn(`[ ${chalk.yellow("Warnings")} ]`);
 
     for (const [_, warning] of integrity.warnings) {
-      message
-        .tab(2)
-        .write(`'${chalk.yellow(warning.name)}'`);
+      message.tab(2).write(`'${chalk.yellow(warning.name)}'`);
 
-      if (warning.accumulate > 0) message.write(` \u00d7 ${warning.accumulate}`);
+      if (warning.accumulate > 0)
+        message.write(` \u00d7 ${warning.accumulate}`);
 
       message.writeLn(` - Penality +${warning.getPenalityAcc().toString()}`);
     }
@@ -50,7 +46,9 @@ export class Fancyfier {
       .tab()
       .writeLn(`[ Total Penality ]`)
       .tab(2)
-      .writeLn(`got ${integrity.getWarningPenality()} of limit ${integrity.maxAcceptablePenalityAcc}`)
+      .writeLn(
+        `got ${integrity.getWarningPenality()} of limit ${integrity.maxAcceptablePenalityAcc}`,
+      );
 
     return message.toString();
   }
@@ -58,7 +56,7 @@ export class Fancyfier {
   private _stringifyFreeWorkerMessage(data: UnassignedWorkersMessageData) {
     const { table, workers, places } = data;
     const message = new Text();
-    const initialEventName = table.config.currentPlace; 
+    const initialEventName = table.config.currentPlace;
 
     message.writeLn(`[ Unassigned Workers ]`);
 
@@ -68,8 +66,14 @@ export class Fancyfier {
       table.config.currentPlace = place;
 
       const unassignedWorkerDescriptions = workers
-        .filter(wr => wr.limit.of(place) > 0 && table.limiter.positionsLeftOf(wr) > 0)
-        .map(wr => `'${chalk.yellow(wr.name)}' - ${table.limiter.positionsLeftOf(wr)}/${wr.limit.of(place)}`);
+        .filter(
+          (wr) =>
+            wr.limit.of(place) > 0 && table.limiter.positionsLeftOf(wr) > 0,
+        )
+        .map(
+          (wr) =>
+            `'${chalk.yellow(wr.name)}' - ${table.limiter.positionsLeftOf(wr)}/${wr.limit.of(place)}`,
+        );
 
       if (unassignedWorkerDescriptions.length === 0) continue;
 
@@ -79,13 +83,13 @@ export class Fancyfier {
         .tab()
         .writeLn(`[ Place: '${chalk.green(table.config.currentPlace)}' ]`);
 
-      unassignedWorkerDescriptions.forEach(desc => message.tab(2).writeLn(desc));
+      unassignedWorkerDescriptions.forEach((desc) =>
+        message.tab(2).writeLn(desc),
+      );
     }
 
     if (everybodyIsAssigned) {
-      message
-        .tab()
-        .writeLn(chalk.greenBright(`All Workers Has Assigned!`))
+      message.tab().writeLn(chalk.greenBright(`All Workers Has Assigned!`));
     }
 
     table.config.currentPlace = initialEventName;

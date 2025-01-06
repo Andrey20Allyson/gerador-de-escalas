@@ -1,4 +1,7 @@
-import type { ExtraDutyTable, WorkerInfo } from "../../auto-schedule/extra-duty-lib";
+import type {
+  ExtraDutyTable,
+  WorkerInfo,
+} from "../../auto-schedule/extra-duty-lib";
 import { getNumOfDaysInMonth } from "../../utils";
 import { DayEditor, DayEditorData } from "./day-editor";
 import { normalizeIndex } from "./utils";
@@ -30,7 +33,7 @@ export interface CreateTableEditorOptions {
 }
 
 export class TableEditor {
-  constructor(readonly data: TableEditorData) { }
+  constructor(readonly data: TableEditorData) {}
 
   *iterDays(): Iterable<DayEditor> {
     for (let i = 0; i < this.data.nunOfDays; i++) {
@@ -46,7 +49,9 @@ export class TableEditor {
     }
   }
 
-  *filterWorker(filter: (worker: WorkerEditor) => boolean): Iterable<WorkerEditor> {
+  *filterWorker(
+    filter: (worker: WorkerEditor) => boolean,
+  ): Iterable<WorkerEditor> {
     for (const worker of this.iterWorkers()) {
       if (filter(worker)) yield worker;
     }
@@ -105,12 +110,15 @@ export class TableEditor {
 
     for (const workerEditor of this.iterWorkers()) {
       const workerInfo = workerMap.get(workerEditor.id());
-      if (!workerInfo) throw new Error(`Can't find worker data with id #${workerEditor.id()}!`);
+      if (!workerInfo)
+        throw new Error(
+          `Can't find worker data with id #${workerEditor.id()}!`,
+        );
 
       for (const dutyEditor of workerEditor.iterDuties()) {
         const duty = table
           .getDay(dutyEditor.day.index())
-          .getDuty(dutyEditor.index())
+          .getDuty(dutyEditor.index());
 
         duty.add(workerInfo);
       }
@@ -150,16 +158,15 @@ export class TableEditor {
 
     for (const day of table) {
       for (const duty of day) {
-        const dutyEditor = editor
-          .getDay(day.index)
-          .getDuty(duty.index);
-  
+        const dutyEditor = editor.getDay(day.index).getDuty(duty.index);
+
         dutyEditor.setTime(duty.start, duty.end);
 
-        for (const [_, { id }] of duty) {   
+        for (const [_, { id }] of duty) {
           const workerEditor = editor.getWorker(id);
-          if (!workerEditor) throw new Error(`Can't find worker data with id #${id}!`);
-    
+          if (!workerEditor)
+            throw new Error(`Can't find worker data with id #${id}!`);
+
           workerEditor.addDuty(dutyEditor.address());
           dutyEditor.addWorker(workerEditor);
         }
@@ -190,6 +197,6 @@ export class TableEditor {
       timeOffRule: true,
       femaleRule: true,
       inspRule: true,
-    }
+    };
   }
 }

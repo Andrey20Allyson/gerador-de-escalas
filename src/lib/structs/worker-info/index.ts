@@ -1,9 +1,12 @@
-import { WorkerRegistryRule, WorkerRegistryRuleTag } from '../../../persistence/entities/worker-registry';
-import { DaysOfWork } from '../days-of-work';
+import {
+  WorkerRegistryRule,
+  WorkerRegistryRuleTag,
+} from "../../../persistence/entities/worker-registry";
+import { DaysOfWork } from "../days-of-work";
 import { Limitable } from "../limitable";
 import { WorkLimit } from "../work-limit";
-import { WorkTime } from '../work-time';
-import { WorkerIdentifier } from '../worker-identifier';
+import { WorkTime } from "../work-time";
+import { WorkerIdentifier } from "../worker-identifier";
 
 export interface WorkerInfoConfig {
   readonly name: string;
@@ -21,10 +24,13 @@ export interface Clonable<T> {
   clone(): T;
 }
 
-export type WorkerToMapEntryCallback = (this: typeof WorkerInfo, worker: WorkerInfo) => [number, WorkerInfo];
+export type WorkerToMapEntryCallback = (
+  this: typeof WorkerInfo,
+  worker: WorkerInfo,
+) => [number, WorkerInfo];
 
-export type Graduation = 'sub-insp' | 'insp' | 'gcm';
-export type Gender = 'N/A' | 'female' | 'male';
+export type Graduation = "sub-insp" | "insp" | "gcm";
+export type Gender = "N/A" | "female" | "male";
 
 export class WorkerInfo implements Limitable, Clonable<WorkerInfo> {
   protected readonly _rules: Map<WorkerRegistryRuleTag, WorkerRegistryRule[]>;
@@ -46,7 +52,7 @@ export class WorkerInfo implements Limitable, Clonable<WorkerInfo> {
 
     this.graduation = config.graduation;
     this.gender = config.gender;
-    
+
     this.id = this.identifier.id;
 
     this._rules = new Map();
@@ -61,12 +67,14 @@ export class WorkerInfo implements Limitable, Clonable<WorkerInfo> {
 
         this._rules.set(rule.tag, ruleStack);
       }
-      
+
       ruleStack.push(rule);
     }
   }
 
-  getRuleStack<Rule extends WorkerRegistryRule = WorkerRegistryRule>(tag: Rule['tag']): Array<Rule> | undefined {
+  getRuleStack<Rule extends WorkerRegistryRule = WorkerRegistryRule>(
+    tag: Rule["tag"],
+  ): Array<Rule> | undefined {
     const ruleStack = this._rules.get(tag) as Array<Rule> | undefined;
 
     return ruleStack;
@@ -85,11 +93,11 @@ export class WorkerInfo implements Limitable, Clonable<WorkerInfo> {
   }
 
   isInsp(): boolean {
-    return this.graduation === 'insp';
+    return this.graduation === "insp";
   }
 
   isSubInsp(): boolean {
-    return this.graduation === 'sub-insp';
+    return this.graduation === "sub-insp";
   }
 
   isDailyWorker(): boolean {
@@ -97,7 +105,16 @@ export class WorkerInfo implements Limitable, Clonable<WorkerInfo> {
   }
 
   clone() {
-    const { daysOfWork, graduation: grad, individualId, name, post, workTime, gender, identifier } = this.config;
+    const {
+      daysOfWork,
+      graduation: grad,
+      individualId,
+      name,
+      post,
+      workTime,
+      gender,
+      identifier,
+    } = this.config;
 
     const config: WorkerInfoConfig = {
       daysOfWork: daysOfWork.clone(),
@@ -112,15 +129,14 @@ export class WorkerInfo implements Limitable, Clonable<WorkerInfo> {
 
     const clone = new WorkerInfo(config);
 
-    clone.addRules(this.iterRules())
+    clone.addRules(this.iterRules());
 
     return clone;
   }
 
   static mapFrom(workers: WorkerInfo[]): Map<number, WorkerInfo> {
-    return new Map(workers.map(worker => [worker.id, worker] as const));
+    return new Map(workers.map((worker) => [worker.id, worker] as const));
   }
 }
 
-export * from './parser';
-
+export * from "./parser";

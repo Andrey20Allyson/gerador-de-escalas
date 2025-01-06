@@ -1,30 +1,32 @@
-import { Command } from 'commander';
-import { context } from 'esbuild';
-import { ProgramInitializer } from 'index';
-import ts from 'typescript';
+import { Command } from "commander";
+import { context } from "esbuild";
+import { ProgramInitializer } from "index";
+import ts from "typescript";
 
 async function runDevBundle() {
   const ctx = await context({
     bundle: true,
-    entryPoints: [
-      './src/renderer/index.ts',
-    ],
-    target: 'es2020',
+    entryPoints: ["./src/renderer/index.ts"],
+    target: "es2020",
     sourcemap: true,
-    outdir: './public'
+    outdir: "./public",
   });
 
   await ctx.watch();
 }
 
 const formatHost: ts.FormatDiagnosticsHost = {
-  getCanonicalFileName: path => path,
+  getCanonicalFileName: (path) => path,
   getCurrentDirectory: ts.sys.getCurrentDirectory,
-  getNewLine: () => ts.sys.newLine
+  getNewLine: () => ts.sys.newLine,
 };
 
 function runDevBuild(onBuild?: () => void) {
-  const configPath = ts.findConfigFile('./src/app', ts.sys.fileExists, 'tsconfig.json');
+  const configPath = ts.findConfigFile(
+    "./src/app",
+    ts.sys.fileExists,
+    "tsconfig.json",
+  );
 
   if (!configPath) {
     throw new Error("Could not find a valid 'tsconfig.json'.");
@@ -43,7 +45,7 @@ function runDevBuild(onBuild?: () => void) {
 
   const origPostProgramCreate = host.afterProgramCreate;
 
-  host.afterProgramCreate = program => {
+  host.afterProgramCreate = (program) => {
     onBuild?.();
     origPostProgramCreate!(program);
   };
@@ -52,7 +54,15 @@ function runDevBuild(onBuild?: () => void) {
 }
 
 function reportDiagnostic(diagnostic: ts.Diagnostic) {
-  console.error("Error", diagnostic.code, ":", ts.flattenDiagnosticMessageText(diagnostic.messageText, formatHost.getNewLine()));
+  console.error(
+    "Error",
+    diagnostic.code,
+    ":",
+    ts.flattenDiagnosticMessageText(
+      diagnostic.messageText,
+      formatHost.getNewLine(),
+    ),
+  );
 }
 
 function reportWatchStatusChanged(diagnostic: ts.Diagnostic) {
@@ -62,8 +72,8 @@ function reportWatchStatusChanged(diagnostic: ts.Diagnostic) {
 export class DevBuildProgramInitializer implements ProgramInitializer {
   initialize(program: Command): void {
     program
-      .command('build:dev')
-      .description('build for development')
+      .command("build:dev")
+      .description("build for development")
       .action(async () => {
         await runDevBundle();
 

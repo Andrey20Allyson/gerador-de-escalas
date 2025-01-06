@@ -1,15 +1,15 @@
 export const weekDayLabelMap = [
-  'Dom',
-  'Seg',
-  'Ter',
-  'Qua',
-  'Qui',
-  'Sex',
-  'Sab'
+  "Dom",
+  "Seg",
+  "Ter",
+  "Qua",
+  "Qui",
+  "Sex",
+  "Sab",
 ];
 
 export function getWeekDayLabel(weekDay: number) {
-  return weekDayLabelMap.at(weekDay) ?? '???';
+  return weekDayLabelMap.at(weekDay) ?? "???";
 }
 
 export function getFirstSundayOfMonth(year: number, month: number): Date {

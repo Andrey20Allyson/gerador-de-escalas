@@ -9,7 +9,10 @@ export class ResultError {
   readonly type = ResultErrorType;
   readonly name: string;
 
-  constructor(readonly message?: string, name?: string) {
+  constructor(
+    readonly message?: string,
+    name?: string,
+  ) {
     this.name = name ?? this.constructor.name;
   }
 
@@ -28,9 +31,9 @@ export class ResultError {
     if (value instanceof ResultError) return value;
 
     if (value instanceof Error) {
-      return new ResultError(value.message, value.name); 
+      return new ResultError(value.message, value.name);
     }
-    
+
     return new ResultError(String(value));
   }
 }
@@ -43,16 +46,22 @@ export abstract class Result {
     if (ResultError.isError(result)) throw result[CreateError]();
     return result as T;
   }
-  
-  static all<R extends readonly unknown[] | []>(results: R): ResultType<{ -readonly[K in keyof R]: SuccessResult<R[K]> }, FailResult<R[keyof R]>> {
+
+  static all<R extends readonly unknown[] | []>(
+    results: R,
+  ): ResultType<
+    { -readonly [K in keyof R]: SuccessResult<R[K]> },
+    FailResult<R[keyof R]>
+  > {
     for (let i = 0; i < results.length; i++) {
-      if (ResultError.isError(results[i])) return results[i] as FailResult<R[keyof R]>;
+      if (ResultError.isError(results[i]))
+        return results[i] as FailResult<R[keyof R]>;
     }
-  
-    return results as { -readonly[K in keyof R]: SuccessResult<R[K]> };
+
+    return results as { -readonly [K in keyof R]: SuccessResult<R[K]> };
   }
-  
+
   static optional<T>(result: ResultType<T>): T | null {
-    return ResultError.isError(result) ? null : result as T;
+    return ResultError.isError(result) ? null : (result as T);
   }
 }

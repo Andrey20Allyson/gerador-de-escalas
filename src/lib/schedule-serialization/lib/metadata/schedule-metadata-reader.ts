@@ -4,20 +4,20 @@ import { JsonDeserializationStratergy } from "../../deserializers/stratergies/js
 import { BookHandler } from "../../../xlsx-handlers";
 
 export class ScheduleMetadataReader {
-  constructor(readonly book: BookHandler) { }
+  constructor(readonly book: BookHandler) {}
 
   async read(): Promise<ExtraDutyTable> {
-    const sheet = this.book.getSheet('__ASG_META__');
+    const sheet = this.book.getSheet("__ASG_META__");
     if (sheet == null) {
       throw new Error();
     }
 
-    const metadataString = sheet.at('A', 1).as('string').value;
+    const metadataString = sheet.at("A", 1).as("string").value;
     const metadataBuffer = Buffer.from(metadataString);
 
-    const table = await DeserializationContext
-      .using(JsonDeserializationStratergy)
-      .deserialize(metadataBuffer);
+    const table = await DeserializationContext.using(
+      JsonDeserializationStratergy,
+    ).deserialize(metadataBuffer);
 
     return table;
   }

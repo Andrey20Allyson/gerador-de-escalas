@@ -7,7 +7,11 @@ export type BigIntParserErrorMessageMap = {
   INVALID_TYPE: string;
 };
 
-export class BigIntParser extends ValueParser<unknown, bigint, BigIntParserErrorMessageMap> {
+export class BigIntParser extends ValueParser<
+  unknown,
+  bigint,
+  BigIntParserErrorMessageMap
+> {
   tryParse(value: number | string | boolean | bigint) {
     try {
       return Result.ok(BigInt(value));
@@ -19,11 +23,17 @@ export class BigIntParser extends ValueParser<unknown, bigint, BigIntParserError
   parse(value: unknown): Result<bigint> {
     switch (typeof value) {
       case "string":
-        return this.tryParse(value) ?? Result.error(this.message('INVALID_STRING', value));
+        return (
+          this.tryParse(value) ??
+          Result.error(this.message("INVALID_STRING", value))
+        );
       case "number":
         let truncNumber = Math.trunc(value);
 
-        return this.tryParse(truncNumber) ?? Result.error(this.message('INVALID_NUMBER', value.toString()));
+        return (
+          this.tryParse(truncNumber) ??
+          Result.error(this.message("INVALID_NUMBER", value.toString()))
+        );
       case "boolean":
         return Result.ok(BigInt(value));
       case "bigint":
@@ -32,7 +42,7 @@ export class BigIntParser extends ValueParser<unknown, bigint, BigIntParserError
       case "undefined":
       case "object":
       case "function":
-        return Result.error(this.message('INVALID_TYPE', typeof value));
+        return Result.error(this.message("INVALID_TYPE", typeof value));
     }
   }
 }

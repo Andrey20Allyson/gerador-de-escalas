@@ -9,22 +9,25 @@ export class CorrectWorkerAllocationChecker implements IntegrityChecker {
   constructor(
     readonly basePenality: number = 12000,
     readonly extraEventAllowedTimeRule = new ExtraEventAllowedTimeRule(),
-  ) { }
+  ) {}
 
   calculatePenality(workerPositionsLeft: number) {
-    return this.basePenality * (1.3 * workerPositionsLeft ** 2)
+    return this.basePenality * (1.3 * workerPositionsLeft ** 2);
   }
 
   isWorkerInsuficient(duty: ExtraDuty) {
     if (duty.isActive() === false) return false;
 
-    if (this.extraEventAllowedTimeRule.canAssign(undefined, duty) === false) return true;
+    if (this.extraEventAllowedTimeRule.canAssign(undefined, duty) === false)
+      return true;
 
     return duty.getSize() < 2;
   }
 
   check(integrity: TableIntegrity): void {
-    const isWorkerInsuficient = Array.from(integrity.table.iterDuties()).some(duty => this.isWorkerInsuficient(duty));
+    const isWorkerInsuficient = Array.from(integrity.table.iterDuties()).some(
+      (duty) => this.isWorkerInsuficient(duty),
+    );
 
     if (!isWorkerInsuficient) return;
 
@@ -32,9 +35,13 @@ export class CorrectWorkerAllocationChecker implements IntegrityChecker {
       if (worker.daysOfWork.hasDaysOff() === false) continue;
       if (integrity.table.limiter.positionsLeftOf(worker) <= 0) continue;
 
-      const penality = this.calculatePenality(integrity.table.limiter.positionsLeftOf(worker));
+      const penality = this.calculatePenality(
+        integrity.table.limiter.positionsLeftOf(worker),
+      );
 
-      integrity.registry(new IntegrityWarning(`workers hasn't correctly allocated`, penality));
+      integrity.registry(
+        new IntegrityWarning(`workers hasn't correctly allocated`, penality),
+      );
     }
   }
 }

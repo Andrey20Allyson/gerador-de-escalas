@@ -1,7 +1,7 @@
-import { app, BrowserWindow } from 'electron';
-import { loadAPI } from './api';
-import { fromRoot } from '../utils/fromRoot';
-import { Day } from 'src/lib/structs/day';
+import { app, BrowserWindow } from "electron";
+import { loadAPI } from "./api";
+import { fromRoot } from "../utils/fromRoot";
+import { Day } from "src/lib/structs/day";
 
 async function createWindow() {
   const window = new BrowserWindow({
@@ -11,20 +11,20 @@ async function createWindow() {
     minHeight: 900,
     autoHideMenuBar: true,
     // titleBarStyle: 'hidden',
-    icon: fromRoot('./public/assets/images/brasao.png'),
+    icon: fromRoot("./public/assets/images/brasao.png"),
     fullscreenable: true,
     webPreferences: {
-      preload: fromRoot('./dist/preload.js'),
+      preload: fromRoot("./dist/preload.js"),
     },
   });
 
-  await window.loadFile(fromRoot('./public/index.html'));
+  await window.loadFile(fromRoot("./public/index.html"));
 
   return window;
 }
 
 async function main() {
-  app.on('activate', () => {
+  app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     }
@@ -35,10 +35,10 @@ async function main() {
 }
 
 function quit() {
-  if (process.platform !== 'darwin') {
+  if (process.platform !== "darwin") {
     app.quit();
   }
 }
 
-app.on('ready', main);
-app.on('window-all-closed', quit);
+app.on("ready", main);
+app.on("window-all-closed", quit);

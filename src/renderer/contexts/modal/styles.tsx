@@ -13,7 +13,7 @@ export const StyledModalBackground = styled.section<StyledModalBackGroundProps>`
       opacity: 1;
     }
   }
-  
+
   @keyframes modal-close {
     0% {
       opacity: 1;
@@ -33,6 +33,6 @@ export const StyledModalBackground = styled.section<StyledModalBackGroundProps>`
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: ${props => props.closing ? 'modal-close' : 'modal-open'} 200ms;
-  opacity: ${props => props.closing ? 0 : 1};
+  animation: ${(props) => (props.closing ? "modal-close" : "modal-open")} 200ms;
+  opacity: ${(props) => (props.closing ? 0 : 1)};
 `;

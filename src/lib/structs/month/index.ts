@@ -1,5 +1,13 @@
-import { Weekend, firstMonday, firstMondayFromYearAndMonth, getNumOfDaysInMonth, isInteger, thisMonth, thisYear } from '../../../../utils';
-import { Year } from '../year';
+import {
+  Weekend,
+  firstMonday,
+  firstMondayFromYearAndMonth,
+  getNumOfDaysInMonth,
+  isInteger,
+  thisMonth,
+  thisYear,
+} from "../../../../utils";
+import { Year } from "../year";
 
 export class Month {
   private _numOfDays: number | null = null;
@@ -18,7 +26,8 @@ export class Month {
   }
 
   getNumOfDays(): number {
-    if (this._numOfDays === null) this._numOfDays = getNumOfDaysInMonth(this.index, this.year);
+    if (this._numOfDays === null)
+      this._numOfDays = getNumOfDaysInMonth(this.index, this.year);
 
     return this._numOfDays;
   }
@@ -28,7 +37,8 @@ export class Month {
   }
 
   getFirstMonday() {
-    if (this._firstMonday === null) this._firstMonday = firstMondayFromYearAndMonth(this.year, this.index);
+    if (this._firstMonday === null)
+      this._firstMonday = firstMondayFromYearAndMonth(this.year, this.index);
 
     return this._firstMonday;
   }
@@ -71,7 +81,7 @@ export class Month {
     if (index > lastIndex) {
       return Month.calculate(year + 1, index - lastIndex - 1);
     } else if (index < 0) {
-      return Month.calculate(year - 1, index + lastIndex + 1)
+      return Month.calculate(year - 1, index + lastIndex + 1);
     }
 
     return new Month(year, index);
@@ -86,4 +96,4 @@ export class Month {
   }
 }
 
-export * from './parser';
+export * from "./parser";

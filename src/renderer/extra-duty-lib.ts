@@ -1,1 +1,1 @@
-export type * from '../apploader/auto-schedule/extra-duty-lib/structs/worker-info';
+export type * from "../apploader/auto-schedule/extra-duty-lib/structs/worker-info";

@@ -5,7 +5,7 @@ export const StyledRegistryGridBody = styled.section`
   display: flex;
   align-items: stretch;
 
-  &>.scrollable-container {
+  & > .scrollable-container {
     flex: 1;
   }
 `;
@@ -20,5 +20,5 @@ export const StyledRegistryGrid = styled.span`
   grid-template-columns: repeat(auto-fill, minmax(min-content, 22rem));
   justify-content: center;
   justify-items: center;
-  gap: .8rem;
+  gap: 0.8rem;
 `;

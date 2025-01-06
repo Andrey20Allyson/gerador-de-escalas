@@ -13,8 +13,8 @@ export const StyledAvaliableWorkerSearchBody = styled.span`
   display: flex;
   align-items: center;
   width: fit-content;
-  border-top-right-radius: .3rem;
-  padding: 0 .2rem;
+  border-top-right-radius: 0.3rem;
+  padding: 0 0.2rem;
   background-color: #00000006;
 `;
 
@@ -24,7 +24,7 @@ export const StyledAvaliableWorkersScrollable = styled.div`
   overflow-y: scroll;
   position: absolute;
   display: flex;
-  gap: .4rem;
+  gap: 0.4rem;
   height: 85%;
   width: 100%;
 
@@ -37,7 +37,7 @@ export const StyledAvaliableWorkersScrollable = styled.div`
     border-radius: 4px;
     width: 8px;
   }
-  
+
   &:hover::-webkit-scrollbar-thumb {
     background-color: #ececec78;
   }

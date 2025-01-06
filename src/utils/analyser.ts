@@ -1,13 +1,21 @@
 import chalk from "chalk";
-import { Text } from './text';
-import { ExtraDuty, ExtraDutyTable, ExtraEventName, WorkerInfo } from "../lib/extra-duty-lib";
+import { Text } from "./text";
+import {
+  ExtraDuty,
+  ExtraDutyTable,
+  ExtraEventName,
+  WorkerInfo,
+} from "../lib/extra-duty-lib";
 import { enumerate } from "./iteration";
 import { Day } from "../lib/extra-duty-lib/structs/day";
 
-export type StringReducer = (text: string) => string
+export type StringReducer = (text: string) => string;
 
 export class DutyFormattingStream {
-  constructor(readonly duty: ExtraDuty, readonly text: string) { }
+  constructor(
+    readonly duty: ExtraDuty,
+    readonly text: string,
+  ) {}
 
   change(text: string) {
     return new DutyFormattingStream(this.duty, text);
@@ -34,7 +42,9 @@ export class DutyFormattingStream {
   }
 }
 
-export function dutyToColored(stream: DutyFormattingStream): DutyFormattingStream {
+export function dutyToColored(
+  stream: DutyFormattingStream,
+): DutyFormattingStream {
   const { duty } = stream;
   const size = duty.getSize();
 
@@ -52,23 +62,35 @@ export function dutyToColored(stream: DutyFormattingStream): DutyFormattingStrea
   return stream.transform(chalk.red);
 }
 
-export function dutyToRuleIndicators(stream: DutyFormattingStream): DutyFormattingStream {
+export function dutyToRuleIndicators(
+  stream: DutyFormattingStream,
+): DutyFormattingStream {
   const { duty } = stream;
 
-  const femaleOnlyIndicatorColor = duty.genderIsOnly('female') ? chalk.redBright : chalk.grey;
-  const gcmOnlyIndicatorColor = duty.gradIsOnly('gcm') ? chalk.redBright : chalk.grey;
+  const femaleOnlyIndicatorColor = duty.genderIsOnly("female")
+    ? chalk.redBright
+    : chalk.grey;
+  const gcmOnlyIndicatorColor = duty.gradIsOnly("gcm")
+    ? chalk.redBright
+    : chalk.grey;
 
   return stream
-    .sufix('-')
-    .sufix(femaleOnlyIndicatorColor('F'))
-    .sufix(gcmOnlyIndicatorColor('G'));
+    .sufix("-")
+    .sufix(femaleOnlyIndicatorColor("F"))
+    .sufix(gcmOnlyIndicatorColor("G"));
 }
 
-export function analyseResult(table: ExtraDutyTable, colors = true, events: string[] = [ExtraEventName.JIQUIA]) {
+export function analyseResult(
+  table: ExtraDutyTable,
+  colors = true,
+  events: string[] = [ExtraEventName.JIQUIA],
+) {
   let analysisText = new Text();
   const initialEventName = table.config.currentPlace;
 
-  analysisText.writeLn(chalk.underline(`[ Numero de funcionários em cada turno do dia ]`));
+  analysisText.writeLn(
+    chalk.underline(`[ Numero de funcionários em cada turno do dia ]`),
+  );
 
   const workersWithPositionsLeft = new Set<WorkerInfo>();
 
@@ -85,7 +107,8 @@ export function analyseResult(table: ExtraDutyTable, colors = true, events: stri
         const size = duty.getSize();
 
         for (const [_, worker] of duty) {
-          if (table.limiter.positionsLeftOf(worker) > 0) workersWithPositionsLeft.add(worker);
+          if (table.limiter.positionsLeftOf(worker) > 0)
+            workersWithPositionsLeft.add(worker);
         }
 
         numOfWorkersInThisDay += size;
@@ -96,14 +119,18 @@ export function analyseResult(table: ExtraDutyTable, colors = true, events: stri
         .map(dutyToColored)
         .map(dutyToRuleIndicators)
         .map(DutyFormattingStream.toString)
-        .join(' , ');
+        .join(" , ");
 
       formatedDutySizesList.push(formattedDutyRowSlice);
     }
 
     const formatedDay = chalk.white(day.date.toString());
 
-    analysisText.writeLn(chalk.gray(`  (${formatedDay}) => [ ${formatedDutySizesList.join(' ] | [ ')} ]`));
+    analysisText.writeLn(
+      chalk.gray(
+        `  (${formatedDay}) => [ ${formatedDutySizesList.join(" ] | [ ")} ]`,
+      ),
+    );
   }
 
   table.config.currentPlace = initialEventName;

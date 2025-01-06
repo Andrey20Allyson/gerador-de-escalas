@@ -1,4 +1,8 @@
-import { DayOfExtraDuty, Graduation, WorkerInfo } from "../../../../extra-duty-lib";
+import {
+  DayOfExtraDuty,
+  Graduation,
+  WorkerInfo,
+} from "../../../../extra-duty-lib";
 import { enumerate, iterReverse } from "../../../../../utils";
 import { WorkerDuty } from "./worker-duty";
 
@@ -17,29 +21,34 @@ export interface DayGrid {
 
 export class DayGridFromatter {
   protected readonly _graduationPrefixMap: Record<Graduation, string> = {
-    "sub-insp": 'SI',
-    gcm: 'GCM',
-    insp: 'INSP.'
+    "sub-insp": "SI",
+    gcm: "GCM",
+    insp: "INSP.",
   };
 
   protected readonly _weekDayNames = [
-    'Domingo',
-    'Segunda',
-    'Terça',
-    'Quarta',
-    'Quinta',
-    'Sexta',
-    'Sábado',
+    "Domingo",
+    "Segunda",
+    "Terça",
+    "Quarta",
+    "Quinta",
+    "Sexta",
+    "Sábado",
   ];
 
   format(day: DayOfExtraDuty, workerDuties: WorkerDuty[]): DayGrid {
     const weekDay = day.date.getWeekDay();
 
-    const weekDayName = this._weekDayNames.at(weekDay) ?? 'Unknow';
+    const weekDayName = this._weekDayNames.at(weekDay) ?? "Unknow";
 
     const title = `Dia ${day.date} (${weekDayName})`;
 
-    const grid: DayGrid = { title, entries: [], numOfDiurnal: 0, numOfNightly: 0 };
+    const grid: DayGrid = {
+      title,
+      entries: [],
+      numOfDiurnal: 0,
+      numOfNightly: 0,
+    };
 
     for (const duty of workerDuties) {
       grid.entries.push(this._toDayGridEntry(duty, duty.worker));
@@ -54,7 +63,10 @@ export class DayGridFromatter {
     return grid;
   }
 
-  protected _toDayGridEntry(duty: WorkerDuty, worker: WorkerInfo): DayGridEntry {
+  protected _toDayGridEntry(
+    duty: WorkerDuty,
+    worker: WorkerInfo,
+  ): DayGridEntry {
     const normalizedDutyStartTime = duty.start % 24;
     const normalizedDutyEndTime = duty.end % 24;
 
@@ -68,20 +80,22 @@ export class DayGridFromatter {
   }
 
   protected _toDutyDesc(start: number, end: number) {
-    const prefix = start >= 7 && start < 18 ? 'Diurno' : 'Noturno';
-  
-    return `${prefix} (${start.toString().padStart(2, '0')} ÀS ${end.toString().padStart(2, '0')}h)`;
+    const prefix = start >= 7 && start < 18 ? "Diurno" : "Noturno";
+
+    return `${prefix} (${start.toString().padStart(2, "0")} ÀS ${end.toString().padStart(2, "0")}h)`;
   }
 
   protected _parseWorkerID(id: number): string {
     const stringifiedID = id.toString();
-    let out = '-' + stringifiedID.slice(-1);
-  
-    for (const [i, digit] of enumerate(iterReverse(stringifiedID.slice(0, -1)))) {
-      const separator = i > 0 && i % 3 === 0 ? '.' : '';
+    let out = "-" + stringifiedID.slice(-1);
+
+    for (const [i, digit] of enumerate(
+      iterReverse(stringifiedID.slice(0, -1)),
+    )) {
+      const separator = i > 0 && i % 3 === 0 ? "." : "";
       out = digit + separator + out;
     }
-  
+
     return out;
   }
 }

@@ -1,6 +1,6 @@
-import { describe, expect, test } from 'vitest';
-import { ExtraDuty } from 'src/lib/structs/extra-duty';
-import { mock } from '../mocking/mocker';
+import { describe, expect, test } from "vitest";
+import { ExtraDuty } from "src/lib/structs/extra-duty";
+import { mock } from "../mocking/mocker";
 
 describe(ExtraDuty.name, () => {
   describe(ExtraDuty.prototype.getSize.name, () => {
@@ -11,8 +11,7 @@ describe(ExtraDuty.name, () => {
       duty.add(mock.worker());
       duty.add(mock.worker());
 
-      expect(duty.getSize())
-        .toStrictEqual(3);
+      expect(duty.getSize()).toStrictEqual(3);
     });
   });
 });

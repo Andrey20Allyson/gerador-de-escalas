@@ -11,7 +11,7 @@ export class CellAddress {
   constructor(
     readonly collumn: string,
     readonly line: number,
-  ) { }
+  ) {}
 
   stringify() {
     return CellAddress.stringify(this.collumn, this.line);

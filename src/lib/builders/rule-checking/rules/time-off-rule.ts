@@ -24,11 +24,16 @@ export class TimeOffAssignmentRule implements AssignmentRule {
   }
 
   canAssign(worker: WorkerInfo, duty: ExtraDuty): boolean {
-    if (duty.config.dutyMinDistance < 1) throw new Error(`Distance can't be smaller than 1! distance: ${duty.config.dutyMinDistance}`);
+    if (duty.config.dutyMinDistance < 1)
+      throw new Error(
+        `Distance can't be smaller than 1! distance: ${duty.config.dutyMinDistance}`,
+      );
 
     const place = duty.config.currentPlace;
 
-    return this.collidesWithTimeOff({ worker, duty, place }) === false
-      && this.collidesWithTimeOff({ worker, duty, distance: 1 }) === false;
+    return (
+      this.collidesWithTimeOff({ worker, duty, place }) === false &&
+      this.collidesWithTimeOff({ worker, duty, distance: 1 }) === false
+    );
   }
 }

@@ -7,17 +7,21 @@ export class PositionLimiter {
   private places: QuantityStorage<number>;
   readonly config: ExtraDutyTableConfig;
 
-  constructor(
-    readonly table: ExtraDutyTable,
-  ) {
+  constructor(readonly table: ExtraDutyTable) {
     this.config = table.config;
     this.places = new QuantityStorage<number>(() => ({}));
   }
 
   isLimitOut(limitable: Limitable): boolean {
-    const workerPositions = this.places.quantityFrom(this.config.currentPlace, limitable.id);
-    
-    return workerPositions + this.config.dutyPositionSize > limitable.limit.of(this.config.currentPlace);
+    const workerPositions = this.places.quantityFrom(
+      this.config.currentPlace,
+      limitable.id,
+    );
+
+    return (
+      workerPositions + this.config.dutyPositionSize >
+      limitable.limit.of(this.config.currentPlace)
+    );
   }
 
   positionsOf(identifiable: Identifiable): number {
@@ -25,7 +29,9 @@ export class PositionLimiter {
   }
 
   positionsLeftOf(limitable: Limitable): number {
-    return limitable.limit.of(this.config.currentPlace) - this.positionsOf(limitable);
+    return (
+      limitable.limit.of(this.config.currentPlace) - this.positionsOf(limitable)
+    );
   }
 
   increase(identifiable: Identifiable): number {
@@ -33,7 +39,11 @@ export class PositionLimiter {
   }
 
   increaseFrom(place: string, identifiable: Identifiable): number {
-    return this.places.increment(place, identifiable.id, this.config.dutyPositionSize);
+    return this.places.increment(
+      place,
+      identifiable.id,
+      this.config.dutyPositionSize,
+    );
   }
 
   decrease(identifiable: Identifiable): number {
@@ -41,7 +51,11 @@ export class PositionLimiter {
   }
 
   decreaseFrom(place: string, identifiable: Identifiable): number {
-    return this.places.decrement(place, identifiable.id, this.config.dutyPositionSize);
+    return this.places.decrement(
+      place,
+      identifiable.id,
+      this.config.dutyPositionSize,
+    );
   }
 
   set(identifiable: Identifiable, value: number): this {
@@ -61,10 +75,10 @@ export class PositionLimiter {
   clear(place?: string): void {
     if (place !== undefined) {
       this.places.reset(place);
-      
+
       return;
     }
-    
+
     this.places.clear();
   }
 }

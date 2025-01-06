@@ -1,4 +1,8 @@
-import { CollectionReference, Query, QueryDocumentSnapshot } from "firebase-admin/firestore";
+import {
+  CollectionReference,
+  Query,
+  QueryDocumentSnapshot,
+} from "firebase-admin/firestore";
 import { readFile } from "fs/promises";
 import path from "path";
 import { WorkerRegistryChunk, WorkerRegistryChunkData } from "./chunk";
@@ -12,44 +16,39 @@ export class ChunkNotFoundError extends Error {
   }
 
   static reject(idx: number): Promise<never> {
-    return Promise.reject(new ChunkNotFoundError(idx))
+    return Promise.reject(new ChunkNotFoundError(idx));
   }
 }
 
 export class WorkerRegistryChunkStorage {
-  constructor(
-    readonly collection: CollectionReference,
-  ) { }
+  constructor(readonly collection: CollectionReference) {}
 
   cacheDirOf(idx: number): string {
-    return path.resolve(
-      CACHE_DIR,
-      `worker-registries.chunk-${idx}.json`,
-    );
+    return path.resolve(CACHE_DIR, `worker-registries.chunk-${idx}.json`);
   }
 
   query(idx: number): Query<WorkerRegistryChunkData> {
     return this.collection
-      .where('type', '==', 'registry-chunk')
-      .where('idx', '==', idx)
+      .where("type", "==", "registry-chunk")
+      .where("idx", "==", idx)
       .limit(1) as Query<WorkerRegistryChunkData>;
   }
 
   async versionOf(idx: number): Promise<number> {
-    const doc = await this
-      .query(idx)
-      .select('version')
+    const doc = (await this.query(idx)
+      .select("version")
       .get()
-      .then(snapshot => snapshot.docs.at(0) ?? ChunkNotFoundError.reject(idx)) as QueryDocumentSnapshot<WorkerRegistryChunkData>;
+      .then(
+        (snapshot) => snapshot.docs.at(0) ?? ChunkNotFoundError.reject(idx),
+      )) as QueryDocumentSnapshot<WorkerRegistryChunkData>;
 
     return doc.data().version;
   }
 
   async fromDB(idx: number): Promise<WorkerRegistryChunk> {
-    const snapshot = await this
-      .query(idx)
+    const snapshot = await this.query(idx)
       .get()
-      .then(query => query.docs.at(0) ?? ChunkNotFoundError.reject(idx));
+      .then((query) => query.docs.at(0) ?? ChunkNotFoundError.reject(idx));
 
     const data = snapshot.data();
 
@@ -57,9 +56,9 @@ export class WorkerRegistryChunkStorage {
   }
 
   async fromCache(idx: number): Promise<WorkerRegistryChunk | null> {
-    return readFile(this.cacheDirOf(idx), { encoding: 'utf-8' })
-      .then(buffer => {
-        const data = JSON.parse(buffer)
+    return readFile(this.cacheDirOf(idx), { encoding: "utf-8" })
+      .then((buffer) => {
+        const data = JSON.parse(buffer);
 
         return new WorkerRegistryChunk(data, this);
       })
@@ -73,7 +72,7 @@ export class WorkerRegistryChunkStorage {
       const latestVersion = await this.versionOf(idx);
 
       if (cache.version() >= latestVersion) return cache;
-    } 
+    }
 
     const chunk = await this.fromDB(idx);
 

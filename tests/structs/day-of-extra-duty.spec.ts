@@ -1,13 +1,15 @@
-import { describe, expect, test } from 'vitest';
-import { DayOfExtraDuty } from '../../extra-duty-lib';
-import { mock } from '../mocking/mocker';
+import { describe, expect, test } from "vitest";
+import { DayOfExtraDuty } from "../../extra-duty-lib";
+import { mock } from "../mocking/mocker";
 
 function verifyPrototype(value: unknown): DayOfExtraDuty {
   if (value instanceof DayOfExtraDuty) {
     return value;
   }
-  
-  expect.fail(`The day returned by table shold be instanceof '${DayOfExtraDuty.name}'`);
+
+  expect.fail(
+    `The day returned by table shold be instanceof '${DayOfExtraDuty.name}'`,
+  );
 }
 
 describe(DayOfExtraDuty.name, () => {
@@ -21,8 +23,7 @@ describe(DayOfExtraDuty.name, () => {
 
       const includesWorker = day.includes(worker, 0, 5);
 
-      expect(includesWorker)
-        .toBeTruthy();
+      expect(includesWorker).toBeTruthy();
     });
   });
 
@@ -32,8 +33,7 @@ describe(DayOfExtraDuty.name, () => {
 
       const pair = table.getDay(0).pair();
 
-      expect(pair.nighttime().every(duty => duty.isNighttime()))
-        .toBeTruthy();
+      expect(pair.nighttime().every((duty) => duty.isNighttime())).toBeTruthy();
     });
 
     test(`shold return a pair that daytime array only have daytime duties`, () => {
@@ -41,8 +41,7 @@ describe(DayOfExtraDuty.name, () => {
 
       const pair = table.getDay(0).pair();
 
-      expect(pair.daytime().every(duty => duty.isDaytime()))
-        .toBeTruthy();
+      expect(pair.daytime().every((duty) => duty.isDaytime())).toBeTruthy();
     });
 
     test(`shold return a pair that sum of daytime and nighttime array length is equals to day size`, () => {
@@ -53,8 +52,7 @@ describe(DayOfExtraDuty.name, () => {
 
       const sum = pair.daytime().length + pair.nighttime().length;
 
-      expect(sum)
-        .toStrictEqual(day.getSize());
+      expect(sum).toStrictEqual(day.getSize());
     });
   });
 });

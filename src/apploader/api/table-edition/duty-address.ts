@@ -10,16 +10,19 @@ export class DutyAddress {
   constructor(
     readonly table: TableEditor,
     readonly data: DutyAddressData,
-  ) { }
+  ) {}
 
   equals(address: DutyAddress) {
-    return this.data.dayIndex === address.data.dayIndex && this.data.dutyIndex === address.data.dutyIndex;
+    return (
+      this.data.dayIndex === address.data.dayIndex &&
+      this.data.dutyIndex === address.data.dutyIndex
+    );
   }
 
   key() {
     const array = new Uint16Array([this.data.dayIndex, this.data.dutyIndex]);
 
-    const uint8Array = new Uint8Array(array.buffer)
+    const uint8Array = new Uint8Array(array.buffer);
 
     return String.fromCharCode(...uint8Array);
   }
@@ -29,7 +32,7 @@ export class DutyAddress {
   }
 
   static create(table: TableEditor, dayIndex: number, dutyIndex: number) {
-    return new DutyAddress(table, { dayIndex, dutyIndex })
+    return new DutyAddress(table, { dayIndex, dutyIndex });
   }
 
   static from(duty: DutyEditor) {

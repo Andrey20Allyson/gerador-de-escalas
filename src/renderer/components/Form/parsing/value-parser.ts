@@ -4,11 +4,11 @@ import { Result } from "./utils";
 
 export type ErrorMessageMapLike = Record<string, string>;
 
-export abstract class ValueParser<I, O, EMM extends ErrorMessageMapLike = {}> implements ParserLike<I, O>, ParseStackable<I, O> {
+export abstract class ValueParser<I, O, EMM extends ErrorMessageMapLike = {}>
+  implements ParserLike<I, O>, ParseStackable<I, O>
+{
   constructor(...args: keyof EMM extends never ? [] : [errorMessageMap: EMM]);
-  constructor(
-    private readonly _errorMessageMap: Readonly<EMM> = {} as EMM,
-  ) { }
+  constructor(private readonly _errorMessageMap: Readonly<EMM> = {} as EMM) {}
 
   message(name: keyof EMM, ...args: string[]): string {
     let str: string = this._errorMessageMap[name];
@@ -22,13 +22,13 @@ export abstract class ValueParser<I, O, EMM extends ErrorMessageMapLike = {}> im
 
       let slices: string[] = [];
       let startIndex = 0;
-      
+
       while (true) {
         count++;
         if (count >= 2000) throw new Error(`loop limit exceded!`);
         const lastStartIndex = startIndex;
         startIndex = str.indexOf(searchString, startIndex);
-        
+
         if (startIndex === -1) {
           const slice = str.slice(lastStartIndex);
 
@@ -36,15 +36,12 @@ export abstract class ValueParser<I, O, EMM extends ErrorMessageMapLike = {}> im
           break;
         }
 
-        slices.push(
-          str.slice(lastStartIndex, startIndex),
-          replaceString,
-        );
+        slices.push(str.slice(lastStartIndex, startIndex), replaceString);
 
         startIndex = startIndex + searchString.length;
       }
 
-      str = slices.join('');
+      str = slices.join("");
     }
 
     return str;

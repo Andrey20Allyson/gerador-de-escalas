@@ -6,7 +6,7 @@ export class LineHander {
   constructor(
     readonly sheet: SheetHandler,
     readonly line: number,
-  ) { }
+  ) {}
 
   at(collumn: string): CellHandler {
     return this.sheet.at(collumn, this.line);
@@ -24,13 +24,20 @@ export class LineHander {
     return tuple;
   }
 
-  static *safeIterCells<C extends readonly string[] | []>(lines: Iterable<LineHander>, collumns: C): Iterable<[LineHander, ResultType<{ -readonly [K in keyof C]: CellHandler }>]> {
+  static *safeIterCells<C extends readonly string[] | []>(
+    lines: Iterable<LineHander>,
+    collumns: C,
+  ): Iterable<
+    [LineHander, ResultType<{ -readonly [K in keyof C]: CellHandler }>]
+  > {
     for (const line of lines) {
       yield [line, line.safeGetCells(collumns)];
     }
   }
 
-  safeGetCells<C extends readonly string[] | []>(collumns: C): ResultType<{ -readonly [K in keyof C]: CellHandler }> {
+  safeGetCells<C extends readonly string[] | []>(
+    collumns: C,
+  ): ResultType<{ -readonly [K in keyof C]: CellHandler }> {
     let cells: CellHandler[] = new Array(collumns.length);
 
     for (let i = 0; i < collumns.length; i++) {

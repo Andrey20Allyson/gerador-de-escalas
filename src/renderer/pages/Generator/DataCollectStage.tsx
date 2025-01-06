@@ -14,7 +14,11 @@ export interface DataCollectStageState {
 }
 
 function createSheetNameOption(sheetName: string, key: number) {
-  return <option key={key} value={sheetName}>{sheetName}</option>;
+  return (
+    <option key={key} value={sheetName}>
+      {sheetName}
+    </option>
+  );
 }
 
 export interface DataCollectStageErrorState {
@@ -34,10 +38,13 @@ export function DataCollectStage() {
     const newErrorState: DataCollectStageErrorState = {};
 
     if (!filePath || !sheetName || month === undefined || year === undefined) {
-      if (!filePath) newErrorState.filePath = 'Escala do Mês é um campo obrigatório';
-      if (!sheetName) newErrorState.sheetName = 'Nome da Aba é um Campo obrigatório';
-      if (month === undefined) newErrorState.month = 'Mês é um Campo obrigatório';
-      if (year === undefined) newErrorState.year = 'Mês é um Campo obrigatório';
+      if (!filePath)
+        newErrorState.filePath = "Escala do Mês é um campo obrigatório";
+      if (!sheetName)
+        newErrorState.sheetName = "Nome da Aba é um Campo obrigatório";
+      if (month === undefined)
+        newErrorState.month = "Mês é um Campo obrigatório";
+      if (year === undefined) newErrorState.year = "Mês é um Campo obrigatório";
 
       return setErrorState(newErrorState);
     }
@@ -49,7 +56,7 @@ export function DataCollectStage() {
       year,
     });
     if (!response.ok) return AppError.log(response.error);
-    
+
     next();
   }
 
@@ -59,11 +66,12 @@ export function DataCollectStage() {
 
     const response = await api.utils.getSheetNames(filePath);
     if (!response.ok) return AppError.log(response.error);
-    
+
     const sheetNames = response.data;
 
     const sheetName = sheetNames.at(0);
-    if (!sheetName) return alert(`O arquivo em '${filePath}' não é um arquivo excel válido!`);
+    if (!sheetName)
+      return alert(`O arquivo em '${filePath}' não é um arquivo excel válido!`);
 
     setState({ ...state, filePath, sheetNames, sheetName });
   }
@@ -76,7 +84,8 @@ export function DataCollectStage() {
   }
 
   function handleMonthChange(ev: React.ChangeEvent<HTMLInputElement>) {
-    const [stringYear, stringMonth]: (string | undefined)[] = ev.currentTarget.value.split('-');
+    const [stringYear, stringMonth]: (string | undefined)[] =
+      ev.currentTarget.value.split("-");
     if (!stringYear) return;
     if (!stringMonth) return;
 
@@ -86,7 +95,8 @@ export function DataCollectStage() {
     setState({ ...state, month, year });
   }
 
-  const message = errorState.filePath ?? errorState.sheetName ?? errorState.month;
+  const message =
+    errorState.filePath ?? errorState.sheetName ?? errorState.month;
 
   if (message) {
     alert(message);
@@ -100,13 +110,18 @@ export function DataCollectStage() {
         <label className="mandatory">Escala do ordinária</label>
         <input type="file" onChange={handleFileChange} />
         <label className="mandatory">Nome da Aba</label>
-        <select onChange={handleSheetNameChange}>{
-          state.sheetNames && state.sheetNames.map(createSheetNameOption)
-        }</select>
+        <select onChange={handleSheetNameChange}>
+          {state.sheetNames && state.sheetNames.map(createSheetNameOption)}
+        </select>
         <label className="mandatory">Mês</label>
         <input onChange={handleMonthChange} type="month" />
       </div>
-      <input type="submit" onClick={handleSubmit} className="submit-button" value="Proximo" />
+      <input
+        type="submit"
+        onClick={handleSubmit}
+        className="submit-button"
+        value="Proximo"
+      />
     </StyledLinedBorder>
-  )
+  );
 }

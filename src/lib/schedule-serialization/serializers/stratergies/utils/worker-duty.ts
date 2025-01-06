@@ -7,7 +7,7 @@ export class WorkerDuty {
     readonly start: number,
     public end: number,
     readonly date: Day,
-  ) { }
+  ) {}
 
   compare(other: WorkerDuty) {
     if (this.date.isBefore(other.date)) {

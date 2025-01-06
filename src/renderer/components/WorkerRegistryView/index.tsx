@@ -9,13 +9,7 @@ import { WorkerRegistry } from "../../../apploader/auto-schedule/persistence/ent
 export function WorkerRegistryView(props: IterProps<WorkerRegistry>) {
   const service = useWorkerRegistriesService();
 
-  const {
-    isCoordinator,
-    individualId,
-    workerId,
-    gender,
-    name,
-  } = props.entry;
+  const { isCoordinator, individualId, workerId, gender, name } = props.entry;
 
   async function handleDelete() {
     const result = await api.config.workers.delete(workerId);
@@ -34,21 +28,15 @@ export function WorkerRegistryView(props: IterProps<WorkerRegistry>) {
         <h2>{name}</h2>
         <p>
           Matrícula:
-          <strong>
-            {workerId}
-          </strong>
+          <strong>{workerId}</strong>
         </p>
         <p>
           CPF:
-          <strong>
-            {individualId}
-          </strong>
+          <strong>{individualId}</strong>
         </p>
         <p>
           Gênero:
-          <strong>
-            {gender}
-          </strong>
+          <strong>{gender}</strong>
         </p>
         {isCoordinator ? <em>Coordenador</em> : null}
       </span>

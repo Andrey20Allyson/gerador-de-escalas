@@ -4,15 +4,18 @@ import { EditorRule } from "../rule";
 
 export class GenderRule extends EditorRule {
   constructor() {
-    super('gender-rule');
+    super("gender-rule");
   }
 
-  protected onTest(workerController: WorkerEditorController, dutyController: DutyEditorController): boolean {
-    if (workerController.worker.gender === 'male') return true;
+  protected onTest(
+    workerController: WorkerEditorController,
+    dutyController: DutyEditorController,
+  ): boolean {
+    if (workerController.worker.gender === "male") return true;
 
     const dutyHasSomeMale = dutyController
       .workers()
-      .some(worker => worker.gender === 'male');
+      .some((worker) => worker.gender === "male");
 
     return dutyHasSomeMale;
   }

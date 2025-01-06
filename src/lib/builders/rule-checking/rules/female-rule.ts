@@ -3,8 +3,8 @@ import { AssignmentRule } from "../assignment-rule";
 
 export class FemaleAssignmentRule implements AssignmentRule {
   canAssign(worker: WorkerInfo, duty: ExtraDuty): boolean {
-    if (worker.gender !== 'female') return true;
+    if (worker.gender !== "female") return true;
 
-    return duty.genderQuantity('male') > 0;
+    return duty.genderQuantity("male") > 0;
   }
 }

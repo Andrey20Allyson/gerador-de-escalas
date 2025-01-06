@@ -1,13 +1,18 @@
-import ExcelJS from 'exceljs';
-import { TableFactory, TableFactoryOptions } from '.';
-import { ExtraDutyTable } from '../extra-duty-lib';
+import ExcelJS from "exceljs";
+import { TableFactory, TableFactoryOptions } from ".";
+import { ExtraDutyTable } from "../extra-duty-lib";
 import { enumerate } from "../../utils";
-import { sortByRegistration, sortByGrad, iterRows, OutputCollumns } from './main-factory.utils';
+import {
+  sortByRegistration,
+  sortByGrad,
+  iterRows,
+  OutputCollumns,
+} from "./main-factory.utils";
 
 export class MainTableFactory implements TableFactory {
   private cachedBook?: Promise<ExcelJS.Workbook>;
 
-  constructor(readonly buffer: Buffer | ArrayBuffer) { }
+  constructor(readonly buffer: Buffer | ArrayBuffer) {}
 
   async createBook() {
     const book = new ExcelJS.Workbook();
@@ -18,7 +23,7 @@ export class MainTableFactory implements TableFactory {
 
   async createCache() {
     this.cachedBook = this.createBook();
-    
+
     return this.cachedBook;
   }
 
@@ -38,7 +43,10 @@ export class MainTableFactory implements TableFactory {
     return this.createBook();
   }
 
-  async generate(table: ExtraDutyTable, options: TableFactoryOptions): Promise<Buffer> {
+  async generate(
+    table: ExtraDutyTable,
+    options: TableFactoryOptions,
+  ): Promise<Buffer> {
     const book = await this.getBook();
 
     const sheet = book.getWorksheet(options.sheetName);
@@ -46,11 +54,11 @@ export class MainTableFactory implements TableFactory {
       throw new Error(`sheet '${options.sheetName}' do not exists!`);
     }
 
-    const yearCell = sheet.getCell('C6');
+    const yearCell = sheet.getCell("C6");
 
     yearCell.value = table.config.year;
 
-    const monthCell = sheet.getCell('C7');
+    const monthCell = sheet.getCell("C7");
 
     monthCell.value = table.config.month + 1;
 
@@ -71,8 +79,8 @@ export class MainTableFactory implements TableFactory {
 
       locationCodeCell.value = 7;
       eventCell.value = rowData.event;
-      detailsCell.value = 'SEGURANÇA E APOIO A SMAS';
-      
+      detailsCell.value = "SEGURANÇA E APOIO A SMAS";
+
       nameCell.value = rowData.name;
       registrationCell.value = rowData.registration;
       gradCell.value = rowData.grad;

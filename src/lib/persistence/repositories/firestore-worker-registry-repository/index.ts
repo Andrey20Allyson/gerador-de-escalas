@@ -1,89 +1,104 @@
-import { WorkerRegistry, WorkerRegistryInit, WorkerRegistryMap, WorkerRegistryRepository } from "../../entities/worker-registry";
-import { ChunkNotFoundError, WorkerRegistryChunkStorage } from "./chunk-storage";
+import {
+  WorkerRegistry,
+  WorkerRegistryInit,
+  WorkerRegistryMap,
+  WorkerRegistryRepository,
+} from "../../entities/worker-registry";
+import {
+  ChunkNotFoundError,
+  WorkerRegistryChunkStorage,
+} from "./chunk-storage";
 import { firestoreWorkerRegistryRepositoryConfig } from "./config";
 
 const COLLECTION_NAME = firestoreWorkerRegistryRepositoryConfig.collectionName;
 
 export interface WorkerRegistryRepositoryOptions {
-    firestore: FirebaseFirestore.Firestore;
-    collection?: string;
-    cacheOnly?: boolean;
+  firestore: FirebaseFirestore.Firestore;
+  collection?: string;
+  cacheOnly?: boolean;
 }
 
-export class FirestoreWorkerRegistryRepository implements WorkerRegistryRepository {
-    readonly cacheOnly: boolean;
-    readonly storage: WorkerRegistryChunkStorage;
+export class FirestoreWorkerRegistryRepository
+  implements WorkerRegistryRepository
+{
+  readonly cacheOnly: boolean;
+  readonly storage: WorkerRegistryChunkStorage;
 
-    constructor(options: WorkerRegistryRepositoryOptions) {
-        const collectionName = options.collection ?? COLLECTION_NAME;
+  constructor(options: WorkerRegistryRepositoryOptions) {
+    const collectionName = options.collection ?? COLLECTION_NAME;
 
-        const collection = options.firestore.collection(collectionName);
+    const collection = options.firestore.collection(collectionName);
 
-        this.storage = new WorkerRegistryChunkStorage(collection);
+    this.storage = new WorkerRegistryChunkStorage(collection);
 
-        this.cacheOnly = options.cacheOnly ?? false;
+    this.cacheOnly = options.cacheOnly ?? false;
+  }
+
+  async create(registry: WorkerRegistryInit): Promise<WorkerRegistry> {
+    const chunk = await this.storage.get(0);
+
+    chunk.add(registry);
+
+    await chunk.persist();
+
+    const persistedRegistry = chunk
+      .registries()
+      .find(
+        (persistedRegistry) => persistedRegistry.workerId === registry.workerId,
+      )!;
+
+    return persistedRegistry;
+  }
+
+  async update(
+    workerId: string,
+    changes: Partial<WorkerRegistryInit>,
+  ): Promise<void> {
+    const chunk = await this.storage.get(0);
+
+    const persistedRegistry = chunk.findById(workerId);
+
+    if (persistedRegistry == null) {
+      throw new Error(`Worker with id ${workerId} do not exists!`);
     }
 
-    async create(registry: WorkerRegistryInit): Promise<WorkerRegistry> {
-        const chunk = await this.storage.get(0);
+    const changedRegistry: WorkerRegistry = {
+      ...persistedRegistry,
+      ...changes,
+      workerId,
+    };
 
-        chunk.add(registry);
+    chunk.update(changedRegistry);
+  }
 
-        await chunk.persist();
+  async delete(workerId: string): Promise<void> {
+    const chunk = await this.storage.get(0);
 
-        const persistedRegistry = chunk
-            .registries()
-            .find(persistedRegistry => persistedRegistry.workerId === registry.workerId)!;
+    chunk.delete(workerId);
 
-        return persistedRegistry;
+    await chunk.persist();
+  }
+
+  async list(): Promise<WorkerRegistry[]> {
+    if (this.cacheOnly) {
+      const chunk = await this.storage.fromCache(0);
+      if (chunk == null) {
+        return ChunkNotFoundError.reject(0);
+      }
+
+      return chunk.registries();
     }
 
-    async update(workerId: string, changes: Partial<WorkerRegistryInit>): Promise<void> {
-        const chunk = await this.storage.get(0);
+    const chunk = await this.storage.get(0);
 
-        const persistedRegistry = chunk.findById(workerId);
+    return chunk.registries();
+  }
 
-        if (persistedRegistry == null) {
-            throw new Error(`Worker with id ${workerId} do not exists!`);
-        }
+  async load(): Promise<WorkerRegistryMap> {
+    const registries = await this.list();
 
-        const changedRegistry: WorkerRegistry = {
-            ...persistedRegistry,
-            ...changes,
-            workerId,
-        }
+    const registryMap = new WorkerRegistryMap(registries);
 
-        chunk.update(changedRegistry);
-    }
-
-    async delete(workerId: string): Promise<void> {
-        const chunk = await this.storage.get(0);
-
-        chunk.delete(workerId);
-
-        await chunk.persist();
-    }
-
-    async list(): Promise<WorkerRegistry[]> {
-        if (this.cacheOnly) {
-            const chunk = await this.storage.fromCache(0)
-            if (chunk == null) {
-                return ChunkNotFoundError.reject(0);
-            }
-
-            return chunk.registries();
-        }
-
-        const chunk = await this.storage.get(0);
-
-        return chunk.registries();
-    }
-
-    async load(): Promise<WorkerRegistryMap> {
-        const registries = await this.list();
-
-        const registryMap = new WorkerRegistryMap(registries);
-
-        return registryMap;
-    }
+    return registryMap;
+  }
 }

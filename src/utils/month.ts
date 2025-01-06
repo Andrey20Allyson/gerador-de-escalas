@@ -11,10 +11,14 @@ export function getMonth() {
 
 function getMappedNumOfDays(month: number) {
   const numOfDays = DAYS_IN_MONTH.at(month);
-  if (!numOfDays) throw new Error(`Can't find the number of days in this month!`);
+  if (!numOfDays)
+    throw new Error(`Can't find the number of days in this month!`);
   return numOfDays;
 }
 
 export function getNumOfDaysInMonth(month: number, year: number) {
-  return getMappedNumOfDays(month) + (isLeapYear(year) && month === FEBRUARY_MONTH_INDEX ? 1 : 0);
+  return (
+    getMappedNumOfDays(month) +
+    (isLeapYear(year) && month === FEBRUARY_MONTH_INDEX ? 1 : 0)
+  );
 }

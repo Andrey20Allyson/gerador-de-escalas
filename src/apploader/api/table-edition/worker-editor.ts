@@ -2,7 +2,10 @@ import type { Gender, Graduation } from "../../auto-schedule/extra-duty-lib";
 import { DutyEditor } from "./duty-editor";
 import { TableEditor } from "./table-editor";
 import { DutyAddress, DutyAddressData } from "./duty-address";
-import { OrdinaryWorkHandlerData, OrdinaryWorkHandler } from "./ordinary-handler";
+import {
+  OrdinaryWorkHandlerData,
+  OrdinaryWorkHandler,
+} from "./ordinary-handler";
 
 export interface WorkerEditorData {
   readonly ordinary: OrdinaryWorkHandlerData;
@@ -19,7 +22,10 @@ export interface WorkerEditorData {
 export class WorkerEditor {
   readonly ordinary: OrdinaryWorkHandler;
 
-  constructor(readonly table: TableEditor, readonly data: WorkerEditorData) {
+  constructor(
+    readonly table: TableEditor,
+    readonly data: WorkerEditorData,
+  ) {
     this.ordinary = new OrdinaryWorkHandler(this);
   }
 
@@ -135,10 +141,10 @@ export class WorkerEditor {
       ordinary: OrdinaryWorkHandler.createData(),
       dutyAddresses: new Map(),
       isDailyWorker: false,
-      graduation: 'gcm',
-      gender: 'N/A',
+      graduation: "gcm",
+      gender: "N/A",
       maxDuties: 5,
-      name: 'N/A',
+      name: "N/A",
       workerID,
     });
   }

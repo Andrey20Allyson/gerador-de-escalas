@@ -34,16 +34,29 @@ export class TableGenerator {
     this.data = { table, workers };
   }
 
-  createPreGenerateEditor(): AppResponse<PreGenerateEditorDTO, ErrorCode.DATA_NOT_LOADED> {
-    if (!this.data) return AppResponse.error(`Can't pre generate editor before load data!`, ErrorCode.DATA_NOT_LOADED);
+  createPreGenerateEditor(): AppResponse<
+    PreGenerateEditorDTO,
+    ErrorCode.DATA_NOT_LOADED
+  > {
+    if (!this.data)
+      return AppResponse.error(
+        `Can't pre generate editor before load data!`,
+        ErrorCode.DATA_NOT_LOADED,
+      );
 
     const editor = PreGenerateEditor.from(this.data.workers);
 
     return AppResponse.ok(editor.data);
   }
 
-  save(data: PreGenerateEditorDTO): AppResponse<void, ErrorCode.DATA_NOT_LOADED> {
-    if (!this.data) return AppResponse.error(`Can't save editor before load data!`, ErrorCode.DATA_NOT_LOADED);
+  save(
+    data: PreGenerateEditorDTO,
+  ): AppResponse<void, ErrorCode.DATA_NOT_LOADED> {
+    if (!this.data)
+      return AppResponse.error(
+        `Can't save editor before load data!`,
+        ErrorCode.DATA_NOT_LOADED,
+      );
 
     const editor = new PreGenerateEditor(data);
 
@@ -53,8 +66,12 @@ export class TableGenerator {
   }
 
   generate(): AppResponse<void, ErrorCode.DATA_NOT_LOADED> {
-    if (!this.data) return AppResponse.error(`Can't generate table before load data!`, ErrorCode.DATA_NOT_LOADED);
-    
+    if (!this.data)
+      return AppResponse.error(
+        `Can't generate table before load data!`,
+        ErrorCode.DATA_NOT_LOADED,
+      );
+
     const { table, workers } = this.data;
 
     table.clear();
@@ -64,12 +81,18 @@ export class TableGenerator {
     return AppResponse.ok();
   }
 
-  async serialize(stratergy: SerializationStratergy): Promise<AppResponse<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
-    if (!this.data) return AppResponse.error(`Can't serialize before load data!`, ErrorCode.DATA_NOT_LOADED);
-    
+  async serialize(
+    stratergy: SerializationStratergy,
+  ): Promise<AppResponse<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
+    if (!this.data)
+      return AppResponse.error(
+        `Can't serialize before load data!`,
+        ErrorCode.DATA_NOT_LOADED,
+      );
+
     this.serializer.setStratergy(stratergy);
     const buffer = await this.serializer.serialize(this.data.table);
 
-    return AppResponse.ok(buffer.buffer)
+    return AppResponse.ok(buffer.buffer);
   }
 }

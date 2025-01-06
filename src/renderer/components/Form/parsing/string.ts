@@ -4,17 +4,17 @@ import { ValueParser } from "./value-parser";
 export class StringParser extends ValueParser<unknown, string> {
   parse(value: unknown): Result<string> {
     switch (typeof value) {
-      case 'string':
+      case "string":
         return Result.ok(value);
-      case 'number':
-      case 'bigint':
-      case 'boolean':
-      case 'symbol':
+      case "number":
+      case "bigint":
+      case "boolean":
+      case "symbol":
         return Result.ok(value.toString());
-      case 'undefined':
-        return Result.ok('undefined');
-      case 'object':
-      case 'function':
+      case "undefined":
+        return Result.ok("undefined");
+      case "object":
+      case "function":
         if (value instanceof Date) return Result.ok(value.toString());
 
         try {

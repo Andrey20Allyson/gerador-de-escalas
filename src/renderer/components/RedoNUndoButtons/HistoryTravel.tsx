@@ -4,7 +4,7 @@ import { FaRedo, FaUndo } from "react-icons/fa";
 import { StyledHistoryTravelButton } from "./HistoryTravel.style";
 
 export interface HistoryTravelButtonProps {
-  direction: 'redo' | 'undo';
+  direction: "redo" | "undo";
 }
 
 export function HistoryTravelButton(props: HistoryTravelButtonProps) {
@@ -35,8 +35,11 @@ export function HistoryTravelButton(props: HistoryTravelButtonProps) {
   }
 
   return (
-    <StyledHistoryTravelButton className={canExecute() ? '' : 'disabled'} onClick={handleClick}>
-      {direction === 'redo' ? <FaRedo /> : <FaUndo />}
+    <StyledHistoryTravelButton
+      className={canExecute() ? "" : "disabled"}
+      onClick={handleClick}
+    >
+      {direction === "redo" ? <FaRedo /> : <FaUndo />}
     </StyledHistoryTravelButton>
   );
 }

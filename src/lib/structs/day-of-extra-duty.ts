@@ -1,9 +1,9 @@
-import { DayOfWeek, dayOfWeekFrom } from '../../../utils';
-import { Day } from './day';
-import { ExtraDuty } from './extra-duty';
-import type { ExtraDutyTable, ExtraDutyTableConfig } from './extra-duty-table';
-import { Month } from './month';
-import { WorkerInfo } from './worker-info';
+import { DayOfWeek, dayOfWeekFrom } from "../../../utils";
+import { Day } from "./day";
+import { ExtraDuty } from "./extra-duty";
+import type { ExtraDutyTable, ExtraDutyTableConfig } from "./extra-duty-table";
+import { Month } from "./month";
+import { WorkerInfo } from "./worker-info";
 
 export interface DayOfExtraDutyFillOptions {
   start?: number;
@@ -20,7 +20,7 @@ export class ExtraDutyArray extends Array<ExtraDuty> {
   }
 
   add(worker: WorkerInfo): this {
-    this.forEach(duty => duty.add(worker));
+    this.forEach((duty) => duty.add(worker));
 
     return this;
   }
@@ -96,7 +96,7 @@ export class DayOfExtraDuty implements Iterable<ExtraDuty> {
     this.date = Day.calculate(table.month.year, table.month.index, this.index);
     this.month = new Month(this.date.year, this.date.month);
     this.weekDay = dayOfWeekFrom(this.month.getFirstMonday(), this.index);
-    
+
     this.size = this.calculateSize();
 
     this.duties = ExtraDuty.dutiesFrom(this);
@@ -145,7 +145,7 @@ export class DayOfExtraDuty implements Iterable<ExtraDuty> {
 
     for (let i = offset; i < end; i++) {
       const duty = this.at(i);
-      if (duty === undefined || duty.day.isLast() && duty.isLast()) continue;
+      if (duty === undefined || (duty.day.isLast() && duty.isLast())) continue;
 
       pair.add(duty);
     }
@@ -155,7 +155,10 @@ export class DayOfExtraDuty implements Iterable<ExtraDuty> {
 
   getDuty(dutyIndex: number): ExtraDuty {
     const maxDuties = this.getSize();
-    if (dutyIndex < 0 || dutyIndex >= maxDuties) throw new Error(`Out of bount trying access item ${dutyIndex}, limit: ${maxDuties}`);
+    if (dutyIndex < 0 || dutyIndex >= maxDuties)
+      throw new Error(
+        `Out of bount trying access item ${dutyIndex}, limit: ${maxDuties}`,
+      );
 
     const duty = this.duties.at(dutyIndex);
     if (!duty) throw new Error(`Value at ${dutyIndex} is undefined!`);
@@ -163,7 +166,12 @@ export class DayOfExtraDuty implements Iterable<ExtraDuty> {
     return duty;
   }
 
-  includes(worker: WorkerInfo, start: number, end: number, place?: string): boolean {
+  includes(
+    worker: WorkerInfo,
+    start: number,
+    end: number,
+    place?: string,
+  ): boolean {
     for (let i = start; i < end; i++) {
       if (this.has(worker, i, place)) return true;
     }

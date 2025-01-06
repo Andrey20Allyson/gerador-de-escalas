@@ -9,7 +9,7 @@ export interface ScheduleClassifier {
 
 export class DefaultScheduleClassifier implements ScheduleClassifier {
   readonly tries: number;
-  
+
   constructor(
     tries: number,
     readonly assigner: IScheduleAssigner,

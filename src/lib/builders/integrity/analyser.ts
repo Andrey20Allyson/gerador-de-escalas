@@ -11,9 +11,7 @@ export class TableIntegrityAnalyser {
     events?: string | string[],
   ) {
     if (events !== undefined) {
-      this._events = typeof events === 'string'
-        ? [events]
-        : events;
+      this._events = typeof events === "string" ? [events] : events;
     }
   }
 

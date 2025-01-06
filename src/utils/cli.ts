@@ -4,7 +4,7 @@ export class CliController {
   constructor(
     readonly args: string[],
     readonly flags: Map<string, CliFlagParamType>,
-  ) { }
+  ) {}
 
   hasFlag(name: string, alias?: string): boolean {
     if (this.flags.has(name)) {
@@ -51,15 +51,19 @@ export class CliController {
 
 export class FlagTypeError extends Error {
   constructor(flag: string, expectedType: string, recived: string) {
-    super(`flag ${JSON.stringify(flag)} expected a ${expectedType} as type, but recived ${recived}`);
+    super(
+      `flag ${JSON.stringify(flag)} expected a ${expectedType} as type, but recived ${recived}`,
+    );
   }
 }
 
 export class FlagAsEnumTypeError extends Error {
   constructor(flag: string, expected: string[], recived: CliFlagParamType) {
-    const expectedString = expected.map(s => JSON.stringify(s)).join(', ');
+    const expectedString = expected.map((s) => JSON.stringify(s)).join(", ");
 
-    super(`flag ${JSON.stringify(flag)} expected a member of enum [${expectedString}] but recived ${JSON.stringify(recived)}`);
+    super(
+      `flag ${JSON.stringify(flag)} expected a member of enum [${expectedString}] but recived ${JSON.stringify(recived)}`,
+    );
   }
 }
 
@@ -79,10 +83,10 @@ export class CliFlagParam {
   constructor(
     readonly flag: string,
     readonly value: CliFlagParamType,
-  ) { }
+  ) {}
 
   asEnum<U extends string, E extends [U, ...U[]]>(values: E): E[number] {
-    if (typeof this.value !== 'string' || !values.includes(this.value as U)) {
+    if (typeof this.value !== "string" || !values.includes(this.value as U)) {
       throw new FlagAsEnumTypeError(this.flag, values, this.value);
     }
 
@@ -90,7 +94,7 @@ export class CliFlagParam {
   }
 
   asString(): string {
-    if (typeof this.value === 'number') {
+    if (typeof this.value === "number") {
       return this.value.toString();
     }
 
@@ -98,8 +102,8 @@ export class CliFlagParam {
   }
 
   asNumber(): number {
-    if (typeof this.value !== 'number') {
-      throw new FlagTypeError(this.flag, 'number', typeof this.value);
+    if (typeof this.value !== "number") {
+      throw new FlagTypeError(this.flag, "number", typeof this.value);
     }
 
     return this.value;
@@ -148,7 +152,7 @@ export class DefaultArgvCompiler implements ArgvCompiler {
   }
 
   private _throwNotInitialiedError(): never {
-    throw new Error('compile time properties hasn\'t initialized yet');
+    throw new Error("compile time properties hasn't initialized yet");
   }
 
   private _getArgs() {
@@ -189,7 +193,7 @@ export class DefaultArgvCompiler implements ArgvCompiler {
     const nextArg = this._next();
 
     if (!nextArg || this._isFlag(nextArg)) {
-      this._setFlag(flag, '');
+      this._setFlag(flag, "");
       this._goBack();
     } else {
       this._setFlag(flag, nextArg);
@@ -232,11 +236,11 @@ export class DefaultArgvCompiler implements ArgvCompiler {
   }
 
   private _isFlag(arg: string): boolean {
-    return arg.startsWith('-') || arg.startsWith('--');
+    return arg.startsWith("-") || arg.startsWith("--");
   }
 
   private _parseFlag(arg: string): string {
-    const nameStart = arg[1] === '-' ? 2 : 1;
+    const nameStart = arg[1] === "-" ? 2 : 1;
 
     return arg.slice(nameStart);
   }
@@ -262,4 +266,6 @@ function getProcess(): NodeJS.Process | null {
   return globalThis.process;
 }
 
-export const argvCompiler: ArgvCompiler = new DefaultArgvCompiler(getProcess()?.argv ?? []);
+export const argvCompiler: ArgvCompiler = new DefaultArgvCompiler(
+  getProcess()?.argv ?? [],
+);

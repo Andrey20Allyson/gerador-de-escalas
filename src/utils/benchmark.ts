@@ -1,5 +1,5 @@
-import chalk from 'chalk';
-import { Text } from './text';
+import chalk from "chalk";
+import { Text } from "./text";
 
 export class BenchmarkInstance {
   startTime: number;
@@ -7,7 +7,7 @@ export class BenchmarkInstance {
 
   constructor(
     readonly name: string,
-    readonly metric: BenchmarkMetric = 'millis',
+    readonly metric: BenchmarkMetric = "millis",
   ) {
     this.startTime = Date.now();
     this.endTime = -1;
@@ -30,7 +30,7 @@ export class BenchmarkInstance {
   difString(): string {
     const dif = this.difInMillis();
 
-    if (this.metric === 'millis') {
+    if (this.metric === "millis") {
       return `${dif} miliseconds`;
     }
 
@@ -42,7 +42,7 @@ export class BenchmarkInstance {
   }
 }
 
-export type BenchmarkMetric = 'millis' | 'sec';
+export type BenchmarkMetric = "millis" | "sec";
 
 export interface BenchmarkOptions {
   metric?: BenchmarkMetric;
@@ -55,7 +55,7 @@ export class Benchmarker {
   constructor(options?: BenchmarkOptions) {
     this.map = new Map();
 
-    this.metric = options?.metric ?? 'millis';
+    this.metric = options?.metric ?? "millis";
   }
 
   start(title: string): BenchmarkInstance {
@@ -76,7 +76,7 @@ export class Benchmarker {
     message.writeLn(chalk.underline(`[ Benchmark ]`));
 
     for (const instance of this.entries()) {
-      message.writeLn('  ', instance.toString());
+      message.writeLn("  ", instance.toString());
     }
 
     return message.toString();

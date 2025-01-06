@@ -1,9 +1,12 @@
-import React, { PropsWithChildren } from 'react';
-import styled from 'styled-components';
-import { useFormController } from '../context';
-import { PropsWithName, PropsWithTitle } from '../types';
+import React, { PropsWithChildren } from "react";
+import styled from "styled-components";
+import { useFormController } from "../context";
+import { PropsWithName, PropsWithTitle } from "../types";
 
-export interface SelectProps extends PropsWithChildren, PropsWithName, PropsWithTitle { }
+export interface SelectProps
+  extends PropsWithChildren,
+    PropsWithName,
+    PropsWithTitle {}
 
 export function Select(props: SelectProps) {
   const { children, name, title } = props;
@@ -16,9 +19,7 @@ export function Select(props: SelectProps) {
   return (
     <StyledSelect>
       <label>{title}</label>
-      <select
-        onChange={handleChange}
-        ref={handleRef}>
+      <select onChange={handleChange} ref={handleRef}>
         {children}
       </select>
     </StyledSelect>
@@ -28,11 +29,11 @@ export function Select(props: SelectProps) {
 export const StyledSelect = styled.div`
   display: flex;
   flex-direction: column;
-  gap: .3rem;
-  padding: .2rem;
+  gap: 0.3rem;
+  padding: 0.2rem;
   justify-content: start;
 
-  &>select {
+  & > select {
     height: min-content;
   }
 `;

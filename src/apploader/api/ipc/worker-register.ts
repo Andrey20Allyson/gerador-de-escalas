@@ -1,4 +1,7 @@
-import { WorkerRegistryInit, WorkerRegistryRepository } from "../../auto-schedule/persistence/entities/worker-registry";
+import {
+  WorkerRegistryInit,
+  WorkerRegistryRepository,
+} from "../../auto-schedule/persistence/entities/worker-registry";
 import { AppAssets } from "../assets";
 import { AppResponse } from "../mapping/response";
 import { IpcMappingFactory, IpcMapping } from "../mapping/utils";
@@ -10,7 +13,7 @@ export interface ListOptions {
 }
 
 export class WorkerRegisterHandler implements IpcMappingFactory {
-  constructor(readonly assets: AppAssets) { }
+  constructor(readonly assets: AppAssets) {}
 
   get repository(): WorkerRegistryRepository {
     return this.assets.services.workerRegistry.repository;
@@ -27,7 +30,7 @@ export class WorkerRegisterHandler implements IpcMappingFactory {
 
     const entry = entries.get(workerId);
 
-    return AppResponse.ok(entry)
+    return AppResponse.ok(entry);
   }
 
   async list(_: IpcMapping.IpcEvent, options: ListOptions = {}) {
@@ -36,7 +39,11 @@ export class WorkerRegisterHandler implements IpcMappingFactory {
     return AppResponse.ok(entries.slice(options.offset, options.limit));
   }
 
-  async update(_: IpcMapping.IpcEvent, workerId: string, changes: Partial<WorkerRegistryInit>) {
+  async update(
+    _: IpcMapping.IpcEvent,
+    workerId: string,
+    changes: Partial<WorkerRegistryInit>,
+  ) {
     const result = await this.repository.update(workerId, changes);
 
     return AppResponse.ok(result);
@@ -49,12 +56,15 @@ export class WorkerRegisterHandler implements IpcMappingFactory {
   }
 
   handler() {
-    return IpcMapping.create({
-      create: this.create,
-      list: this.list,
-      get: this.get,
-      update: this.update,
-      delete: this.delete,
-    }, this);
+    return IpcMapping.create(
+      {
+        create: this.create,
+        list: this.list,
+        get: this.get,
+        update: this.update,
+        delete: this.delete,
+      },
+      this,
+    );
   }
 }

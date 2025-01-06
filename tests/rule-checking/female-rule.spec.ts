@@ -4,38 +4,35 @@ import { mock } from "../mocking/mocker";
 
 describe(FemaleAssignmentRule.name, () => {
   const checker = new FemaleAssignmentRule();
-  
+
   test(`Shold return false if duty don't have 'male' and is trying assign a 'female'`, () => {
     const { duty, worker } = mock({
       worker: {
-        gender: 'female',
-      }
+        gender: "female",
+      },
     });
 
-    expect(checker.canAssign(worker, duty))
-      .toBeFalsy();
+    expect(checker.canAssign(worker, duty)).toBeFalsy();
   });
 
   test(`Shold return true if duty have a 'male' and is trying assign a 'female'`, () => {
     const { duty } = mock();
 
-    const maleWorker = mock.worker({ gender: 'male' });
-    const femaleWorker = mock.worker({ gender: 'female' });
+    const maleWorker = mock.worker({ gender: "male" });
+    const femaleWorker = mock.worker({ gender: "female" });
 
     duty.add(maleWorker);
 
-    expect(checker.canAssign(femaleWorker, duty))
-      .toBeTruthy();
+    expect(checker.canAssign(femaleWorker, duty)).toBeTruthy();
   });
 
   test(`Shold return true if is trying to assign a 'male'`, () => {
     const { duty, worker } = mock({
       worker: {
-        gender: 'male',
-      }
+        gender: "male",
+      },
     });
 
-    expect(checker.canAssign(worker, duty))
-      .toBeTruthy();
+    expect(checker.canAssign(worker, duty)).toBeTruthy();
   });
 });

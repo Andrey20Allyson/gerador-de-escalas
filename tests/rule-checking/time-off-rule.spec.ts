@@ -7,7 +7,7 @@ describe(TimeOffAssignmentRule.name, () => {
     const { table, worker } = mock({
       table: {
         dutyMinDistance: 20,
-      }
+      },
     });
 
     const duty1 = table.getDay(0).getDuty(0);
@@ -15,11 +15,9 @@ describe(TimeOffAssignmentRule.name, () => {
 
     const duty2 = table.getDay(1).getDuty(0);
 
-    const canAssign = new TimeOffAssignmentRule()
-      .canAssign(worker, duty2);
+    const canAssign = new TimeOffAssignmentRule().canAssign(worker, duty2);
 
-    expect(canAssign)
-      .toBeFalsy();
+    expect(canAssign).toBeFalsy();
   });
 
   test(`shold return false if duty already has the worker`, () => {
@@ -27,11 +25,9 @@ describe(TimeOffAssignmentRule.name, () => {
 
     duty.add(worker);
 
-    const canAssign = new TimeOffAssignmentRule()
-      .canAssign(worker, duty);
+    const canAssign = new TimeOffAssignmentRule().canAssign(worker, duty);
 
-    expect(canAssign)
-      .toBeFalsy();
+    expect(canAssign).toBeFalsy();
   });
 
   test(`shold return true if duty don't collides with time out`, () => {
@@ -41,16 +37,12 @@ describe(TimeOffAssignmentRule.name, () => {
       },
     });
 
-    table
-      .getDuty(0, 0)
-      .add(worker);
+    table.getDuty(0, 0).add(worker);
 
     const duty = table.getDuty(4, 0);
 
-    const canAssign = new TimeOffAssignmentRule()
-      .canAssign(worker, duty);
+    const canAssign = new TimeOffAssignmentRule().canAssign(worker, duty);
 
-    expect(canAssign)
-      .toBeTruthy();
+    expect(canAssign).toBeTruthy();
   });
 });

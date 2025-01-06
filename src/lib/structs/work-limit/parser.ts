@@ -43,13 +43,13 @@ export class WorkLimitParser implements Parser<WorkLimitParserData, WorkLimit> {
 
   parseNumberList(str: string): number[] {
     const numbers: number[] = [];
-    let selectedData = '';
+    let selectedData = "";
     let isOpen = false;
 
     for (const [i, char] of enumerate(str)) {
-      if (char === ' ') continue;
+      if (char === " ") continue;
 
-      if (char === '[') {
+      if (char === "[") {
         if (isOpen) throw new SyntaxError(`unexpected token '[' at index ${i}`);
 
         isOpen = true;
@@ -57,7 +57,7 @@ export class WorkLimitParser implements Parser<WorkLimitParserData, WorkLimit> {
       }
 
       if (isOpen) {
-        if (char === ']') {
+        if (char === "]") {
           if (selectedData.length > 0) {
             numbers.push(parseNumberOrThrow(selectedData));
           }
@@ -65,14 +65,15 @@ export class WorkLimitParser implements Parser<WorkLimitParserData, WorkLimit> {
           break;
         }
 
-        if (char === ',') {
+        if (char === ",") {
           numbers.push(parseNumberOrThrow(selectedData));
 
-          selectedData = '';
+          selectedData = "";
           continue;
         }
 
-        if (isDigit(char) === false) throw new SyntaxError(`unexpected token '${char}' at index ${i}`);
+        if (isDigit(char) === false)
+          throw new SyntaxError(`unexpected token '${char}' at index ${i}`);
 
         selectedData += char;
         continue;

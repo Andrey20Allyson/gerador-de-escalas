@@ -1,8 +1,11 @@
 import { io } from "../../auto-schedule";
-import { WorkerRegistry, WorkerRegistryMap } from "../../auto-schedule/persistence/entities/worker-registry";
+import {
+  WorkerRegistry,
+  WorkerRegistryMap,
+} from "../../auto-schedule/persistence/entities/worker-registry";
 import { Holidays } from "../../auto-schedule/extra-duty-lib";
 import { BookHandler, SheetHandler } from "../../auto-schedule/xlsx-handlers";
-import fs from 'fs/promises';
+import fs from "fs/promises";
 
 export interface InputTable {
   buffer: Buffer;
@@ -10,7 +13,7 @@ export interface InputTable {
 }
 
 export interface ParseTablePayload {
-  workerRegistryMap?: WorkerRegistryMap,
+  workerRegistryMap?: WorkerRegistryMap;
   table: InputTable;
 }
 
@@ -36,19 +39,22 @@ export function parseOrdinary(payload: ParseOrdinaryPayload) {
 }
 
 export interface ReadTableConfig {
-  sheetName: string,
-  filePath: string
+  sheetName: string;
+  filePath: string;
 }
 
 export interface ReadTablePayload {
   table: ReadTableConfig;
 }
 
-export interface FileSystemLike extends Pick<typeof fs, 'readFile'> { }
+export interface FileSystemLike extends Pick<typeof fs, "readFile"> {}
 
-export async function readTables(payload: ReadTablePayload, fs: FileSystemLike): Promise<InputTable> {
+export async function readTables(
+  payload: ReadTablePayload,
+  fs: FileSystemLike,
+): Promise<InputTable> {
   const { table } = payload;
-  
+
   return {
     buffer: await fs.readFile(table.filePath),
     sheetName: table.sheetName,
@@ -58,9 +64,9 @@ export async function readTables(payload: ReadTablePayload, fs: FileSystemLike):
 export function parseExtraTable(payload: ParseTablePayload) {
   const { workerRegistryMap, table: excelTable } = payload;
 
-  const sheet = BookHandler
-    .parse(excelTable.buffer)
-    .getSheet(excelTable.sheetName);
+  const sheet = BookHandler.parse(excelTable.buffer).getSheet(
+    excelTable.sheetName,
+  );
 
   const { year, month } = extractYearAndMonthFromBook(sheet);
 
@@ -85,7 +91,7 @@ export interface InputMonth {
 
 export function extractYearAndMonthFromBook(sheet: SheetHandler): InputMonth {
   return {
-    month: sheet.at('c', 7).as('number').value - 1,
-    year: sheet.at('c', 6).as('number').value,
-  }
+    month: sheet.at("c", 7).as("number").value - 1,
+    year: sheet.at("c", 6).as("number").value,
+  };
 }

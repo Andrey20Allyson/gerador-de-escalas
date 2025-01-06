@@ -33,7 +33,7 @@ export module random {
     return randomizeArray(array, mutates);
   }
 
-  export function bool(trueRatio = .5): boolean {
+  export function bool(trueRatio = 0.5): boolean {
     return Math.random() < trueRatio ? true : false;
   }
 

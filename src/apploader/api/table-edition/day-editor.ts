@@ -1,7 +1,10 @@
 import { DutyEditorData, DutyEditor } from "./duty-editor";
 import { normalizeIndex } from "./utils";
 import { TableEditor } from "./table-editor";
-import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "../../utils/week-days";
+import {
+  dayOfWeekFrom,
+  firstMondayFromYearAndMonth,
+} from "../../utils/week-days";
 
 export interface DayEditorData {
   readonly index: number;
@@ -10,7 +13,10 @@ export interface DayEditorData {
 }
 
 export class DayEditor {
-  constructor(readonly table: TableEditor, readonly data: DayEditorData) { }
+  constructor(
+    readonly table: TableEditor,
+    readonly data: DayEditorData,
+  ) {}
 
   index() {
     return this.data.index;

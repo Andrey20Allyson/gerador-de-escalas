@@ -10,8 +10,8 @@ export class TableIntegrity {
 
   constructor(
     readonly table: ExtraDutyTable,
-    public maxAcceptablePenalityAcc: number | null = null
-  ) { }
+    public maxAcceptablePenalityAcc: number | null = null,
+  ) {}
 
   clear() {
     this.failures.clear();
@@ -43,7 +43,10 @@ export class TableIntegrity {
   }
 
   penalityIsAcceptable() {
-    return this.maxAcceptablePenalityAcc === null || this._warningPenalityAcc <= this.maxAcceptablePenalityAcc;
+    return (
+      this.maxAcceptablePenalityAcc === null ||
+      this._warningPenalityAcc <= this.maxAcceptablePenalityAcc
+    );
   }
 
   isFailureFree() {
@@ -68,7 +71,10 @@ export class TableIntegrity {
     return this.getWarningPenality() < otherIntegrity.getWarningPenality();
   }
 
-  private _registry<T extends IntegrityFailure | IntegrityWarning>(map: Map<string, T>, inconsistence: T) {
+  private _registry<T extends IntegrityFailure | IntegrityWarning>(
+    map: Map<string, T>,
+    inconsistence: T,
+  ) {
     let existentInconsistence = map.get(inconsistence.name);
 
     if (!existentInconsistence) {

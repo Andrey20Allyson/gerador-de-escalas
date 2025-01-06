@@ -1,9 +1,7 @@
 export class QuantityStorage<K extends keyof any> {
   private quantityInPlaces: Map<string, Record<K, number>>;
 
-  constructor(
-    private initializer: () => Record<K, number>,
-  ) {
+  constructor(private initializer: () => Record<K, number>) {
     this.quantityInPlaces = new Map();
   }
 
@@ -38,7 +36,7 @@ export class QuantityStorage<K extends keyof any> {
       record[key] = 0;
     }
 
-    return record[key] += count;
+    return (record[key] += count);
   }
 
   decrement(place: string, key: K, count = 1): number {
@@ -48,7 +46,7 @@ export class QuantityStorage<K extends keyof any> {
       record[key] = 0;
     }
 
-    return record[key] -= count;
+    return (record[key] -= count);
   }
 
   counterFrom(place: string) {

@@ -22,9 +22,9 @@ import { MultiStepScheduleAssigner } from "../../../builders/assigners/multi-ste
 export const benchOptionsSchema = z.object({
   times: z.number({ coerce: true }).default(1),
   weight: z
-    .enum(['low', 'mid', 'high'])
-    .default('low')
-    .transform(weight => {
+    .enum(["low", "mid", "high"])
+    .default("low")
+    .transform((weight) => {
       switch (weight) {
         case "low":
           return 0;
@@ -39,19 +39,12 @@ export const benchOptionsSchema = z.object({
 export type BenchActionOptions = z.infer<typeof benchOptionsSchema>;
 
 export function bench(options: BenchActionOptions) {
-  const {
-    times,
-    weight,
-  } = options;
+  const { times, weight } = options;
 
-  const {
-    year,
-    index: month,
-  } = Month.now();
+  const { year, index: month } = Month.now();
 
   const table = new ExtraDutyTable({ month, year, dutyMinDistance: 6 });
-  const workers = new RandomWorkerMockFactory({ year, month })
-    .array(27);
+  const workers = new RandomWorkerMockFactory({ year, month }).array(27);
 
   let ruleStack = new AssignmentRuleStack([
     new DutyLimitAssignmentRule(),
@@ -81,14 +74,17 @@ export function bench(options: BenchActionOptions) {
   const events = [ExtraEventName.JIQUIA];
 
   if (weight >= 2) {
-    events.unshift(ExtraEventName.SUPPORT_TO_CITY_HALL, ExtraEventName.JARDIM_BOTANICO_DAYTIME);
+    events.unshift(
+      ExtraEventName.SUPPORT_TO_CITY_HALL,
+      ExtraEventName.JARDIM_BOTANICO_DAYTIME,
+    );
   }
 
   const totalOfAssigns = times * events.length;
-  const progress = new ProgressBar(totalOfAssigns, .05);
+  const progress = new ProgressBar(totalOfAssigns, 0.05);
 
   progress.start();
-  const multipleAssigments = benchmarker.start('Multiple assigments');
+  const multipleAssigments = benchmarker.start("Multiple assigments");
 
   for (const [i, event] of enumerate(events)) {
     table.config.currentPlace = event;
@@ -105,11 +101,13 @@ export function bench(options: BenchActionOptions) {
   multipleAssigments.end();
 
   const valuesPerSecStr = progress
-    .getValuesPer('sec')
+    .getValuesPer("sec")
     // .filter(ValuesPerTimeEntry.higherOrLower)
-    .join('\n  ');
+    .join("\n  ");
 
   console.log(`Values per sec [\n  ${valuesPerSecStr}\n]`);
 
-  console.log(`Runned ${(totalOfAssigns / multipleAssigments.difInMillis() * 1000).toFixed(0)} aps`)
+  console.log(
+    `Runned ${((totalOfAssigns / multipleAssigments.difInMillis()) * 1000).toFixed(0)} aps`,
+  );
 }

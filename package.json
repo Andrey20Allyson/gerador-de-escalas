@@ -29,7 +29,6 @@
     "generator": "tsx src/app/auto-schedule/cli",
     "test:renderer": "vitest renderer",
     "test:app": "vitest app",
-    "type:check:app": "tsc --noEmit -p src/app/tsconfig.json",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
@@ -37,7 +36,10 @@
     "build:app": "tsc -p src/app",
     "build:prod": "node scripts build:prod",
     "build:dev": "node scripts build:dev",
-    "build:scripts": "tsc -p scripts && tsc-alias -p scripts/tsconfig.json"
+    "build:scripts": "tsc -p scripts && tsc-alias -p scripts/tsconfig.json",
+    "type:check": "tsc --noEmit",
+    "lint:check": "prettier --check .",
+    "lint:fix": "prettier --write ."
   },
   "keywords": [],
   "author": "",

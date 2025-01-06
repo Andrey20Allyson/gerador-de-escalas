@@ -1,25 +1,39 @@
-import ExcelJS from 'exceljs';
-import { DayOfExtraDuty, ExtraDuty, ExtraDutyTable, ExtraDutyTableEntry, Graduation, WorkerInfo } from "../extra-duty-lib";
+import ExcelJS from "exceljs";
+import {
+  DayOfExtraDuty,
+  ExtraDuty,
+  ExtraDutyTable,
+  ExtraDutyTableEntry,
+  Graduation,
+  WorkerInfo,
+} from "../extra-duty-lib";
 import { dayOfWeekFrom, enumerate, iterReverse } from "../../utils";
-import { Day } from '../extra-duty-lib/structs/day';
+import { Day } from "../extra-duty-lib/structs/day";
 
 export function toDutyDesc(start: number, end: number) {
-  const prefix = start >= 7 && start < 18 ? 'Diurno' : 'Noturno';
+  const prefix = start >= 7 && start < 18 ? "Diurno" : "Noturno";
 
-  return `${prefix} (${start.toString().padStart(2, '0')} ÀS ${end.toString().padStart(2, '0')}h)`;
+  return `${prefix} (${start.toString().padStart(2, "0")} ÀS ${end.toString().padStart(2, "0")}h)`;
 }
 
-export function workerNameSorter(a: ExtraDutyTableEntry, b: ExtraDutyTableEntry): number {
+export function workerNameSorter(
+  a: ExtraDutyTableEntry,
+  b: ExtraDutyTableEntry,
+): number {
   return a.worker < b.worker ? -1 : a.worker > b.worker ? 1 : 0;
 }
 
 export const graduationPrefixMap: Record<Graduation, string> = {
-  "sub-insp": 'SI',
-  gcm: 'GCM',
-  insp: 'INSP.'
-}
+  "sub-insp": "SI",
+  gcm: "GCM",
+  insp: "INSP.",
+};
 
-export function toDayGridEntry(day: DayOfExtraDuty, duty: ExtraDuty, worker: WorkerInfo): DayGridEntry {
+export function toDayGridEntry(
+  day: DayOfExtraDuty,
+  duty: ExtraDuty,
+  worker: WorkerInfo,
+): DayGridEntry {
   const normalizedDutyStartTime = duty.start % 24;
   const normalizedDutyEndTime = duty.end % 24;
 
@@ -34,10 +48,10 @@ export function toDayGridEntry(day: DayOfExtraDuty, duty: ExtraDuty, worker: Wor
 
 export function parseWorkerID(id: number): string {
   const stringifiedID = id.toString();
-  let out = '-' + stringifiedID.slice(-1);
+  let out = "-" + stringifiedID.slice(-1);
 
   for (const [i, digit] of enumerate(iterReverse(stringifiedID.slice(0, -1)))) {
-    const separator = i > 0 && i % 3 === 0 ? '.' : '';
+    const separator = i > 0 && i % 3 === 0 ? "." : "";
     out = digit + separator + out;
   }
 
@@ -45,7 +59,7 @@ export function parseWorkerID(id: number): string {
 }
 
 export function parseDayIndex(index: number) {
-  return (index + 1).toString().padStart(2, '0');
+  return (index + 1).toString().padStart(2, "0");
 }
 
 export interface DayGridEntry {
@@ -62,28 +76,33 @@ export interface DayGrid {
 }
 
 export const weekDayNames = [
-  'Domingo',
-  'Segunda',
-  'Terça',
-  'Quarta',
-  'Quinta',
-  'Sexta',
-  'Sábado',
+  "Domingo",
+  "Segunda",
+  "Terça",
+  "Quarta",
+  "Quinta",
+  "Sexta",
+  "Sábado",
 ];
 
 export function fromExcelDim(dim: number) {
-  return dim ** 2 / (dim - .71);
+  return dim ** 2 / (dim - 0.71);
 }
 
 class DayGridFromatter {
   format(day: DayOfExtraDuty, workerDuties: WorkerDuty[]): DayGrid {
     const weekDay = day.date.getWeekDay();
 
-    const weekDayName = weekDayNames.at(weekDay) ?? 'Unknow';
+    const weekDayName = weekDayNames.at(weekDay) ?? "Unknow";
 
     const title = `Dia ${day.date} (${weekDayName})`;
 
-    const grid: DayGrid = { title, entries: [], numOfDiurnal: 0, numOfNightly: 0 };
+    const grid: DayGrid = {
+      title,
+      entries: [],
+      numOfDiurnal: 0,
+      numOfNightly: 0,
+    };
 
     for (const duty of workerDuties) {
       grid.entries.push(this._toDayGridEntry(duty, duty.worker));
@@ -118,7 +137,7 @@ class WorkerDuty {
     readonly start: number,
     public end: number,
     readonly date: Day,
-  ) { }
+  ) {}
 
   compare(other: WorkerDuty) {
     if (this.date.isBefore(other.date)) {
@@ -147,43 +166,40 @@ class WorkerDutiesBuilder {
     const duties = dutyPair.all();
     const workers = duties.workers();
 
-    const workerDuties = workers.flatMap(worker => {
-      const workerDuties: WorkerDuty[] = [];
+    const workerDuties = workers
+      .flatMap((worker) => {
+        const workerDuties: WorkerDuty[] = [];
 
-      for (let i = 0; i < duties.length; i++) {
-        let duty = duties.at(i)!;
+        for (let i = 0; i < duties.length; i++) {
+          let duty = duties.at(i)!;
 
-        if (duty.has(worker) === false) {
-          continue;
-        }
-
-        const date = duty.day.date;
-        const start = duty.start;
-        let end = duty.end;
-
-        while (duty.has(worker)) {
-          end = duty.end;
-
-          const nextDuty = duty.next();
-
-          if (nextDuty == null || duty.isDaytime() !== nextDuty.isDaytime()) {
-            break;
+          if (duty.has(worker) === false) {
+            continue;
           }
 
-          duty = nextDuty;
-          i++;
+          const date = duty.day.date;
+          const start = duty.start;
+          let end = duty.end;
+
+          while (duty.has(worker)) {
+            end = duty.end;
+
+            const nextDuty = duty.next();
+
+            if (nextDuty == null || duty.isDaytime() !== nextDuty.isDaytime()) {
+              break;
+            }
+
+            duty = nextDuty;
+            i++;
+          }
+
+          workerDuties.push(new WorkerDuty(worker, start, end, date));
         }
 
-        workerDuties.push(new WorkerDuty(
-          worker,
-          start,
-          end,
-          date,
-        ));
-      }
-
-      return workerDuties;
-    }).sort((a, b) => a.compare(b));
+        return workerDuties;
+      })
+      .sort((a, b) => a.compare(b));
 
     return workerDuties;
   }
@@ -201,14 +217,32 @@ export function* iterGrids(table: ExtraDutyTable): Iterable<DayGrid> {
   }
 }
 
-export const label = ['TURNO', 'NOME', 'MATRÍCULA'];
-export const titleFill: ExcelJS.Fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDDDDDD' } };
-export const labelFill: ExcelJS.Fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEFEFEF' } };
-export const primaryFill: ExcelJS.Fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEEEEEE' } };
-export const secondaryFill: ExcelJS.Fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEFEFE' } };
+export const label = ["TURNO", "NOME", "MATRÍCULA"];
+export const titleFill: ExcelJS.Fill = {
+  type: "pattern",
+  pattern: "solid",
+  fgColor: { argb: "FFDDDDDD" },
+};
+export const labelFill: ExcelJS.Fill = {
+  type: "pattern",
+  pattern: "solid",
+  fgColor: { argb: "FFEFEFEF" },
+};
+export const primaryFill: ExcelJS.Fill = {
+  type: "pattern",
+  pattern: "solid",
+  fgColor: { argb: "FFEEEEEE" },
+};
+export const secondaryFill: ExcelJS.Fill = {
+  type: "pattern",
+  pattern: "solid",
+  fgColor: { argb: "FFFEFEFE" },
+};
 
 export const boldFont: Partial<ExcelJS.Font> = { bold: true };
-export const centerHorizontalAlignment: Partial<ExcelJS.Alignment> = { horizontal: 'center' };
+export const centerHorizontalAlignment: Partial<ExcelJS.Alignment> = {
+  horizontal: "center",
+};
 export const defaultRowPerPage = 47;
 
 export function pageFromRow(row: number) {
@@ -219,7 +253,10 @@ export function firstRowFromPage(page: number) {
   return Math.ceil(page * defaultRowPerPage) + 1;
 }
 
-export async function serializeTableToDivugation(table: ExtraDutyTable, sheetName: string) {
+export async function serializeTableToDivugation(
+  table: ExtraDutyTable,
+  sheetName: string,
+) {
   const book = new ExcelJS.Workbook();
   const sheet = book.addWorksheet(sheetName);
 
@@ -267,7 +304,8 @@ export async function serializeTableToDivugation(table: ExtraDutyTable, sheetNam
     for (const entry of grid.entries) {
       const row = sheet.getRow(actualRow++);
 
-      const fill = (actualRow - rowStartI) % 2 === 1 ? primaryFill : secondaryFill;
+      const fill =
+        (actualRow - rowStartI) % 2 === 1 ? primaryFill : secondaryFill;
 
       const { duty, id, name } = entry;
 
@@ -290,7 +328,12 @@ export async function serializeTableToDivugation(table: ExtraDutyTable, sheetNam
 
     const dutySeparationRow = lastRow - grid.numOfNightly - 2;
 
-    makeGridBorders({ sheet, start: { col: 1, row: rowStartI }, end: { col: 3, row: lastRow - 2 }, dutySeparationRow });
+    makeGridBorders({
+      sheet,
+      start: { col: 1, row: rowStartI },
+      end: { col: 3, row: lastRow - 2 },
+      dutySeparationRow,
+    });
 
     rowStartI = lastRow;
   }
@@ -315,11 +358,11 @@ export interface SheetAddress {
 }
 
 export function createNormalBorder(): ExcelJS.Border {
-  return { color: { argb: 'FF000000' }, style: 'thin' };
+  return { color: { argb: "FF000000" }, style: "thin" };
 }
 
 export function createMediumBorder(): ExcelJS.Border {
-  return { color: { argb: 'FF000000' }, style: 'medium' };
+  return { color: { argb: "FF000000" }, style: "medium" };
 }
 
 export interface MakeGridBordersParams {
@@ -354,7 +397,10 @@ export function makeGridBorders(params: MakeGridBordersParams) {
         left: ci === start.col ? mediumBorder : normalBorder,
         right: ci === end.col ? mediumBorder : normalBorder,
         top: ri === start.row ? mediumBorder : normalBorder,
-        bottom: ri === dutySeparationRow || ri === end.row || ri - start.row < 2 ? mediumBorder : normalBorder,
+        bottom:
+          ri === dutySeparationRow || ri === end.row || ri - start.row < 2
+            ? mediumBorder
+            : normalBorder,
       };
     }
   }

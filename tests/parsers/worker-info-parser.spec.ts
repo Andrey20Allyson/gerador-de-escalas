@@ -4,7 +4,7 @@ import { randomIntFromInterval } from "../../../utils";
 
 describe(WorkerInfoParser.name, () => {
   describe(WorkerInfoParser.prototype.parse.name, () => {
-    const licenseStr = 'LICENÇA PRÊMIO';
+    const licenseStr = "LICENÇA PRÊMIO";
 
     test(`Shold return null if hourly is equals to '${licenseStr}'`, () => {
       const parser = new WorkerInfoParser();
@@ -12,20 +12,19 @@ describe(WorkerInfoParser.name, () => {
 
       try {
         worker = parser.parse({
-          grad: 'CGM',
+          grad: "CGM",
           hourly: licenseStr,
           month: randomIntFromInterval(0, 11),
           year: randomIntFromInterval(2000, 3000),
-          name: 'John Due',
+          name: "John Due",
           post: licenseStr,
-          workerId: '14242-43',
+          workerId: "14242-43",
         });
       } catch {
         expect.fail(`Expected a return, but it throwned`);
       }
 
-      expect(worker)
-        .toBeNull();
+      expect(worker).toBeNull();
     });
   });
 });

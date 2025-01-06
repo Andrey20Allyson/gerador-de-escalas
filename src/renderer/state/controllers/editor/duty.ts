@@ -1,8 +1,17 @@
 import { firstMondayFromYearAndMonth, dayOfWeekFrom } from "../../../utils";
-import { DutyAndWorkerRelationship, DutyData, TableData, WorkerData } from "../../../../apploader/api/table-reactive-edition/table";
+import {
+  DutyAndWorkerRelationship,
+  DutyData,
+  TableData,
+  WorkerData,
+} from "../../../../apploader/api/table-reactive-edition/table";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { editorActions } from "../../slices/table-editor";
-import { DispatcherType, EditorControllerOptions, currentTableFromRootSelector } from "./table";
+import {
+  DispatcherType,
+  EditorControllerOptions,
+  currentTableFromRootSelector,
+} from "./table";
 import { DutyFormatter } from "../../formatters/editor/duty";
 
 export interface IDutyEditor {
@@ -13,7 +22,7 @@ export interface IDutyEditor {
   workers(): WorkerData[];
 }
 
-export interface DutyEditorControllerOptions extends EditorControllerOptions { }
+export interface DutyEditorControllerOptions extends EditorControllerOptions {}
 
 export class DutyEditorController implements IDutyEditor {
   readonly dispatcher: DispatcherType;
@@ -32,8 +41,9 @@ export class DutyEditorController implements IDutyEditor {
     this.table = table;
     this.dispatcher = dispatcher;
 
-    const duty = this.table.duties.find(duty => duty.id === dutyId);
-    if (duty === undefined) throw new Error(`Duty with id ${dutyId} can't be found!`);
+    const duty = this.table.duties.find((duty) => duty.id === dutyId);
+    if (duty === undefined)
+      throw new Error(`Duty with id ${dutyId} can't be found!`);
 
     this.duty = duty;
 
@@ -41,23 +51,37 @@ export class DutyEditorController implements IDutyEditor {
   }
 
   remove(workerId: number): this {
-    const foundRelationship = this.table.dutyAndWorkerRelationships.find(relationship => {
-      return relationship.workerId === workerId && relationship.dutyId === this.duty.id;
-    });
+    const foundRelationship = this.table.dutyAndWorkerRelationships.find(
+      (relationship) => {
+        return (
+          relationship.workerId === workerId &&
+          relationship.dutyId === this.duty.id
+        );
+      },
+    );
     if (foundRelationship === undefined) return this;
 
-    this.dispatcher(editorActions.removeRelationship({ id: foundRelationship.id }));
+    this.dispatcher(
+      editorActions.removeRelationship({ id: foundRelationship.id }),
+    );
 
     return this;
   }
 
   add(workerId: number): this {
-    const alreadyHasHelationship = this.table.dutyAndWorkerRelationships.some(relationship => {
-      return relationship.dutyId === this.duty.id && relationship.workerId === workerId;
-    });
+    const alreadyHasHelationship = this.table.dutyAndWorkerRelationships.some(
+      (relationship) => {
+        return (
+          relationship.dutyId === this.duty.id &&
+          relationship.workerId === workerId
+        );
+      },
+    );
     if (alreadyHasHelationship) return this;
 
-    this.dispatcher(editorActions.addRelationship({ dutyId: this.duty.id, workerId }));
+    this.dispatcher(
+      editorActions.addRelationship({ dutyId: this.duty.id, workerId }),
+    );
 
     return this;
   }
@@ -70,21 +94,29 @@ export class DutyEditorController implements IDutyEditor {
 
     const dayShift = Math.floor((count + dutyIdx) / dutyLimit);
 
-    const nextIdx = (dutyIdx + dutyLimit + count % dutyLimit) % dutyLimit;
+    const nextIdx = (dutyIdx + dutyLimit + (count % dutyLimit)) % dutyLimit;
     const nextDay = (day.index + dayShift + numOfDays) % numOfDays;
 
-    const duty = this.table.duties.find(duty => duty.date.index === nextDay && duty.index === nextIdx);
-    if (!duty) throw new Error(`Can't find duty at day ${nextDay} in duty index ${nextIdx}`);
+    const duty = this.table.duties.find(
+      (duty) => duty.date.index === nextDay && duty.index === nextIdx,
+    );
+    if (!duty)
+      throw new Error(
+        `Can't find duty at day ${nextDay} in duty index ${nextIdx}`,
+      );
 
     const { table, dispatcher } = this;
-    
-    const dutyController = new DutyEditorController(duty.id, { table, dispatcher });
-    
+
+    const dutyController = new DutyEditorController(duty.id, {
+      table,
+      dispatcher,
+    });
+
     if (dutyController.isActive() === false) {
       if (duty.id === startDutyId) {
         throw new Error(`Can't find a active duty`);
       }
-      
+
       return dutyController.shift(count, duty.id);
     }
 
@@ -101,7 +133,10 @@ export class DutyEditorController implements IDutyEditor {
   }
 
   startsAt() {
-    return this.table.config.firstDutyTime + this.table.config.dutyDuration * this.duty.index;
+    return (
+      this.table.config.firstDutyTime +
+      this.table.config.dutyDuration * this.duty.index
+    );
   }
 
   endsAt() {
@@ -129,7 +164,9 @@ export class DutyEditorController implements IDutyEditor {
   }
 
   relationships(): DutyAndWorkerRelationship[] {
-    return this.table.dutyAndWorkerRelationships.filter(relationship => relationship.dutyId === this.duty.id);
+    return this.table.dutyAndWorkerRelationships.filter(
+      (relationship) => relationship.dutyId === this.duty.id,
+    );
   }
 
   size(): number {
@@ -141,15 +178,18 @@ export class DutyEditorController implements IDutyEditor {
   }
 
   workerIds(): number[] {
-    return this.workers().map(worker => worker.id);
+    return this.workers().map((worker) => worker.id);
   }
 
   workers(): WorkerData[] {
-    const workerMap = new Map(this.table.workers.map(worker => [worker.id, worker]));
+    const workerMap = new Map(
+      this.table.workers.map((worker) => [worker.id, worker]),
+    );
 
-    return this.relationships().map(relationship => {
+    return this.relationships().map((relationship) => {
       const worker = workerMap.get(relationship.workerId);
-      if (worker === undefined) throw new Error(`Can't find worker with id ${relationship.workerId}!`);
+      if (worker === undefined)
+        throw new Error(`Can't find worker with id ${relationship.workerId}!`);
 
       return worker;
     });
@@ -172,8 +212,8 @@ export class DutyEditorController implements IDutyEditor {
       table: useAppSelector(currentTableFromRootSelector),
     };
 
-    return Array.from(iterable, value => {
-      const dutyId = typeof value === 'number' ? value : value.id;
+    return Array.from(iterable, (value) => {
+      const dutyId = typeof value === "number" ? value : value.id;
 
       return new DutyEditorController(dutyId, options);
     });
@@ -181,8 +221,11 @@ export class DutyEditorController implements IDutyEditor {
 
   static find(day: number, index: number): DutyData {
     const table = useAppSelector(currentTableFromRootSelector);
-    const duty = table.duties.find(duty => duty.date.index === day && duty.index === index);
-    if (!duty) throw new Error(`Can't find duty at day ${day} in index ${index}`);
+    const duty = table.duties.find(
+      (duty) => duty.date.index === day && duty.index === index,
+    );
+    if (!duty)
+      throw new Error(`Can't find duty at day ${day} in index ${index}`);
 
     return duty;
   }
@@ -195,6 +238,8 @@ export class DutyEditorController implements IDutyEditor {
       table,
     };
 
-    return table.duties.map(duty => new DutyEditorController(duty.id, options));
+    return table.duties.map(
+      (duty) => new DutyEditorController(duty.id, options),
+    );
   }
 }

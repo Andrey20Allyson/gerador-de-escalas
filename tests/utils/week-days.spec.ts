@@ -1,15 +1,23 @@
-import { test, expect } from 'vitest';
-import { firstMonday, isBusinessDay } from '../../../utils/week-days';
+import { test, expect } from "vitest";
+import { firstMonday, isBusinessDay } from "../../../utils/week-days";
 
-function runFirstMondayTest(weekDay: number, monthDay: number, sholdReturn: number) {
+function runFirstMondayTest(
+  weekDay: number,
+  monthDay: number,
+  sholdReturn: number,
+) {
   test(`${firstMonday.name} shold return ${sholdReturn} if weekDay is ${weekDay} and monthDay is ${monthDay}`, () => {
     const _firstMonday = firstMonday(weekDay, monthDay);
-  
+
     expect(_firstMonday).toStrictEqual(sholdReturn);
   });
 }
 
-function runIsBusinessDayTest(firtMondayDate: number, date: number, sholdReturn: boolean) {
+function runIsBusinessDayTest(
+  firtMondayDate: number,
+  date: number,
+  sholdReturn: boolean,
+) {
   test(`${isBusinessDay.name} shold return ${sholdReturn} if firstMondayDate is ${firtMondayDate} and date is ${date}`, () => {
     const result = isBusinessDay(firtMondayDate, date);
 
@@ -44,12 +52,12 @@ const firstMondayTestsParams: Parameters<typeof runFirstMondayTest>[] = [
   [2, 12, 4],
   [2, 19, 4],
   [2, 26, 4],
-  
+
   [1, 4, 4],
   [1, 11, 4],
   [1, 18, 4],
   [1, 25, 4],
-  
+
   [0, 3, 4],
   [0, 10, 4],
   [0, 17, 4],

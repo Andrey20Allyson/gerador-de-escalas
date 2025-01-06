@@ -30,11 +30,9 @@ export class ProdBuildProgramInitializer implements ProgramInitializer {
       .action(async () => {
         await Promise.all([
           build({
-            entryPoints: [
-              './src/renderer/index.ts'
-            ],
-            outdir: './public',
-            target: 'es2020',
+            entryPoints: ["./src/renderer/index.ts"],
+            outdir: "./public",
+            target: "es2020",
             bundle: true,
             minify: true,
           }),
@@ -42,9 +40,9 @@ export class ProdBuildProgramInitializer implements ProgramInitializer {
           build({
             entryPoints: ["./src/app/index.ts"],
             outdir: "./dist",
-            tsconfig: path.join(process.cwd(), 'src/app/tsconfig.json'),
-            platform: 'node',
-            format: 'cjs',
+            tsconfig: path.join(process.cwd(), "src/app/tsconfig.json"),
+            platform: "node",
+            format: "cjs",
           }),
         ]);
 

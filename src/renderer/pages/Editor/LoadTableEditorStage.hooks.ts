@@ -13,7 +13,7 @@ export function useLoadedTable(callback: OnTableReady) {
   const tableResponse = useTableData();
 
   useEffect(() => {
-    if (tableResponse.status === 'success') {
+    if (tableResponse.status === "success") {
       callback(tableResponse.data);
     }
   }, [tableResponse.status]);
@@ -24,7 +24,7 @@ export function useLoadEditorStage() {
   const { listen, loading } = useLoading();
   const tableLoader = TableEditorController.useEditorLoader();
 
-  useLoadedTable(table => {
+  useLoadedTable((table) => {
     tableLoader.load(table);
 
     next();

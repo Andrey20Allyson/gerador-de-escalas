@@ -13,10 +13,13 @@ export interface WorkerEditorDTO {
 export interface OldDayOfWork {
   work: boolean;
   day: number;
-} 
+}
 
 export class WorkerEditor {
-  constructor(parent: PreGenerateEditor, readonly data: WorkerEditorDTO) { }
+  constructor(
+    parent: PreGenerateEditor,
+    readonly data: WorkerEditorDTO,
+  ) {}
 
   name() {
     return this.data.name;
@@ -34,12 +37,13 @@ export class WorkerEditor {
 
   toggleOrdinary(index: number) {
     const newValue = !this.ordinaryAt(index);
-    
+
     this.setOrdinary(index, newValue);
   }
 
   setOrdinary(index: number, work: boolean) {
-    if (!this.data.ordinaryDays.has(index)) throw new Error(`Invalid day index at ${index}!`);
+    if (!this.data.ordinaryDays.has(index))
+      throw new Error(`Invalid day index at ${index}!`);
     this.data.ordinaryDays.set(index, work);
   }
 
@@ -50,7 +54,14 @@ export class WorkerEditor {
   }
 
   static create(parent: PreGenerateEditor, workerID: number) {
-    return new WorkerEditor(parent, { name: 'N/A', numberOfDays: 0, ordinaryDays: new Map(), workerID, month: 0, year: 0 });
+    return new WorkerEditor(parent, {
+      name: "N/A",
+      numberOfDays: 0,
+      ordinaryDays: new Map(),
+      workerID,
+      month: 0,
+      year: 0,
+    });
   }
 
   static from(parent: PreGenerateEditor, workerInfo: WorkerInfo) {
@@ -77,7 +88,7 @@ export interface PreGenerateEditorDTO {
 }
 
 export class PreGenerateEditor {
-  constructor(readonly data: PreGenerateEditorDTO) { }
+  constructor(readonly data: PreGenerateEditorDTO) {}
 
   *workers(): Iterable<WorkerEditor> {
     for (const [_, worker] of this.data.workers) {
@@ -87,7 +98,7 @@ export class PreGenerateEditor {
 
   addWorker(worker: WorkerEditorDTO) {
     if (this.data.workers.has(worker.workerID)) return false;
-    
+
     this.data.workers.set(worker.workerID, worker);
   }
 
@@ -99,8 +110,11 @@ export class PreGenerateEditor {
   save(workers: WorkerInfo[]) {
     for (const workerInfo of workers) {
       const worker = this.getWorker(workerInfo.id);
-      if (!worker) throw new Error(`Invalid input, 'workers' arg have a not mapped worker!`);
-      
+      if (!worker)
+        throw new Error(
+          `Invalid input, 'workers' arg have a not mapped worker!`,
+        );
+
       for (const { day, work } of worker.days()) {
         if (work) {
           workerInfo.daysOfWork.work(day);

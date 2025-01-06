@@ -9,14 +9,12 @@ export const uploadWorkersOptionsSchema = z.object({
 export type UploadWorkersOptions = z.infer<typeof uploadWorkersOptionsSchema>;
 
 export async function upload(options: UploadWorkersOptions) {
-  const {
-    input,
-  } = options;
+  const { input } = options;
 
   const registries = await loadWorkerByPromptInput();
-  
-  console.log('publicando...');
+
+  console.log("publicando...");
   await publishWorkerRegistries(registries);
-  
-  console.log('registros salvos com sucesso!');
+
+  console.log("registros salvos com sucesso!");
 }

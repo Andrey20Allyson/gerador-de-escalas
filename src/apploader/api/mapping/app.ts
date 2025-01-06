@@ -3,14 +3,16 @@ import { IpcMapping, IpcMappingFactory, separator } from "./utils";
 import { AppError } from "./error";
 import { AppResponse } from "./response";
 
-export type HandlerType = { [K in string]: IpcMapping.HandlerFunction | HandlerType };
+export type HandlerType = {
+  [K in string]: IpcMapping.HandlerFunction | HandlerType;
+};
 export type IpcHandlerMapValue = {
   thisArg?: unknown;
   callback: IpcMapping.HandlerFunction<unknown[]>;
 };
 export type IpcHandlerMap = Map<string, IpcHandlerMapValue>;
 
-export type IpcReciver = Pick<IpcMain, 'handle'>;
+export type IpcReciver = Pick<IpcMain, "handle">;
 
 export class IpcHandlerConsumer {
   handlers: IpcHandlerMap;
@@ -26,11 +28,14 @@ export class IpcHandlerConsumer {
 
     this.recivers.add(ipc);
 
-    ipc.handle('resource', (ev, name, ...args) => this.consume(name, ev, ...args));
+    ipc.handle("resource", (ev, name, ...args) =>
+      this.consume(name, ev, ...args),
+    );
   }
 
   async consume(name: unknown, ev: IpcMapping.IpcEvent, ...args: unknown[]) {
-    if (typeof name !== 'string') throw new Error(`Resource name must be a string!`);
+    if (typeof name !== "string")
+      throw new Error(`Resource name must be a string!`);
     const handler = this.handlers.get(name);
     if (!handler) throw new Error(`Unknow resource named '${name}'`);
 
@@ -43,7 +48,11 @@ export class IpcHandlerConsumer {
     }
   }
 
-  private static _map(handler: IpcMapping, prefix = '', handlerMap: IpcHandlerMap = new Map()) {
+  private static _map(
+    handler: IpcMapping,
+    prefix = "",
+    handlerMap: IpcHandlerMap = new Map(),
+  ) {
     for (let key in handler.map) {
       const value = handler.map[key];
       if (value === undefined) continue;
@@ -62,6 +71,6 @@ export class IpcHandlerConsumer {
   }
 
   static map<F extends IpcMappingFactory>(factory: F): IpcHandlerMap {
-    return IpcHandlerConsumer._map(factory.handler())
+    return IpcHandlerConsumer._map(factory.handler());
   }
 }

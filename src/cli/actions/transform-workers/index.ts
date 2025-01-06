@@ -14,9 +14,11 @@ export const transformerSchema = z.object({
   fn: z.function(),
 });
 
-const FIREBASE_KEY_PASSWORD = env('KEY_DECRYPT_PASSWORD');
+const FIREBASE_KEY_PASSWORD = env("KEY_DECRYPT_PASSWORD");
 
-export type TransformWorkersOptions = z.infer<typeof transformWorkersOptionsSchema>;
+export type TransformWorkersOptions = z.infer<
+  typeof transformWorkersOptionsSchema
+>;
 
 export type Transformer = z.infer<typeof transformerSchema>;
 
@@ -29,7 +31,7 @@ export async function transformWorkers(options: TransformWorkersOptions) {
 
   await transform(transformer);
 
-  console.log('modificações salvas com sucesso!');
+  console.log("modificações salvas com sucesso!");
 }
 
 async function transform(transformer: Transformer) {
@@ -38,7 +40,10 @@ async function transform(transformer: Transformer) {
   const chunk = await storage.get(0);
 
   for (const worker of chunk.registries()) {
-    if (transformer.only != null && transformer.only.includes(worker.workerId) === false) {
+    if (
+      transformer.only != null &&
+      transformer.only.includes(worker.workerId) === false
+    ) {
       continue;
     }
 
@@ -53,7 +58,9 @@ async function transform(transformer: Transformer) {
 }
 
 async function getChunkStorage() {
-  const initializer = new FirestoreInitializer({ password: FIREBASE_KEY_PASSWORD });
+  const initializer = new FirestoreInitializer({
+    password: FIREBASE_KEY_PASSWORD,
+  });
   const firestore = await initializer.getFirestore();
 
   const repository = new FirestoreWorkerRegistryRepository({ firestore });

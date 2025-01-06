@@ -1,9 +1,15 @@
 import { DayOfWeek } from "../../utils";
 import { ExtraDutyTable, ExtraEventName, WorkerInfo } from "../structs";
-import { AssingOptions, MultiStepScheduleAssigner } from "./assigners/multi-step-assigner";
+import {
+  AssingOptions,
+  MultiStepScheduleAssigner,
+} from "./assigners/multi-step-assigner";
 import { ScheduleClassifier } from "./classifiers/classifier";
 import { MultiEventScheduleClassifier } from "./classifiers/multi-event-classifier";
-import { DefaultTableIntegrityAnalyser, TableIntegrityAnalyser } from "./integrity";
+import {
+  DefaultTableIntegrityAnalyser,
+  TableIntegrityAnalyser,
+} from "./integrity";
 import { ScheduleBuilder } from "./schedule-builder";
 
 export interface DefaultMultiEventScheduleBuilderOptions {
@@ -12,7 +18,7 @@ export interface DefaultMultiEventScheduleBuilderOptions {
 }
 
 export class MultiEventScheduleBuilder implements ScheduleBuilder {
-  constructor(readonly classifier: ScheduleClassifier) { }
+  constructor(readonly classifier: ScheduleClassifier) {}
 
   build(table: ExtraDutyTable, workers: WorkerInfo[]): ExtraDutyTable {
     const bestClone = this.classifier.classify(table, workers);
@@ -22,73 +28,86 @@ export class MultiEventScheduleBuilder implements ScheduleBuilder {
     return table;
   }
 
-  static default(options: DefaultMultiEventScheduleBuilderOptions = {}): ScheduleBuilder {
-    const {
-      tries = 500,
-    } = options;
+  static default(
+    options: DefaultMultiEventScheduleBuilderOptions = {},
+  ): ScheduleBuilder {
+    const { tries = 500 } = options;
 
     const checker = MultiStepScheduleAssigner.defaultChecker();
 
-    const events = [
-      ExtraEventName.JIQUIA,
+    const events = [ExtraEventName.JIQUIA];
+
+    const steps: AssingOptions[] = [
+      {
+        onlyWorkersWhere: (worker) =>
+          worker.workTime.duration === 24 && worker.isGraduate(),
+        fullDay: true,
+        max: 1,
+      },
+      {
+        onlyWorkersWhere: (worker) =>
+          worker.workTime.duration === 24 && worker.isGraduate(),
+        max: 1,
+      },
+      {
+        onlyWorkersWhere: (worker) => worker.workTime.duration === 24,
+        fullDay: true,
+        max: 2,
+      },
+      {
+        onlyWorkersWhere: (worker) => worker.isDailyWorker(),
+        passDayWhen: (day) => day.date.isWeekEnd() === false,
+        events,
+        min: 2,
+        dutyMinDistance: 1,
+      },
+      {
+        onlyWorkersWhere: (worker) => worker.isDailyWorker(),
+        events,
+      },
+      {
+        onlyWorkersWhere: (worker) => worker.isInsp(),
+        events,
+      },
+      {
+        onlyWorkersWhere: (worker) => worker.isSubInsp(),
+        passDayWhen: (day) => day.isWeekDay(DayOfWeek.MONDAY),
+        events,
+      },
+      {
+        passDayWhen: (day) => day.isWeekDay(DayOfWeek.MONDAY),
+        events,
+        max: 2,
+      },
+      {
+        events,
+        min: 2,
+        dutyMinDistance: 4,
+      },
+      {
+        events,
+        min: 2,
+        dutyMinDistance: 2,
+      },
+      {
+        events,
+        min: 2,
+        max: 3,
+        dutyMinDistance: 1,
+      },
+      {
+        events,
+        min: 3,
+        dutyMinDistance: 1,
+      },
     ];
 
-    const steps: AssingOptions[] = [{
-      onlyWorkersWhere: worker => worker.workTime.duration === 24 && worker.isGraduate(),
-      fullDay: true,
-      max: 1,
-    }, {
-      onlyWorkersWhere: worker => worker.workTime.duration === 24 && worker.isGraduate(),
-      max: 1,
-    }, {
-      onlyWorkersWhere: worker => worker.workTime.duration === 24,
-      fullDay: true,
-      max: 2,
-    }, {
-      onlyWorkersWhere: worker => worker.isDailyWorker(),
-      passDayWhen: day => day.date.isWeekEnd() === false,
-      events,
-      min: 2,
-      dutyMinDistance: 1,
-    }, {
-      onlyWorkersWhere: worker => worker.isDailyWorker(),
-      events,
-    }, {
-      onlyWorkersWhere: worker => worker.isInsp(),
-      events,
-    }, {
-      onlyWorkersWhere: worker => worker.isSubInsp(),
-      passDayWhen: day => day.isWeekDay(DayOfWeek.MONDAY),
-      events,
-    }, {
-      passDayWhen: day => day.isWeekDay(DayOfWeek.MONDAY),
-      events,
-      max: 2,
-    }, {
-      events,
-      min: 2,
-      dutyMinDistance: 4,
-    }, {
-      events,
-      min: 2,
-      dutyMinDistance: 2,
-    }, {
-      events,
-      min: 2,
-      max: 3,
-      dutyMinDistance: 1,
-    }, {
-      events,
-      min: 3,
-      dutyMinDistance: 1,
-    }];
+    const assigner = new MultiStepScheduleAssigner(checker, steps);
 
-    const assigner = new MultiStepScheduleAssigner(
-      checker,
-      steps,
+    const analyser = new DefaultTableIntegrityAnalyser(
+      options.penalityLimit,
+      events,
     );
-
-    const analyser = new DefaultTableIntegrityAnalyser(options.penalityLimit, events);
 
     const classifier = new MultiEventScheduleClassifier(
       tries,
@@ -96,8 +115,6 @@ export class MultiEventScheduleBuilder implements ScheduleBuilder {
       analyser,
     );
 
-    return new MultiEventScheduleBuilder(
-      classifier,
-    );
+    return new MultiEventScheduleBuilder(classifier);
   }
 }

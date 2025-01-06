@@ -19,8 +19,11 @@ export interface DutyEditorData {
 export class DutyEditor {
   readonly table: TableEditor;
 
-  constructor(readonly day: DayEditor, readonly data: DutyEditorData) {
-    this.table = this.day.table
+  constructor(
+    readonly day: DayEditor,
+    readonly data: DutyEditorData,
+  ) {
+    this.table = this.day.table;
   }
 
   index() {
@@ -96,7 +99,7 @@ export class DutyEditor {
   addWorker(worker: WorkerEditor): boolean {
     const { workerIDs } = this.data;
 
-    if (workerIDs.has(worker.id())) return false
+    if (workerIDs.has(worker.id())) return false;
 
     workerIDs.add(worker.id());
     this.incrementQuantity(worker);
@@ -127,15 +130,18 @@ export class DutyEditor {
     if (this.index() < lastDutyIndex) {
       return day.getDuty(this.index() + 1);
     } else if (day.index() < lastDayIndex) {
-      return table.getDay(day.index() + 1).getDuty(0)
+      return table.getDay(day.index() + 1).getDuty(0);
     }
   }
 
   breaksTimeOffRule(worker: WorkerEditor): boolean {
     const workerID = worker.id();
 
-    return this.table.rules().timeOffRule
-      && ((this.prevDuty()?.includes(workerID) ?? false) || (this.nextDuty()?.includes(workerID) ?? false));
+    return (
+      this.table.rules().timeOffRule &&
+      ((this.prevDuty()?.includes(workerID) ?? false) ||
+        (this.nextDuty()?.includes(workerID) ?? false))
+    );
   }
 
   breaksOrdinaryRule(worker: WorkerEditor): boolean {
@@ -143,25 +149,30 @@ export class DutyEditor {
   }
 
   breaksInspRule(worker: WorkerEditor): boolean {
-    return this.rules().inspRule
-      && this.graduationQuantityOf('insp') > 0
-      && worker.graduation() === 'insp';
+    return (
+      this.rules().inspRule &&
+      this.graduationQuantityOf("insp") > 0 &&
+      worker.graduation() === "insp"
+    );
   }
 
   breaksGenderRule(worker: WorkerEditor): boolean {
-    return this.rules().femaleRule
-      && this.numOfWorkers() <= 1
-      && worker.gender() === 'female'
-      && this.gerderQuantityOf('male') === 0;
+    return (
+      this.rules().femaleRule &&
+      this.numOfWorkers() <= 1 &&
+      worker.gender() === "female" &&
+      this.gerderQuantityOf("male") === 0
+    );
   }
 
   canAddWorker(worker: WorkerEditor) {
-    const breaksSomeRule = this.isFull()
-      || this.includes(worker.id())
-      || this.breaksInspRule(worker)
-      || this.breaksGenderRule(worker)
-      || this.breaksTimeOffRule(worker)
-      || this.breaksOrdinaryRule(worker);
+    const breaksSomeRule =
+      this.isFull() ||
+      this.includes(worker.id()) ||
+      this.breaksInspRule(worker) ||
+      this.breaksGenderRule(worker) ||
+      this.breaksTimeOffRule(worker) ||
+      this.breaksOrdinaryRule(worker);
 
     return !breaksSomeRule;
   }

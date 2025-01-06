@@ -10,15 +10,15 @@ export class WorkingPlaceStorage {
     this.places = new Map();
 
     this.graduation = new QuantityStorage<Graduation>(() => ({
-      'sub-insp': 0,
-      'insp': 0,
-      'gcm': 0,
+      "sub-insp": 0,
+      insp: 0,
+      gcm: 0,
     }));
 
     this.gender = new QuantityStorage<Gender>(() => ({
-      'female': 0,
-      'male': 0,
-      'N/A': 0,
+      female: 0,
+      male: 0,
+      "N/A": 0,
     }));
   }
 
@@ -51,12 +51,10 @@ export class WorkingPlaceStorage {
   has(workerId: number, place?: string): boolean;
   has(worker: WorkerInfo, place?: string): boolean;
   has(arg0: number | WorkerInfo, place?: string): boolean {
-    const id = typeof arg0 === 'number' ? arg0 : arg0.id;
+    const id = typeof arg0 === "number" ? arg0 : arg0.id;
 
     if (place !== undefined) {
-      return this
-        .placeFrom(place)
-        .has(id);
+      return this.placeFrom(place).has(id);
     }
 
     for (const [_, place] of this.places) {

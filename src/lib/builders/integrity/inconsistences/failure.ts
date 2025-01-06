@@ -1,3 +1,3 @@
 import { IntegrityInconsistence } from "./inconsistence";
 
-export class IntegrityFailure extends IntegrityInconsistence { }
+export class IntegrityFailure extends IntegrityInconsistence {}

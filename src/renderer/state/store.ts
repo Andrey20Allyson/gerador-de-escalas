@@ -1,5 +1,5 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { tableEditorSlice } from './slices/table-editor';
+import { configureStore } from "@reduxjs/toolkit";
+import { tableEditorSlice } from "./slices/table-editor";
 
 export const store = configureStore({
   reducer: {
@@ -7,5 +7,5 @@ export const store = configureStore({
   },
 });
 
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

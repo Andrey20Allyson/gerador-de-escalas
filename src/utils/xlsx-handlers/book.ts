@@ -1,10 +1,12 @@
-import * as XLSX from 'xlsx';
-import { Result, ResultError, ResultType } from '../../utils/result';
-import { SheetHandler } from './sheet';
+import * as XLSX from "xlsx";
+import { Result, ResultError, ResultType } from "../../utils/result";
+import { SheetHandler } from "./sheet";
 
 export class SheetNotFoundError extends ResultError {
   constructor(sheetName: string, sheetList: readonly string[]) {
-    super(`Can't find sheet with name "${sheetName}"!\n  Did you mean ${sheetList.map((name) => `\n    "${name}"`).join(';')}\n`);
+    super(
+      `Can't find sheet with name "${sheetName}"!\n  Did you mean ${sheetList.map((name) => `\n    "${name}"`).join(";")}\n`,
+    );
   }
 }
 
@@ -23,9 +25,7 @@ export class MustInsertSheetNameError extends ResultError {
 export class BookHandler {
   private sheetMap: Map<string, SheetHandler>;
 
-  constructor(
-    readonly workBook: XLSX.WorkBook = XLSX.utils.book_new(),
-  ) {
+  constructor(readonly workBook: XLSX.WorkBook = XLSX.utils.book_new()) {
     this.sheetMap = new Map();
   }
 
@@ -49,7 +49,12 @@ export class BookHandler {
     return Result.unwrap(this.safeGetSheet(name));
   }
 
-  safeGetSheet(name?: string): ResultType<SheetHandler, EmptyBookError | MustInsertSheetNameError | SheetNotFoundError> {
+  safeGetSheet(
+    name?: string,
+  ): ResultType<
+    SheetHandler,
+    EmptyBookError | MustInsertSheetNameError | SheetNotFoundError
+  > {
     if (this.sheetNames.length === 0) return new EmptyBookError();
 
     name = this.sheetNames.length === 1 ? this.sheetNames[0] : name;
@@ -70,11 +75,11 @@ export class BookHandler {
   }
 
   toArrayBuffer(): ArrayBuffer {
-    return XLSX.write(this.workBook, { type: 'array' });
+    return XLSX.write(this.workBook, { type: "array" });
   }
 
   toBuffer(): Buffer {
-    return XLSX.write(this.workBook, { type: 'buffer', cellStyles: true });
+    return XLSX.write(this.workBook, { type: "buffer", cellStyles: true });
   }
 
   static parse(data: ArrayBuffer | Buffer) {

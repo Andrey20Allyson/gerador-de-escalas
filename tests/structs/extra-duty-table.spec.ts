@@ -1,11 +1,11 @@
-import { expect, test } from 'vitest';
-import { ExtraDutyTable } from '../../extra-duty-lib/structs/extra-duty-table';
-import { mock } from '../mocking/mocker';
+import { expect, test } from "vitest";
+import { ExtraDutyTable } from "../../extra-duty-lib/structs/extra-duty-table";
+import { mock } from "../mocking/mocker";
 
 test(`#clear shold restart all workers positionsLeft`, () => {
-  const worker0 = mock.worker({ name: 'Jose' });
-  const worker1 = mock.worker({ name: 'Roberto' });
-  const worker2 = mock.worker({ name: 'Cariane' });
+  const worker0 = mock.worker({ name: "Jose" });
+  const worker1 = mock.worker({ name: "Roberto" });
+  const worker2 = mock.worker({ name: "Cariane" });
 
   const table = new ExtraDutyTable();
 

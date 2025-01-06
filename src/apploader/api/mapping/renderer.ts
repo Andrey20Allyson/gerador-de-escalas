@@ -1,13 +1,19 @@
-import { IpcInvokerMapFromFactory, IpcMappingFactory, separator } from "./utils";
+import {
+  IpcInvokerMapFromFactory,
+  IpcMappingFactory,
+  separator,
+} from "./utils";
 
 export type IpcInvokerFunction = (...args: unknown[]) => unknown;
 
-export type IPCInvokerRecord = { [K in string]: IPCInvokerRecord | IpcInvokerFunction }
+export type IPCInvokerRecord = {
+  [K in string]: IPCInvokerRecord | IpcInvokerFunction;
+};
 
 export class IpcInvokerProxyFactory {
-  constructor(public listener: (path: string, ...args: unknown[]) => unknown) { }
+  constructor(public listener: (path: string, ...args: unknown[]) => unknown) {}
 
-  private _create(prefix = '', path = ''): IPCInvokerRecord {
+  private _create(prefix = "", path = ""): IPCInvokerRecord {
     const map = new Map<string, IPCInvokerRecord>();
     const factory = this;
 
@@ -16,7 +22,7 @@ export class IpcInvokerProxyFactory {
     }
 
     function get(_: typeof callback, p: string | symbol) {
-      if (typeof p !== 'string') return;
+      if (typeof p !== "string") return;
       let childProxy = map.get(p);
 
       if (!childProxy) {
@@ -31,7 +37,9 @@ export class IpcInvokerProxyFactory {
     return new Proxy(callback, { get }) as any;
   }
 
-  create<F extends IpcMappingFactory = IpcMappingFactory>(): IpcInvokerMapFromFactory<F> {
+  create<
+    F extends IpcMappingFactory = IpcMappingFactory,
+  >(): IpcInvokerMapFromFactory<F> {
     return this._create() as IpcInvokerMapFromFactory<F>;
   }
 }

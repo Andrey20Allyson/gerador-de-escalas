@@ -11,7 +11,7 @@ export default function usePreGenerateEditor() {
       if (!response.ok) return AppError.log(response.error);
 
       const editor = new PreGenerateEditor(response.data);
-      
+
       setData(editor);
     }
 

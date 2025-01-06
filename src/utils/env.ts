@@ -1,15 +1,15 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
-dotenv.config()
+dotenv.config();
 
 export function env(key: string): string {
-    const variable = process.env[key];
-    
-    if (variable == null) {
-      throw new Error(`env '${key}' is mandatory!`);
-    }
+  const variable = process.env[key];
 
-    return variable;
+  if (variable == null) {
+    throw new Error(`env '${key}' is mandatory!`);
+  }
+
+  return variable;
 }
 
 export module env {
@@ -21,5 +21,5 @@ export module env {
     }
 
     return variable;
-  } 
+  }
 }

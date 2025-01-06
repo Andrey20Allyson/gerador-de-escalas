@@ -1,4 +1,4 @@
-import { ExtraDutyTable } from '../extra-duty-lib';
+import { ExtraDutyTable } from "../extra-duty-lib";
 
 export interface TableFactoryOptions {
   sheetName: string;
@@ -6,5 +6,8 @@ export interface TableFactoryOptions {
 }
 
 export interface TableFactory {
-  generate(table: ExtraDutyTable, options: TableFactoryOptions): Promise<Buffer>;
+  generate(
+    table: ExtraDutyTable,
+    options: TableFactoryOptions,
+  ): Promise<Buffer>;
 }

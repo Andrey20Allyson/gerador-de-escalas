@@ -1,8 +1,8 @@
 import { Month } from "../../extra-duty-lib/structs/month";
 import { randomIntFromInterval } from "../../../utils";
 
-export function createHourlyStringFrom(days: number[], sep = ', '): string {
-  return `(DIAS: ${days.map(num => num + 1).join(sep)})`;
+export function createHourlyStringFrom(days: number[], sep = ", "): string {
+  return `(DIAS: ${days.map((num) => num + 1).join(sep)})`;
 }
 
 export interface HourlyMock {

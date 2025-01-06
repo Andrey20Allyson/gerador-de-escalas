@@ -1,28 +1,28 @@
-import { Day } from 'src/lib/structs/day'
+import { Day } from "src/lib/structs/day";
 
 export class Text {
   private text: string;
 
   constructor() {
-    this.text = '';
+    this.text = "";
   }
 
   tab(count: number = 1): this {
-    this.write('  '.repeat(count));
-  
-    return this
+    this.write("  ".repeat(count));
+
+    return this;
   }
 
   write(...data: unknown[]): this {
     for (const entry of data) {
       this.text += String(entry);
     }
-    
+
     return this;
   }
 
   writeLn(...data: unknown[]): this {
-    this.write(...data, '\n');
+    this.write(...data, "\n");
 
     return this;
   }

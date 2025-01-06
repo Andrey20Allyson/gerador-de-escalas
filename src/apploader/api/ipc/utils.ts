@@ -10,8 +10,11 @@ export class UtilsHandler implements IpcMappingFactory {
   }
 
   handler() {
-    return IpcMapping.create({
-      getSheetNames: this.getSheetNames
-    }, this);
+    return IpcMapping.create(
+      {
+        getSheetNames: this.getSheetNames,
+      },
+      this,
+    );
   }
 }

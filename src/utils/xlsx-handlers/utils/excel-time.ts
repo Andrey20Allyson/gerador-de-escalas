@@ -24,7 +24,7 @@ export class ExcelTime {
     public hours: number,
     public minutes: number,
     public seconds: number,
-  ) { }
+  ) {}
 
   /**
    * Normalizes the time to a value between 0 and 1.
@@ -36,15 +36,21 @@ export class ExcelTime {
 
   /**
    * Normalizes the given time values into a decimal representation of the time fraction in a day.
-   * 
+   *
    * @param hours - The number of hours.
    * @param minutes - The number of minutes (default: 0).
    * @param seconds - The number of seconds (default: 0).
    * @returns The normalized time fraction in a day.
    */
-  static normalize(hours: number, minutes: number = 0, seconds: number = 0): number {
-    const totalSeconds = hours * ExcelTime.SECONDS_IN_AN_HOUR +
-      minutes * ExcelTime.SECONDS_IN_A_MINUTE + seconds;
+  static normalize(
+    hours: number,
+    minutes: number = 0,
+    seconds: number = 0,
+  ): number {
+    const totalSeconds =
+      hours * ExcelTime.SECONDS_IN_AN_HOUR +
+      minutes * ExcelTime.SECONDS_IN_A_MINUTE +
+      seconds;
     return totalSeconds / ExcelTime.SECONDS_IN_A_DAY;
   }
 
@@ -56,7 +62,10 @@ export class ExcelTime {
   static parse(time: number): ExcelTime {
     const totalSeconds = time * ExcelTime.SECONDS_IN_A_DAY;
     const hours = Math.floor(totalSeconds / ExcelTime.SECONDS_IN_AN_HOUR);
-    const minutes = Math.floor((totalSeconds % ExcelTime.SECONDS_IN_AN_HOUR) / ExcelTime.SECONDS_IN_A_MINUTE);
+    const minutes = Math.floor(
+      (totalSeconds % ExcelTime.SECONDS_IN_AN_HOUR) /
+        ExcelTime.SECONDS_IN_A_MINUTE,
+    );
     const seconds = Math.floor(totalSeconds % ExcelTime.SECONDS_IN_A_MINUTE);
     return new ExcelTime(hours, minutes, seconds);
   }

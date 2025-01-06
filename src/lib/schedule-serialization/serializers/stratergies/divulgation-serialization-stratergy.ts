@@ -1,22 +1,42 @@
-import ExcelJS from 'exceljs';
+import ExcelJS from "exceljs";
 import { ExtraDutyTable, ExtraDutyTableEntry } from "../../../extra-duty-lib";
 import { enumerate } from "../../../../utils";
 import { SerializationStratergy } from "../serialization-stratergy";
-import { DayGrid, DayGridFromatter } from './utils/day-grid-formatter';
-import { WorkerDutiesBuilder } from './utils/worker-duties-builder';
-import { ScheduleMetadataWriter } from '../../lib/metadata/schedule-metatada-writer';
+import { DayGrid, DayGridFromatter } from "./utils/day-grid-formatter";
+import { WorkerDutiesBuilder } from "./utils/worker-duties-builder";
+import { ScheduleMetadataWriter } from "../../lib/metadata/schedule-metatada-writer";
 
-export class DivulgationSerializationStratergy implements SerializationStratergy {
-  readonly label = ['TURNO', 'NOME', 'MATRÍCULA'];
-  readonly titleFill: ExcelJS.Fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDDDDDD' } };
-  readonly labelFill: ExcelJS.Fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEFEFEF' } };
-  readonly primaryFill: ExcelJS.Fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEEEEEE' } };
-  readonly secondaryFill: ExcelJS.Fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEFEFE' } };
+export class DivulgationSerializationStratergy
+  implements SerializationStratergy
+{
+  readonly label = ["TURNO", "NOME", "MATRÍCULA"];
+  readonly titleFill: ExcelJS.Fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "FFDDDDDD" },
+  };
+  readonly labelFill: ExcelJS.Fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "FFEFEFEF" },
+  };
+  readonly primaryFill: ExcelJS.Fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "FFEEEEEE" },
+  };
+  readonly secondaryFill: ExcelJS.Fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "FFFEFEFE" },
+  };
 
   readonly boldFont: Partial<ExcelJS.Font> = { bold: true };
-  readonly centerHorizontalAlignment: Partial<ExcelJS.Alignment> = { horizontal: 'center' };
+  readonly centerHorizontalAlignment: Partial<ExcelJS.Alignment> = {
+    horizontal: "center",
+  };
 
-  constructor(readonly sheetName: string = 'DADOS') { }
+  constructor(readonly sheetName: string = "DADOS") {}
 
   async execute(table: ExtraDutyTable): Promise<Buffer> {
     const book = new ExcelJS.Workbook();
@@ -66,7 +86,10 @@ export class DivulgationSerializationStratergy implements SerializationStratergy
       for (const entry of grid.entries) {
         const row = sheet.getRow(actualRow++);
 
-        const fill = (actualRow - rowStartI) % 2 === 1 ? this.primaryFill : this.secondaryFill;
+        const fill =
+          (actualRow - rowStartI) % 2 === 1
+            ? this.primaryFill
+            : this.secondaryFill;
 
         const { duty, id, name } = entry;
 
@@ -89,7 +112,12 @@ export class DivulgationSerializationStratergy implements SerializationStratergy
 
       const dutySeparationRow = lastRow - grid.numOfNightly - 2;
 
-      makeGridBorders({ sheet, start: { col: 1, row: rowStartI }, end: { col: 3, row: lastRow - 2 }, dutySeparationRow });
+      makeGridBorders({
+        sheet,
+        start: { col: 1, row: rowStartI },
+        end: { col: 3, row: lastRow - 2 },
+        dutySeparationRow,
+      });
 
       rowStartI = lastRow;
     }
@@ -123,16 +151,19 @@ export class DivulgationSerializationStratergy implements SerializationStratergy
   }
 }
 
-export function workerNameSorter(a: ExtraDutyTableEntry, b: ExtraDutyTableEntry): number {
+export function workerNameSorter(
+  a: ExtraDutyTableEntry,
+  b: ExtraDutyTableEntry,
+): number {
   return a.worker < b.worker ? -1 : a.worker > b.worker ? 1 : 0;
 }
 
 export function parseDayIndex(index: number) {
-  return (index + 1).toString().padStart(2, '0');
+  return (index + 1).toString().padStart(2, "0");
 }
 
 export function fromExcelDim(dim: number) {
-  return dim ** 2 / (dim - .71);
+  return dim ** 2 / (dim - 0.71);
 }
 
 export const defaultRowPerPage = 47;
@@ -151,11 +182,11 @@ export interface SheetAddress {
 }
 
 export function createNormalBorder(): ExcelJS.Border {
-  return { color: { argb: 'FF000000' }, style: 'thin' };
+  return { color: { argb: "FF000000" }, style: "thin" };
 }
 
 export function createMediumBorder(): ExcelJS.Border {
-  return { color: { argb: 'FF000000' }, style: 'medium' };
+  return { color: { argb: "FF000000" }, style: "medium" };
 }
 
 export interface MakeGridBordersParams {
@@ -190,7 +221,10 @@ export function makeGridBorders(params: MakeGridBordersParams) {
         left: ci === start.col ? mediumBorder : normalBorder,
         right: ci === end.col ? mediumBorder : normalBorder,
         top: ri === start.row ? mediumBorder : normalBorder,
-        bottom: ri === dutySeparationRow || ri === end.row || ri - start.row < 2 ? mediumBorder : normalBorder,
+        bottom:
+          ri === dutySeparationRow || ri === end.row || ri - start.row < 2
+            ? mediumBorder
+            : normalBorder,
       };
     }
   }

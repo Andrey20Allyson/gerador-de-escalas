@@ -6,10 +6,7 @@ import { LoadTableEditorStage } from "./LoadTableEditorStage";
 export default function Editor() {
   return (
     <StageProvider>
-      <StageRouter stages={[
-        LoadTableEditorStage,
-        EditTableStage,
-      ]} />
+      <StageRouter stages={[LoadTableEditorStage, EditTableStage]} />
     </StageProvider>
   );
 }

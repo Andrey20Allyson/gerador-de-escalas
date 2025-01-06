@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { FaCalendarAlt, FaTrash } from 'react-icons/fa';
-import { genderComponentMap, graduationTextColor2Map } from "../../components/DayEditionModal/utils";
+import { FaCalendarAlt, FaTrash } from "react-icons/fa";
+import {
+  genderComponentMap,
+  graduationTextColor2Map,
+} from "../../components/DayEditionModal/utils";
 import { DutyCard } from "../../components/DutyCard";
 import { useDutySelectModal } from "../../components/DutySelectModal";
 import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
@@ -14,14 +17,16 @@ export interface WorkerEditionCardProps {
   onOpenModal?: (dutyId: number) => void;
 }
 
-export function WorkerEditionCard(props: IterProps<number, WorkerEditionCardProps>) {
+export function WorkerEditionCard(
+  props: IterProps<number, WorkerEditionCardProps>,
+) {
   const { onOpenModal } = props;
 
   const workerController = new WorkerEditorController(props.entry);
   const { worker } = workerController;
 
-  const dutyIds = workerController.duties().map(duty => duty.id);
-  
+  const dutyIds = workerController.duties().map((duty) => duty.id);
+
   const [copiedID, setCopiedID] = useState(false);
   const dutyModal = useDutySelectModal();
 
@@ -37,7 +42,7 @@ export function WorkerEditionCard(props: IterProps<number, WorkerEditionCardProp
     if (copiedID) removeCopiedEffect();
 
     return () => {
-      valid = false
+      valid = false;
     };
   }, [copiedID]);
 
@@ -68,29 +73,39 @@ export function WorkerEditionCard(props: IterProps<number, WorkerEditionCardProp
 
   return (
     <StyledWorkerEditionCard>
-      <section className='presentation'>
-        <p className='name'>{worker.name}</p>
-        <div className='info'>
+      <section className="presentation">
+        <p className="name">{worker.name}</p>
+        <div className="info">
           <Gender />
-          <ColoredText className='graduation' color={graduationTextColor2Map[graduation]}>{upperCaseGraduation}</ColoredText>
-          <p className='id-box'>
-            <span className='title'>
-              MAT:
-            </span>
-            <span className={`content${copiedID ? ' copied' : ''}`} onClick={handleCopyID}>
+          <ColoredText
+            className="graduation"
+            color={graduationTextColor2Map[graduation]}
+          >
+            {upperCaseGraduation}
+          </ColoredText>
+          <p className="id-box">
+            <span className="title">MAT:</span>
+            <span
+              className={`content${copiedID ? " copied" : ""}`}
+              onClick={handleCopyID}
+            >
               {formattedWorkerID}
             </span>
           </p>
         </div>
       </section>
-      <section className='duty-list'>
-        <ElementList Component={DutyCard} communProps={{ onExcludeDuty: handleExcludeDuty, onOpenModal }} iter={dutyIds} />
+      <section className="duty-list">
+        <ElementList
+          Component={DutyCard}
+          communProps={{ onExcludeDuty: handleExcludeDuty, onOpenModal }}
+          iter={dutyIds}
+        />
       </section>
-      <section className='commands'>
-        <button className='add-duty-button' onClick={handleOpenDutySelection}>
+      <section className="commands">
+        <button className="add-duty-button" onClick={handleOpenDutySelection}>
           <FaCalendarAlt size={14} />
         </button>
-        <button className='delete-all-button' onClick={handleExcludeAllDuties}>
+        <button className="delete-all-button" onClick={handleExcludeAllDuties}>
           <FaTrash size={14} />
         </button>
       </section>

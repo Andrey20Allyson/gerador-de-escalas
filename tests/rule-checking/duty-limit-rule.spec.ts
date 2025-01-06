@@ -14,18 +14,16 @@ describe(DutyLimitAssignmentRule.name, () => {
 
     duty.add(worker);
 
-    expect(checker.canAssign(worker, duty))
-      .toBeFalsy();
+    expect(checker.canAssign(worker, duty)).toBeFalsy();
   });
 
   test(`Shold return true if duty have free space`, () => {
     const { duty, worker } = mock({
       table: {
         dutyCapacity: 1,
-      }
+      },
     });
 
-    expect(checker.canAssign(worker, duty))
-      .toBeTruthy();
+    expect(checker.canAssign(worker, duty)).toBeTruthy();
   });
 });

@@ -1,11 +1,13 @@
 import { TableIntegrityAnalyser } from "./analyser";
-import { GCMOnlyChecker, FemaleOnlyChecker, DutyMinQuantityChecker, CorrectWorkerAllocationChecker } from "./checkers";
+import {
+  GCMOnlyChecker,
+  FemaleOnlyChecker,
+  DutyMinQuantityChecker,
+  CorrectWorkerAllocationChecker,
+} from "./checkers";
 
 export class DefaultTableIntegrityAnalyser extends TableIntegrityAnalyser {
-  constructor(
-    penalityLimit: number = 100_000,
-    events?: string | string[],
-  ) {
+  constructor(penalityLimit: number = 100_000, events?: string | string[]) {
     super(
       [
         new GCMOnlyChecker(75),
@@ -14,7 +16,7 @@ export class DefaultTableIntegrityAnalyser extends TableIntegrityAnalyser {
         new CorrectWorkerAllocationChecker(),
       ],
       penalityLimit,
-      events
+      events,
     );
   }
 }

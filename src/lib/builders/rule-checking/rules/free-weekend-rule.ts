@@ -4,22 +4,25 @@ import { Day } from "../../../structs/day";
 import { AssignmentRule } from "../assignment-rule";
 
 export class FreeWeekendAssignmentRule implements AssignmentRule {
-  protected _hasOrdinaryOnPrevThursdayOrFriday(worker: WorkerInfo, day: Day): boolean {
+  protected _hasOrdinaryOnPrevThursdayOrFriday(
+    worker: WorkerInfo,
+    day: Day,
+  ): boolean {
     const prevFriday = day.seekPrevWeekday(DayOfWeek.FRIDAY);
     const prevThursday = prevFriday.prev();
     const currentMonth = worker.daysOfWork.month;
-    
+
     if (prevFriday.month === currentMonth) {
       const worksOnFriday = worker.daysOfWork.workOn(prevFriday.index);
-      
+
       if (worksOnFriday) {
         return true;
       }
     }
-    
+
     if (prevThursday.month === currentMonth) {
       const worksOnThursday = worker.daysOfWork.workOn(prevThursday.index);
-      
+
       if (worksOnThursday) {
         return true;
       }
@@ -30,11 +33,12 @@ export class FreeWeekendAssignmentRule implements AssignmentRule {
 
   canAssign(worker: WorkerInfo, duty: ExtraDuty): boolean {
     if (worker.workTime.duration !== 24) return true;
-    
+
     const isWeekend = duty.day.date.isWeekEnd();
     if (!isWeekend) return true;
 
-    const hasOrdinaryOnPrevThursdayOrFriday = this._hasOrdinaryOnPrevThursdayOrFriday(worker, duty.day.date);
+    const hasOrdinaryOnPrevThursdayOrFriday =
+      this._hasOrdinaryOnPrevThursdayOrFriday(worker, duty.day.date);
 
     return !hasOrdinaryOnPrevThursdayOrFriday;
   }

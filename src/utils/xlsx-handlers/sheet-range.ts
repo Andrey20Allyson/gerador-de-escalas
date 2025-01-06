@@ -11,17 +11,19 @@ export class SheetRange {
   constructor(
     readonly start: CellAddress,
     readonly end: CellAddress,
-  ) { }
+  ) {}
 
   static parse(value: string) {
     return Result.unwrap(this.safeParse(value));
   }
 
   static safeParse(value: string): ResultType<SheetRange> {
-    const addresses = value.split(':');
+    const addresses = value.split(":");
     if (addresses.length !== 2) return new InvalidSheetRangeError(value);
 
-    const result = Result.all(addresses.map(CellAddress.parse.bind(CellAddress)));
+    const result = Result.all(
+      addresses.map(CellAddress.parse.bind(CellAddress)),
+    );
     if (ResultError.isError(result)) return result;
 
     const [start, end] = result as [CellAddress, CellAddress];

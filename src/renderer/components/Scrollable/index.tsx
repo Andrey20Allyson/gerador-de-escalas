@@ -1,21 +1,22 @@
 import React from "react";
 import styled from "styled-components";
 
-type StyledRefType<E> = ((instance: E | null) => void) | React.RefObject<E> | null | undefined;
-type OmitRef<P extends { ref?: any }> = Omit<P, 'ref'>;
+type StyledRefType<E> =
+  | ((instance: E | null) => void)
+  | React.RefObject<E>
+  | null
+  | undefined;
+type OmitRef<P extends { ref?: any }> = Omit<P, "ref">;
 
-export interface ScrollableProps extends React.PropsWithChildren, OmitRef<React.ComponentProps<'section'>> {
+export interface ScrollableProps
+  extends React.PropsWithChildren,
+    OmitRef<React.ComponentProps<"section">> {
   bodyRef?: StyledRefType<HTMLElement>;
   scrollableRef?: StyledRefType<HTMLElement>;
 }
 
 export function Scrollable(props: ScrollableProps) {
-  const {
-    scrollableRef,
-    children,
-    bodyRef,
-    ...rest
-  } = props;
+  const { scrollableRef, children, bodyRef, ...rest } = props;
 
   return (
     <StyledScrollable ref={bodyRef} {...rest}>
@@ -39,12 +40,12 @@ export const StyledScrollable = styled.section`
 
     &::-webkit-scrollbar {
       background-color: #ffffff81;
-      width: .5rem;
+      width: 0.5rem;
     }
 
     &::-webkit-scrollbar-thumb {
       background-color: #ffffffb0;
-      border-radius: .3rem;
+      border-radius: 0.3rem;
     }
   }
 `;

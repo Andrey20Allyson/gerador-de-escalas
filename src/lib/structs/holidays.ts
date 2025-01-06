@@ -1,15 +1,15 @@
-import zod from 'zod';
-import { ResultError, ResultType } from '../../../utils';
+import zod from "zod";
+import { ResultError, ResultType } from "../../../utils";
 
 const holidaySchema = zod.object({
   day: zod.number(),
   month: zod.number(),
 });
 
-export interface Holiday extends zod.infer<typeof holidaySchema> { }
+export interface Holiday extends zod.infer<typeof holidaySchema> {}
 
 export class Holidays {
-  constructor(private holidaysMap: Map<number, Holiday[]>) { }
+  constructor(private holidaysMap: Map<number, Holiday[]>) {}
 
   get(month: number): Holiday[] {
     return this.holidaysMap.get(month) ?? [];
@@ -21,11 +21,14 @@ export class Holidays {
 
   static safeParse(buffer: Buffer): ResultType<Holidays> {
     try {
-      const data: unknown = JSON.parse(buffer.toString('utf-8'));
+      const data: unknown = JSON.parse(buffer.toString("utf-8"));
 
       const result = holidaySchema.array().safeParse(data);
 
-      if (!result.success) return new ResultError(`Can't parse data to a array of Holidays!\n${result.error.toString()}`);
+      if (!result.success)
+        return new ResultError(
+          `Can't parse data to a array of Holidays!\n${result.error.toString()}`,
+        );
 
       const holidays = result.data;
 

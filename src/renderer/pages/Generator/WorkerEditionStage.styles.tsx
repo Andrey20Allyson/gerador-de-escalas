@@ -28,23 +28,23 @@ export const HelpIcon = styled.label`
   cursor: pointer;
 
   &::before {
-    content: '?';
+    content: "?";
   }
 
-  &>* {
+  & > * {
     position: absolute;
     background-color: #ebebeb;
-    padding: .5rem;
+    padding: 0.5rem;
     visibility: hidden;
     border-style: solid;
     width: max-content;
     border-width: 1px;
     border-color: #0004;
-    box-shadow: -.2rem .2rem .4rem #0004;
+    box-shadow: -0.2rem 0.2rem 0.4rem #0004;
     z-index: 2;
   }
 
-  &:hover>* {
+  &:hover > * {
     visibility: visible;
     top: 70%;
     right: 70%;
@@ -62,7 +62,7 @@ export const StageBody = styled.div`
     color: #000c;
 
     &:hover {
-      color: #000
+      color: #000;
     }
 
     &:focus {
@@ -79,10 +79,10 @@ export const Footer = styled.footer`
 export const DayGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: .4rem;
+  gap: 0.4rem;
   background-color: #49494942;
-  border-radius: .2rem;
-  padding: .4rem;
+  border-radius: 0.2rem;
+  padding: 0.4rem;
 `;
 
 export interface DayCellProps {
@@ -90,15 +90,15 @@ export interface DayCellProps {
 }
 
 export function normalBackgroundColorFunction(props: DayCellProps) {
-  return props.isWorkDay ? '#d3d3d3' : '#297a29';
+  return props.isWorkDay ? "#d3d3d3" : "#297a29";
 }
 
 export function hovererBackgroundColorFunction(props: DayCellProps) {
-  return props.isWorkDay ? '#8a8a8a' : '#025a00';
+  return props.isWorkDay ? "#8a8a8a" : "#025a00";
 }
 
 export const shadowStyles = css`
-  box-shadow: -.1rem .1rem .4rem #0002;
+  box-shadow: -0.1rem 0.1rem 0.4rem #0002;
 `;
 
 export const dayCellStyles = css`
@@ -111,16 +111,18 @@ export const dayCellStyles = css`
   justify-content: center;
   user-select: none;
   border-color: #0001;
-  border-radius: .2rem;
+  border-radius: 0.2rem;
   border-width: 1px;
   border-style: solid;
-  transition: background-color 100ms, color 100ms;
+  transition:
+    background-color 100ms,
+    color 100ms;
 `;
 
 export const DayCell = styled.div`
   ${dayCellStyles}
   background-color: #3d3d3d;
-  opacity: .2;
+  opacity: 0.2;
 `;
 
 export const WorkDayCell = styled.div<DayCellProps>`
@@ -132,8 +134,13 @@ export const WorkDayCell = styled.div<DayCellProps>`
     background-color: ${hovererBackgroundColorFunction};
   }
 
-  color: ${(props) => props.isWorkDay ? '#000' : '#eee'};
-  ${(props) => props.isWorkDay ? '' : css`font-weight: bolder;`}
+  color: ${(props) => (props.isWorkDay ? "#000" : "#eee")};
+  ${(props) =>
+    props.isWorkDay
+      ? ""
+      : css`
+          font-weight: bolder;
+        `}
 `;
 
 export const HeaderLabel = styled.label`

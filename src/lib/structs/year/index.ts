@@ -2,10 +2,8 @@ import { isInteger, thisYear } from "../../../../utils";
 
 export class Year {
   readonly index: number;
-  
-  constructor(
-    index: number
-  ) {
+
+  constructor(index: number) {
     if (!Year.isValidIndex(index)) {
       throw new Error(`Value ${index} don't is a valid year!`);
     }

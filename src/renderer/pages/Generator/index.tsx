@@ -6,10 +6,7 @@ import { WorkerEditionStage } from "./WorkerEditionStage";
 export default function Generator() {
   return (
     <StageProvider>
-      <StageRouter stages={[
-        DataCollectStage,
-        WorkerEditionStage,
-      ]} />
+      <StageRouter stages={[DataCollectStage, WorkerEditionStage]} />
     </StageProvider>
   );
 }

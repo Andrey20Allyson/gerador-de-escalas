@@ -4,4 +4,4 @@ export type ExtraWork = {
   monthIndex: number;
   dayIndex: number;
   dutyIndex: number;
-}
+};

@@ -20,15 +20,14 @@ describe(OrdinaryAssignmentRule.name, () => {
 
     worker.daysOfWork.work(duty.day.index);
 
-    expect(checker.canAssign(worker, duty))
-      .toBeFalsy();
+    expect(checker.canAssign(worker, duty)).toBeFalsy();
   });
 
   test(`Shold return false if duty collides with worker's ordinary timeoff`, () => {
     const { table, worker } = mock({
       worker: {
         workTime: new WorkTime(1, 18),
-      }
+      },
     });
 
     worker.daysOfWork.work(10);
@@ -36,44 +35,50 @@ describe(OrdinaryAssignmentRule.name, () => {
     const day = table.getDay(9);
     const duty = day.getDuty(day.getSize() - 1);
 
-    expect(checker.canAssign(worker, duty))
-      .toBeFalsy();
+    expect(checker.canAssign(worker, duty)).toBeFalsy();
   });
 
   test(`Should use dutyPositionSize to calculate the time off`, () => {
     const month = mock.month();
 
-    const tests: DutyPositionSizeTestConfig[] = [{
-      day: 6,
-      duty: 2,
-      dutyPositionSize: 2,
-      result: false,
-    }, {
-      day: 6,
-      duty: 3,
-      dutyPositionSize: 2,
-      result: true,
-    }, {
-      day: 6,
-      duty: 2,
-      dutyPositionSize: 1,
-      result: true,
-    }, {
-      day: 6,
-      duty: 3,
-      dutyPositionSize: 3,
-      result: false,
-    }, {
-      day: 4,
-      duty: 2,
-      dutyPositionSize: 2,
-      result: true,
-    }, {
-      day: 4,
-      duty: 3,
-      dutyPositionSize: 2,
-      result: false,
-    }];
+    const tests: DutyPositionSizeTestConfig[] = [
+      {
+        day: 6,
+        duty: 2,
+        dutyPositionSize: 2,
+        result: false,
+      },
+      {
+        day: 6,
+        duty: 3,
+        dutyPositionSize: 2,
+        result: true,
+      },
+      {
+        day: 6,
+        duty: 2,
+        dutyPositionSize: 1,
+        result: true,
+      },
+      {
+        day: 6,
+        duty: 3,
+        dutyPositionSize: 3,
+        result: false,
+      },
+      {
+        day: 4,
+        duty: 2,
+        dutyPositionSize: 2,
+        result: true,
+      },
+      {
+        day: 4,
+        duty: 3,
+        dutyPositionSize: 2,
+        result: false,
+      },
+    ];
 
     const { table, worker } = mock({
       worker: {
@@ -91,7 +96,6 @@ describe(OrdinaryAssignmentRule.name, () => {
 
       expect(checker.canAssign(worker, duty)).toStrictEqual(config.result);
     }
-    
   });
 
   test(`Shold return true if duty don't collides with worker's ordinary`, () => {
@@ -103,9 +107,8 @@ describe(OrdinaryAssignmentRule.name, () => {
 
     Array.from(iterRange(0, 16))
       .concat(Array.from(iterRange(20, table.width)))
-      .forEach(day => worker.daysOfWork.work(day));
+      .forEach((day) => worker.daysOfWork.work(day));
 
-    expect(checker.canAssign(worker, duty))
-      .toBeTruthy();
+    expect(checker.canAssign(worker, duty)).toBeTruthy();
   });
 });

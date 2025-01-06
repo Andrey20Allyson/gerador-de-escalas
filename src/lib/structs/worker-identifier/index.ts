@@ -1,6 +1,6 @@
 import { isInteger } from "../../../../utils";
 
-export class InvalidIdentifierError extends Error { }
+export class InvalidIdentifierError extends Error {}
 
 export class WorkerIdentifier {
   readonly id: number;
@@ -20,20 +20,18 @@ export class WorkerIdentifier {
 
   private validate() {
     if (isNaN(this.preId) || isNaN(this.postId)) {
-      this.addInvalidation(
-        new InvalidIdentifierError(`Recived a NaN!`)
-      );
+      this.addInvalidation(new InvalidIdentifierError(`Recived a NaN!`));
     }
 
     if (!isInteger(this.preId) || !isInteger(this.postId)) {
       this.addInvalidation(
-        new InvalidIdentifierError(`Recived a float point value`)
+        new InvalidIdentifierError(`Recived a float point value`),
       );
     }
 
     if (this.postId > 9 || this.postId < 0) {
       this.addInvalidation(
-        new InvalidIdentifierError(`postId shold be in [0..9] range!`)
+        new InvalidIdentifierError(`postId shold be in [0..9] range!`),
       );
     }
   }
@@ -47,7 +45,7 @@ export class WorkerIdentifier {
   }
 
   getInvalidations(): InvalidIdentifierError[] {
-    return [...this.invalidations ?? []] ;
+    return [...(this.invalidations ?? [])];
   }
 
   isValid(): boolean {

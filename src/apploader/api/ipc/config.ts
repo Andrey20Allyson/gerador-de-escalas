@@ -10,8 +10,11 @@ export class ConfigHandler implements IpcMappingFactory {
   }
 
   handler() {
-    return IpcMapping.create({
-      workers: this.workers.handler(),
-    }, this);
+    return IpcMapping.create(
+      {
+        workers: this.workers.handler(),
+      },
+      this,
+    );
   }
 }

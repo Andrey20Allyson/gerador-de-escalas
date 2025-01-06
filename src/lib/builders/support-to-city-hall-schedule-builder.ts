@@ -8,6 +8,6 @@ export class SupportToCHScheduleBuilder extends ClassifyingScheduleBuilder {
     super(
       ExtraEventName.SUPPORT_TO_CITY_HALL,
       new DefaultScheduleClassifier(tries, MultiStepScheduleAssigner.default()),
-    )
+    );
   }
 }

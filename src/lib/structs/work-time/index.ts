@@ -17,22 +17,15 @@ export class WorkTime implements Clonable<WorkTime> {
   }
 
   equals(workTime: WorkTime) {
-    return this.start === workTime.start
-      && this.duration === workTime.duration;
+    return this.start === workTime.start && this.duration === workTime.duration;
   }
 
   static fromRange(start: number, end: number): WorkTime {
     if (end > start) {
-      return new WorkTime(
-        start,
-        end - start,
-      );
+      return new WorkTime(start, end - start);
     }
 
-    return new WorkTime(
-      start,
-      24 + end - start,
-    );
+    return new WorkTime(start, 24 + end - start);
   }
 
   static fromDailyWorker() {

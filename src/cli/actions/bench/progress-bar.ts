@@ -1,7 +1,7 @@
 import chalk from "chalk";
 
-export type ValuePerTimeScala = 'min' | 'sec' | 'milli';
-export type ValuesPerTimeAvg = 'higher' | 'lower' | 'mid';
+export type ValuePerTimeScala = "min" | "sec" | "milli";
+export type ValuesPerTimeAvg = "higher" | "lower" | "mid";
 export type NumberMapper = (value: number) => number;
 
 export class ValuesPerTimeEntry {
@@ -9,8 +9,8 @@ export class ValuesPerTimeEntry {
     readonly valuesPerTime: number,
     readonly difToPrev: number,
     readonly scala: ValuePerTimeScala,
-    readonly avg: ValuesPerTimeAvg = 'mid',
-  ) { }
+    readonly avg: ValuesPerTimeAvg = "mid",
+  ) {}
 
   private _avgColor(): chalk.Chalk {
     switch (this.avg) {
@@ -45,11 +45,16 @@ export class ValuesPerTimeEntry {
   }
 
   setAvg(avg: ValuesPerTimeAvg): ValuesPerTimeEntry {
-    return new ValuesPerTimeEntry(this.valuesPerTime, this.difToPrev, this.scala, avg);
+    return new ValuesPerTimeEntry(
+      this.valuesPerTime,
+      this.difToPrev,
+      this.scala,
+      avg,
+    );
   }
 
   static higherOrLower(entry: ValuesPerTimeEntry): boolean {
-    return entry.avg === 'higher' || entry.avg === 'lower';
+    return entry.avg === "higher" || entry.avg === "lower";
   }
 }
 
@@ -58,8 +63,11 @@ export class ProgressBar {
   private lastTime: number;
   private difs: number[] = [];
 
-  constructor(readonly total: number, step: number = .05) {
-    step = Math.max(step, 1 / this.total, .01);
+  constructor(
+    readonly total: number,
+    step: number = 0.05,
+  ) {
+    step = Math.max(step, 1 / this.total, 0.01);
 
     this.percOfTotal = Math.round(this.total * step);
     this.lastTime = Date.now();
@@ -83,14 +91,16 @@ export class ProgressBar {
     return [...this.difs];
   }
 
-  getValuesPer(scala: ValuePerTimeScala, mapper?: NumberMapper): ValuesPerTimeEntry[] {
+  getValuesPer(
+    scala: ValuePerTimeScala,
+    mapper?: NumberMapper,
+  ): ValuesPerTimeEntry[] {
     let prevVPT: number | undefined;
     let higger: ValuesPerTimeEntry | undefined;
     let lower: ValuesPerTimeEntry | undefined;
 
-    return this
-      .getDifs()
-      .map(dif => {
+    return this.getDifs()
+      .map((dif) => {
         let mult = 1;
         switch (scala) {
           case "min":
@@ -99,10 +109,15 @@ export class ProgressBar {
             mult = 1000;
         }
 
-        const valuesPerTime = this.percOfTotal / dif * mult;
+        const valuesPerTime = (this.percOfTotal / dif) * mult;
 
-        const mappedVPT = mapper !== undefined ? mapper(valuesPerTime) : valuesPerTime;
-        const entry = new ValuesPerTimeEntry(mappedVPT, valuesPerTime - (prevVPT ?? 0), scala);
+        const mappedVPT =
+          mapper !== undefined ? mapper(valuesPerTime) : valuesPerTime;
+        const entry = new ValuesPerTimeEntry(
+          mappedVPT,
+          valuesPerTime - (prevVPT ?? 0),
+          scala,
+        );
 
         prevVPT = valuesPerTime;
 
@@ -123,13 +138,14 @@ export class ProgressBar {
         }
 
         return entry;
-      }).map(entry => {
+      })
+      .map((entry) => {
         if (entry === higger) {
-          return entry.setAvg('higher');
+          return entry.setAvg("higher");
         }
 
         if (entry === lower) {
-          return entry.setAvg('lower');
+          return entry.setAvg("lower");
         }
 
         return entry;
@@ -144,7 +160,7 @@ export class ProgressBar {
 
       stdout.cursorTo(0);
       stdout.clearLine(0);
-      stdout.write(`[ ${chalk.greenBright('Completed')} ]\n`);
+      stdout.write(`[ ${chalk.greenBright("Completed")} ]\n`);
       return;
     }
 
@@ -159,6 +175,8 @@ export class ProgressBar {
 
     stdout.cursorTo(0);
     stdout.clearLine(0);
-    stdout.write(`[ ${chalk.greenBright('#'.repeat(count))}${chalk.grey('#'.repeat(10 - count))} ${(perc * 100).toFixed(0)}% ]`);
+    stdout.write(
+      `[ ${chalk.greenBright("#".repeat(count))}${chalk.grey("#".repeat(10 - count))} ${(perc * 100).toFixed(0)}% ]`,
+    );
   }
 }

@@ -7,24 +7,24 @@ export const StyledWorkerEditionCard = styled.span`
   border: 1px solid #0004;
   max-width: 70rem;
   width: 100%;
-  border-radius: .5rem;
-  margin: 0 .4rem;
-  padding: .5rem;
+  border-radius: 0.5rem;
+  margin: 0 0.4rem;
+  padding: 0.5rem;
   display: flex;
   justify-content: space-between;
   align-items: stretch;
-  gap: .2rem;
+  gap: 0.2rem;
 
-  &>.presentation {
+  & > .presentation {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    gap: .2rem;
+    gap: 0.2rem;
     width: 35%;
 
-    &>.name {
+    & > .name {
       margin: 0;
-      flex: .8;
+      flex: 0.8;
       text-align: left;
       white-space: nowrap;
       overflow: hidden;
@@ -32,32 +32,32 @@ export const StyledWorkerEditionCard = styled.span`
       text-overflow: ellipsis;
     }
 
-    &>.info {
+    & > .info {
       flex: 1;
       display: flex;
       align-items: center;
-      gap: .5rem;
+      gap: 0.5rem;
 
-      &>.graduation {
+      & > .graduation {
         background-color: #00000036;
-        padding: .2rem;
-        border-radius: .2rem;
+        padding: 0.2rem;
+        border-radius: 0.2rem;
         border: 1px solid #ffffffb7;
         text-align: center;
         width: 36%;
       }
 
-      &>.id-box {
+      & > .id-box {
         display: flex;
-        gap: .2rem;
+        gap: 0.2rem;
         align-items: end;
         margin: 0;
-        
-        &>.title {
-          font-size: .7rem;
+
+        & > .title {
+          font-size: 0.7rem;
         }
 
-        &>.content {
+        & > .content {
           cursor: pointer;
           font-weight: bold;
           user-select: none;
@@ -66,13 +66,10 @@ export const StyledWorkerEditionCard = styled.span`
 
           &.copied {
             transition-duration: 100ms;
-            --stroke-color: #0004
-            text-shadow: 
-               1px  1px 0 var(--stroke-color),
-              -1px -1px 0 var(--stroke-color),
-               1px -1px 0 var(--stroke-color),
-              -1px  1px 0 var(--stroke-color);
-              
+            --stroke-color: #0004 text-shadow: 1px 1px 0 var(--stroke-color),
+              -1px -1px 0 var(--stroke-color), 1px -1px 0 var(--stroke-color),
+              -1px 1px 0 var(--stroke-color);
+
             color: #0af502;
           }
 
@@ -81,7 +78,12 @@ export const StyledWorkerEditionCard = styled.span`
             position: absolute;
             height: 2px;
             width: 0;
-            background-image: linear-gradient(90deg, #00ff554c, #11ee09, #00ff554c);
+            background-image: linear-gradient(
+              90deg,
+              #00ff554c,
+              #11ee09,
+              #00ff554c
+            );
             transition: all 200ms;
             transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
             bottom: 0;
@@ -97,27 +99,27 @@ export const StyledWorkerEditionCard = styled.span`
     }
   }
 
-  &>.duty-list {
+  & > .duty-list {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: .3rem;
+    gap: 0.3rem;
     width: 60%;
   }
 
-  &>.commands {
+  & > .commands {
     display: flex;
     flex-direction: column;
-    gap: .2rem;
+    gap: 0.2rem;
 
-    &>* {
+    & > * {
       display: flex;
       justify-content: center;
       align-items: center;
       color: #ffffffbe;
-      border-radius: .3rem;
+      border-radius: 0.3rem;
       border: 1px solid #aaaaaa8f;
       width: min-content;
-      padding: .3rem;
+      padding: 0.3rem;
       height: 100%;
       cursor: pointer;
       transition: all 200ms;
@@ -126,20 +128,20 @@ export const StyledWorkerEditionCard = styled.span`
       &:hover {
         color: #fff;
       }
-  
+
       &.add-duty-button {
         background-color: #99999961;
         border-color: #fff;
-  
+
         &:hover {
           background-color: #dbdbdb;
         }
       }
-      
+
       &.delete-all-button {
         background-color: #f004;
         border-color: #f008;
-  
+
         &:hover {
           background-color: #d32e2e;
         }

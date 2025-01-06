@@ -1,4 +1,7 @@
-export function forkArray<T>(array: Array<T>, separator: (value: T) => boolean): [true: T[], false: T[]] {
+export function forkArray<T>(
+  array: Array<T>,
+  separator: (value: T) => boolean,
+): [true: T[], false: T[]] {
   let falseArray = [];
   let trueArray = [];
 
@@ -10,12 +13,20 @@ export function forkArray<T>(array: Array<T>, separator: (value: T) => boolean):
     }
   }
 
-  return [trueArray, falseArray]
+  return [trueArray, falseArray];
 }
 
-export type FilterPredicate<T> = (value: T, index: number, array: T[]) => boolean;
+export type FilterPredicate<T> = (
+  value: T,
+  index: number,
+  array: T[],
+) => boolean;
 
-export function removeFromArrayWhere<T>(array: T[], predicate: FilterPredicate<T>, thisArg: unknown = undefined): T[] {
+export function removeFromArrayWhere<T>(
+  array: T[],
+  predicate: FilterPredicate<T>,
+  thisArg: unknown = undefined,
+): T[] {
   let insertionIdx = 0;
 
   for (let i = 0; i < array.length; i++) {

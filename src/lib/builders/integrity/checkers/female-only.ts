@@ -5,8 +5,8 @@ import { IntegrityChecker } from "./integrity-checker";
 export class FemaleOnlyChecker implements IntegrityChecker {
   check(integrity: TableIntegrity): void {
     for (const duty of integrity.table.iterDuties()) {
-      if (duty.genderIsOnly('female')) {
-        integrity.registry(new IntegrityFailure('female only duty'));
+      if (duty.genderIsOnly("female")) {
+        integrity.registry(new IntegrityFailure("female only duty"));
       }
     }
   }

@@ -8,7 +8,7 @@
   background-color: #e4e4e4;
   border-radius: 1rem;
   padding: 10px;
-  box-shadow: -.2rem .2rem .5rem #0004;
+  box-shadow: -0.2rem 0.2rem 0.5rem #0004;
   align-items: center;
   transition: height 1000ms;
 }
@@ -22,7 +22,7 @@
   margin: 1rem 0;
 }
 
-.form-body>label {
+.form-body > label {
   font-weight: bold;
 }
 
@@ -33,14 +33,14 @@ input[type="button"] {
   background-image: linear-gradient(40deg, #067411, #099209);
   color: #eeeeeede;
   border-width: 1px;
-  border-radius: .2rem;
-  padding: .2rem .3rem;
+  border-radius: 0.2rem;
+  padding: 0.2rem 0.3rem;
   border-color: #2e2e2e7e;
   outline: none;
   font-weight: bold;
   border-style: solid;
-  box-shadow: -.1rem .1rem .4rem #0004;
-  font-family: 'Montserrat', sans-serif;
+  box-shadow: -0.1rem 0.1rem 0.4rem #0004;
+  font-family: "Montserrat", sans-serif;
   cursor: pointer;
   transition: color 200ms;
 
@@ -51,7 +51,7 @@ input[type="button"] {
 
 input[type="file"] {
   border-bottom: 1px solid #0004;
-  padding: .2rem;
+  padding: 0.2rem;
   cursor: pointer;
 }
 
@@ -61,41 +61,39 @@ select {
   border-width: 0;
   border-bottom-width: 1px;
   height: 100%;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 
-  &>option {
+  & > option {
     background-color: rgb(212, 212, 212);
   }
 }
 
 button {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 input {
   border: none;
   border-bottom: 1px solid #0004;
-  padding: .2rem;
+  padding: 0.2rem;
   background-color: #0000;
   outline: none;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   transition:
     border-color 200ms,
     box-shadow 200ms;
-
 }
 
 input:focus {
   border-color: #19cc40;
-  box-shadow:
-    0 .1rem .1rem #08aa0844;
+  box-shadow: 0 0.1rem 0.1rem #08aa0844;
 }
 
 h1,
 h2 {
   text-align: center;
-  margin: .5rem 0;
-  text-shadow: -.1rem .1rem .3rem #0003;
+  margin: 0.5rem 0;
+  text-shadow: -0.1rem 0.1rem 0.3rem #0003;
   line-height: 85%;
 }
 
@@ -120,17 +118,17 @@ h2 {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  margin-bottom: .5rem;
-  gap: .4rem;
+  margin-bottom: 0.5rem;
+  gap: 0.4rem;
   height: max-content;
 
-  &>img {
+  & > img {
     width: 3rem;
-    box-shadow: -.2rem .2rem .5rem #0006;
+    box-shadow: -0.2rem 0.2rem 0.5rem #0006;
     border-radius: 50%;
   }
 
-  &>h1 {
+  & > h1 {
     font-size: 1.5rem;
     color: #d3d3d3;
   }
@@ -144,9 +142,9 @@ h2 {
 }
 
 .mandatory::after {
-  content: '*';
+  content: "*";
   color: red;
-  margin-left: .1rem;
+  margin-left: 0.1rem;
 }
 
 input.error {
@@ -154,6 +152,5 @@ input.error {
 }
 
 input.error:focus {
-  box-shadow:
-    0 .1rem .1rem #aa080885;
+  box-shadow: 0 0.1rem 0.1rem #aa080885;
 }

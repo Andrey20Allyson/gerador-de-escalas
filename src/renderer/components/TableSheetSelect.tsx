@@ -15,12 +15,16 @@ export interface TableSheetSelectProps {
 }
 
 function createSheetNameOption(sheetName: string, key: number) {
-  return <option key={key} value={sheetName}>{sheetName}</option>;
+  return (
+    <option key={key} value={sheetName}>
+      {sheetName}
+    </option>
+  );
 }
 
 export function TableSheetSelect(props: TableSheetSelectProps) {
   const [state, setState] = useState<TableSheetSelectState>();
-  
+
   props.onChange?.(state);
 
   async function handleFileChange(ev: React.ChangeEvent<HTMLInputElement>) {
@@ -32,7 +36,8 @@ export function TableSheetSelect(props: TableSheetSelectProps) {
 
     const sheetNames = response.data;
     const sheetName = sheetNames.at(0);
-    if (!sheetName) return alert(`O arquivo em '${filePath}' não é um arquivo excel válido!`);
+    if (!sheetName)
+      return alert(`O arquivo em '${filePath}' não é um arquivo excel válido!`);
 
     setState({ ...state, filePath, sheetNames, sheetName });
   }
@@ -40,7 +45,7 @@ export function TableSheetSelect(props: TableSheetSelectProps) {
   function handleSheetNameChange(ev: React.ChangeEvent<HTMLSelectElement>) {
     if (!state) return;
 
-    setState({...state, sheetName: ev.currentTarget.value});
+    setState({ ...state, sheetName: ev.currentTarget.value });
   }
 
   return (
@@ -48,9 +53,11 @@ export function TableSheetSelect(props: TableSheetSelectProps) {
       <label className="mandatory">{props.fileInputTitle}</label>
       <input type="file" onChange={handleFileChange} />
       <label className="mandatory">{props.selectTitle}</label>
-      <select onChange={handleSheetNameChange}>{
-        state && state.sheetNames && state.sheetNames.map(createSheetNameOption)
-      }</select>
+      <select onChange={handleSheetNameChange}>
+        {state &&
+          state.sheetNames &&
+          state.sheetNames.map(createSheetNameOption)}
+      </select>
     </>
   );
 }

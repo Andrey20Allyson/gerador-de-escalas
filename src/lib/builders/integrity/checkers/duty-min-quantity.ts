@@ -15,13 +15,15 @@ export class DutyMinQuantityChecker implements IntegrityChecker {
 
   constructor(
     readonly extraEventAllowedTimeRule = new ExtraEventAllowedTimeRule(),
-  ) { }
+  ) {}
 
   calculateDutyPontuation(duty: ExtraDuty, firstMonday: number): number {
     const pointGetter = this.pointGetterMap.at(duty.getSize());
     const isNightDuty = duty.index > 0;
 
-    return (pointGetter?.(duty.day.index, firstMonday) ?? 0) * (isNightDuty ? 1 : 3);
+    return (
+      (pointGetter?.(duty.day.index, firstMonday) ?? 0) * (isNightDuty ? 1 : 3)
+    );
   }
 
   check(integrity: TableIntegrity): void {
@@ -30,12 +32,25 @@ export class DutyMinQuantityChecker implements IntegrityChecker {
         continue;
       }
 
-      if (integrity.table.config.currentPlace === ExtraEventName.JARDIM_BOTANICO_DAYTIME && duty.isNighttime()) continue;
+      if (
+        integrity.table.config.currentPlace ===
+          ExtraEventName.JARDIM_BOTANICO_DAYTIME &&
+        duty.isNighttime()
+      )
+        continue;
       if (duty.isActive() === false) continue;
       if (duty.getSize() >= 2) continue;
 
-      const dutyQuantityPenality = -this.calculateDutyPontuation(duty, integrity.table.month.getFirstMonday());
-      integrity.registry(new IntegrityWarning('insuficient num of workers in duty', dutyQuantityPenality));
+      const dutyQuantityPenality = -this.calculateDutyPontuation(
+        duty,
+        integrity.table.month.getFirstMonday(),
+      );
+      integrity.registry(
+        new IntegrityWarning(
+          "insuficient num of workers in duty",
+          dutyQuantityPenality,
+        ),
+      );
     }
   }
 }

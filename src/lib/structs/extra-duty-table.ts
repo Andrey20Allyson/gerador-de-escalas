@@ -1,11 +1,14 @@
-import { DayOfExtraDuty, ExtraDuty, WorkerInfo } from '.';
-import { DayOfWeek, thisMonth, thisYear } from '../../../utils';
-import { ExtraEventName } from './extra-events/extra-place';
-import { Month } from './month';
-import { PositionLimiter } from './position-limiter';
-import { ExtraEventConfig, ExtraEventConfigBuilder } from './extra-events/extra-event-config';
-import { Day } from './day';
-import _ from 'lodash';
+import { DayOfExtraDuty, ExtraDuty, WorkerInfo } from ".";
+import { DayOfWeek, thisMonth, thisYear } from "../../../utils";
+import { ExtraEventName } from "./extra-events/extra-place";
+import { Month } from "./month";
+import { PositionLimiter } from "./position-limiter";
+import {
+  ExtraEventConfig,
+  ExtraEventConfigBuilder,
+} from "./extra-events/extra-event-config";
+import { Day } from "./day";
+import _ from "lodash";
 
 export interface ExtraDutyTableConfig {
   readonly dutyDuration: number;
@@ -65,10 +68,14 @@ export class ExtraDutyTable implements Iterable<DayOfExtraDuty> {
     return placeSet.values();
   }
 
-  findDuty(predicate: (duty: ExtraDuty) => boolean, start: number = 0, end: number = this.width): ExtraDuty | undefined {
+  findDuty(
+    predicate: (duty: ExtraDuty) => boolean,
+    start: number = 0,
+    end: number = this.width,
+  ): ExtraDuty | undefined {
     if (start < 0) start = 0;
     if (end > this.width) end = this.width;
-    
+
     for (let i = start; i < end; i++) {
       const day = this.getDay(i);
 
@@ -80,10 +87,7 @@ export class ExtraDutyTable implements Iterable<DayOfExtraDuty> {
 
   copy(other: ExtraDutyTable) {
     for (const otherDuty of other.iterDuties()) {
-      this
-        .getDay(otherDuty.day.index)
-        .getDuty(otherDuty.index)
-        .copy(otherDuty);
+      this.getDay(otherDuty.day.index).getDuty(otherDuty.index).copy(otherDuty);
     }
 
     this.limiter.copy(other.limiter);
@@ -132,13 +136,11 @@ export class ExtraDutyTable implements Iterable<DayOfExtraDuty> {
   }
 
   findDay(date: Day): DayOfExtraDuty | undefined {
-    return this.days.find(dutyDay => dutyDay.date.equalsTo(date))
+    return this.days.find((dutyDay) => dutyDay.date.equalsTo(date));
   }
 
   getDuty(dayIndex: number, dutyIndex: number): ExtraDuty {
-    return this
-      .getDay(dayIndex)
-      .getDuty(dutyIndex);
+    return this.getDay(dayIndex).getDuty(dutyIndex);
   }
 
   private _validateConfig() {
@@ -176,7 +178,9 @@ export class ExtraDutyTable implements Iterable<DayOfExtraDuty> {
     return this;
   }
 
-  static createConfigFrom(partialConfig?: Partial<ExtraDutyTableConfig>): ExtraDutyTableConfig {
+  static createConfigFrom(
+    partialConfig?: Partial<ExtraDutyTableConfig>,
+  ): ExtraDutyTableConfig {
     return {
       dutyPositionSize: partialConfig?.dutyPositionSize ?? 1,
       dutyMinDistance: partialConfig?.dutyMinDistance ?? 6,
@@ -187,10 +191,11 @@ export class ExtraDutyTable implements Iterable<DayOfExtraDuty> {
       month: partialConfig?.month ?? thisMonth,
       year: partialConfig?.year ?? thisYear,
       extraEvents: {
-        [ExtraEventName.JARDIM_BOTANICO_DAYTIME]: ExtraEventConfigBuilder.default({
-          allowNighttime: false,
-          eventStartDay: new Day(2024, 0, 4),
-        }),
+        [ExtraEventName.JARDIM_BOTANICO_DAYTIME]:
+          ExtraEventConfigBuilder.default({
+            allowNighttime: false,
+            eventStartDay: new Day(2024, 0, 4),
+          }),
         [ExtraEventName.SUPPORT_TO_CITY_HALL]: ExtraEventConfigBuilder.default({
           allowDaytime: false,
           allowedWeekdays: [

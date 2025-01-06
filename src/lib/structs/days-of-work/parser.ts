@@ -34,19 +34,15 @@ export class DaysOfWorkParser implements IDaysOfWorkParser {
   readonly periodic: PeriodicParsingConfig;
 
   constructor(config: DaysOfWorkParserConfig = {}) {
-    this.daysOfWorkRegExp = config.daysOfWorkRegExp ?? DEFAULT_DAYS_OF_WORK_REGEXP;
+    this.daysOfWorkRegExp =
+      config.daysOfWorkRegExp ?? DEFAULT_DAYS_OF_WORK_REGEXP;
     this.periodic = {
-      daySeparator: config.periodic?.daySeparator ?? ',',
+      daySeparator: config.periodic?.daySeparator ?? ",",
     };
   }
 
   parse(data: DaysOfWorkParseData): DaysOfWork {
-    const {
-      hourly,
-      month,
-      year,
-      license,
-    } = data;
+    const { hourly, month, year, license } = data;
 
     if (license != null) {
       const daysOfWork = DaysOfWork.fromDailyWorker(year, month);
@@ -64,16 +60,11 @@ export class DaysOfWorkParser implements IDaysOfWorkParser {
   }
 
   isDailyWorker(hourly: string) {
-    return hourly.includes('2ª/6ª');
+    return hourly.includes("2ª/6ª");
   }
 
   parsePeriodic(data: DaysOfWorkParseData): DaysOfWork {
-    const {
-      name = 'unknown',
-      hourly,
-      year,
-      month,
-    } = data;
+    const { name = "unknown", hourly, year, month } = data;
 
     const matches = this.daysOfWorkRegExp.exec(hourly);
     if (!matches) {
@@ -87,14 +78,17 @@ export class DaysOfWorkParser implements IDaysOfWorkParser {
 
     const days = numbersString
       .split(this.periodic.daySeparator)
-      .map(val => this.parseToNumber(val) - 1);
+      .map((val) => this.parseToNumber(val) - 1);
 
     return DaysOfWork.fromDays(days, year, month);
   }
 
   parseToNumber(value: string): number {
     const num = Number(value);
-    if (isNaN(num)) throw new Error(`Can't parse string ${JSON.stringify(value)} to a number!`);
+    if (isNaN(num))
+      throw new Error(
+        `Can't parse string ${JSON.stringify(value)} to a number!`,
+      );
 
     return num;
   }
