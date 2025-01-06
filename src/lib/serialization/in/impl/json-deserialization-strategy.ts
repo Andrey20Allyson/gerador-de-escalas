@@ -26,6 +26,8 @@ export class JsonDeserializationStratergy implements Deserializer {
       this._objectIntoWorker(worker, table.month),
     );
 
+    table.addWorkers(workers);
+
     this._applyScheduleObject(json.schedule, table, workers);
 
     return table;

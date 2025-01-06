@@ -23,7 +23,7 @@ export class MustInsertSheetNameError extends ResultError {
 }
 
 export class BookHandler {
-  private sheetMap: Map<string, SheetHandler>;
+  sheetMap: Map<string, SheetHandler>;
 
   constructor(readonly workBook: XLSX.WorkBook = XLSX.utils.book_new()) {
     this.sheetMap = new Map();
@@ -57,8 +57,13 @@ export class BookHandler {
   > {
     if (this.sheetNames.length === 0) return new EmptyBookError();
 
-    name = this.sheetNames.length === 1 ? this.sheetNames[0] : name;
-    if (!name) return new MustInsertSheetNameError();
+    if (name == null) {
+      name = this.sheetNames.length === 1 ? this.sheetNames[0] : name;
+    }
+
+    if (name == null) {
+      return new MustInsertSheetNameError();
+    }
 
     const sheet: XLSX.WorkSheet | undefined = this.workBook.Sheets[name];
 

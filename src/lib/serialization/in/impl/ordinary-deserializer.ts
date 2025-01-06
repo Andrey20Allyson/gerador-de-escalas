@@ -10,7 +10,16 @@ import * as XLSX from "xlsx";
 import { Deserializer } from "../deserializer";
 import { ScheduleMetadataReader } from "../metadata/reader";
 
+export class DeserializeWithoutMetadataAndMonthError extends Error {
+  constructor() {
+    super(
+      "Expected withOutMetadataConfig when deserializing a ordinary table without metadata",
+    );
+  }
+}
+
 interface OrdinaryDeserializerWithoutMetadataConfig {
+  readonly sheetName?: string;
   readonly month: Month;
   readonly workerRegistryRepository: WorkerRegistryRepository;
 }
@@ -28,34 +37,24 @@ export class OrdinaryDeserializer implements Deserializer {
     const hasMetadata = reader.hasMetadata();
 
     if (hasMetadata) {
-      return reader.read();
+      const table = await reader.read();
+
+      return table;
     }
 
     if (this.withOutMetadataConfig == null) {
-      throw new Error(
-        "Expected withOutMetadataConfig when deserializing a ordinary table without metadata",
-      );
+      throw new DeserializeWithoutMetadataAndMonthError();
     }
 
-    const { month, workerRegistryRepository } = this.withOutMetadataConfig;
-
-    const sheet = book.getSheet("configuration");
-
-    const config = new Map<string, any>();
-
-    for (const line of sheet.iterLines()) {
-      const key = line.at("a").as("string").value;
-      const value = line.at("b").value;
-
-      config.set(key, value);
-    }
+    const { month, workerRegistryRepository, sheetName } =
+      this.withOutMetadataConfig;
 
     const table = new ExtraDutyTable({ month });
 
     const workerRegistries = await workerRegistryRepository.load();
 
     const workers = scrappeWorkersFromBook(workBook, {
-      sheetName: "Plan1",
+      sheetName,
       month,
       workerRegistries,
     });
@@ -123,6 +122,10 @@ function safeScrappeWorkersFromBook(
   const errors: ResultError[] = [];
 
   for (const line of sheet.iterLines(2)) {
+    if (line.at("a").is("empity")) {
+      continue;
+    }
+
     const cellsResult = line.safeGetCells(workersTableCollumns);
 
     if (ResultError.isError(cellsResult)) {
