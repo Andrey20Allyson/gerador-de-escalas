@@ -59,6 +59,10 @@ export class ExtraDutyTable implements Iterable<DayOfExtraDuty> {
     }
   }
 
+  getWorkerList() {
+    return Array.from(this.workers.values());
+  }
+
   *iterDuties(): Iterable<ExtraDuty> {
     for (const day of this) {
       for (const duty of day) {

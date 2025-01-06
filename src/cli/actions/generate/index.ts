@@ -9,7 +9,6 @@ import {
 } from "src/lib/structs";
 import { DefaultTableIntegrityAnalyser } from "src/lib/builders/integrity";
 import { FirestoreInitializer } from "src/infra/firebase";
-import { parseWorkers } from "src/lib/io";
 import { FirestoreWorkerRegistryRepository } from "src/lib/persistence/repositories/firestore-worker-registry-repository";
 import { Benchmarker, analyseResult } from "src/utils";
 import { env } from "src/utils/env";
@@ -19,6 +18,7 @@ import { RandomWorkerMockFactory } from "../../mock/worker/random";
 import { z } from "zod";
 import { MultiEventScheduleBuilder } from "src/lib/builders/multi-event-schedule-builder";
 import { DivulgationSerializer } from "src/lib/serialization";
+import { OrdinaryDeserializer } from "src/lib/serialization/in/impl/ordinary-deserializer";
 
 export const generateOptionsSchema = z.object({
   mode: z.enum(["input-file", "mock"]).optional(),
@@ -36,15 +36,24 @@ export type GenerateCommandOptions = z.infer<typeof generateOptionsSchema>;
 
 const KEY_DECRYPT_PASSWORD = env("KEY_DECRYPT_PASSWORD");
 
-function mockWorkers(month: Month) {
+function mockTable(month: Month): ExtraDutyTable {
+  const table = new ExtraDutyTable({ month });
+
   const workerMocker: MockFactory<WorkerInfo> = new RandomWorkerMockFactory({
     month,
   });
 
-  return workerMocker.array(28);
+  const workers = workerMocker.array(28);
+
+  table.addWorkers(workers);
+
+  return table;
 }
 
-async function loadWorkers(month: Month, inputFile: string) {
+async function loadTable(
+  month: Month,
+  inputFile: string,
+): Promise<ExtraDutyTable> {
   const inputBuffer = await fs.readFile(inputFile);
 
   const initializer = new FirestoreInitializer({
@@ -52,16 +61,17 @@ async function loadWorkers(month: Month, inputFile: string) {
   });
   const firestore = await initializer.getFirestore();
 
-  const loader = new FirestoreWorkerRegistryRepository({
+  const repository = new FirestoreWorkerRegistryRepository({
     cacheOnly: true,
     firestore,
   });
-  const workerRegistries = await loader.load();
 
-  return parseWorkers(inputBuffer, {
-    workerRegistries,
+  const deserializer = new OrdinaryDeserializer({
     month,
+    workerRegistryRepository: repository,
   });
+
+  return deserializer.deserialize(inputBuffer);
 }
 
 export async function generate(options: GenerateCommandOptions) {
@@ -75,12 +85,10 @@ export async function generate(options: GenerateCommandOptions) {
 
   const beckmarker = new Benchmarker({ metric: "sec" });
 
-  let workers =
-    mode === "mock" ? mockWorkers(month) : await loadWorkers(month, inputFile);
+  let table =
+    mode === "mock" ? mockTable(month) : await loadTable(month, inputFile);
 
-  const table = new ExtraDutyTable({
-    month: month,
-  });
+  const workers = table.getWorkerList();
 
   const tableAssignBenchmark = beckmarker.start("talbe assign");
 
