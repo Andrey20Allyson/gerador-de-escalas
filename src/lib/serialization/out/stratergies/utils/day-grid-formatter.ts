@@ -1,9 +1,5 @@
-import {
-  DayOfExtraDuty,
-  Graduation,
-  WorkerInfo,
-} from "../../../../extra-duty-lib";
-import { enumerate, iterReverse } from "../../../../../utils";
+import { DayOfExtraDuty, Graduation, WorkerInfo } from "src/lib/structs";
+import { enumerate, iterReverse } from "src/utils";
 import { WorkerDuty } from "./worker-duty";
 
 export interface DayGridEntry {

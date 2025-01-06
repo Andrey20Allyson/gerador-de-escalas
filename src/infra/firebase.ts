@@ -1,7 +1,7 @@
 import admin from "firebase-admin";
 import pfs from "node:fs/promises";
 import path from "node:path";
-import CryptorWithPassword from "../src/utils/cryptor-with-password";
+import CryptorWithPassword from "src/utils/cryptor-with-password";
 
 export const DEFAULT_FIREBASE_KEY_PATH = path.resolve(
   "./keys/firebase-key.aes",

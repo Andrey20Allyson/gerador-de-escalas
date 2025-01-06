@@ -1,4 +1,4 @@
-import { WorkTime } from "../../../../extra-duty-lib";
+import { WorkTime } from "src/lib/structs";
 
 function nightWorkTime(): WorkTime {
   return new WorkTime(19, 12);

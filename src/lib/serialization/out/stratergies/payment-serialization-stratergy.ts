@@ -4,13 +4,13 @@ import {
   ExtraDutyTableEntry,
   ExtraEventName,
   Graduation,
-} from "../../../extra-duty-lib";
-import { enumerate } from "../../../../utils";
-import { ScheduleMetadataWriter } from "../../lib/metadata/schedule-metatada-writer";
-import { SerializationStratergy } from "../serialization-stratergy";
+} from "src/lib/structs";
+import { enumerate } from "src/utils";
+import { ScheduleMetadataWriter } from "src/lib/serialization/out/metadata/writer";
+import { Serializer } from "../serializer";
 import ExcelJS from "exceljs";
 
-export class PaymentSerializationStratergy implements SerializationStratergy {
+export class PaymentSerializationStratergy implements Serializer {
   private cachedBook?: Promise<ExcelJS.Workbook>;
 
   constructor(
@@ -47,7 +47,7 @@ export class PaymentSerializationStratergy implements SerializationStratergy {
     return this.createBook();
   }
 
-  async execute(table: ExtraDutyTable): Promise<Buffer> {
+  async serialize(table: ExtraDutyTable): Promise<Buffer> {
     const book = await this.getBook();
 
     const sheet = book.getWorksheet(this.sheetName);

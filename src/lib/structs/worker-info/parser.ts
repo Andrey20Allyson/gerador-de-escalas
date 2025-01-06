@@ -1,5 +1,5 @@
 import { Gender, Graduation, WorkerInfo } from ".";
-import { parseNumberOrThrow } from "../../../../utils";
+import { parseNumberOrThrow } from "src/utils";
 import { Parser } from "../base/parser";
 import { DEFAULT_DAYS_OF_WORK_PARSER, DaysOfWork } from "../days-of-work";
 import {

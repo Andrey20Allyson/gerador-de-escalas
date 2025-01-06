@@ -1,11 +1,11 @@
 import * as XLSX from "xlsx";
-import { ExtraDutyTable, Holidays, WorkerInfo } from "../extra-duty-lib";
-import { WorkerInfoParser } from "../extra-duty-lib/structs/worker-info/parser";
-import { Result, ResultError, ResultType } from "../../utils";
-import { BookHandler, CellHandler, LineHander } from "../xlsx-handlers";
-import { ExcelTime } from "../xlsx-handlers/utils";
+import { ExtraDutyTable, Holidays, WorkerInfo } from "src/lib/structs";
+import { WorkerInfoParser } from "src/lib/structs/worker-info/parser";
+import { Result, ResultError, ResultType } from "src/utils";
+import { BookHandler, CellHandler, LineHander } from "src/utils/xlsx-handlers";
+import { ExcelTime } from "src/utils/xlsx-handlers/utils";
 import { WorkerRegistryMap } from "../persistence/entities/worker-registry";
-import { Day } from "../extra-duty-lib/structs/day";
+import { Day } from "src/lib/structs/day";
 
 export enum WorkerInfoCollumns {
   NAME = "d",

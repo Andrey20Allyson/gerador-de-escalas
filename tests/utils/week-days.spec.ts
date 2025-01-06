@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { firstMonday, isBusinessDay } from "../../../utils/week-days";
+import { firstMonday, isBusinessDay } from "src/utils/week-days";
 
 function runFirstMondayTest(
   weekDay: number,

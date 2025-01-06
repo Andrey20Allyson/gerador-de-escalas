@@ -1,4 +1,4 @@
-import { isInteger, thisYear } from "../../../../utils";
+import { isInteger, thisYear } from "src/utils";
 
 export class Year {
   readonly index: number;

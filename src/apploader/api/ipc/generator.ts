@@ -1,7 +1,6 @@
 import fs from "fs/promises";
 import { AppAssets } from "../assets";
 import { TableGenerator } from "../table-generation/table-generator";
-import { PreGenerateEditorHandler } from "./pre-generade-editor";
 import { AppResponse } from "../mapping/response";
 import { IpcMapping } from "../mapping/utils";
 
@@ -14,13 +13,9 @@ export interface LoadPayload {
 
 export class GeneratorHandler {
   generator: TableGenerator;
-  preGenerateEditorHandler: PreGenerateEditorHandler;
 
   constructor(readonly assets: AppAssets) {
     this.generator = new TableGenerator();
-    this.preGenerateEditorHandler = new PreGenerateEditorHandler(
-      this.generator,
-    );
   }
 
   clear() {
@@ -56,7 +51,6 @@ export class GeneratorHandler {
   handler() {
     return IpcMapping.create(
       {
-        preGenerateEditor: this.preGenerateEditorHandler.handler(),
         serialize: this.serialize,
         generate: this.generate,
         clear: this.clear,

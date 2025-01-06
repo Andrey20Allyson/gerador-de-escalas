@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { BusyWorkerAssignmentRule } from "../../extra-duty-lib/builders/rule-checking/rules";
+import { BusyWorkerAssignmentRule } from "src/lib/builders/rule-checking/rules";
 import { mock } from "../mocking/mocker";
 
 describe(BusyWorkerAssignmentRule.name, () => {

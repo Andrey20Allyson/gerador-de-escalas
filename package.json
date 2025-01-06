@@ -27,8 +27,7 @@
   "scripts": {
     "test:auto-schedule": "vitest --dir src/app/auto-schedule/specs",
     "generator": "tsx src/app/auto-schedule/cli",
-    "test:renderer": "vitest renderer",
-    "test:app": "vitest app",
+    "test": "vitest",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",

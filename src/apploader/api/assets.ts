@@ -1,18 +1,18 @@
 import fs from "fs/promises";
-import { Holidays } from "../auto-schedule/extra-duty-lib";
-import { FirestoreInitializer } from "../auto-schedule/firebase/app";
+import { Holidays } from "src/lib/structs/holidays";
+import { FirestoreInitializer } from "src/infra/firebase";
 import {
   WorkerRegistryMap,
   WorkerRegistryRepository,
-} from "../auto-schedule/persistence/entities/worker-registry";
-import { MainTableFactory } from "../auto-schedule/xlsx-builders";
+} from "src/lib/persistence/entities/worker-registry";
+import { MainTableFactory } from "src/utils/xlsx-builders";
 import { fromRoot } from "../../utils/fromRoot";
 import { AssetsErrorCode } from "./assets.error";
 import { AppResponse } from "./mapping/response";
-import { FirestoreWorkerRegistryRepository } from "../auto-schedule/persistence/repositories/firestore-worker-registry-repository";
-import { SerializationStratergy } from "../auto-schedule/schedule-serialization/serializers/serialization-stratergy";
-import { DivulgationSerializationStratergy } from "../auto-schedule/schedule-serialization/serializers/stratergies/divulgation-serialization-stratergy";
-import { env } from "../utils/env";
+import { FirestoreWorkerRegistryRepository } from "src/lib/persistence/repositories/firestore-worker-registry-repository";
+import { Serializer } from "src/lib/serialization/out/serializer";
+import { DivulgationSerializer } from "src/lib/serialization/out";
+import { env } from "src/utils/env";
 import { AppError } from "./mapping/error";
 
 export type AppAssetsServices = {
@@ -25,7 +25,7 @@ export type WorkerRegistryServices = {
 
 export interface AppAssetsData {
   workerRegistryMap: WorkerRegistryMap;
-  serializationStratergy: SerializationStratergy;
+  serializationStratergy: Serializer;
   patternBuffer: Buffer;
   holidays: Holidays;
 }
@@ -124,9 +124,7 @@ export class AppAssets {
 
     // TODO remove holidays from whole application
     const holidays = Holidays.from([]);
-    const serializationStratergy = new DivulgationSerializationStratergy(
-      "DADOS",
-    );
+    const serializationStratergy = new DivulgationSerializer("DADOS");
 
     this._data = {
       holidays,

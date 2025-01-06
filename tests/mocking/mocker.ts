@@ -1,16 +1,13 @@
-import {
-  WorkerInfo,
-  WorkerInfoConfig,
-} from "../../extra-duty-lib/structs/worker-info";
-import { WorkTime } from "../../extra-duty-lib/structs/work-time";
+import { WorkerInfo, WorkerInfoConfig } from "src/lib/structs/worker-info";
+import { WorkTime } from "src/lib/structs/work-time";
 import {
   ExtraDutyTable,
   ExtraDutyTableConfig,
-} from "../../extra-duty-lib/structs/extra-duty-table";
-import { DaysOfWork } from "../../extra-duty-lib/structs/days-of-work";
-import { Month } from "../../extra-duty-lib/structs/month";
-import { WorkerIdentifier } from "../../extra-duty-lib/structs/worker-identifier";
-import { getYear } from "../../../utils";
+} from "src/lib/structs/extra-duty-table";
+import { DaysOfWork } from "src/lib/structs/days-of-work";
+import { Month } from "src/lib/structs/month";
+import { WorkerIdentifier } from "src/lib/structs/worker-identifier";
+import { getYear } from "src/utils";
 
 export interface DutyMockOptions {
   dayIndex?: number;

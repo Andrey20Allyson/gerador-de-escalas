@@ -1,5 +1,4 @@
-import { DaysOfWork } from "../../../../extra-duty-lib";
-
+import { DaysOfWork } from "src/lib/structs";
 export interface RandomDaysOfWorkOptions {
   /**
    * @default 0

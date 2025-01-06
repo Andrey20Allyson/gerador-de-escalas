@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { InspAssignmentRule } from "../../extra-duty-lib/builders/rule-checking/rules";
+import { InspAssignmentRule } from "src/lib/builders/rule-checking/rules";
 import { mock } from "../mocking/mocker";
 
 describe(InspAssignmentRule.name, () => {

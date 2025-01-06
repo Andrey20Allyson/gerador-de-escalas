@@ -5,9 +5,9 @@ import {
   ExtraDutyTable,
   ExtraEventName,
   WorkerInfo,
-} from "../lib/extra-duty-lib";
+  Day,
+} from "src/lib/structs";
 import { enumerate } from "./iteration";
-import { Day } from "../lib/extra-duty-lib/structs/day";
 
 export type StringReducer = (text: string) => string;
 

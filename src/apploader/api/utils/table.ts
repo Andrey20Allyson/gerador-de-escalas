@@ -1,10 +1,10 @@
-import { io } from "../../auto-schedule";
+import { io } from "src/lib";
 import {
   WorkerRegistry,
   WorkerRegistryMap,
-} from "../../auto-schedule/persistence/entities/worker-registry";
-import { Holidays } from "../../auto-schedule/extra-duty-lib";
-import { BookHandler, SheetHandler } from "../../auto-schedule/xlsx-handlers";
+} from "src/lib/persistence/entities/worker-registry";
+import { Holidays } from "src/lib/structs";
+import { BookHandler, SheetHandler } from "src/utils/xlsx-handlers";
 import fs from "fs/promises";
 
 export interface InputTable {

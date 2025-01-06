@@ -1,8 +1,8 @@
 import { describe, expect, test } from "vitest";
-import { FreeWeekendAssignmentRule } from "../../extra-duty-lib/builders/rule-checking/rules/free-weekend-rule";
+import { FreeWeekendAssignmentRule } from "src/lib/builders/rule-checking/rules/free-weekend-rule";
 import { mock } from "../mocking/mocker";
-import { DaysOfWork, WorkTime } from "../../extra-duty-lib";
-import { Month } from "../../extra-duty-lib/structs/month";
+import { DaysOfWork, WorkTime } from "src/lib/structs";
+import { Month } from "src/lib/structs/month";
 
 describe(FreeWeekendAssignmentRule, () => {
   test(`Should block assignment of 24h workers on weekend days if he had ordinary on past thursday or friday`, () => {

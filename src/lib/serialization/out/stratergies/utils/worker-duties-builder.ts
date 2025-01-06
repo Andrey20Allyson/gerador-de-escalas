@@ -1,4 +1,4 @@
-import { DayOfExtraDuty } from "../../../../extra-duty-lib";
+import { DayOfExtraDuty } from "src/lib/structs";
 import { WorkerDuty } from "./worker-duty";
 
 export class WorkerDutiesBuilder {

@@ -6,7 +6,7 @@ import {
   isWeekEnd,
   thisMonth,
   thisYear,
-} from "../../../../utils";
+} from "src/utils";
 import { Month } from "../month";
 
 export class Day {

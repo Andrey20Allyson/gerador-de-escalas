@@ -1,8 +1,8 @@
 import prompt from "prompt";
 import {
-  WorkerRegistryGender,
   WorkerRegistryInit,
-} from "../../../persistence/entities/worker-registry";
+  WorkerRegistryGender,
+} from "src/lib/persistence/entities/worker-registry";
 
 prompt.message = "";
 

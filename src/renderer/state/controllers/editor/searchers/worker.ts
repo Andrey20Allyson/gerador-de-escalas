@@ -1,6 +1,6 @@
-import { WorkerData } from "../../../../../apploader/api/table-reactive-edition/table";
-import { Gender } from "../../../../extra-duty-lib";
-import { Searcher } from "../../../../utils/searcher";
+import { WorkerData } from "src/apploader/api/table-reactive-edition/table";
+import { Gender } from "src/lib/structs";
+import { Searcher } from "src/renderer/utils";
 
 export class WorkerSearcher extends Searcher<WorkerData> {
   genderEquals(gender: Gender): this {

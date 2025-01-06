@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { FemaleAssignmentRule } from "../../extra-duty-lib/builders/rule-checking/rules";
+import { FemaleAssignmentRule } from "src/lib/builders/rule-checking/rules";
 import { mock } from "../mocking/mocker";
 
 describe(FemaleAssignmentRule.name, () => {

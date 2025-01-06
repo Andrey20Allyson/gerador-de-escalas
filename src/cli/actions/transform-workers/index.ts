@@ -1,9 +1,9 @@
-import { z } from "zod";
-import { FirestoreInitializer } from "../../../firebase/app";
-import { FirestoreWorkerRegistryRepository } from "../../../persistence/repositories/firestore-worker-registry-repository";
-import { env } from "../../../../utils/env";
-import { WorkerRegistry } from "../../../persistence/entities/worker-registry";
 import path from "path";
+import { FirestoreInitializer } from "src/infra/firebase";
+import { FirestoreWorkerRegistryRepository } from "src/lib/persistence/repositories/firestore-worker-registry-repository";
+import { z } from "zod";
+import { env } from "src/utils/env";
+import { WorkerRegistry } from "src/lib/persistence/entities/worker-registry";
 
 export const transformWorkersOptionsSchema = z.object({
   source: z.string(),

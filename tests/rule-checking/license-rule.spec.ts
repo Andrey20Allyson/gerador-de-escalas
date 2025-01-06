@@ -1,8 +1,8 @@
 import { describe, expect, test } from "vitest";
-import { DaysOfWork } from "../../extra-duty-lib";
-import { LicenseAssignmentRule } from "../../extra-duty-lib/builders/rule-checking/rules";
-import { Day } from "../../extra-duty-lib/structs/day";
-import { LicenseInterval } from "../../extra-duty-lib/structs/days-of-work/license-interval";
+import { DaysOfWork } from "src/lib/structs";
+import { LicenseAssignmentRule } from "src/lib/builders/rule-checking/rules";
+import { Day } from "src/lib/structs/day";
+import { LicenseInterval } from "src/lib/structs/days-of-work/license-interval";
 import { mock } from "../mocking/mocker";
 
 describe(LicenseAssignmentRule.name, () => {

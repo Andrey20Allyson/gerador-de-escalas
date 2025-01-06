@@ -1,4 +1,4 @@
-import { io } from "../../auto-schedule";
+import { io } from "src/lib";
 import { AppResponse } from "../mapping/response";
 import { IpcMappingFactory, IpcMapping } from "../mapping/utils";
 

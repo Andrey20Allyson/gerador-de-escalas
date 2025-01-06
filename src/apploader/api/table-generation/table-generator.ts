@@ -1,12 +1,10 @@
-import { MainTableFactory } from "../../auto-schedule/xlsx-builders";
-import { ExtraDutyTable, WorkerInfo } from "../../auto-schedule/extra-duty-lib";
-import { DefautlScheduleBuilder } from "../../auto-schedule/extra-duty-lib/builders/default-builder";
-import { ParseOrdinaryPayload, parseOrdinary } from "../utils/table";
-import { PreGenerateEditor, PreGenerateEditorDTO } from "./pre-generate-editor";
+import { DefautlScheduleBuilder } from "src/lib/builders/default-builder";
+import { Serializer } from "src/lib/serialization/out/serializer";
+import { ExtraDutyTable, WorkerInfo } from "src/lib/structs";
 import { ErrorCode } from "../mapping/error";
 import { AppResponse } from "../mapping/response";
-import { SerializationContext } from "../../auto-schedule/schedule-serialization/serializers/serialization-context";
-import { SerializationStratergy } from "../../auto-schedule/schedule-serialization/serializers/serialization-stratergy";
+import { ParseOrdinaryPayload, parseOrdinary } from "../utils/table";
+import { PreGenerateEditor, PreGenerateEditorDTO } from "./pre-generate-editor";
 
 export interface GeneratedData {
   table: ExtraDutyTable;
@@ -14,11 +12,7 @@ export interface GeneratedData {
 }
 
 export class TableGenerator {
-  readonly serializer: SerializationContext;
-
-  constructor(public data?: GeneratedData) {
-    this.serializer = new SerializationContext();
-  }
+  constructor(public data?: GeneratedData) {}
 
   clear() {
     delete this.data;
@@ -82,7 +76,7 @@ export class TableGenerator {
   }
 
   async serialize(
-    stratergy: SerializationStratergy,
+    serializer: Serializer,
   ): Promise<AppResponse<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
     if (!this.data)
       return AppResponse.error(
@@ -90,8 +84,7 @@ export class TableGenerator {
         ErrorCode.DATA_NOT_LOADED,
       );
 
-    this.serializer.setStratergy(stratergy);
-    const buffer = await this.serializer.serialize(this.data.table);
+    const buffer = await serializer.serialize(this.data.table);
 
     return AppResponse.ok(buffer.buffer);
   }

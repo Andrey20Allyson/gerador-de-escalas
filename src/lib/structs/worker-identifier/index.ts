@@ -1,4 +1,4 @@
-import { isInteger } from "../../../../utils";
+import { isInteger } from "src/utils";
 
 export class InvalidIdentifierError extends Error {}
 

@@ -1,7 +1,7 @@
-import { FirestoreInitializer } from "../../../firebase/app";
-import { WorkerRegistryInit } from "../../../persistence/entities/worker-registry";
-import { FirestoreWorkerRegistryRepository } from "../../../persistence/repositories/firestore-worker-registry-repository";
-import { env } from "../../../../utils/env";
+import { FirestoreInitializer } from "src/infra/firebase";
+import { WorkerRegistryInit } from "src/lib/persistence/entities/worker-registry";
+import { FirestoreWorkerRegistryRepository } from "src/lib/persistence/repositories/firestore-worker-registry-repository";
+import { env } from "src/utils/env";
 
 const FIREBASE_KEY_PASSWORD = env("KEY_DECRYPT_PASSWORD");
 

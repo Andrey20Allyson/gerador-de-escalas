@@ -1,4 +1,4 @@
-import { io } from "../auto-schedule";
+import { io } from "src/lib";
 import { ipcMain } from "electron";
 import fs from "fs/promises";
 import { AppAssets } from "./assets";

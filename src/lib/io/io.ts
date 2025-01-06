@@ -1,6 +1,6 @@
 import type { readFile, writeFile } from "fs/promises";
 import * as XLSX from "xlsx";
-import { ExtraDutyTable, WorkerInfo } from "../extra-duty-lib";
+import { ExtraDutyTable, WorkerInfo } from "src/lib/structs";
 import { Result } from "../../utils/result";
 import {
   ScrappeTableOptions,
@@ -13,7 +13,7 @@ import {
   MainTableFactory,
   TableFactory,
   TableFactoryOptions,
-} from "../xlsx-builders";
+} from "src/utils/xlsx-builders";
 
 export interface IOFileSystem {
   readFile: typeof readFile;

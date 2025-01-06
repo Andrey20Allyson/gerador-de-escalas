@@ -1,5 +1,5 @@
-import { Gender } from "../../../../extra-duty-lib";
-import { randomIntFromInterval } from "../../../../../utils";
+import { Gender } from "src/lib/structs";
+import { randomIntFromInterval } from "src/utils";
 
 export const M_NAMES = [
   "João",

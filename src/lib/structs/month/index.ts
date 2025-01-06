@@ -6,7 +6,7 @@ import {
   isInteger,
   thisMonth,
   thisYear,
-} from "../../../../utils";
+} from "src/utils";
 import { Year } from "../year";
 
 export class Month {

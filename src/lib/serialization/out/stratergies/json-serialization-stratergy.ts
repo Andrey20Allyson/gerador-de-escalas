@@ -2,11 +2,11 @@ import {
   ExtraDutyTable,
   ExtraDutyTableEntry,
   WorkerInfo,
-} from "../../../extra-duty-lib";
-import { SerializationStratergy } from "../serialization-stratergy";
+} from "src/lib/structs";
+import { Serializer } from "../serializer";
 
-export class JsonSerializationStratergy implements SerializationStratergy {
-  async execute(table: ExtraDutyTable): Promise<Buffer> {
+export class JsonSerializationStratergy implements Serializer {
+  async serialize(table: ExtraDutyTable): Promise<Buffer> {
     const workers = table
       .workers()
       .map((worker) => this._workerIntoObject(worker));

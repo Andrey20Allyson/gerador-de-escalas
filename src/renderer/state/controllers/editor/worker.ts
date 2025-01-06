@@ -3,7 +3,7 @@ import {
   WorkerData,
   DutyData,
 } from "../../../../apploader/api/table-reactive-edition/table";
-import { DayRestriction } from "../../../../apploader/auto-schedule/extra-duty-lib";
+import { DayRestriction } from "src/lib/structs";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { editorActions } from "../../slices/table-editor";
 import {

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { TimeOffAssignmentRule } from "../../extra-duty-lib/builders/rule-checking/rules";
+import { TimeOffAssignmentRule } from "src/lib/builders/rule-checking/rules";
 import { mock } from "../mocking/mocker";
 
 describe(TimeOffAssignmentRule.name, () => {

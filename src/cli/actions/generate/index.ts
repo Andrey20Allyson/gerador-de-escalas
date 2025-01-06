@@ -4,24 +4,20 @@ import {
   ExtraDutyTable,
   ExtraEventName,
   WorkerInfo,
-} from "../../../extra-duty-lib";
-import { DefaultTableIntegrityAnalyser } from "../../../builders/integrity";
-import { FirestoreInitializer } from "../../../firebase/app";
-import { parseWorkers } from "../../../io";
-import { FirestoreWorkerRegistryRepository } from "../../../persistence/repositories/firestore-worker-registry-repository";
-import { Benchmarker, analyseResult } from "../../../../utils";
-import { env } from "../../../../utils/env";
-import {
-  Fancyfier,
-  UnassignedWorkersMessageData,
-} from "../../../../utils/fancyfier";
+  DEFAULT_MONTH_PARSER,
+} from "src/lib/structs";
+import { DefaultTableIntegrityAnalyser } from "src/lib/builders/integrity";
+import { FirestoreInitializer } from "src/infra/firebase";
+import { parseWorkers } from "src/lib/io";
+import { FirestoreWorkerRegistryRepository } from "src/lib/persistence/repositories/firestore-worker-registry-repository";
+import { Benchmarker, analyseResult } from "src/utils";
+import { env } from "src/utils/env";
+import { Fancyfier, UnassignedWorkersMessageData } from "src/utils/fancyfier";
 import { MockFactory } from "../../mock";
 import { RandomWorkerMockFactory } from "../../mock/worker/random";
 import { z } from "zod";
-import { DEFAULT_MONTH_PARSER } from "../../../extra-duty-lib/structs/month";
-import { MultiEventScheduleBuilder } from "../../../builders/multi-event-schedule-builder";
-import { SerializationContext } from "../../../schedule-serialization/serializers/serialization-context";
-import { DivulgationSerializationStratergy } from "../../../schedule-serialization/serializers/stratergies/divulgation-serialization-stratergy";
+import { MultiEventScheduleBuilder } from "src/lib/builders/multi-event-schedule-builder";
+import { DivulgationSerializer } from "src/lib/serialization";
 
 export const generateOptionsSchema = z.object({
   mode: z.enum(["input-file", "mock"]).optional(),
@@ -118,10 +114,9 @@ export async function generate(options: GenerateCommandOptions) {
   console.log(`pode ser utilizado: ${integrity.isCompliant()}`);
 
   if (outputFile) {
-    const outBuffer = await SerializationContext.using(
-      DivulgationSerializationStratergy,
-    ).serialize(table);
+    const serializer = new DivulgationSerializer();
 
+    const outBuffer = await serializer.serialize(table);
     const outputFileWithExt =
       path.extname(outputFile) === "" ? outputFile + ".xlsx" : outputFile;
 

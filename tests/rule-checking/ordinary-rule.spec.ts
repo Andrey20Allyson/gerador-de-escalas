@@ -1,9 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { OrdinaryAssignmentRule } from "../../extra-duty-lib/builders/rule-checking/rules";
+import { OrdinaryAssignmentRule } from "src/lib/builders/rule-checking/rules";
 import { mock } from "../mocking/mocker";
-import { iterRange } from "../../../utils";
-import { WorkTime } from "../../extra-duty-lib/structs/work-time";
-import { DaysOfWork } from "../../extra-duty-lib/structs/days-of-work";
+import { iterRange } from "src/utils";
+import { WorkTime } from "src/lib/structs/work-time";
+import { DaysOfWork } from "src/lib/structs/days-of-work";
 
 interface DutyPositionSizeTestConfig {
   day: number;

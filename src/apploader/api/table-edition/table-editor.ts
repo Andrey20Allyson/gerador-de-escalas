@@ -1,8 +1,5 @@
-import type {
-  ExtraDutyTable,
-  WorkerInfo,
-} from "../../auto-schedule/extra-duty-lib";
-import { getNumOfDaysInMonth } from "../../utils";
+import type { ExtraDutyTable, WorkerInfo } from "src/lib/structs";
+import { getNumOfDaysInMonth } from "src/utils";
 import { DayEditor, DayEditorData } from "./day-editor";
 import { normalizeIndex } from "./utils";
 import { WorkerEditor, WorkerEditorData } from "./worker-editor";

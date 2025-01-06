@@ -1,5 +1,5 @@
 import { DayOfExtraDuty, ExtraDuty, WorkerInfo } from ".";
-import { DayOfWeek, thisMonth, thisYear } from "../../../utils";
+import { DayOfWeek, thisMonth, thisYear } from "src/utils";
 import { ExtraEventName } from "./extra-events/extra-place";
 import { Month } from "./month";
 import { PositionLimiter } from "./position-limiter";

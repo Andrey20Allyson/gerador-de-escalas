@@ -3,7 +3,7 @@ import {
   firstMondayFromYearAndMonth,
   getNumOfDaysInMonth,
   isBusinessDay,
-} from "../../../../utils";
+} from "src/utils";
 import type { Holidays } from "../holidays";
 import type { Clonable } from "../worker-info";
 import type { LicenseInterval } from "./license-interval";

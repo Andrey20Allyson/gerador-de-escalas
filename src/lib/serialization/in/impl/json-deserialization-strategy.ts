@@ -5,13 +5,13 @@ import {
   WorkerInfo,
   WorkLimit,
   WorkTime,
-} from "../../../extra-duty-lib";
-import { Month } from "../../../extra-duty-lib/structs/month";
-import { WorkerIdentifier } from "../../../extra-duty-lib/structs/worker-identifier";
-import { DeserializationStratergy } from "../deserialization-stratergy";
+  Month,
+  WorkerIdentifier,
+} from "src/lib/structs";
+import { Deserializer } from "src/lib/serialization/in";
 
-export class JsonDeserializationStratergy implements DeserializationStratergy {
-  async execute(buffer: Buffer): Promise<ExtraDutyTable> {
+export class JsonDeserializationStratergy implements Deserializer {
+  async deserialize(buffer: Buffer): Promise<ExtraDutyTable> {
     const parseable = buffer.toString("utf-8");
     const json = JSON.parse(parseable);
 

@@ -1,7 +1,7 @@
 import {
   WorkerRegistryRule,
   WorkerRegistryRuleTag,
-} from "../../../persistence/entities/worker-registry";
+} from "src/lib/persistence/entities/worker-registry";
 import { DaysOfWork } from "../days-of-work";
 import { Limitable } from "../limitable";
 import { WorkLimit } from "../work-limit";

@@ -1,4 +1,4 @@
-import { ExtraDutyTable } from "../../extra-duty-lib";
+import { ExtraDutyTable } from "src/lib/structs";
 import { IntegrityChecker } from "./checkers";
 import { TableIntegrity } from "./table-integrity";
 

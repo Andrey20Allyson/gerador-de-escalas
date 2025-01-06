@@ -1,4 +1,4 @@
-import { ExtraDutyTable } from "../extra-duty-lib";
+import { ExtraDutyTable } from "src/lib/structs";
 
 export interface TableFactoryOptions {
   sheetName: string;

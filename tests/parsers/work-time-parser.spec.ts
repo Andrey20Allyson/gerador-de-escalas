@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { WorkTimeParser } from "../../extra-duty-lib/structs/work-time/parser";
+import { WorkTimeParser } from "src/lib/structs/work-time/parser";
 import {
   WORK_TIME_PARSE_TESTS,
   WorkTimeParseTestEntry,

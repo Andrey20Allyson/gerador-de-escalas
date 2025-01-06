@@ -1,4 +1,4 @@
-import type { Gender, Graduation } from "../../auto-schedule/extra-duty-lib";
+import type { Gender, Graduation } from "src/lib/structs";
 import { DayEditor } from "./day-editor";
 import { DutyAddress } from "./duty-address";
 import { TableEditor } from "./table-editor";

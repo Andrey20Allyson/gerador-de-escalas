@@ -1,5 +1,5 @@
 import { TableFactory, TableFactoryOptions } from ".";
-import { ExtraDutyTable } from "../extra-duty-lib";
+import { ExtraDutyTable } from "src/lib/structs";
 import { serializeTableToDivugation } from "./divugation-factory.utils";
 
 export class DivugationTableFactory implements TableFactory {

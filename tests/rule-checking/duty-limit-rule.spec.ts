@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { DutyLimitAssignmentRule } from "../../extra-duty-lib/builders/rule-checking/rules";
+import { DutyLimitAssignmentRule } from "src/lib/builders/rule-checking/rules";
 import { mock } from "../mocking/mocker";
 
 describe(DutyLimitAssignmentRule.name, () => {

@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
-import { ExtraDutyTable } from "../../extra-duty-lib/structs/extra-duty-table";
-import { mock } from "../mocking/mocker";
+import { ExtraDutyTable } from "src/lib/structs";
+import { mock } from "tests/mocking/mocker";
 
 test(`#clear shold restart all workers positionsLeft`, () => {
   const worker0 = mock.worker({ name: "Jose" });

@@ -1,6 +1,6 @@
 import { describe, test, expect } from "vitest";
-import { Day } from "../../extra-duty-lib/structs/day";
-import { DayOfWeek } from "../../../utils";
+import { Day } from "src/lib/structs/day";
+import { DayOfWeek } from "src/utils";
 
 interface DaySeekPrevWeekdayTestConfig {
   day: Day;

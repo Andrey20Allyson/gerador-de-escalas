@@ -3,9 +3,9 @@ import {
   ExtraEventName,
   WorkLimit,
   WorkerInfo,
-} from "../../../../extra-duty-lib";
-import { WorkerIdentifier } from "../../../../extra-duty-lib/structs/worker-identifier";
-import { randomIntFromInterval } from "../../../../../utils";
+  WorkerIdentifier,
+} from "src/lib/structs";
+import { randomIntFromInterval } from "src/utils";
 import { randomDaysOfWork } from "./days-of-work";
 import { randomGender } from "./gender";
 import { randomGrad } from "./grad";

@@ -1,4 +1,4 @@
-import { Graduation } from "../../../../extra-duty-lib";
+import { Graduation } from "src/lib/structs";
 
 export function randomGrad(): Graduation {
   const choice = Math.random();

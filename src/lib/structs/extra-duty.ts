@@ -1,4 +1,4 @@
-import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "../../../utils";
+import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "src/utils";
 import type { DayOfExtraDuty } from "./day-of-extra-duty";
 import type { ExtraDutyTable, ExtraDutyTableConfig } from "./extra-duty-table";
 import { Gender, Graduation, WorkerInfo } from "./worker-info";

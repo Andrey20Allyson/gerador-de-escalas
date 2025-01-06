@@ -1,5 +1,5 @@
 import zod from "zod";
-import { ResultError, ResultType } from "../../../utils";
+import { ResultError, ResultType } from "src/utils";
 
 const holidaySchema = zod.object({
   day: zod.number(),

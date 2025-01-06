@@ -1,5 +1,4 @@
-import { WorkerInfo } from "../../../../extra-duty-lib";
-import { Day } from "../../../../extra-duty-lib/structs/day";
+import { Day, WorkerInfo } from "src/lib/structs";
 
 export class WorkerDuty {
   constructor(

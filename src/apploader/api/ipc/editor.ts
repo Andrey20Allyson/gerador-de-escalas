@@ -1,9 +1,4 @@
-import {
-  DivugationTableFactory,
-  TableFactory as SerializationTableFactory,
-} from "../../auto-schedule/xlsx-builders";
-import { DayListTableFactory } from "../../auto-schedule/xlsx-builders/day-list-factory";
-import { ExtraDutyTable, WorkerInfo } from "../../auto-schedule/extra-duty-lib";
+import { ExtraDutyTable, WorkerInfo } from "src/lib/structs";
 import fs from "fs/promises";
 import { AppAssets } from "../assets";
 import { TableData, TableFactory } from "../table-reactive-edition/table";
@@ -11,10 +6,11 @@ import { ReadTablePayload, parseExtraTable, readTables } from "../utils/table";
 import { ErrorCode, AppError } from "../mapping/error";
 import { AppResponse } from "../mapping/response";
 import { IpcMappingFactory, IpcMapping } from "../mapping/utils";
-import { PaymentSerializationStratergy } from "../../auto-schedule/schedule-serialization/serializers/stratergies/payment-serialization-stratergy";
-import { SerializationStratergy } from "../../auto-schedule/schedule-serialization/serializers/serialization-stratergy";
-import { DivulgationSerializationStratergy } from "../../auto-schedule/schedule-serialization/serializers/stratergies/divulgation-serialization-stratergy";
-import { SerializationContext } from "../../auto-schedule/schedule-serialization/serializers/serialization-context";
+import {
+  DivulgationSerializer,
+  PaymentSerializationStratergy,
+  Serializer,
+} from "src/lib/serialization";
 
 export interface EditorHandlerFactoryData {
   table: ExtraDutyTable;
@@ -25,14 +21,11 @@ export type SerializationMode = "payment" | "divugation" | "day-list";
 
 export class EditorHandler implements IpcMappingFactory {
   readonly tableFactory = new TableFactory();
-  readonly serializator: SerializationContext;
 
   constructor(
     readonly assets: AppAssets,
     public data?: EditorHandlerFactoryData,
-  ) {
-    this.serializator = new SerializationContext();
-  }
+  ) {}
 
   clear() {
     delete this.data;
@@ -95,7 +88,7 @@ export class EditorHandler implements IpcMappingFactory {
     return AppResponse.ok();
   }
 
-  getSerializationStratergy(mode: SerializationMode): SerializationStratergy {
+  getSerializationStratergy(mode: SerializationMode): Serializer {
     switch (mode) {
       case "payment":
         return new PaymentSerializationStratergy(
@@ -103,7 +96,7 @@ export class EditorHandler implements IpcMappingFactory {
           "DADOS",
         );
       case "divugation":
-        return new DivulgationSerializationStratergy("DADOS");
+        return new DivulgationSerializer("DADOS");
       case "day-list":
         throw new Error(`Serialization mode '${mode}' not mapped!`);
       default:
@@ -122,11 +115,9 @@ export class EditorHandler implements IpcMappingFactory {
         ErrorCode.DATA_NOT_LOADED,
       );
 
-    const stratergy = this.getSerializationStratergy(mode);
+    const serializer = this.getSerializationStratergy(mode);
 
-    this.serializator.setStratergy(stratergy);
-
-    const buffer = await this.serializator.serialize(table);
+    const buffer = await serializer.serialize(table);
 
     return AppResponse.ok(buffer.buffer);
   }

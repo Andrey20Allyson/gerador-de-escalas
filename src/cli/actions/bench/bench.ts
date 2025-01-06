@@ -1,6 +1,7 @@
-import { z } from "zod";
-import { ExtraDutyTable, ExtraEventName } from "../../../extra-duty-lib";
-import { AssignmentRuleStack } from "../../../builders/rule-checking";
+import { RandomWorkerMockFactory } from "src/cli/mock/worker/random";
+
+import { MultiStepScheduleAssigner } from "src/lib/builders/assigners/multi-step-assigner";
+import { AssignmentRuleStack } from "src/lib/builders/rule-checking";
 import {
   BusyWorkerAssignmentRule,
   DutyLimitAssignmentRule,
@@ -9,15 +10,17 @@ import {
   LicenseAssignmentRule,
   OrdinaryAssignmentRule,
   TimeOffAssignmentRule,
-} from "../../../builders/rule-checking/rules";
-import { ExtraEventAllowedTimeRule } from "../../../builders/rule-checking/rules/extra-event-allowed-time-rule";
-import { ExtraEventAllowedWeekdaysRule } from "../../../builders/rule-checking/rules/extra-event-allowed-weekdays-rule";
-import { ExtraEventStartDayRule } from "../../../builders/rule-checking/rules/extra-event-start-day";
-import { Month } from "../../../extra-duty-lib/structs/month";
-import { Benchmarker, enumerate, iterRange } from "../../../../utils";
-import { RandomWorkerMockFactory } from "../../mock/worker/random";
+} from "src/lib/builders/rule-checking/rules";
+import { ExtraEventAllowedTimeRule } from "src/lib/builders/rule-checking/rules/extra-event-allowed-time-rule";
+import { ExtraEventAllowedWeekdaysRule } from "src/lib/builders/rule-checking/rules/extra-event-allowed-weekdays-rule";
+import { ExtraEventStartDayRule } from "src/lib/builders/rule-checking/rules/extra-event-start-day";
+import { ExtraDutyTable, ExtraEventName, Month } from "src/lib/structs";
+
+import { Benchmarker, enumerate, iterRange } from "src/utils";
+
+import { z } from "zod";
+
 import { ProgressBar } from "./progress-bar";
-import { MultiStepScheduleAssigner } from "../../../builders/assigners/multi-step-assigner";
 
 export const benchOptionsSchema = z.object({
   times: z.number({ coerce: true }).default(1),

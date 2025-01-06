@@ -1,7 +1,7 @@
 import {
   WorkerRegistryInit,
   WorkerRegistryRepository,
-} from "../../auto-schedule/persistence/entities/worker-registry";
+} from "src/lib/persistence/entities/worker-registry";
 import { AppAssets } from "../assets";
 import { AppResponse } from "../mapping/response";
 import { IpcMappingFactory, IpcMapping } from "../mapping/utils";

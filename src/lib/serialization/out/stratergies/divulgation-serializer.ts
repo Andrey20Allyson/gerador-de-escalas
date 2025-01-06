@@ -1,14 +1,12 @@
 import ExcelJS from "exceljs";
-import { ExtraDutyTable, ExtraDutyTableEntry } from "../../../extra-duty-lib";
-import { enumerate } from "../../../../utils";
-import { SerializationStratergy } from "../serialization-stratergy";
+import { ExtraDutyTable, ExtraDutyTableEntry } from "src/lib/structs";
+import { enumerate } from "src/utils";
+import { Serializer } from "../serializer";
 import { DayGrid, DayGridFromatter } from "./utils/day-grid-formatter";
 import { WorkerDutiesBuilder } from "./utils/worker-duties-builder";
-import { ScheduleMetadataWriter } from "../../lib/metadata/schedule-metatada-writer";
+import { ScheduleMetadataWriter } from "../metadata/writer";
 
-export class DivulgationSerializationStratergy
-  implements SerializationStratergy
-{
+export class DivulgationSerializer implements Serializer {
   readonly label = ["TURNO", "NOME", "MATRÍCULA"];
   readonly titleFill: ExcelJS.Fill = {
     type: "pattern",
@@ -38,7 +36,7 @@ export class DivulgationSerializationStratergy
 
   constructor(readonly sheetName: string = "DADOS") {}
 
-  async execute(table: ExtraDutyTable): Promise<Buffer> {
+  async serialize(table: ExtraDutyTable): Promise<Buffer> {
     const book = new ExcelJS.Workbook();
     const sheet = book.addWorksheet(this.sheetName);
 

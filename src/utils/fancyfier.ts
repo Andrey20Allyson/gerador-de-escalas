@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { ExtraDutyTable, WorkerInfo } from "../lib/extra-duty-lib";
+import { ExtraDutyTable, WorkerInfo } from "src/lib/structs";
 import { TableIntegrity } from "../lib/builders/integrity";
 import { Text } from "./text";
 import { Benchmarker } from "./benchmark";

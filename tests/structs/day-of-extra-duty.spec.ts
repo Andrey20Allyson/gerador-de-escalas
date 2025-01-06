@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { DayOfExtraDuty } from "../../extra-duty-lib";
+import { DayOfExtraDuty } from "src/lib/structs";
 import { mock } from "../mocking/mocker";
 
 function verifyPrototype(value: unknown): DayOfExtraDuty {

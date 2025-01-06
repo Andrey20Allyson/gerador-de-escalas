@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { WorkerInfo, WorkerInfoParser } from "../../extra-duty-lib";
-import { randomIntFromInterval } from "../../../utils";
+import { WorkerInfo, WorkerInfoParser } from "src/lib/structs";
+import { randomIntFromInterval } from "src/utils";
 
 describe(WorkerInfoParser.name, () => {
   describe(WorkerInfoParser.prototype.parse.name, () => {

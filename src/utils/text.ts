@@ -1,5 +1,3 @@
-import { Day } from "src/lib/structs/day";
-
 export class Text {
   private text: string;
 

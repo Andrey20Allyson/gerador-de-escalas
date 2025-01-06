@@ -1,4 +1,4 @@
-import type { WorkerInfo } from "../../auto-schedule/extra-duty-lib";
+import type { WorkerInfo } from "src/lib/structs";
 
 export interface WorkerEditorDTO {
   readonly workerID: number;

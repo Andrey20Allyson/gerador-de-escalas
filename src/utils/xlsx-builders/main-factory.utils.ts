@@ -5,7 +5,7 @@ import {
   ExtraDutyTableEntry,
   ExtraEventName,
   Graduation,
-} from "../extra-duty-lib";
+} from "src/lib/structs";
 
 export enum OutputCollumns {
   NAME = "B",

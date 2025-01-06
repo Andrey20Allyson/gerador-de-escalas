@@ -1,13 +1,13 @@
 import ExcelJS from "exceljs";
 import { TableFactory, TableFactoryOptions } from ".";
-import { ExtraDutyTable } from "../extra-duty-lib";
-import { enumerate } from "../../utils";
+import { ExtraDutyTable } from "src/lib/structs";
+import { enumerate } from "src/utils";
 import {
   sortByRegistration,
   sortByGrad,
   iterRows,
   OutputCollumns,
-} from "./main-factory.utils";
+} from "./utils";
 
 export class MainTableFactory implements TableFactory {
   private cachedBook?: Promise<ExcelJS.Workbook>;

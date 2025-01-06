@@ -7,7 +7,7 @@ import type {
   Graduation,
   WorkerInfo,
   DayOfExtraDuty,
-} from "../../auto-schedule/extra-duty-lib";
+} from "src/lib/structs";
 import { WorkerInsertionRulesState } from "../table-edition";
 
 export interface OrdinaryInfo {

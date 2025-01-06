@@ -1,4 +1,4 @@
-import { DayOfWeek } from "../../../../utils";
+import { DayOfWeek } from "src/utils";
 import { Day } from "../day";
 import { ExtraDutyTableConfig } from "../extra-duty-table";
 

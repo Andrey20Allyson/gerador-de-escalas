@@ -6,9 +6,9 @@ import {
   ExtraDutyTableEntry,
   Graduation,
   WorkerInfo,
-} from "../extra-duty-lib";
+  Day,
+} from "src/lib/structs";
 import { dayOfWeekFrom, enumerate, iterReverse } from "../../utils";
-import { Day } from "../extra-duty-lib/structs/day";
 
 export function toDutyDesc(start: number, end: number) {
   const prefix = start >= 7 && start < 18 ? "Diurno" : "Noturno";

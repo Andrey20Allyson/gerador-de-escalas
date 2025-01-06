@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { autoScheduleConfig } from "../../../config";
+import { autoScheduleConfig } from "../../../../config";
 
 const CONFIG_SCHEMA = z
   .object({

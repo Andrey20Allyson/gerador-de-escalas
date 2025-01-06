@@ -5,7 +5,7 @@ import {
 } from "../../../../apploader/api/table-reactive-edition/table";
 import { DispatcherType, TableEditorController } from "./table";
 import { DutySearcher } from "./searchers/duty";
-import { ExtraEventName } from "../../../../apploader/auto-schedule/extra-duty-lib";
+import { ExtraEventName } from "src/lib/structs";
 
 function mockDuties(numOfDays: number, dutiesPerDay: number): DutyData[] {
   const duties: DutyData[] = [];

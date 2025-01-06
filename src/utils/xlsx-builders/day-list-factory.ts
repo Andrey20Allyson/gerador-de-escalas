@@ -1,5 +1,5 @@
 import { Alignment, Workbook, Worksheet } from "exceljs";
-import { DayOfExtraDuty, ExtraDutyTable, WorkerInfo } from "../extra-duty-lib";
+import { DayOfExtraDuty, ExtraDutyTable, WorkerInfo } from "src/lib/structs";
 import { iterRange } from "../../utils";
 import {
   SheetAddress,

@@ -1,4 +1,4 @@
-import { WorkTime } from "../../extra-duty-lib";
+import { WorkTime } from "src/lib/structs";
 
 export interface WorkTimeParseTestEntry {
   input: string;
