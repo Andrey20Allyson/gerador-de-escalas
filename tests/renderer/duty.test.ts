@@ -2,9 +2,12 @@ import { expect, test } from "vitest";
 import {
   DutyData,
   TableData,
-} from "../../../../apploader/api/table-reactive-edition/table";
-import { DispatcherType, TableEditorController } from "./table";
-import { DutySearcher } from "./searchers/duty";
+} from "src/apploader/api/table-reactive-edition/table";
+import {
+  DispatcherType,
+  TableEditorController,
+} from "src/renderer/state/controllers/editor/table";
+import { DutySearcher } from "src/renderer/state/controllers/editor/searchers/duty";
 import { ExtraEventName } from "src/lib/structs";
 
 function mockDuties(numOfDays: number, dutiesPerDay: number): DutyData[] {
