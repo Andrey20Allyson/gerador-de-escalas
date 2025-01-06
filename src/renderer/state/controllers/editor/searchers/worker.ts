@@ -1,4 +1,4 @@
-import { WorkerData } from "../../../../../app/api/table-reactive-edition/table";
+import { WorkerData } from "../../../../../apploader/api/table-reactive-edition/table";
 import { Gender } from "../../../../extra-duty-lib";
 import { Searcher } from "../../../../utils/searcher";
 

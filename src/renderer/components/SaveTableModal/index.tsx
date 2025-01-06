@@ -1,6 +1,6 @@
 import { TableEditorController } from "../../state/controllers/editor/table";
-import { SerializationMode } from "../../../app/api/ipc";
-import { TableEditor } from "../../../app/api/table-edition";
+import { SerializationMode } from "../../../apploader/api/ipc";
+import { TableEditor } from "../../../apploader/api/table-edition";
 import { AppError, editor } from "../../api";
 import { createModalContext } from "../../contexts/modal";
 import { saveFile } from "../../utils";

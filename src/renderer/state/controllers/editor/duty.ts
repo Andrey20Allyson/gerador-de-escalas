@@ -1,5 +1,5 @@
 import { firstMondayFromYearAndMonth, dayOfWeekFrom } from "../../../utils";
-import { DutyAndWorkerRelationship, DutyData, TableData, WorkerData } from "../../../../app/api/table-reactive-edition/table";
+import { DutyAndWorkerRelationship, DutyData, TableData, WorkerData } from "../../../../apploader/api/table-reactive-edition/table";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { editorActions } from "../../slices/table-editor";
 import { DispatcherType, EditorControllerOptions, currentTableFromRootSelector } from "./table";

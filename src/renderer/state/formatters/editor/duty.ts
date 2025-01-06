@@ -1,4 +1,4 @@
-import { DutyData, TableData } from "../../../../app/api/table-reactive-edition/table";
+import { DutyData, TableData } from "../../../../apploader/api/table-reactive-edition/table";
 import { DateFormatter } from "./day";
 
 export class DutyFormatter {

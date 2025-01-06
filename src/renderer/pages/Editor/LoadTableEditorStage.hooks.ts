@@ -5,7 +5,7 @@ import { useStage } from "../../contexts/stages";
 import { useLoading, useTableData } from "../../hooks";
 import { TableEditorController } from "../../state/controllers/editor/table";
 import { sleep } from "../../utils";
-import { TableData } from "../../../app/api/table-reactive-edition/table";
+import { TableData } from "../../../apploader/api/table-reactive-edition/table";
 
 export type OnTableReady = (table: TableData) => void;
 

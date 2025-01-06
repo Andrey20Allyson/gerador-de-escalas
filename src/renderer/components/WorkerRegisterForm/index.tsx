@@ -1,7 +1,7 @@
 import React from "react";
 import { AiOutlineCloudUpload, AiOutlineDelete } from "react-icons/ai";
 import styled from "styled-components";
-import { WorkerRegistryInit } from "../../../app/auto-schedule/persistence/entities/worker-registry";
+import { WorkerRegistryInit } from "../../../apploader/auto-schedule/persistence/entities/worker-registry";
 import Form, { FormController } from "../../components/Form";
 import { parsers } from "../Form/parsing";
 import { CPFParser } from "../Form/parsing/cpf";

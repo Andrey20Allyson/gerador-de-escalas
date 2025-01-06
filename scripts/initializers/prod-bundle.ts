@@ -1,7 +1,8 @@
-import { Command } from 'commander';
-import { build } from 'esbuild';
-import { ProgramInitializer } from 'index';
-import cp from 'child_process';
+import { Command } from "commander";
+import { build } from "esbuild";
+import { ProgramInitializer } from "index";
+import path from "node:path";
+import cp from "child_process";
 
 type ExecResult = {
   stdout: string;
@@ -24,8 +25,8 @@ function exec(command: string) {
 export class ProdBuildProgramInitializer implements ProgramInitializer {
   initialize(program: Command): void {
     program
-      .command('build:prod')
-      .description('build for production')
+      .command("build:prod")
+      .description("build for production")
       .action(async () => {
         await Promise.all([
           build({
@@ -37,10 +38,17 @@ export class ProdBuildProgramInitializer implements ProgramInitializer {
             bundle: true,
             minify: true,
           }),
-          exec('npx tsc -p src/app'),
+
+          build({
+            entryPoints: ["./src/app/index.ts"],
+            outdir: "./dist",
+            tsconfig: path.join(process.cwd(), 'src/app/tsconfig.json'),
+            platform: 'node',
+            format: 'cjs',
+          }),
         ]);
 
-        console.log('Builded with success');
+        console.log("Builded with success");
       });
   }
 }

@@ -1,4 +1,4 @@
-import { PreGenerateEditor } from "../../app/api/table-generation/pre-generate-editor";
+import { PreGenerateEditor } from "../../apploader/api/table-generation/pre-generate-editor";
 import { AppError, api } from "../api";
 import { useEffect, useState } from "react";
 

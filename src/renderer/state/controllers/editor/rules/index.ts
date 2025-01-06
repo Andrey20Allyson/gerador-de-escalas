@@ -1,5 +1,5 @@
-import { WorkerInsertionRulesState } from "../../../../../app/api/table-edition";
-import { TableData } from "../../../../../app/api/table-reactive-edition/table";
+import { WorkerInsertionRulesState } from "../../../../../apploader/api/table-edition";
+import { TableData } from "../../../../../apploader/api/table-reactive-edition/table";
 import { useAppDispatch, useAppSelector } from "../../../../hooks";
 import { editorActions } from "../../../slices/table-editor";
 import { DutyEditorController } from "../duty";

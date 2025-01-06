@@ -1,0 +1,190 @@
+import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "../../../utils";
+import type { DayOfExtraDuty } from "./day-of-extra-duty";
+import type { ExtraDutyTable, ExtraDutyTableConfig } from "./extra-duty-table";
+import { Gender, Graduation, WorkerInfo } from "./worker-info";
+import { WorkingPlaceStorage } from "./working-place-storage";
+
+export class ExtraDuty implements Iterable<[string, WorkerInfo]> {
+  readonly offTimeEnd: number;
+  private readonly _isNightly: boolean;
+  private _actived: boolean;
+  readonly start: number;
+  readonly end: number;
+  readonly firstMonday: number;
+  readonly weekDay: number;
+  readonly workers: WorkingPlaceStorage;
+  readonly config: ExtraDutyTableConfig;
+  readonly table: ExtraDutyTable;
+
+  constructor(
+    readonly index: number,
+    readonly day: DayOfExtraDuty,
+  ) {
+    this.table = day.table;
+    this.config = day.config;
+
+    this.workers = new WorkingPlaceStorage();
+
+    this._actived = true;
+    this.start = this.config.firstDutyTime + this.config.dutyDuration * index;
+    this.end = this.start + this.config.dutyDuration;
+    this.offTimeEnd = this.end + this.config.dutyOffTimeToOrdinary;
+    this._isNightly = this.start >= 18 || this.start < 7;
+    this.firstMonday = firstMondayFromYearAndMonth(this.config.year, this.config.month);
+    this.weekDay = dayOfWeekFrom(this.firstMonday, this.day.index);
+  }
+
+  isActive() {
+    return this._actived;
+  }
+
+  desactivate() {
+    this._actived = false;
+  }
+
+  activate() {
+    this._actived = true;
+  }
+
+  isNighttime(): boolean {
+    return this._isNightly;
+  }
+
+  isDaytime(): boolean {
+    return !this._isNightly;
+  }
+
+  isLast(): boolean {
+    return this.index >= this.day.getSize() - 1;
+  }
+
+  copy(other: ExtraDuty): this {
+    this.workers.copy(other.workers);
+
+    return this;
+  }
+
+  calculateTimeoffStart() {
+    const { dutyPositionSize, dutyDuration } = this.config;
+  
+    return this.start - dutyDuration * dutyPositionSize;
+  }
+
+  calculateTimeoffEnd() {
+    const { dutyPositionSize, dutyDuration } = this.config;
+
+    return this.end + dutyDuration * dutyPositionSize;
+  }
+
+  iterPlaces(): Iterable<string> {
+    return this.workers.iterPlaceNames();    
+  }
+
+  gradQuantity(grad: Graduation): number {
+    return this.workers.graduation.quantityFrom(this.config.currentPlace, grad);
+  }
+
+  graduateQuantity() {
+    return this.gradQuantity('insp') + this.gradQuantity('sub-insp');
+  }
+
+  genderQuantity(gender: Gender): number {
+    return this.workers.gender.quantityFrom(this.config.currentPlace, gender);
+  }
+
+  gradIsOnly(grad: Graduation) {
+    return !this.isEmpity() && this.gradQuantity(grad) === this.getSize();
+  }
+
+  genderIsOnly(gender: Gender) {
+    return !this.isEmpity() && this.genderQuantity(gender) === this.getSize();
+  }
+
+  isWeekDay(weekDay: number) {
+    return this.weekDay === weekDay;
+  }
+
+  next(count: number = 1): ExtraDuty | undefined {
+    return this.day.at(this.index + count);
+  }
+  
+  prev(count: number = 1): ExtraDuty | undefined {
+    return this.day.at(this.index - count);
+  }
+
+  *[Symbol.iterator](): Iterator<[string, WorkerInfo]> {
+    for (const [_, worker] of this.workers.placeFrom(this.config.currentPlace)) {
+      yield [worker.name, worker];
+    }
+  }
+
+  isFull() {
+    return this.getSize() >= this.config.dutyCapacity;
+  }
+
+  isEmpity() {
+    return this.getSize() === 0;
+  }
+
+  has(worker: WorkerInfo, place?: string) {
+    return this.workers.has(worker, place);
+  }
+
+  getSize(): number {
+    return this.workers.placeFrom(this.config.currentPlace).size;
+  }
+
+  add(worker: WorkerInfo) {
+    this.workers.add(this.config.currentPlace, worker);
+
+    this.table.limiter.increase(worker);
+  }
+
+  delete(worker: WorkerInfo) {
+    const existed = this.workers.remove(this.config.currentPlace, worker);
+
+    if (!existed) return;
+
+    this.table.limiter.decrease(worker);
+  }
+
+  clear(place?: string) {
+    if (place === undefined) {
+      for (const place of this.workers.iterPlaceNames()) {
+        this.clear(place);
+      }
+
+      return;
+    }
+
+    for (const [_, worker] of this.workers.placeFrom(place)) {
+      this.table.limiter.decreaseFrom(place, worker);
+    }
+
+    this.workers.clear(place);
+  }
+
+  static dutiesFrom(day: DayOfExtraDuty): readonly ExtraDuty[] {
+    const duties: ExtraDuty[] = new Array(day.getSize());
+
+    for (let i = 0; i < duties.length; i++) {
+      duties[i] = new ExtraDuty(i, day);
+    }
+
+    if (day.index === 0) {
+      const firstDuty = duties.at(0)!;
+
+      firstDuty.desactivate();
+    }
+
+    if (day.month.index > day.table.month.index) {
+      for (let i = 1; i < duties.length; i++) {
+        const duty = duties.at(i)!;
+
+        duty.desactivate()
+      }
+    }
+
+    return duties;
+  }
+}

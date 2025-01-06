@@ -1,4 +1,4 @@
-import { DateData, DutyData, TableData, WorkerData } from "../../../../app/api/table-reactive-edition/table";
+import { DateData, DutyData, TableData, WorkerData } from "../../../../apploader/api/table-reactive-edition/table";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "../../../utils";
 import { Searcher } from "../../../utils/searcher";

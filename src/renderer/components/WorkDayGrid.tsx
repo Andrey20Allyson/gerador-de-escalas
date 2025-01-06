@@ -1,4 +1,4 @@
-import { WorkerEditor } from "../../app/api/table-generation/pre-generate-editor";
+import { WorkerEditor } from "../../apploader/api/table-generation/pre-generate-editor";
 import { useRerender } from "../hooks";
 import { DayCell, DayGrid, WorkDayCell } from "../pages/Generator/WorkerEditionStage.styles";
 import { getFirstSundayOfMonth, getNumOfDaysInMonth, iterRange } from '../utils';

@@ -1,8 +1,8 @@
-import { expect, test } from '@jest/globals';
-import { DutyData, TableData } from '../../../../app/api/table-reactive-edition/table';
+import { expect, test } from 'vitest';
+import { DutyData, TableData } from '../../../../apploader/api/table-reactive-edition/table';
 import { DispatcherType, TableEditorController } from './table';
 import { DutySearcher } from './searchers/duty';
-import { ExtraEventName } from '../../../../app/auto-schedule/extra-duty-lib';
+import { ExtraEventName } from '../../../../apploader/auto-schedule/extra-duty-lib';
 
 function mockDuties(numOfDays: number, dutiesPerDay: number): DutyData[] {
   const duties: DutyData[] = [];
@@ -66,12 +66,12 @@ function mockTable(): TableData {
   };
 }
 
-const dispatcherMock: DispatcherType = null as any;
+const dispatcherMock: DispatcherType = () => ({  }) as any;
 
 test('#next method shild return next duty', () => {
   const table: TableData = mockTable();
 
-  const tableController = new TableEditorController({ table, dispatcher: dispatcherMock });
+  const tableController = new TableEditorController({ state: {history: [table], undoIndex: 1}, table, dispatcher: dispatcherMock });
 
   const dutyController = tableController.findDuty(
     DutySearcher

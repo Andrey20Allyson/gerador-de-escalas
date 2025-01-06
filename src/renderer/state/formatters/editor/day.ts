@@ -1,4 +1,4 @@
-import { DateData, TableData } from "../../../../app/api/table-reactive-edition/table";
+import { DateData, TableData } from "../../../../apploader/api/table-reactive-edition/table";
 
 export class DateFormatter {
   constructor(private readonly table: TableData, private readonly date: DateData) { }

@@ -6,7 +6,7 @@ import { DutyEditorController } from "../../state/controllers/editor/duty";
 import { TableEditorController } from "../../state/controllers/editor/table";
 import { WorkerEditorController } from "../../state/controllers/editor/worker";
 import styled from "styled-components";
-import { DutyEditor, WorkerEditor } from "../../../app/api/table-edition";
+import { DutyEditor, WorkerEditor } from "../../../apploader/api/table-edition";
 import { genderComponentMap, graduationTextColorMap } from "../../components/DayEditionModal/utils";
 import { useDutySelectModal } from "../../components/DutySelectModal";
 import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";

@@ -1,4 +1,4 @@
-import { WorkerEditor } from "../../../app/api/table-generation/pre-generate-editor";
+import { WorkerEditor } from "../../../apploader/api/table-generation/pre-generate-editor";
 import { AppError, api } from "../../api";
 import { WorkDayGrid } from "../../components/WorkDayGrid";
 import { useStage } from "../../contexts/stages";

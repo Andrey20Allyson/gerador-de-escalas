@@ -5,7 +5,7 @@ import { WorkerEditorController } from "../../state/controllers/editor/worker";
 import { iterRange } from "../../utils";
 import { ElementList, IterProps } from "../../utils/react-iteration";
 import { StyledDay, StyledDayTitle, StyledDutiesContainer, StyledDuty, StyledDutyHeader, StyledDutySlot, StyledDutyTitle, StyledEmpityDutySlot } from "./styles";
-import { DateData } from "../../../app/api/table-reactive-edition/table";
+import { DateData } from "../../../apploader/api/table-reactive-edition/table";
 import { DateFormatter } from "../../state/formatters/editor/day";
 
 export function EmpityDutySlot() {

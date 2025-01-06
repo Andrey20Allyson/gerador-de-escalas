@@ -1,5 +1,5 @@
-import { TableData, WorkerData, DutyData } from "../../../../app/api/table-reactive-edition/table";
-import { DayRestriction } from "../../../../app/auto-schedule/extra-duty-lib";
+import { TableData, WorkerData, DutyData } from "../../../../apploader/api/table-reactive-edition/table";
+import { DayRestriction } from "../../../../apploader/auto-schedule/extra-duty-lib";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { editorActions } from "../../slices/table-editor";
 import { EditorControllerOptions, DispatcherType, currentTableFromRootSelector } from "./table";

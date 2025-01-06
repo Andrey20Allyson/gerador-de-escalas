@@ -2,7 +2,7 @@ import { createModalContext } from '../../contexts/modal';
 import React, { MutableRefObject, useState } from 'react';
 import { TableEditorController } from '../../state/controllers/editor/table';
 import styled from 'styled-components';
-import { WorkerInsertionRulesState } from '../../../app/api/table-edition';
+import { WorkerInsertionRulesState } from '../../../apploader/api/table-edition';
 
 export function RulesModal() {
   const tableController = new TableEditorController();

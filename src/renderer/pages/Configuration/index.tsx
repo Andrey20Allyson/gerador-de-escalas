@@ -9,7 +9,7 @@ import React from "react";
 import { AiOutlineSave } from "react-icons/ai";
 import styled from "styled-components";
 import { WorkerRegistriesProvider, useWorkerRegistriesService } from "./workers.ctx";
-import { WorkerRegistry, WorkerRegistryInit } from "../../../app/auto-schedule/persistence/entities/worker-registry";
+import { WorkerRegistry, WorkerRegistryInit } from "../../../apploader/auto-schedule/persistence/entities/worker-registry";
 
 export default function ConfigurationPage() {
   return (

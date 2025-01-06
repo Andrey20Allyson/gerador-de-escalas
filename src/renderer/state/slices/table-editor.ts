@@ -1,7 +1,7 @@
-import { DutyAndWorkerRelationship, IdGenerator, TableData, TableFactory } from "../../../app/api/table-reactive-edition/table";
+import { DutyAndWorkerRelationship, IdGenerator, TableData, TableFactory } from "../../../apploader/api/table-reactive-edition/table";
 import { createSlice, PayloadAction, } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
-import { WorkerInsertionRulesState } from "../../../app/api/table-edition";
+import { WorkerInsertionRulesState } from "../../../apploader/api/table-edition";
 
 export interface TableEditorState {
   history: TableData[];

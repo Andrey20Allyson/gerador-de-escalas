@@ -4,7 +4,7 @@ import { IterProps } from "../../utils/react-iteration";
 import React from "react";
 import { GoPencil, GoTrash } from "react-icons/go";
 import { StyledWorkerRegistryView } from "./styles";
-import { WorkerRegistry } from "../../../app/auto-schedule/persistence/entities/worker-registry";
+import { WorkerRegistry } from "../../../apploader/auto-schedule/persistence/entities/worker-registry";
 
 export function WorkerRegistryView(props: IterProps<WorkerRegistry>) {
   const service = useWorkerRegistriesService();

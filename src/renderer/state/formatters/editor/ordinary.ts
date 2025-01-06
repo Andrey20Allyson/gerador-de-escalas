@@ -1,4 +1,4 @@
-import { OrdinaryInfo } from "../../../../app/api/table-reactive-edition/table";
+import { OrdinaryInfo } from "../../../../apploader/api/table-reactive-edition/table";
 
 export class OrdinaryFormatter {
   constructor(readonly ordinary: OrdinaryInfo) { }

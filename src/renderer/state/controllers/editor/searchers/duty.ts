@@ -1,4 +1,4 @@
-import { DateData, DutyData } from "../../../../../app/api/table-reactive-edition/table";
+import { DateData, DutyData } from "../../../../../apploader/api/table-reactive-edition/table";
 import { Searcher } from "../../../../utils/searcher";
 
 export class DutySearcher extends Searcher<DutyData> {

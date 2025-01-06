@@ -8,7 +8,7 @@ import { WorkerEditorController } from '../../../state/controllers/editor/worker
 import { getWeekDayLabel } from '../../../utils';
 import { ElementList, IterProps } from '../../../utils/react-iteration';
 import { EditorRulesService as EditorRuleService } from '../../../state/controllers/editor/rules';
-import { DateData } from '../../../../app/api/table-reactive-edition/table';
+import { DateData } from '../../../../apploader/api/table-reactive-edition/table';
 
 export interface DutySelectionGridProps {
   workerId: number;
