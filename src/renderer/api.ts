@@ -1,8 +1,6 @@
 import { APIHandler } from "../apploader/api/controllers";
 import { IpcInvokerProxyFactory } from "../apploader/api/mapping/renderer";
 
-console.log(window.resource);
-
 const factory = new IpcInvokerProxyFactory((path, ...args) => {
   return window.resource(path, ...args);
 });

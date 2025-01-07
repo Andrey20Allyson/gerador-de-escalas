@@ -4,10 +4,12 @@ import { AppError, DeserializationErrorCode, api } from "src/renderer/api";
 import { useStage } from "src/renderer/contexts/stages";
 import { useAppDispatch } from "src/renderer/hooks";
 import { editorLoaderActions } from "src/renderer/state/slices/table-editor-loader";
+import { TableEditorController } from "src/renderer/state/controllers/editor/table";
 
 export function LoadTableEditorStage() {
   const stage = useStage();
   const dispatch = useAppDispatch();
+  const editorLoader = TableEditorController.useEditorLoader();
 
   async function onSubmit(ev: FormEvent<HTMLFormElement>) {
     ev.preventDefault();
@@ -24,17 +26,26 @@ export function LoadTableEditorStage() {
 
     dispatch(editorLoaderActions.setPath(file.path));
 
-    if (result.ok) {
-      stage.navigate(2);
+    if (result.ok === false) {
+      if (result.error.code === DeserializationErrorCode.INEXISTENT_METADATA) {
+        stage.next();
+        return;
+      }
+
+      AppError.log(result.error);
       return;
     }
 
-    if (result.error.code === DeserializationErrorCode.INEXISTENT_METADATA) {
-      stage.next();
+    const tableEditorResult = await api.editor.createEditor();
+
+    if (tableEditorResult.ok === false) {
+      AppError.log(tableEditorResult.error);
       return;
     }
 
-    AppError.log(result.error);
+    editorLoader.load(tableEditorResult.data);
+
+    stage.navigate(2);
   }
 
   return (

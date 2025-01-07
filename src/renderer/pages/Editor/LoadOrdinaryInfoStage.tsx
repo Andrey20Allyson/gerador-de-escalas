@@ -4,11 +4,13 @@ import { useStage } from "src/renderer/contexts/stages";
 import { Month } from "src/lib/structs";
 import { useAppSelector } from "src/renderer/hooks";
 import { currentTablePath } from "src/renderer/state/slices/table-editor-loader";
-import { AppError, api } from "src/renderer/api";
+import { AppError, AppResponse, api } from "src/renderer/api";
+import { TableEditorController } from "src/renderer/state/controllers/editor/table";
 
 export function LoadOrdinaryInfoStage() {
   const stage = useStage();
   const path = useAppSelector(currentTablePath)!;
+  const editorLoader = TableEditorController.useEditorLoader();
   const [sheetNames, setSheetNames] = useState<readonly string[]>([]);
 
   async function getSheetNames(path: string) {
@@ -61,6 +63,15 @@ export function LoadOrdinaryInfoStage() {
       AppError.log(result.error);
       return;
     }
+
+    const tableEditorResult = await api.editor.createEditor();
+
+    if (tableEditorResult.ok === false) {
+      AppError.log(tableEditorResult.error);
+      return;
+    }
+
+    editorLoader.load(tableEditorResult.data);
 
     stage.next();
   }

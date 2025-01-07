@@ -107,13 +107,19 @@ export class EditorHandler implements IpcMappingFactory {
 
   createEditor(): AppResponse<TableData, ErrorCode.DATA_NOT_LOADED> {
     const { data } = this;
-    if (!data)
+
+    console.log(data);
+
+    if (!data) {
       return AppResponse.error(
         "Shold load data before get editor!",
         ErrorCode.DATA_NOT_LOADED,
       );
+    }
 
     const { table } = data;
+
+    console.log(table);
 
     const tableDTO = this.tableFactory.toDTO(table);
 
