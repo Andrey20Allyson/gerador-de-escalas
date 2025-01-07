@@ -15,7 +15,7 @@ import {
 import {
   WorkerRegistry,
   WorkerRegistryInit,
-} from "../../../apploader/auto-schedule/persistence/entities/worker-registry";
+} from "src/lib/persistence/entities/worker-registry";
 
 export default function ConfigurationPage() {
   return (

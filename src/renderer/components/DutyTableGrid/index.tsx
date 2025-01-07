@@ -15,10 +15,7 @@ export function DutyTableGrid() {
     modal.open({ dutyId });
   }
 
-  const firstMonday = firstMondayFromYearAndMonth(
-    table.config.year,
-    table.config.month,
-  );
+  const firstMonday = table.config.month.getFirstMonday();
   const firstSunday = (firstMonday + 7 - 1) % 7;
 
   return (

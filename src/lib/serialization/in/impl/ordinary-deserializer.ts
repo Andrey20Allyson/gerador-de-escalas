@@ -10,44 +10,19 @@ import * as XLSX from "xlsx";
 import { Deserializer } from "../deserializer";
 import { ScheduleMetadataReader } from "../metadata/reader";
 
-export class DeserializeWithoutMetadataAndMonthError extends Error {
-  constructor() {
-    super(
-      "Expected withOutMetadataConfig when deserializing a ordinary table without metadata",
-    );
-  }
-}
-
-interface OrdinaryDeserializerWithoutMetadataConfig {
+interface OrdinaryDeserializerConfig {
   readonly sheetName?: string;
   readonly month: Month;
   readonly workerRegistryRepository: WorkerRegistryRepository;
 }
 
 export class OrdinaryDeserializer implements Deserializer {
-  constructor(
-    readonly withOutMetadataConfig?: OrdinaryDeserializerWithoutMetadataConfig,
-  ) {}
+  constructor(readonly config: OrdinaryDeserializerConfig) {}
 
   async deserialize(buffer: Buffer): Promise<ExtraDutyTable> {
     const workBook = XLSX.read(buffer);
-    const book = new BookHandler(workBook);
 
-    const reader = ScheduleMetadataReader.from(book);
-    const hasMetadata = reader.hasMetadata();
-
-    if (hasMetadata) {
-      const table = await reader.read();
-
-      return table;
-    }
-
-    if (this.withOutMetadataConfig == null) {
-      throw new DeserializeWithoutMetadataAndMonthError();
-    }
-
-    const { month, workerRegistryRepository, sheetName } =
-      this.withOutMetadataConfig;
+    const { month, workerRegistryRepository, sheetName } = this.config;
 
     const table = new ExtraDutyTable({ month });
 

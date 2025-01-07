@@ -10,7 +10,7 @@ import {
 } from "src/lib/structs";
 import { Deserializer } from "src/lib/serialization/in";
 
-export class JsonDeserializationStratergy implements Deserializer {
+export class JsonDeserializer implements Deserializer {
   async deserialize(buffer: Buffer): Promise<ExtraDutyTable> {
     const parseable = buffer.toString("utf-8");
     const json = JSON.parse(parseable);

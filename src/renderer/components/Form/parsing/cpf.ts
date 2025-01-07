@@ -25,7 +25,7 @@ export class CPFParser extends ValueParser<string, string, CPFParserEMM> {
 
     let sum = 0;
     for (let i = 0; i < iterationLength; i++) {
-      sum += digits[i] * (i + multiplicationStart);
+      sum += digits[i]! * (i + multiplicationStart);
     }
 
     const rest = sum % 11;

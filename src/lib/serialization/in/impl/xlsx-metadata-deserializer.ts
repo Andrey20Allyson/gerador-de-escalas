@@ -3,7 +3,7 @@ import { BookHandler } from "src/utils/xlsx-handlers";
 import { ScheduleMetadataReader } from "../metadata/reader";
 import { Deserializer } from "src/lib/serialization";
 
-export class PaymentDeserializationStratergy implements Deserializer {
+export class XLSXMetadataDeserializer implements Deserializer {
   constructor() {}
 
   async deserialize(buffer: Buffer): Promise<ExtraDutyTable> {

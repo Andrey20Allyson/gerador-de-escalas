@@ -1,5 +1,5 @@
 import { AppError } from "../../../apploader/api/mapping/error";
-import { WorkerRegistry } from "../../../apploader/auto-schedule/persistence/entities/worker-registry";
+import { WorkerRegistry } from "src/lib/persistence/entities/worker-registry";
 import { api } from "../../api";
 import { AtonHook } from "../../utils/state";
 import React, {

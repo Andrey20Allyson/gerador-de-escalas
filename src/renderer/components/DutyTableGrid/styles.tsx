@@ -1,4 +1,4 @@
-import { Gender, Graduation } from "../../extra-duty-lib";
+import { Gender, Graduation } from "src/lib/structs";
 import styled, { css } from "styled-components";
 
 export const StyledExpandDayButton = styled.button`

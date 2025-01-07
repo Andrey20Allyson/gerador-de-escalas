@@ -13,12 +13,11 @@ import {
   DivulgationSerializer,
   PaymentSerializationStratergy,
   Serializer,
+  XLSXMetadataDeserializer,
 } from "src/lib/serialization";
 import { WorkerRegistryRepository } from "src/lib/persistence/entities";
-import {
-  DeserializeWithoutMetadataAndMonthError,
-  OrdinaryDeserializer,
-} from "src/lib/serialization/in/impl/ordinary-deserializer";
+import { OrdinaryDeserializer } from "src/lib/serialization/in/impl/ordinary-deserializer";
+import { MetadataNotFoundError } from "src/lib/serialization/in/metadata/reader";
 
 export interface EditorHandlerFactoryData {
   table: ExtraDutyTable;
@@ -60,7 +59,7 @@ export class EditorHandler implements IpcMappingFactory {
     try {
       const buffer = await fs.readFile(path);
 
-      const deserializer = new OrdinaryDeserializer();
+      const deserializer = new XLSXMetadataDeserializer();
 
       const table = await deserializer.deserialize(buffer);
 
@@ -68,7 +67,7 @@ export class EditorHandler implements IpcMappingFactory {
 
       return AppResponse.ok();
     } catch (error) {
-      if (error instanceof DeserializeWithoutMetadataAndMonthError) {
+      if (error instanceof MetadataNotFoundError) {
         return AppResponse.error(
           error.message,
           DeserializationErrorCode.INEXISTENT_METADATA,
@@ -175,6 +174,7 @@ export class EditorHandler implements IpcMappingFactory {
     return IpcMapping.create(
       {
         createEditor: this.createEditor,
+        loadOrdinary: this.loadOrdinary,
         serialize: this.serialize,
         clear: this.clear,
         load: this.load,

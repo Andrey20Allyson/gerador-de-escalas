@@ -12,8 +12,10 @@ export interface RouterInnerContext<TRoutes extends RoutesLike> {
   routes: TRoutes;
 }
 
+type ReactComponent = ((props: any) => JSX.Element) | (() => JSX.Element);
+
 export type RoutesLike = {
-  [K in string | symbol]: ((props: any) => JSX.Element) | (() => JSX.Element);
+  [K in string | symbol]: ReactComponent;
 };
 
 export type InferProps<T> = T extends (props: infer P) => JSX.Element
@@ -88,7 +90,7 @@ export function createRouterContext<
     const { currentRoute, routes } = useRoutes();
     const { props, name: route } = currentRoute;
 
-    const Route = routes[route];
+    const Route = routes[route]!;
 
     return <Route {...props} />;
   }

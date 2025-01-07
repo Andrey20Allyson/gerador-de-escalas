@@ -15,7 +15,6 @@ async function runDevBundle() {
     target: "es2020",
     outdir: "./public",
     tsconfig,
-    plugins: [externalsPlugin()],
   });
 
   await ctx.watch();
@@ -25,7 +24,7 @@ async function runDevBuildOfApploader() {
   const ctx = await context({
     bundle: true,
     // sourcemap: "inline",
-    entryPoints: ["./src/apploader/index.ts"],
+    entryPoints: ["./src/apploader/index.ts", "./src/apploader/preload.ts"],
     platform: "node",
     format: "cjs",
     outdir: "dist/",

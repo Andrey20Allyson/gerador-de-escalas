@@ -11,3 +11,14 @@ export const StyledLinedBorder = styled.div`
   align-items: center;
   box-shadow: -0.2rem 0.2rem 0.4rem #0004;
 `;
+
+export const StyledLoaderForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  & > input,
+  & > select {
+    min-height: 1.5rem;
+  }
+`;
