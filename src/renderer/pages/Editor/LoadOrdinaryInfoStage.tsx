@@ -4,7 +4,7 @@ import { useStage } from "src/renderer/contexts/stages";
 import { Month } from "src/lib/structs";
 import { useAppSelector } from "src/renderer/hooks";
 import { currentTablePath } from "src/renderer/state/slices/table-editor-loader";
-import { AppError, AppResponse, api } from "src/renderer/api";
+import { AppError, api } from "src/renderer/api";
 import { TableEditorController } from "src/renderer/state/controllers/editor/table";
 
 export function LoadOrdinaryInfoStage() {
@@ -70,6 +70,8 @@ export function LoadOrdinaryInfoStage() {
       AppError.log(tableEditorResult.error);
       return;
     }
+
+    console.log(tableEditorResult.data);
 
     editorLoader.load(tableEditorResult.data);
 

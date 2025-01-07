@@ -42,4 +42,14 @@
       "`;",
     ],
   },
+
+  "Make UUID": {
+    "prefix": "mkid",
+    "body": ["\"$UUID\""],
+  },
+
+  "Relative Filepath": {
+    "prefix": "rfp",
+    "body": ["\"${RELATIVE_FILEPATH/[\\\\]/\\//g}\""],
+  },
 }

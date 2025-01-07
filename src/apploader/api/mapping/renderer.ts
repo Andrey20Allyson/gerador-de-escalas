@@ -3,6 +3,8 @@ import {
   IpcMappingFactory,
   separator,
 } from "./utils";
+import "./protos";
+import { cloneAndInscribeProto, resolveProto } from "src/utils/resolve-proto";
 
 export type IpcInvokerFunction = (...args: unknown[]) => unknown;
 
@@ -17,8 +19,13 @@ export class IpcInvokerProxyFactory {
     const map = new Map<string, IPCInvokerRecord>();
     const factory = this;
 
-    function callback(...args: unknown[]) {
-      return factory.listener(path, ...args);
+    async function callback(...args: unknown[]) {
+      const result = await factory.listener(
+        path,
+        ...cloneAndInscribeProto(args),
+      );
+
+      return resolveProto(result);
     }
 
     function get(_: typeof callback, p: string | symbol) {

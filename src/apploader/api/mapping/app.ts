@@ -2,6 +2,9 @@ import { IpcMain } from "electron";
 import { IpcMapping, IpcMappingFactory, separator } from "./utils";
 import { AppError } from "./error";
 import { AppResponse } from "./response";
+import _ from "lodash";
+import { cloneAndInscribeProto, resolveProto } from "src/utils/resolve-proto";
+import "./protos";
 
 export type HandlerType = {
   [K in string]: IpcMapping.HandlerFunction | HandlerType;
@@ -42,7 +45,9 @@ export class IpcHandlerConsumer {
     const { callback, thisArg } = handler;
 
     try {
-      return await callback.call(thisArg, ev, ...args);
+      const result = await callback.call(thisArg, ev, ...resolveProto(args));
+
+      return cloneAndInscribeProto(result);
     } catch (e) {
       return AppResponse.error(AppError.parse(e));
     }
