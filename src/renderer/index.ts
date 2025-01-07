@@ -3,7 +3,7 @@ import "react-activity/dist/library.css";
 import { createRoot } from "react-dom/client";
 import "react-loading-skeleton/dist/skeleton.css";
 import App from "./App";
-import "src/styles/Anchor.css";
+import "src/renderer/styles/Anchor.css";
 import "./index.css";
 
 const rootElement = document.getElementById("root");
