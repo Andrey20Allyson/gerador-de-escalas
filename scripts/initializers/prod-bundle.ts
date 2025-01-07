@@ -3,6 +3,7 @@ import { build } from "esbuild";
 import { ProgramInitializer } from "index";
 import path from "node:path";
 import cp from "child_process";
+import { externalsPlugin } from "../utils/esbuild-plugin";
 
 type ExecResult = {
   stdout: string;
@@ -35,14 +36,18 @@ export class ProdBuildProgramInitializer implements ProgramInitializer {
             target: "es2020",
             bundle: true,
             minify: true,
+            plugins: [externalsPlugin()],
           }),
 
           build({
-            entryPoints: ["./src/app/index.ts"],
-            outdir: "./dist",
-            tsconfig: path.join(process.cwd(), "src/app/tsconfig.json"),
-            platform: "node",
+            entryPoints: ["./src/apploader/index.ts"],
+            tsconfig: path.join(process.cwd(), "tsconfig.json"),
             format: "cjs",
+            platform: "node",
+            outdir: "dist/",
+            bundle: true,
+            minify: true,
+            plugins: [externalsPlugin()],
           }),
         ]);
 

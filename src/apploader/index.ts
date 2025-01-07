@@ -1,7 +1,6 @@
 import { app, BrowserWindow } from "electron";
 import { loadAPI } from "./api";
-import { fromRoot } from "../utils/fromRoot";
-import { Day } from "src/lib/structs/day";
+import { fromRoot } from "src/utils/fromRoot";
 
 async function createWindow() {
   const window = new BrowserWindow({

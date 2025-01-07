@@ -34,14 +34,14 @@ export interface LoadOrdinaryPayload {
 
 export class EditorHandler implements IpcMappingFactory {
   readonly tableFactory = new TableFactory();
-  readonly workerRegistryRepository: WorkerRegistryRepository;
 
   constructor(
     readonly assets: AppAssets,
     public data?: EditorHandlerFactoryData,
-  ) {
-    this.workerRegistryRepository =
-      this.assets.services.workerRegistry.repository;
+  ) {}
+
+  getWorkerRegistryRepository(): WorkerRegistryRepository {
+    return this.assets.services.workerRegistry.repository;
   }
 
   clear() {
@@ -94,7 +94,7 @@ export class EditorHandler implements IpcMappingFactory {
 
     const deserializer = new OrdinaryDeserializer({
       month: new Month(payload.year, payload.month),
-      workerRegistryRepository: this.workerRegistryRepository,
+      workerRegistryRepository: this.getWorkerRegistryRepository(),
     });
 
     const table = await deserializer.deserialize(buffer);
