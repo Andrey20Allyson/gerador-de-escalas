@@ -1,7 +1,7 @@
 import {
   DateData,
   TableData,
-} from "../../../../apploader/api/table-reactive-edition/table";
+} from "src/apploader/api/table-reactive-edition/table";
 
 export class DateFormatter {
   constructor(
@@ -15,7 +15,7 @@ export class DateFormatter {
     const formattedDay = (day + 1).toString().padStart(2, "0");
     const formattedMonth = (month + 1).toString().padStart(2, "0");
 
-    if (month !== this.table.config.month.index) {
+    if (month !== this.table.config.month) {
       return `Dia ${formattedDay}/${formattedMonth}`;
     }
 

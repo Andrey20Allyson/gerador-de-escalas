@@ -1,7 +1,6 @@
 import type {
   DayRestriction,
   ExtraDuty,
-  ExtraDutyTableConfig,
   ExtraDutyTable,
   Gender,
   Graduation,
@@ -47,10 +46,19 @@ export interface DutyData {
   readonly end: number;
 }
 
-export interface TableConfig extends ExtraDutyTableConfig {
+export interface TableConfig {
   readonly numOfDays: number;
   readonly dutiesPerDay: number;
   readonly workerCapacity: number;
+  readonly dutyDuration: number;
+  readonly firstDutyTime: number;
+  readonly month: number;
+  readonly year: number;
+  dutyOffTimeToOrdinary: number;
+  dutyPositionSize: number;
+  dutyMinDistance: number;
+  dutyCapacity: number;
+  currentPlace: string;
 }
 
 export interface DutyAndWorkerRelationship {
@@ -87,13 +95,20 @@ export class TableFactory {
         timeOffRule: true,
       },
       config: {
-        ...table.config,
         dutyCapacity: 3,
         dutiesPerDay: Math.floor(24 / table.config.dutyDuration),
         numOfDays: table.width,
         workerCapacity: Math.trunc(
           this.BASE_WORKER_CAPACITY / table.config.dutyPositionSize,
         ),
+        currentPlace: table.config.currentPlace,
+        dutyDuration: table.config.dutyDuration,
+        dutyMinDistance: table.config.dutyMinDistance,
+        dutyOffTimeToOrdinary: table.config.dutyOffTimeToOrdinary,
+        dutyPositionSize: table.config.dutyPositionSize,
+        firstDutyTime: table.config.firstDutyTime,
+        month: table.config.month.index,
+        year: table.config.month.year,
       },
       dutyAndWorkerRelationships: [],
     };

@@ -9,13 +9,12 @@ import { TableEditorController } from "../../state/controllers/editor/table";
 export function DutyTableGrid() {
   const modal = useDayEditionModal();
   const tableController = new TableEditorController();
-  const { table } = tableController;
 
   function openModal(dutyId: number) {
     modal.open({ dutyId });
   }
 
-  const firstMonday = table.config.month.getFirstMonday();
+  const firstMonday = tableController.getMonth().getFirstMonday();
   const firstSunday = (firstMonday + 7 - 1) % 7;
 
   return (

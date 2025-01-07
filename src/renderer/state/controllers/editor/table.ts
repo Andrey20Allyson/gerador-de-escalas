@@ -1,3 +1,4 @@
+import { Month } from "src/lib/structs";
 import {
   DateData,
   DutyData,
@@ -93,10 +94,14 @@ export class TableEditorController {
       .map((duty) => new DutyEditorController(duty.id, { table, dispatcher }));
   }
 
-  dayOfWeekFrom(day: number) {
-    const { month } = this.table.config;
+  getMonth(): Month {
+    const { year, month } = this.table.config;
 
-    const firstMonday = month.getFirstMonday();
+    return new Month(year, month);
+  }
+
+  dayOfWeekFrom(day: number) {
+    const firstMonday = this.getMonth().getFirstMonday();
 
     return dayOfWeekFrom(firstMonday, day);
   }

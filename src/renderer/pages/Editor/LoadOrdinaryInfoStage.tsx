@@ -71,8 +71,6 @@ export function LoadOrdinaryInfoStage() {
       return;
     }
 
-    console.log(tableEditorResult.data);
-
     editorLoader.load(tableEditorResult.data);
 
     stage.next();

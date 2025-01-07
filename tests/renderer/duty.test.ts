@@ -1,14 +1,14 @@
-import { expect, test } from "vitest";
 import {
   DutyData,
   TableData,
 } from "src/apploader/api/table-reactive-edition/table";
+import { ExtraEventName } from "src/lib/structs";
+import { DutySearcher } from "src/renderer/state/controllers/editor/searchers/duty";
 import {
   DispatcherType,
   TableEditorController,
 } from "src/renderer/state/controllers/editor/table";
-import { DutySearcher } from "src/renderer/state/controllers/editor/searchers/duty";
-import { ExtraEventName, Month } from "src/lib/structs";
+import { expect, test } from "vitest";
 
 function mockDuties(numOfDays: number, dutiesPerDay: number): DutyData[] {
   const duties: DutyData[] = [];
@@ -53,12 +53,13 @@ function mockTable(): TableData {
     config: {
       workerCapacity: 5,
       dutyCapacity: 3,
-      month: new Month(2023, 11),
+      month: 11,
+      year: 2023,
       numOfDays,
       dutyDuration: 12,
       dutyMinDistance: 4,
       // dutyInterval: 12,
-      extraEvents: {},
+      // extraEvents: {},
       currentPlace: ExtraEventName.JIQUIA,
       dutyOffTimeToOrdinary: 12,
       dutiesPerDay,

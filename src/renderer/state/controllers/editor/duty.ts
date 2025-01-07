@@ -13,6 +13,7 @@ import {
   currentTableFromRootSelector,
 } from "./table";
 import { DutyFormatter } from "../../formatters/editor/duty";
+import { Month } from "src/lib/structs";
 
 export interface IDutyEditor {
   remove(workerId: number): this;
@@ -124,10 +125,10 @@ export class DutyEditorController implements IDutyEditor {
   }
 
   dayOfWeek() {
-    const { month } = this.table.config;
+    const { year, month } = this.table.config;
     const { date: day } = this.duty;
 
-    const firstMonday = month.getFirstMonday();
+    const firstMonday = new Month(year, month).getFirstMonday();
 
     return dayOfWeekFrom(firstMonday, day.index);
   }
