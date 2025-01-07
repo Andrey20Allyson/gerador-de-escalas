@@ -6,7 +6,7 @@ import {
 } from "../../components/DayEditionModal/utils";
 import { DutyCard } from "../../components/DutyCard";
 import { useDutySelectModal } from "../../components/DutySelectModal";
-import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
+import { ColoredText } from "../../styles/WorkerEditionStage.styles";
 import { WorkerEditorController } from "../../state/controllers/editor/worker";
 import { sleep } from "../../utils";
 import { ElementList, IterProps } from "../../utils/react-iteration";

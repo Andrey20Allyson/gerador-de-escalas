@@ -11,7 +11,7 @@ import { HiUserRemove } from "react-icons/hi";
 import { AvaliableWorkers } from "../../components/AvaliableWorkers";
 import { useDutySelectModal } from "../../components/DutySelectModal";
 import { createModalContext } from "../../contexts/modal";
-import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
+import { ColoredText } from "../../styles/WorkerEditionStage.styles";
 import { DutyEditorController } from "../../state/controllers/editor/duty";
 import { DutySearcher } from "../../state/controllers/editor/searchers/duty";
 import { TableEditorController } from "../../state/controllers/editor/table";

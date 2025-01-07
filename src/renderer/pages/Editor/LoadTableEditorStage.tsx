@@ -1,8 +1,5 @@
 import React, { FormEvent } from "react";
-import {
-  StyledLinedBorder,
-  StyledLoaderForm,
-} from "../../pages/Generator/DataCollectStage.styles";
+import { StyledLinedBorder, StyledLoaderForm } from "./DataCollectStage.styles";
 import { AppError, DeserializationErrorCode, api } from "src/renderer/api";
 import { useStage } from "src/renderer/contexts/stages";
 import { useAppDispatch } from "src/renderer/hooks";

@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  StyledLinedBorder,
-  StyledLoaderForm,
-} from "../Generator/DataCollectStage.styles";
+import { StyledLinedBorder, StyledLoaderForm } from "./DataCollectStage.styles";
 import { useStage } from "src/renderer/contexts/stages";
 import { Month } from "src/lib/structs";
 import { useAppSelector } from "src/renderer/hooks";
@@ -37,15 +34,35 @@ export function LoadOrdinaryInfoStage() {
     return `${month.year}-${monthString}`;
   }
 
+  function parseMonthFromInput(text: string): [number, number] {
+    const [yearString, monthString] = text.split("-");
+
+    return [parseInt(yearString!), parseInt(monthString!)];
+  }
+
   async function onSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
 
     const data = new FormData(ev.currentTarget);
 
-    const month = data.get("month") as string;
+    const monthString = data.get("month") as string;
     const sheetName = data.get("sheet") as string;
 
-    console.log({ month, sheetName });
+    const [year, month] = parseMonthFromInput(monthString);
+
+    const result = await api.editor.loadOrdinary({
+      path,
+      year,
+      month,
+      sheetName,
+    });
+
+    if (result.ok === false) {
+      AppError.log(result.error);
+      return;
+    }
+
+    stage.next();
   }
 
   function gotoPrev(ev: React.MouseEvent<HTMLAnchorElement>) {

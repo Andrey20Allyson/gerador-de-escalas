@@ -12,7 +12,7 @@ import {
   graduationTextColorMap,
 } from "../../components/DayEditionModal/utils";
 import { useDutySelectModal } from "../../components/DutySelectModal";
-import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
+import { ColoredText } from "../../styles/WorkerEditionStage.styles";
 import { ElementList, IterProps } from "../../utils/react-iteration";
 import {
   StyledAvaliableWorkerBody,

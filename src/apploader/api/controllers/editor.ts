@@ -29,6 +29,7 @@ export interface LoadOrdinaryPayload {
   path: string;
   month: number;
   year: number;
+  sheetName?: string;
 }
 
 export class EditorHandler implements IpcMappingFactory {
@@ -93,6 +94,7 @@ export class EditorHandler implements IpcMappingFactory {
 
     const deserializer = new OrdinaryDeserializer({
       month: new Month(payload.year, payload.month),
+      sheetName: payload.sheetName,
       workerRegistryRepository: this.getWorkerRegistryRepository(),
     });
 

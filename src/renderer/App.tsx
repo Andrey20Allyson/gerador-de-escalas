@@ -71,7 +71,6 @@ export default function App() {
     <Providers>
       <AppBody>
         <TopNav>
-          {/* <StyledNavButton selected={route === 'Generator'} onClick={() => navigate('Generator')}>Gerador</StyledNavButton> */}
           <StyledNavButton
             selected={route === "Editor"}
             onClick={() => navigate("Editor")}
