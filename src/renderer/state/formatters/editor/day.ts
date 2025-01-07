@@ -15,7 +15,7 @@ export class DateFormatter {
     const formattedDay = (day + 1).toString().padStart(2, "0");
     const formattedMonth = (month + 1).toString().padStart(2, "0");
 
-    if (month !== this.table.config.month) {
+    if (month !== this.table.config.month.index) {
       return `Dia ${formattedDay}/${formattedMonth}`;
     }
 

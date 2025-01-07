@@ -94,9 +94,9 @@ export class TableEditorController {
   }
 
   dayOfWeekFrom(day: number) {
-    const { year, month } = this.table.config;
+    const { month } = this.table.config;
 
-    const firstMonday = firstMondayFromYearAndMonth(year, month);
+    const firstMonday = month.getFirstMonday();
 
     return dayOfWeekFrom(firstMonday, day);
   }

@@ -124,10 +124,10 @@ export class DutyEditorController implements IDutyEditor {
   }
 
   dayOfWeek() {
-    const { year, month } = this.table.config;
+    const { month } = this.table.config;
     const { date: day } = this.duty;
 
-    const firstMonday = firstMondayFromYearAndMonth(year, month);
+    const firstMonday = month.getFirstMonday();
 
     return dayOfWeekFrom(firstMonday, day.index);
   }

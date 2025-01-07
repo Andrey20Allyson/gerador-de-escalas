@@ -50,10 +50,7 @@ module.exports = {
   ],
   hooks: {
     prePackage: async () => {
-      const buildPromise = exec("npm run build");
-      const bundlePromise = exec("npm run prod:bundle").catch((e) => String(e));
-
-      await Promise.all([buildPromise, bundlePromise]);
+      await exec("npm run build:prod").catch((e) => console.error(e));
     },
   },
 };

@@ -6,7 +6,7 @@ const factory = new IpcInvokerProxyFactory((path, ...args) => {
 });
 
 export const api = factory.create<APIHandler>();
-export const { editor, generator } = api;
+export const { editor } = api;
 
 export * from "../apploader/api/mapping/response";
 export * from "../apploader/api/mapping/error";
