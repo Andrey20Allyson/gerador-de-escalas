@@ -11,14 +11,20 @@ export function WorkerList() {
   const workerControllers = WorkerEditorController.all();
   const [search, setSearch] = useState<string>();
 
-  const workers = workerControllers.map(controller => controller.worker);
+  const workers = workerControllers.map((controller) => controller.worker);
 
   const sortedWorkers = useMemo(() => {
-    return Array.from(workers).sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1)
+    return Array.from(workers).sort((a, b) =>
+      a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1,
+    );
   }, [workers]);
   const modal = useDayEditionModal();
 
-  const filteredWorkers = search ? sortedWorkers.filter(worker => worker.name.toUpperCase().includes(search.toUpperCase())) : workers;
+  const filteredWorkers = search
+    ? sortedWorkers.filter((worker) =>
+        worker.name.toUpperCase().includes(search.toUpperCase()),
+      )
+    : workers;
 
   function handleOpenModal(dutyId: number) {
     modal.open({ dutyId });
@@ -32,13 +38,21 @@ export function WorkerList() {
 
   return (
     <StyledWorkerList>
-      <section className='search'>
-        <BiSearch/>
-        <input type="text" placeholder='pesquisar' onChange={handleChangeSearch} />
+      <section className="search">
+        <BiSearch />
+        <input
+          type="text"
+          placeholder="pesquisar"
+          onChange={handleChangeSearch}
+        />
       </section>
-      <section className='scroll-box'>
-        <span className='scrolable'>
-          <ElementList communProps={{ onOpenModal: handleOpenModal }} Component={WorkerEditionCard} iter={filteredWorkers.map(worker => worker.id)} />
+      <section className="scroll-box">
+        <span className="scrolable">
+          <ElementList
+            communProps={{ onOpenModal: handleOpenModal }}
+            Component={WorkerEditionCard}
+            iter={filteredWorkers.map((worker) => worker.id)}
+          />
         </span>
       </section>
     </StyledWorkerList>
@@ -53,14 +67,14 @@ export const StyledWorkerList = styled.section`
   justify-content: space-between;
   padding: 1rem 2rem;
   box-sizing: border-box;
-  gap: .8rem;
-  
-  &>.search {
+  gap: 0.8rem;
+
+  & > .search {
     display: flex;
-    gap: .4rem;
-    padding: .4rem;
+    gap: 0.4rem;
+    padding: 0.4rem;
     align-items: center;
-    border-radius: .2rem;
+    border-radius: 0.2rem;
 
     &:hover {
       background-color: #fff4;
@@ -70,28 +84,28 @@ export const StyledWorkerList = styled.section`
       background-color: #fff5;
     }
 
-    &>input {
+    & > input {
       width: 100%;
       border: none;
-      
+
       &:focus {
         box-shadow: none;
       }
     }
 
-    &>svg {
+    & > svg {
       font-size: 1rem;
     }
   }
 
-  &>.scroll-box {
+  & > .scroll-box {
     position: relative;
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: stretch;
-  
-    &>.scrolable {
+
+    & > .scrolable {
       position: absolute;
       height: inherit;
       width: inherit;
@@ -102,27 +116,27 @@ export const StyledWorkerList = styled.section`
       box-sizing: border-box;
       overflow-x: hidden;
       padding: 0 1.5rem;
-      gap: .4rem;
+      gap: 0.4rem;
 
       &::after {
         content: " ";
-        height: .3rem;
+        height: 0.3rem;
       }
-  
+
       &::-webkit-scrollbar {
         width: 10px;
       }
-  
+
       &::-webkit-scrollbar-thumb {
         background-color: #f3f3f345;
         border-radius: 4px;
         width: 8px;
       }
-  
+
       &:hover::-webkit-scrollbar-thumb {
         background-color: #ececec78;
       }
-  
+
       &::-webkit-scrollbar-track {
         background-color: #d1d1d1ab;
         border-radius: 4px;

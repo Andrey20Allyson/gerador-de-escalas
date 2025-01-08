@@ -8,7 +8,7 @@ export interface ButtonProps extends PropsWithChildren {
 
 export function Button(props: ButtonProps) {
   const controller = useFormController();
-  
+
   return (
     <StyledButton onClick={() => props.onClick?.(controller)}>
       {props.children}
@@ -20,15 +20,15 @@ export const StyledButton = styled.button`
   border: 1px solid #0003;
   cursor: pointer;
   font-size: 1rem;
-  padding: .3rem .7rem;
+  padding: 0.3rem 0.7rem;
   transition: all 300ms;
   display: flex;
-  gap: .3rem;
+  gap: 0.3rem;
   align-items: center;
 
   &:hover {
     background-color: #fafafa;
-    box-shadow: 0 .2rem .3rem #0003;
+    box-shadow: 0 0.2rem 0.3rem #0003;
   }
 
   &:active {

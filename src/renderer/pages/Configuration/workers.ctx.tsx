@@ -1,8 +1,13 @@
-import { AppError } from "../../../app/api/mapping/error";
-import { WorkerRegistry } from "../../../app/auto-schedule/persistence/entities/worker-registry";
+import { AppError } from "../../../apploader/api/mapping/error";
+import { WorkerRegistry } from "src/lib/persistence/entities/worker-registry";
 import { api } from "../../api";
 import { AtonHook } from "../../utils/state";
-import React, { PropsWithChildren, createContext, useContext, useEffect } from "react";
+import React, {
+  PropsWithChildren,
+  createContext,
+  useContext,
+  useEffect,
+} from "react";
 
 class WorkerRegistriesService {
   private _registries = new AtonHook<WorkerRegistry[]>([]);
@@ -44,33 +49,26 @@ class WorkerRegistriesService {
     this._load();
   }
 
-  filter() {
+  filter() {}
 
-  }
-
-  loadMore(amount: number) {
-
-  }
-} 
+  loadMore(amount: number) {}
+}
 
 const context = createContext<WorkerRegistriesService | null>(null);
 
 export function WorkerRegistriesProvider(props: PropsWithChildren) {
-  const {
-    children,
-  } = props;
-  
+  const { children } = props;
+
   const service = new WorkerRegistriesService();
 
-  return (
-    <context.Provider value={service}>
-      {children}
-    </context.Provider>
-  );
+  return <context.Provider value={service}>{children}</context.Provider>;
 }
 
 export function useWorkerRegistriesService(): WorkerRegistriesService {
   const ctx = useContext(context);
-  if (ctx === null) throw new Error(`Can't use WorkerRegistriesService outside a WorkerRegistriesProvider`);
+  if (ctx === null)
+    throw new Error(
+      `Can't use WorkerRegistriesService outside a WorkerRegistriesProvider`,
+    );
   return ctx;
 }

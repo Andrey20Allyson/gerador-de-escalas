@@ -1,47 +1,55 @@
 {
-	"React Component": {
-		"prefix": "sfrc",
-		"body": [
-			"export interface ${1:Component}Props { }",
-			"",
-			"export function ${1:Component}(props: ${1:Component}Props) {",
-			"\treturn (",
-			"\t\t<Styled${1:Component}>\n\t\t\t$0\n\t\t</Styled${1:Component}>",
-			"\t);",
-			"}",
-			"",
-			"export const Styled${1:Component} = styled.${2:div}`",
-			"\t",
-			"`;"
-		]
-	},
-	"Import React": {
-		"prefix": "ir",
-		"body": [
-			"import React from 'react';"
-		]
-	},
-	"Import Styled Components And React": {
-		"prefix": "isr",
-		"body": [
-			"import React from 'react';",
-			"import styled from 'styled-components';"
-		]
-	},
-	"Default React Component": {
-		"prefix": "sdfrc",
-		"body": [
-			"export interface ${1:Component}Props { }",
-			"",
-			"export default function ${1:Component}(props: ${1:Component}Props) {",
-			"\treturn (",
-			"\t\t<Styled${1:Component}>\n\t\t\t$0\n\t\t</Styled${1:Component}>",
-			"\t);",
-			"}",
-			"",
-			"export const Styled${1:Component} = styled.${2:div}`",
-			"\t",
-			"`;"
-		]
-	}
+  "React Component": {
+    "prefix": "sfrc",
+    "body": [
+      "export interface ${1:Component}Props { }",
+      "",
+      "export function ${1:Component}(props: ${1:Component}Props) {",
+      "\treturn (",
+      "\t\t<Styled${1:Component}>\n\t\t\t$0\n\t\t</Styled${1:Component}>",
+      "\t);",
+      "}",
+      "",
+      "export const Styled${1:Component} = styled.${2:div}`",
+      "\t",
+      "`;",
+    ],
+  },
+  "Import React": {
+    "prefix": "ir",
+    "body": ["import React from 'react';"],
+  },
+  "Import Styled Components And React": {
+    "prefix": "isr",
+    "body": [
+      "import React from 'react';",
+      "import styled from 'styled-components';",
+    ],
+  },
+  "Default React Component": {
+    "prefix": "sdfrc",
+    "body": [
+      "export interface ${1:Component}Props { }",
+      "",
+      "export default function ${1:Component}(props: ${1:Component}Props) {",
+      "\treturn (",
+      "\t\t<Styled${1:Component}>\n\t\t\t$0\n\t\t</Styled${1:Component}>",
+      "\t);",
+      "}",
+      "",
+      "export const Styled${1:Component} = styled.${2:div}`",
+      "\t",
+      "`;",
+    ],
+  },
+
+  "Make UUID": {
+    "prefix": "mkid",
+    "body": ["\"$UUID\""],
+  },
+
+  "Relative Filepath": {
+    "prefix": "rfp",
+    "body": ["\"${RELATIVE_FILEPATH/[\\\\]/\\//g}\""],
+  },
 }

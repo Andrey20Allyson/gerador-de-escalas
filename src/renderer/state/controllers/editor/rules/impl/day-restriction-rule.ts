@@ -6,20 +6,24 @@ import { EditorRule } from "../rule";
 enum DayRestriction {
   NONE = 1,
   ORDINARY_WORK = 2,
-  LICENCE = 3
+  LICENCE = 3,
 }
 
 const HOURS_PER_DAY = 24;
 
 export class DayRestrictionRule extends EditorRule {
   constructor() {
-    super('day-restriction-rule');
+    super("day-restriction-rule");
   }
 
-  private dutyCollidesWithNextDayLicence(workerController: WorkerEditorController, dutyController: DutyEditorController): boolean {
+  private dutyCollidesWithNextDayLicence(
+    workerController: WorkerEditorController,
+    dutyController: DutyEditorController,
+  ): boolean {
     const { worker } = workerController;
     const { date: day } = dutyController.duty;
-    const nextDayRestriction = worker.restrictions.at(day.index + 1) ?? DayRestriction.NONE;
+    const nextDayRestriction =
+      worker.restrictions.at(day.index + 1) ?? DayRestriction.NONE;
 
     if (nextDayRestriction === DayRestriction.LICENCE) {
       const dutyEnd = dutyController.endsAt();
@@ -30,13 +34,16 @@ export class DayRestrictionRule extends EditorRule {
     return false;
   }
 
-  private isDailyWorkerAtFridayNight(workerController: WorkerEditorController, dutyController: DutyEditorController): boolean {
+  private isDailyWorkerAtFridayNight(
+    workerController: WorkerEditorController,
+    dutyController: DutyEditorController,
+  ): boolean {
     const { worker } = workerController;
 
     if (
-      worker.ordinary.isDailyWorker
-      && dutyController.dayOfWeek() === DayOfWeek.FRIDAY
-      && dutyController.startsAt() >= 18
+      worker.ordinary.isDailyWorker &&
+      dutyController.dayOfWeek() === DayOfWeek.FRIDAY &&
+      dutyController.startsAt() >= 18
     ) {
       return true;
     }
@@ -44,18 +51,26 @@ export class DayRestrictionRule extends EditorRule {
     return false;
   }
 
-  private testThisDayRestriction(workerController: WorkerEditorController, dutyController: DutyEditorController): boolean {
+  private testThisDayRestriction(
+    workerController: WorkerEditorController,
+    dutyController: DutyEditorController,
+  ): boolean {
     const { worker } = workerController;
     const { date: day } = dutyController.duty;
-    const restriction = worker.restrictions.at(day.index) ?? DayRestriction.NONE;
+    const restriction =
+      worker.restrictions.at(day.index) ?? DayRestriction.NONE;
 
     return restriction === DayRestriction.NONE;
   }
 
-  private testNextDayRestriction(workerController: WorkerEditorController, dutyController: DutyEditorController): boolean {
+  private testNextDayRestriction(
+    workerController: WorkerEditorController,
+    dutyController: DutyEditorController,
+  ): boolean {
     const { worker } = workerController;
     const { date: day } = dutyController.duty;
-    const restriction = worker.restrictions.at(day.index + 1) ?? DayRestriction.NONE;
+    const restriction =
+      worker.restrictions.at(day.index + 1) ?? DayRestriction.NONE;
 
     if (restriction === DayRestriction.ORDINARY_WORK) {
       const dutyTimeOffEnd = dutyController.timeOffEnd();
@@ -67,10 +82,14 @@ export class DayRestrictionRule extends EditorRule {
     return true;
   }
 
-  private testPrevDayRestriction(workerController: WorkerEditorController, dutyController: DutyEditorController): boolean {
+  private testPrevDayRestriction(
+    workerController: WorkerEditorController,
+    dutyController: DutyEditorController,
+  ): boolean {
     const { worker } = workerController;
     const { date: day } = dutyController.duty;
-    const restriction = worker.restrictions.at(day.index - 1) ?? DayRestriction.NONE;
+    const restriction =
+      worker.restrictions.at(day.index - 1) ?? DayRestriction.NONE;
 
     if (restriction === DayRestriction.ORDINARY_WORK) {
       const ordinaryTimeOffEnd = worker.ordinary.timeOffEnd;
@@ -82,13 +101,20 @@ export class DayRestrictionRule extends EditorRule {
     return true;
   }
 
-  protected onTest(workerController: WorkerEditorController, dutyController: DutyEditorController): boolean {
-    if (this.dutyCollidesWithNextDayLicence(workerController, dutyController)) return false;
+  protected onTest(
+    workerController: WorkerEditorController,
+    dutyController: DutyEditorController,
+  ): boolean {
+    if (this.dutyCollidesWithNextDayLicence(workerController, dutyController))
+      return false;
 
-    if (this.isDailyWorkerAtFridayNight(workerController, dutyController)) return true;
+    if (this.isDailyWorkerAtFridayNight(workerController, dutyController))
+      return true;
 
-    return this.testThisDayRestriction(workerController, dutyController)
-      && this.testNextDayRestriction(workerController, dutyController)
-      && this.testPrevDayRestriction(workerController, dutyController);
+    return (
+      this.testThisDayRestriction(workerController, dutyController) &&
+      this.testNextDayRestriction(workerController, dutyController) &&
+      this.testPrevDayRestriction(workerController, dutyController)
+    );
   }
 }

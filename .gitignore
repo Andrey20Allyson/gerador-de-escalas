@@ -6,6 +6,7 @@
 /public/*
 /.cache/
 /.env
+~$*.xlsx
 
 !README.md
 !/public/assets

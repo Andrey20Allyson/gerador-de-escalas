@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 export function RegistrySearch() {
   return (
@@ -9,6 +9,4 @@ export function RegistrySearch() {
   );
 }
 
-export const StyledRegistrySearch = styled.section`
-
-`;
+export const StyledRegistrySearch = styled.section``;

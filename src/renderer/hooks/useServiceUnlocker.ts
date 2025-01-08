@@ -13,12 +13,11 @@ export function useServiceUnlocker() {
   }
 
   useEffect(() => {
-    isServicesLocked()
-      .then(isLocked => {
-        if (isLocked) return;
+    isServicesLocked().then((isLocked) => {
+      if (isLocked) return;
 
-        setLocked(false);
-      });
+      setLocked(false);
+    });
   }, []);
 
   async function unlock(password: string) {
@@ -30,7 +29,7 @@ export function useServiceUnlocker() {
 
     const isLocked = await isServicesLocked();
     if (isLocked) {
-      alert('Services still locked!');
+      alert("Services still locked!");
       return;
     }
 

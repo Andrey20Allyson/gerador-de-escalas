@@ -1,12 +1,10 @@
-import * as fs from 'node:fs/promises';
-import * as _path from 'node:path';
+import * as fs from "node:fs/promises";
+import * as _path from "node:path";
 
 class LinesOfCode {
   lines: number;
 
-  constructor(
-    readonly extention: string,
-  ) {
+  constructor(readonly extention: string) {
     this.lines = 0;
   }
 
@@ -14,7 +12,7 @@ class LinesOfCode {
     this.lines++;
 
     for (const char of buffer) {
-      if (char === '\n') this.lines++;
+      if (char === "\n") this.lines++;
     }
   }
 }
@@ -54,7 +52,7 @@ class LinesOfCodeMap {
   }
 
   async add(file: string) {
-    const buffer = await fs.readFile(file, { encoding: 'utf-8' });
+    const buffer = await fs.readFile(file, { encoding: "utf-8" });
     const extention = LinesOfCodeMap.extentionFrom(file);
 
     this.get(extention).add(buffer);
@@ -62,7 +60,7 @@ class LinesOfCodeMap {
 
   static extentionFrom(file: string) {
     const extention = _path.extname(file);
-    if (extention.length === 0) return 'unknow';
+    if (extention.length === 0) return "unknow";
 
     return extention;
   }
@@ -88,7 +86,8 @@ class DirectoryScanner<R = string> {
     const pathStat = await fs.stat(fullPath);
 
     if (pathStat.isFile()) {
-      const result = await this.callback?.(fullPath) ?? fullPath as Awaited<R>;
+      const result =
+        (await this.callback?.(fullPath)) ?? (fullPath as Awaited<R>);
 
       this.results.push(result);
 
@@ -101,7 +100,7 @@ class DirectoryScanner<R = string> {
   private async scanDir(dir: string) {
     const paths = await fs.readdir(dir);
 
-    const promises = paths.map(path => this.insertFilesInStack(dir, path));
+    const promises = paths.map((path) => this.insertFilesInStack(dir, path));
 
     await Promise.all(promises);
   }
@@ -109,9 +108,9 @@ class DirectoryScanner<R = string> {
 
 async function main() {
   const linesOfCodeMap = new LinesOfCodeMap();
-  const scanner = new DirectoryScanner(file => linesOfCodeMap.add(file));
+  const scanner = new DirectoryScanner((file) => linesOfCodeMap.add(file));
 
-  await scanner.scan(process.argv.at(2) ?? '.');
+  await scanner.scan(process.argv.at(2) ?? ".");
 
   for (const { extention, lines } of linesOfCodeMap.iter()) {
     console.log(`${extention}: ${lines}`);

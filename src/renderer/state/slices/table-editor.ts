@@ -1,7 +1,12 @@
-import { DutyAndWorkerRelationship, IdGenerator, TableData, TableFactory } from "../../../app/api/table-reactive-edition/table";
-import { createSlice, PayloadAction, } from "@reduxjs/toolkit";
+import {
+  DutyAndWorkerRelationship,
+  IdGenerator,
+  TableData,
+  TableFactory,
+} from "../../../apploader/api/table-reactive-edition/table";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
-import { WorkerInsertionRulesState } from "../../../app/api/table-edition";
+import { WorkerInsertionRulesState } from "../../../apploader/api/table-edition";
 
 export interface TableEditorState {
   history: TableData[];
@@ -40,9 +45,9 @@ const HISTORY_CAPACITY = 256;
 export function pushToHistory(state: TableEditorState, newData: TableData) {
   state.history = [
     newData,
-    ...state.undoIndex === 0
+    ...(state.undoIndex === 0
       ? state.history
-      : state.history.slice(state.undoIndex),
+      : state.history.slice(state.undoIndex)),
   ].slice(0, HISTORY_CAPACITY);
 
   state.undoIndex = 0;
@@ -51,7 +56,7 @@ export function pushToHistory(state: TableEditorState, newData: TableData) {
 }
 
 export const tableEditorSlice = createSlice({
-  name: 'table-editor',
+  name: "table-editor",
   initialState,
   reducers: {
     clear() {
@@ -68,34 +73,41 @@ export const tableEditorSlice = createSlice({
       const idGenerator = new IdGenerator(current.idCounters);
       const tableFactory = new TableFactory(idGenerator);
 
-      const newRelationship = tableFactory
-        .createDutyAndWorkerRelationship(
-          action.payload.workerId,
-          action.payload.dutyId
-        );
+      const newRelationship = tableFactory.createDutyAndWorkerRelationship(
+        action.payload.workerId,
+        action.payload.dutyId,
+      );
 
       const newData: TableData = {
         ...current,
         dutyAndWorkerRelationships: [
           ...current.dutyAndWorkerRelationships,
           newRelationship,
-        ]
+        ],
       };
 
       pushToHistory(state as TableEditorState, newData);
     },
-    removeRelationship(state, action: PayloadAction<RemoveRelationshipPayload>) {
+    removeRelationship(
+      state,
+      action: PayloadAction<RemoveRelationshipPayload>,
+    ) {
       const current = currentTableSelector(state as TableEditorState);
       if (current === null) return;
 
       const newData: TableData = {
         ...current,
-        dutyAndWorkerRelationships: current.dutyAndWorkerRelationships.filter(relationship => relationship.id !== action.payload.id)
-      }
+        dutyAndWorkerRelationships: current.dutyAndWorkerRelationships.filter(
+          (relationship) => relationship.id !== action.payload.id,
+        ),
+      };
 
       pushToHistory(state as TableEditorState, newData);
     },
-    removeRelationships(state, action: PayloadAction<RemoveRelationshipsPayload>) {
+    removeRelationships(
+      state,
+      action: PayloadAction<RemoveRelationshipsPayload>,
+    ) {
       const current = currentTableSelector(state as TableEditorState);
       if (current === null) return;
 
@@ -103,7 +115,9 @@ export const tableEditorSlice = createSlice({
 
       const newData: TableData = {
         ...current,
-        dutyAndWorkerRelationships: current.dutyAndWorkerRelationships.filter(relationship => !ids.includes(relationship.id)),
+        dutyAndWorkerRelationships: current.dutyAndWorkerRelationships.filter(
+          (relationship) => !ids.includes(relationship.id),
+        ),
       };
 
       pushToHistory(state as TableEditorState, newData);
@@ -122,10 +136,10 @@ export const tableEditorSlice = createSlice({
 
       if (state.undoIndex >= lastIndex) {
         state.undoIndex = lastIndex;
-      
+
         return;
       }
-      
+
       state.undoIndex++;
     },
     redo(state) {
@@ -136,8 +150,8 @@ export const tableEditorSlice = createSlice({
       }
 
       state.undoIndex--;
-    }
-  }
+    },
+  },
 });
 
 export const editorActions = tableEditorSlice.actions;
@@ -148,28 +162,42 @@ export function tableEditorSelector(state: RootState): TableEditorState {
   return state.tableEditor;
 }
 
-export function currentTableSelector(state: TableEditorState): TableData | null {
+export function currentTableSelector(
+  state: TableEditorState,
+): TableData | null {
   return state.history.at(state.undoIndex) ?? null;
 }
 
-export function relationshipsSelector(state: RootState): DutyAndWorkerRelationship[] {
+export function relationshipsSelector(
+  state: RootState,
+): DutyAndWorkerRelationship[] {
   const current = currentTableSelector(tableEditorSelector(state));
   if (current === null) throw new Error(`Table editor has't initialized yet!`);
 
   return current.dutyAndWorkerRelationships;
 }
 
-export function relationshipSelector(id: number): StateSelector<RootState, DutyAndWorkerRelationship | undefined> {
-  return state => relationshipsSelector(state)
-    .find((relationship) => relationship.id === id);
+export function relationshipSelector(
+  id: number,
+): StateSelector<RootState, DutyAndWorkerRelationship | undefined> {
+  return (state) =>
+    relationshipsSelector(state).find((relationship) => relationship.id === id);
 }
 
-export function dutyRelationshipsSelector(dutyId: number): StateSelector<RootState, DutyAndWorkerRelationship[]> {
-  return state => relationshipsSelector(state)
-    .filter(relationship => relationship.dutyId === dutyId);
+export function dutyRelationshipsSelector(
+  dutyId: number,
+): StateSelector<RootState, DutyAndWorkerRelationship[]> {
+  return (state) =>
+    relationshipsSelector(state).filter(
+      (relationship) => relationship.dutyId === dutyId,
+    );
 }
 
-export function workerRelationship(workerId: number): StateSelector<RootState, DutyAndWorkerRelationship[]> {
-  return state => relationshipsSelector(state)
-    .filter(relationship => relationship.workerId === workerId);
+export function workerRelationship(
+  workerId: number,
+): StateSelector<RootState, DutyAndWorkerRelationship[]> {
+  return (state) =>
+    relationshipsSelector(state).filter(
+      (relationship) => relationship.workerId === workerId,
+    );
 }

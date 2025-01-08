@@ -1,11 +1,17 @@
-import React, { createContext, useContext, useState, PropsWithChildren, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  PropsWithChildren,
+  useEffect,
+} from "react";
 import { LoadBar } from "../components/LoadBar";
 
 export type StageComponent = () => React.JSX.Element;
 
 export interface StageController {
   stages: StageComponent[];
-  index: number,
+  index: number;
 
   setStages(stages: StageComponent[]): void;
   navigate(stage: number): void;
@@ -17,7 +23,8 @@ const stageContext = createContext<StageController | null>(null);
 
 export function useStage() {
   const controller = useContext(stageContext);
-  if (controller === null) throw new Error(`'useStages' must be inside a StageProvider`);
+  if (controller === null)
+    throw new Error(`'useStages' must be inside a StageProvider`);
 
   return controller;
 }
@@ -60,10 +67,10 @@ export function StageProvider(props: PropsWithChildren) {
   const controller = useStageControllerCreator();
 
   return (
-    <stageContext.Provider value={controller} >
+    <stageContext.Provider value={controller}>
       {props.children}
     </stageContext.Provider>
-  )
+  );
 }
 
 export interface StageRouterProps {
@@ -79,11 +86,11 @@ export function StageRouter(props: StageRouterProps) {
 
   const Stage = stages.at(index) ?? (() => undefined);
 
-  return <Stage />
+  return <Stage />;
 }
 
 export function StageLoadBar() {
   const { stages, index } = useStage();
 
-  return <LoadBar steps={stages.length - 1} actual={index} />
+  return <LoadBar steps={stages.length - 1} actual={index} />;
 }

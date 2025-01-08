@@ -1,11 +1,15 @@
 import { Result } from "./utils";
-import { ValueParser } from './value-parser';
+import { ValueParser } from "./value-parser";
 
 export type BooleanParserEMM = {
   INVALID_TYPE: string;
 };
 
-export class BooleanParser extends ValueParser<unknown, boolean, BooleanParserEMM> {
+export class BooleanParser extends ValueParser<
+  unknown,
+  boolean,
+  BooleanParserEMM
+> {
   parse(value: unknown): Result<boolean> {
     switch (typeof value) {
       case "boolean":
@@ -18,7 +22,7 @@ export class BooleanParser extends ValueParser<unknown, boolean, BooleanParserEM
       case "undefined":
       case "object":
       case "function":
-        return this.error('INVALID_TYPE', typeof value);
+        return this.error("INVALID_TYPE", typeof value);
     }
   }
 }

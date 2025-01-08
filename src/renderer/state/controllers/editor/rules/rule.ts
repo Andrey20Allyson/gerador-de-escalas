@@ -4,17 +4,21 @@ import { WorkerEditorController } from "../worker";
 export abstract class EditorRule {
   private enabled = true;
 
-  constructor(
-    private name: string,
-  ) { }
+  constructor(private name: string) {}
 
-  test(workerController: WorkerEditorController, dutyController: DutyEditorController): boolean {
+  test(
+    workerController: WorkerEditorController,
+    dutyController: DutyEditorController,
+  ): boolean {
     if (!this.isEnabled()) return true;
 
     return this.onTest(workerController, dutyController);
   }
 
-  protected abstract onTest(workerController: WorkerEditorController, dutyController: DutyEditorController): boolean
+  protected abstract onTest(
+    workerController: WorkerEditorController,
+    dutyController: DutyEditorController,
+  ): boolean;
 
   enable(): void {
     this.enabled = true;

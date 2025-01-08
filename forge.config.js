@@ -1,14 +1,14 @@
 // @ts-check
-const cp = require('child_process');
+const cp = require("child_process");
 
 const baseConfig = {
-  authors: 'Andrey Allyson',
-  description: 'None',
-}
+  authors: "Andrey Allyson",
+  description: "None",
+};
 
 /**
- * 
- * @param {string} command 
+ *
+ * @param {string} command
  * @returns {Promise<string>}
  */
 function exec(command) {
@@ -25,35 +25,32 @@ function exec(command) {
 /**@type {import('@electron-forge/shared-types').ForgeConfig} */
 module.exports = {
   packagerConfig: {
-    name: 'Gerador de Escalas',
-    icon: 'public/assets/icon/favicon.ico',
+    name: "Gerador de Escalas",
+    icon: "public/assets/icon/favicon.ico",
   },
   rebuildConfig: {},
   makers: [
     {
-      name: '@electron-forge/maker-squirrel',
+      name: "@electron-forge/maker-squirrel",
       config: baseConfig,
     },
     {
-      name: '@electron-forge/maker-zip',
-      platforms: ['darwin'],
+      name: "@electron-forge/maker-zip",
+      platforms: ["darwin"],
       config: baseConfig,
     },
     {
-      name: '@electron-forge/maker-deb',
+      name: "@electron-forge/maker-deb",
       config: baseConfig,
     },
     {
-      name: '@electron-forge/maker-rpm',
+      name: "@electron-forge/maker-rpm",
       config: baseConfig,
     },
   ],
   hooks: {
     prePackage: async () => {
-      const buildPromise = exec('npm run build');
-      const bundlePromise = exec('npm run prod:bundle').catch(e => String(e));
-
-      await Promise.all([buildPromise, bundlePromise]);
-    }
-  }
+      await exec("npm run build:prod").catch((e) => console.error(e));
+    },
+  },
 };

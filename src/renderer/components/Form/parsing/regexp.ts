@@ -5,8 +5,15 @@ export type RegExpParserErrorMessageMap = {
   INCOMPATIBLE_STRING: string;
 };
 
-export class RegExpParser extends ValueParser<string, string, RegExpParserErrorMessageMap> {
-  constructor(readonly regexp: RegExp, errorMessageMap: RegExpParserErrorMessageMap) {
+export class RegExpParser extends ValueParser<
+  string,
+  string,
+  RegExpParserErrorMessageMap
+> {
+  constructor(
+    readonly regexp: RegExp,
+    errorMessageMap: RegExpParserErrorMessageMap,
+  ) {
     super(errorMessageMap);
   }
 
@@ -15,6 +22,6 @@ export class RegExpParser extends ValueParser<string, string, RegExpParserErrorM
 
     return matches
       ? this.ok(value)
-      : this.error('INCOMPATIBLE_STRING', value, this.regexp.source);
+      : this.error("INCOMPATIBLE_STRING", value, this.regexp.source);
   }
 }

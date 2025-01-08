@@ -4,10 +4,16 @@ import { EditorRule } from "../rule";
 
 export class WorkerCapacityRule extends EditorRule {
   constructor() {
-    super('worker-capacity-rule');
+    super("worker-capacity-rule");
   }
-  
-  protected onTest(workerController: WorkerEditorController, _: DutyEditorController): boolean {
-    return workerController.dutyQuantity() < workerController.table.config.workerCapacity;
+
+  protected onTest(
+    workerController: WorkerEditorController,
+    _: DutyEditorController,
+  ): boolean {
+    return (
+      workerController.dutyQuantity() <
+      workerController.table.config.workerCapacity
+    );
   }
 }

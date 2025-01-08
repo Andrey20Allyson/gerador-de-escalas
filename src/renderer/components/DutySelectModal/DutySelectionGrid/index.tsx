@@ -1,14 +1,14 @@
-import React from 'react';
-import { BsPeopleFill } from 'react-icons/bs';
-import styled from 'styled-components';
-import { OnDutySelect } from '../../../components/DutyTableGrid/utils';
-import { DutySearcher } from '../../../state/controllers/editor/searchers/duty';
-import { TableEditorController } from '../../../state/controllers/editor/table';
-import { WorkerEditorController } from '../../../state/controllers/editor/worker';
-import { getWeekDayLabel } from '../../../utils';
-import { ElementList, IterProps } from '../../../utils/react-iteration';
-import { EditorRulesService as EditorRuleService } from '../../../state/controllers/editor/rules';
-import { DateData } from '../../../../app/api/table-reactive-edition/table';
+import React from "react";
+import { BsPeopleFill } from "react-icons/bs";
+import styled from "styled-components";
+import { OnDutySelect } from "../../../components/DutyTableGrid/utils";
+import { DutySearcher } from "../../../state/controllers/editor/searchers/duty";
+import { TableEditorController } from "../../../state/controllers/editor/table";
+import { WorkerEditorController } from "../../../state/controllers/editor/worker";
+import { getWeekDayLabel } from "../../../utils";
+import { ElementList, IterProps } from "../../../utils/react-iteration";
+import { EditorRulesService as EditorRuleService } from "../../../state/controllers/editor/rules";
+import { DateData } from "../../../../apploader/api/table-reactive-edition/table";
 
 export interface DutySelectionGridProps {
   workerId: number;
@@ -22,7 +22,11 @@ export function DutySelectionGrid(props: DutySelectionGridProps) {
 
   return (
     <StyledDutySelectionGrid>
-      <ElementList Component={DayCard} communProps={{ onDutySelected, workerId }} iter={tableController.iterDays()} />
+      <ElementList
+        Component={DayCard}
+        communProps={{ onDutySelected, workerId }}
+        iter={tableController.iterDays()}
+      />
     </StyledDutySelectionGrid>
   );
 }
@@ -31,8 +35,8 @@ const StyledDutySelectionGrid = styled.section`
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   height: min-content;
-  gap: .4rem;
-  padding: .5rem;
+  gap: 0.4rem;
+  padding: 0.5rem;
 `;
 
 export interface DayCardProps {
@@ -51,8 +55,12 @@ export function DayCard(props: IterProps<DateData, DayCardProps>) {
   return (
     <StyledDayCard>
       Dia {date.day + 1} - {weekDayLabel}
-      <span className='duty-row'>
-        <ElementList Component={DutySelectButton} communProps={{ onDutySelected, workerId, date: date }} iter={tableController.iterDutyIndexes()} />
+      <span className="duty-row">
+        <ElementList
+          Component={DutySelectButton}
+          communProps={{ onDutySelected, workerId, date: date }}
+          iter={tableController.iterDutyIndexes()}
+        />
       </span>
     </StyledDayCard>
   );
@@ -60,20 +68,20 @@ export function DayCard(props: IterProps<DateData, DayCardProps>) {
 
 export const StyledDayCard = styled.span`
   border: 1px solid #0005;
-  border-radius: .5rem;
-  padding: .25rem;
-  box-shadow: -.1rem .1rem .2rem #0004;
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  box-shadow: -0.1rem 0.1rem 0.2rem #0004;
   background-color: #ffffff14;
-  font-size: .8rem;
+  font-size: 0.8rem;
   display: flex;
   font-weight: bold;
   flex-direction: column;
   align-items: stretch;
   text-align: center;
 
-  &>.duty-row {
+  & > .duty-row {
     display: flex;
-    gap: .3rem;
+    gap: 0.3rem;
   }
 `;
 
@@ -83,17 +91,18 @@ export interface DutySelectButtonProps {
   workerId: number;
 }
 
-export function DutySelectButton(props: IterProps<number, DutySelectButtonProps>) {
+export function DutySelectButton(
+  props: IterProps<number, DutySelectButtonProps>,
+) {
   const { onDutySelected, workerId, date, entry: index } = props;
 
   const tableController = new TableEditorController();
 
   const dutyController = tableController.findDuty(
-    DutySearcher
-      .dayEquals(date)
-      .indexEquals(index),
+    DutySearcher.dayEquals(date).indexEquals(index),
   );
-  if (!dutyController) throw new Error(`Can't find duty at day ${date} in index ${index}!`);
+  if (!dutyController)
+    throw new Error(`Can't find duty at day ${date} in index ${index}!`);
 
   const { duty } = dutyController;
   const dutySize = dutyController.size();
@@ -101,7 +110,9 @@ export function DutySelectButton(props: IterProps<number, DutySelectButtonProps>
   const workerController = new WorkerEditorController(workerId);
 
   const title = dutyController.format.hours();
-  const selected = workerController.duties().some(workerDuty => workerDuty.id === duty.id);
+  const selected = workerController
+    .duties()
+    .some((workerDuty) => workerDuty.id === duty.id);
 
   const ruleService = new EditorRuleService();
   const canSelect = ruleService.check(workerId, duty.id);
@@ -115,9 +126,14 @@ export function DutySelectButton(props: IterProps<number, DutySelectButtonProps>
   }
 
   return (
-    <StyledDutySelectButton className={`${canSelect ? ' selectable' : ''}${selected ? ' selected' : ''}${isAtOrdinary ? ' ordinary' : ''}`} onClick={handleSelectDuty}>
+    <StyledDutySelectButton
+      className={`${canSelect ? " selectable" : ""}${selected ? " selected" : ""}${isAtOrdinary ? " ordinary" : ""}`}
+      onClick={handleSelectDuty}
+    >
       {title}
-      <span className={`worker-quantity-display${dutySize < 2 ? ' low-quantity' : ''}`}>
+      <span
+        className={`worker-quantity-display${dutySize < 2 ? " low-quantity" : ""}`}
+      >
         {dutySize}
         <BsPeopleFill />
       </span>
@@ -126,13 +142,13 @@ export function DutySelectButton(props: IterProps<number, DutySelectButtonProps>
 }
 
 const StyledDutySelectButton = styled.button`
-  border-radius: .3rem;
-  font-size: .6rem;
-  padding: .15rem;
+  border-radius: 0.3rem;
+  font-size: 0.6rem;
+  padding: 0.15rem;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: .2rem;
+  gap: 0.2rem;
   flex: 1;
   border: 1px solid #0004;
   text-align: center;
@@ -141,17 +157,17 @@ const StyledDutySelectButton = styled.button`
   background-color: #0000;
   font-weight: bold;
 
-  &>.worker-quantity-display {
+  & > .worker-quantity-display {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: .2rem;
+    gap: 0.2rem;
 
     &.low-quantity {
       color: #e21111;
     }
   }
-  
+
   &.selectable {
     background-color: #4fca632d;
     cursor: pointer;
@@ -160,13 +176,13 @@ const StyledDutySelectButton = styled.button`
       background-color: #4fca6367;
     }
   }
-  
+
   &.selected {
     background-color: #4fca63;
     cursor: pointer;
 
     &:hover {
-      background-color: #4fca6394
+      background-color: #4fca6394;
     }
   }
 

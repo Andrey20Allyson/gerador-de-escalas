@@ -1,56 +1,63 @@
-import { AppError, api } from "../api";
-import React, { useState } from "react";
+// import { AppError, api } from "../api";
+// import React, { useState } from "react";
 
-export interface TableSheetSelectState {
-  sheetNames: string[];
-  sheetName: string;
-  filePath: string;
-}
+// export interface TableSheetSelectState {
+//   sheetNames: string[];
+//   sheetName: string;
+//   filePath: string;
+// }
 
-export interface TableSheetSelectProps {
-  fileInputTitle: string;
-  selectTitle: string;
+// export interface TableSheetSelectProps {
+//   fileInputTitle: string;
+//   selectTitle: string;
 
-  onChange?: (state: TableSheetSelectState | undefined) => void;
-}
+//   onChange?: (state: TableSheetSelectState | undefined) => void;
+// }
 
-function createSheetNameOption(sheetName: string, key: number) {
-  return <option key={key} value={sheetName}>{sheetName}</option>;
-}
+// function createSheetNameOption(sheetName: string, key: number) {
+//   return (
+//     <option key={key} value={sheetName}>
+//       {sheetName}
+//     </option>
+//   );
+// }
 
-export function TableSheetSelect(props: TableSheetSelectProps) {
-  const [state, setState] = useState<TableSheetSelectState>();
-  
-  props.onChange?.(state);
+// export function TableSheetSelect(props: TableSheetSelectProps) {
+//   const [state, setState] = useState<TableSheetSelectState>();
 
-  async function handleFileChange(ev: React.ChangeEvent<HTMLInputElement>) {
-    const filePath = ev.currentTarget.files?.item(0)?.path;
-    if (!filePath) return;
+//   props.onChange?.(state);
 
-    const response = await api.utils.getSheetNames(filePath);
-    if (!response.ok) return AppError.log(response.error);
+//   async function handleFileChange(ev: React.ChangeEvent<HTMLInputElement>) {
+//     const filePath = ev.currentTarget.files?.item(0)?.path;
+//     if (!filePath) return;
 
-    const sheetNames = response.data;
-    const sheetName = sheetNames.at(0);
-    if (!sheetName) return alert(`O arquivo em '${filePath}' não é um arquivo excel válido!`);
+//     const response = await api.utils.getSheetNames(filePath);
+//     if (!response.ok) return AppError.log(response.error);
 
-    setState({ ...state, filePath, sheetNames, sheetName });
-  }
+//     const sheetNames = response.data;
+//     const sheetName = sheetNames.at(0);
+//     if (!sheetName)
+//       return alert(`O arquivo em '${filePath}' não é um arquivo excel válido!`);
 
-  function handleSheetNameChange(ev: React.ChangeEvent<HTMLSelectElement>) {
-    if (!state) return;
+//     setState({ ...state, filePath, sheetNames, sheetName });
+//   }
 
-    setState({...state, sheetName: ev.currentTarget.value});
-  }
+//   function handleSheetNameChange(ev: React.ChangeEvent<HTMLSelectElement>) {
+//     if (!state) return;
 
-  return (
-    <>
-      <label className="mandatory">{props.fileInputTitle}</label>
-      <input type="file" onChange={handleFileChange} />
-      <label className="mandatory">{props.selectTitle}</label>
-      <select onChange={handleSheetNameChange}>{
-        state && state.sheetNames && state.sheetNames.map(createSheetNameOption)
-      }</select>
-    </>
-  );
-}
+//     setState({ ...state, sheetName: ev.currentTarget.value });
+//   }
+
+//   return (
+//     <>
+//       <label className="mandatory">{props.fileInputTitle}</label>
+//       <input type="file" onChange={handleFileChange} />
+//       <label className="mandatory">{props.selectTitle}</label>
+//       <select onChange={handleSheetNameChange}>
+//         {state &&
+//           state.sheetNames &&
+//           state.sheetNames.map(createSheetNameOption)}
+//       </select>
+//     </>
+//   );
+// }

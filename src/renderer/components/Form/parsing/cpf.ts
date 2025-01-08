@@ -5,7 +5,7 @@ export type CPFParserEMM = {
   INVALID_CPF: string;
 };
 
-export class CPFParser extends ValueParser<string, string, CPFParserEMM>  {
+export class CPFParser extends ValueParser<string, string, CPFParserEMM> {
   constructor() {
     super({
       INVALID_CPF: 'cpf $0 é inválido!, motivo: "$1"',
@@ -25,7 +25,7 @@ export class CPFParser extends ValueParser<string, string, CPFParserEMM>  {
 
     let sum = 0;
     for (let i = 0; i < iterationLength; i++) {
-      sum += digits[i] * (i + multiplicationStart);
+      sum += digits[i]! * (i + multiplicationStart);
     }
 
     const rest = sum % 11;
@@ -35,22 +35,24 @@ export class CPFParser extends ValueParser<string, string, CPFParserEMM>  {
   }
 
   isValidationDigitsCorrect(digits: Uint8Array): boolean {
-    return this.isValidationDigitCorrect(digits, 0)
-      && this.isValidationDigitCorrect(digits, 1);
+    return (
+      this.isValidationDigitCorrect(digits, 0) &&
+      this.isValidationDigitCorrect(digits, 1)
+    );
   }
 
   isValidationDigitsValid(digits: Uint8Array): Result<Uint8Array> {
-    const isValid = this.isValidationDigitsCorrect(digits)
+    const isValid = this.isValidationDigitsCorrect(digits);
 
     if (isValid) {
       return Result.ok(digits);
     } else {
-      return Result.error('invalid cpf digits');
+      return Result.error("invalid cpf digits");
     }
   }
 
   parseDigits(cpf: string): Result<Uint8Array> {
-    if (!this.isCPFFormatValid(cpf)) return Result.error('invalid cpf format');
+    if (!this.isCPFFormatValid(cpf)) return Result.error("invalid cpf format");
 
     const digits = new Uint8Array(11);
     let digitCount = 0;
@@ -64,14 +66,14 @@ export class CPFParser extends ValueParser<string, string, CPFParserEMM>  {
       }
     }
 
-    if (digitCount < 11) return Result.error('invalid cpf size');
+    if (digitCount < 11) return Result.error("invalid cpf size");
 
     return Result.ok(digits);
   }
 
   validateCPF(cpf: string): Result<Uint8Array> {
     const digits = this.parseDigits(cpf);
-    if (digits.type === 'error') return digits;
+    if (digits.type === "error") return digits;
 
     return this.isValidationDigitsValid(digits.value);
   }
@@ -79,7 +81,7 @@ export class CPFParser extends ValueParser<string, string, CPFParserEMM>  {
   parse(cpf: string): Result<string> {
     const validationResult = this.validateCPF(cpf);
 
-    if (validationResult.type === 'value') {
+    if (validationResult.type === "value") {
       return this.ok(cpf);
     } else {
       return validationResult;

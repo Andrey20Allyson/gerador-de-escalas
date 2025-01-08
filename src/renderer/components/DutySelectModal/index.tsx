@@ -44,8 +44,10 @@ export function DutySelectModal(props: DutySelectModalProps) {
   }
 
   function handleAddDuty(dutyId: number) {
-    const selected = workerController.duties().some(duty => duty.id === dutyId);
-    
+    const selected = workerController
+      .duties()
+      .some((duty) => duty.id === dutyId);
+
     if (selected) {
       workerController.leave(dutyId);
     } else {
@@ -65,23 +67,21 @@ export function DutySelectModal(props: DutySelectModalProps) {
 
   return (
     <StyledDutySelectModal>
-      <section className='head'>
+      <section className="head">
         Escolha os turnos
         <AiOutlineCloseCircle onClick={handleClose} size={25} color="#cc0000" />
       </section>
-      <section className='body'>
-        <div className='presentation'>
-          <span className='worker-info'>
-            <span className='name'>
-              {worker.name}
-            </span>
-            <span className='other-info'>
-              <label className='title'>Matricula</label>
-              <p className='id'>{formattedWorkerID}</p>
-              <label className='title'>Graduação</label>
+      <section className="body">
+        <div className="presentation">
+          <span className="worker-info">
+            <span className="name">{worker.name}</span>
+            <span className="other-info">
+              <label className="title">Matricula</label>
+              <p className="id">{formattedWorkerID}</p>
+              <label className="title">Graduação</label>
               <label>{upperCaseGraduation}</label>
-              <label className='title'>Sexo</label>
-              <span className='gender'>
+              <label className="title">Sexo</label>
+              <span className="gender">
                 <Gender />
               </span>
               <label>Expediente Ord.</label>
@@ -90,15 +90,25 @@ export function DutySelectModal(props: DutySelectModalProps) {
               <label>{ordinaryFormatter.duration()}</label>
             </span>
           </span>
-          <span className='options-box'>
-            <FaTrash onClick={handleClearDuties}/>
-            <BsGearFill onClick={handleChangeRules}/>
+          <span className="options-box">
+            <FaTrash onClick={handleClearDuties} />
+            <BsGearFill onClick={handleChangeRules} />
           </span>
-          <Scrollable className='duty-list'>
-            <ElementList Component={DutyCard} communProps={{ titleType: 'extence', onExcludeDuty: handleExcludeDuty }} iter={workerController.dutyIds()} />
+          <Scrollable className="duty-list">
+            <ElementList
+              Component={DutyCard}
+              communProps={{
+                titleType: "extence",
+                onExcludeDuty: handleExcludeDuty,
+              }}
+              iter={workerController.dutyIds()}
+            />
           </Scrollable>
         </div>
-        <DutySelectionGrid onDutySelected={handleAddDuty} workerId={worker.id} />
+        <DutySelectionGrid
+          onDutySelected={handleAddDuty}
+          workerId={worker.id}
+        />
       </section>
     </StyledDutySelectModal>
   );
@@ -109,12 +119,12 @@ export const StyledDutySelectModal = styled.div`
   height: 80%;
   background-color: #d1d1d1;
   animation-duration: 200ms;
-  border-radius: .5rem;
+  border-radius: 0.5rem;
   display: grid;
   grid-template-rows: 2rem 1fr;
   border: 1px solid #0005;
 
-  &>.head {
+  & > .head {
     background-color: #bbbbbb;
     border-top-left-radius: inherit;
     border-top-right-radius: inherit;
@@ -123,65 +133,65 @@ export const StyledDutySelectModal = styled.div`
     border-bottom: inherit;
     align-items: center;
     font-weight: bold;
-    padding: 0 .5rem;
+    padding: 0 0.5rem;
 
-    &>svg {
+    & > svg {
       cursor: pointer;
     }
   }
 
-  &>.body {
+  & > .body {
     grid-template-columns: 1fr 4fr;
-    padding: .5rem;
+    padding: 0.5rem;
     display: grid;
 
-    &>.presentation {
+    & > .presentation {
       border-right: 1px solid #0005;
       flex-direction: column;
-      padding-right: .5rem;
+      padding-right: 0.5rem;
       display: flex;
 
-      &>.worker-info {
+      & > .worker-info {
         flex-direction: column;
         display: flex;
         flex: 1;
-        gap: .7rem;
+        gap: 0.7rem;
         font-weight: 900;
 
-        &>.name {
+        & > .name {
           font-size: 1rem;
           text-align: center;
           font-weight: bold;
         }
 
-        &>.other-info {
+        & > .other-info {
           display: grid;
           grid-template-columns: 1fr 1.5fr;
-          gap: .5rem;
-          font-size: .8rem;
+          gap: 0.5rem;
+          font-size: 0.8rem;
 
-          &>* {
+          & > * {
             border-bottom: 1px solid #0005;
           }
 
-          &>label {
+          & > label {
             width: 100%;
             display: flex;
             justify-content: space-between;
-            gap: .2rem;
-            font-size: .8rem;
+            gap: 0.2rem;
+            font-size: 0.8rem;
 
             &.title::after {
               content: ":";
             }
           }
 
-          &>.id {
+          & > .id {
             margin: 0;
-            font-size: .9rem;
+            font-size: 0.9rem;
           }
 
-          &>.gender {
+          & > .gender {
             display: flex;
             align-items: center;
             font-size: 1.1rem;
@@ -189,31 +199,31 @@ export const StyledDutySelectModal = styled.div`
         }
       }
 
-      &>.options-box {
+      & > .options-box {
         display: flex;
-        gap: .5rem;
-        padding: .5rem 0;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
 
-        &>svg {
+        & > svg {
           transition: all 200ms;
           cursor: pointer;
 
           &:hover {
-            opacity: .7;
+            opacity: 0.7;
           }
         }
       }
 
-      &>.duty-list {
+      & > .duty-list {
         flex: 1;
         display: grid;
-        gap: .5rem;
+        gap: 0.5rem;
         border-top: 1px solid #0005;
-        padding-top: .5rem;
+        padding-top: 0.5rem;
         grid-template-rows: repeat(5, 1fr);
 
-        &>* * {
-          font-size: .7rem;
+        & > * * {
+          font-size: 0.7rem;
         }
       }
     }

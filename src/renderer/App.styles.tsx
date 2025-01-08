@@ -19,9 +19,11 @@ export const hoveredBackground = css`
 
 export const StyledNavButton = styled.span<StyledNavButtonProps>`
   color: #ffffff;
-  ${(props) => props.selected ? selectedBackground : normalBackground}
+  ${(props) => (props.selected ? selectedBackground : normalBackground)}
   padding: .1rem .7rem;
-  transition: background-color 200ms, color 200ms;
+  transition:
+    background-color 200ms,
+    color 200ms;
   user-select: none;
   display: flex;
   align-items: center;
@@ -29,7 +31,7 @@ export const StyledNavButton = styled.span<StyledNavButtonProps>`
   margin: 0;
 
   &:hover {
-    ${props => props.selected ? selectedBackground : hoveredBackground}
+    ${(props) => (props.selected ? selectedBackground : hoveredBackground)}
   }
 `;
 
@@ -47,7 +49,7 @@ export const BodyCard = styled.main`
   flex-direction: column;
   justify-content: center;
   background-color: #cccccc;
-  box-shadow: -.2rem .2rem .5rem #0004;
+  box-shadow: -0.2rem 0.2rem 0.5rem #0004;
   align-items: center;
   transition: height 1000ms;
   flex: 1;
@@ -69,6 +71,6 @@ export const TopNav = styled.nav`
   height: 2.1rem;
   background-color: #014b1d;
   color: #000000;
-  gap: .2rem;
-  box-shadow: 0 .2rem .3rem #0005;
+  gap: 0.2rem;
+  box-shadow: 0 0.2rem 0.3rem #0005;
 `;

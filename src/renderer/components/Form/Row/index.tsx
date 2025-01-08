@@ -1,9 +1,9 @@
-import React, { PropsWithChildren, Children } from 'react';
-import styled from 'styled-components';
+import React, { PropsWithChildren, Children } from "react";
+import styled from "styled-components";
 
 export interface RowProps extends PropsWithChildren {
-  separator?: 'line';
-  contentJustify?: React.CSSProperties['justifyContent'];
+  separator?: "line";
+  contentJustify?: React.CSSProperties["justifyContent"];
 }
 
 export function Row(props: RowProps) {
@@ -12,14 +12,14 @@ export function Row(props: RowProps) {
   const childrenWithLines = Children.map(children, (child, index) => {
     return (
       <>
-        {separator === 'line' && index > 0 ? <StyledVerticalLine /> : undefined}
+        {separator === "line" && index > 0 ? <StyledVerticalLine /> : undefined}
         {child}
       </>
     );
-  })
+  });
 
   return (
-    <StyledRow style={{ justifyContent: contentJustify }} >
+    <StyledRow style={{ justifyContent: contentJustify }}>
       {childrenWithLines}
     </StyledRow>
   );
@@ -28,7 +28,7 @@ export function Row(props: RowProps) {
 export const StyledRow = styled.div`
   display: flex;
   justify-content: space-between;
-  gap: .4rem;
+  gap: 0.4rem;
 `;
 
 export const StyledVerticalLine = styled.span`

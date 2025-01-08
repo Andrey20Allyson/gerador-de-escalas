@@ -1,11 +1,17 @@
 import React, { useState } from "react";
-import { AiOutlineCloseCircle, AiOutlineDoubleLeft, AiOutlineDoubleRight, AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
+import {
+  AiOutlineCloseCircle,
+  AiOutlineDoubleLeft,
+  AiOutlineDoubleRight,
+  AiOutlineLeft,
+  AiOutlineRight,
+} from "react-icons/ai";
 import { FaCalendarAlt } from "react-icons/fa";
 import { HiUserRemove } from "react-icons/hi";
 import { AvaliableWorkers } from "../../components/AvaliableWorkers";
 import { useDutySelectModal } from "../../components/DutySelectModal";
 import { createModalContext } from "../../contexts/modal";
-import { ColoredText } from "../../pages/Generator/WorkerEditionStage.styles";
+import { ColoredText } from "../../styles/WorkerEditionStage.styles";
 import { DutyEditorController } from "../../state/controllers/editor/duty";
 import { DutySearcher } from "../../state/controllers/editor/searchers/duty";
 import { TableEditorController } from "../../state/controllers/editor/table";
@@ -26,7 +32,7 @@ import {
   StyledWorkerViewBody,
 } from "./styles";
 import { genderComponentMap, graduationTextColorMap } from "./utils";
-import { DateData } from "../../../app/api/table-reactive-edition/table";
+import { DateData } from "../../../apploader/api/table-reactive-edition/table";
 
 export interface DutyViewModalProps {
   dutyId: number;
@@ -41,9 +47,18 @@ export function DutyEditionModal(props: DutyViewModalProps) {
 
   const modal = useDayEditionModal();
 
-  const dutyViewContent = dutyController.size() > 0
-    ? <ElementList communProps={{ dutyId }} iter={dutyController.workerIds()} Component={WorkerCard} />
-    : <StyledEmpityDutyMessage>Esse turno não possui componentes.</StyledEmpityDutyMessage>;
+  const dutyViewContent =
+    dutyController.size() > 0 ? (
+      <ElementList
+        communProps={{ dutyId }}
+        iter={dutyController.workerIds()}
+        Component={WorkerCard}
+      />
+    ) : (
+      <StyledEmpityDutyMessage>
+        Esse turno não possui componentes.
+      </StyledEmpityDutyMessage>
+    );
 
   function handleClose() {
     modal.close();
@@ -72,16 +87,18 @@ export function DutyEditionModal(props: DutyViewModalProps) {
         <StyledDayViewNavigation>
           <AiOutlineDoubleLeft onClick={prevDay} />
           <AiOutlineLeft onClick={prevDuty} />
-          <StyledModalTitle>
-            {dutyController.format.day()}
-          </StyledModalTitle>
+          <StyledModalTitle>{dutyController.format.day()}</StyledModalTitle>
           <AiOutlineRight onClick={nextDuty} />
           <AiOutlineDoubleRight onClick={nextDay} />
         </StyledDayViewNavigation>
         <AiOutlineCloseCircle onClick={handleClose} size={25} color="#cc0000" />
       </StyledModalHeader>
       <StyledModalBody>
-        <DutyEditionNavation day={duty.date} selectedDutyIndex={duty.index} onNavigate={setDutyId} />
+        <DutyEditionNavation
+          day={duty.date}
+          selectedDutyIndex={duty.index}
+          onNavigate={setDutyId}
+        />
         <StyledModalTitle2>
           Turno das {dutyController.format.hours()}
         </StyledModalTitle2>
@@ -113,26 +130,32 @@ export function DutyEditionNavation(props: DutyViewNavationProps) {
   const tableController = new TableEditorController();
   const dutyIds = tableController
     .findDuties(DutySearcher.dayEquals(day))
-    .map(controller => controller.duty.id);
+    .map((controller) => controller.duty.id);
 
   return (
     <StyledDutyViewNavigation>
-      <ElementList iter={dutyIds} Component={props => {
-        const { entry: dutyId } = props;
+      <ElementList
+        iter={dutyIds}
+        Component={(props) => {
+          const { entry: dutyId } = props;
 
-        const dutyController = new DutyEditorController(dutyId);
-        const { duty } = dutyController;
+          const dutyController = new DutyEditorController(dutyId);
+          const { duty } = dutyController;
 
-        function handleNavigate() {
-          onNavigate?.(duty.id);
-        }
+          function handleNavigate() {
+            onNavigate?.(duty.id);
+          }
 
-        return (
-          <StyledDutyViewNavButton selected={duty.index === selectedDutyIndex} onClick={handleNavigate}>
-            {dutyController.format.hours()}
-          </StyledDutyViewNavButton>
-        );
-      }} />
+          return (
+            <StyledDutyViewNavButton
+              selected={duty.index === selectedDutyIndex}
+              onClick={handleNavigate}
+            >
+              {dutyController.format.hours()}
+            </StyledDutyViewNavButton>
+          );
+        }}
+      />
     </StyledDutyViewNavigation>
   );
 }
@@ -143,7 +166,7 @@ export interface WorkerViewProps {
 
 export function WorkerCard(props: IterProps<number, WorkerViewProps>) {
   const { entry: workerId, dutyId } = props;
-  
+
   const workerController = new WorkerEditorController(workerId);
   const { worker } = workerController;
 
@@ -162,11 +185,19 @@ export function WorkerCard(props: IterProps<number, WorkerViewProps>) {
   return (
     <StyledWorkerViewBody>
       {worker.name}
-      <section className='info'>
-        [<ColoredText color={gradutationColor}>{worker.graduation.toUpperCase()}</ColoredText>]
+      <section className="info">
+        [
+        <ColoredText color={gradutationColor}>
+          {worker.graduation.toUpperCase()}
+        </ColoredText>
+        ]
         <Gender />
-        <HiUserRemove className="clickable" color='#c00000' onClick={handleWorkerRemove} />
-        <FaCalendarAlt className='open-modal' onClick={handleOpenDutyModal} />
+        <HiUserRemove
+          className="clickable"
+          color="#c00000"
+          onClick={handleWorkerRemove}
+        />
+        <FaCalendarAlt className="open-modal" onClick={handleOpenDutyModal} />
       </section>
     </StyledWorkerViewBody>
   );

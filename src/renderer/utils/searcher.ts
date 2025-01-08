@@ -2,9 +2,7 @@ export type SearchFunction<T> = (value: T) => boolean;
 export type FindHandler<T> = (value: T, index: number, arr: T[]) => boolean;
 
 export abstract class Searcher<T> {
-  constructor(
-    private steps: SearchFunction<T>[] = [],
-  ) { }
+  constructor(private steps: SearchFunction<T>[] = []) {}
 
   someMatches(value: T): boolean {
     for (const step of this.steps) {
@@ -23,11 +21,11 @@ export abstract class Searcher<T> {
   }
 
   someMatchesHandler(): FindHandler<T> {
-    return value => this.someMatches(value);
+    return (value) => this.someMatches(value);
   }
 
   everyMatchesHandler(): FindHandler<T> {
-    return value => this.everyMatches(value);
+    return (value) => this.everyMatches(value);
   }
 
   protected addStep(step: SearchFunction<T>): this {

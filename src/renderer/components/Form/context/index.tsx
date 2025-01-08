@@ -5,7 +5,7 @@ const formContext = createContext<FormController | null>(null);
 
 export interface FormProviderProps extends PropsWithChildren {
   onSubmit?: OnSubmitHandler;
-};
+}
 
 export function FormProvider(props: FormProviderProps) {
   const { children, onSubmit } = props;
@@ -15,18 +15,17 @@ export function FormProvider(props: FormProviderProps) {
   if (onSubmit) controller.subscribe(onSubmit);
 
   return (
-    <formContext.Provider value={controller}>
-      {children}
-    </formContext.Provider>
+    <formContext.Provider value={controller}>{children}</formContext.Provider>
   );
 }
 
 export function useFormController() {
   const controller = useContext(formContext);
-  if (controller === null) throw new Error(`Can't use FormController outside a FormProvider`);
+  if (controller === null)
+    throw new Error(`Can't use FormController outside a FormProvider`);
 
   return controller;
 }
 
-export * from './form-controller';
-export * from './form-field';
+export * from "./form-controller";
+export * from "./form-field";

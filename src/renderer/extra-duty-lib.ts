@@ -1,1 +1,0 @@
-export type * from '../app/auto-schedule/extra-duty-lib/structs/worker-info';

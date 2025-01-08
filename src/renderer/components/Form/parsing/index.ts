@@ -40,21 +40,29 @@ const BOOLEAN_PARSER = new BooleanParser({
 
 export const parsers = {
   string: () => STRING_PARSER,
-  number: (messages?: NumberParserErrorMessageMap) => messages === undefined ? NUMBER_PARSER : new NumberParser(messages),
-  date: (messages?: DateParserErrorMessageMap) => messages === undefined ? DATE_PARSER : new DateParser(messages),
-  bigint: (messages?: BigIntParserErrorMessageMap) => messages === undefined ? BIGINT_PARSER : new BigIntParser(messages),
-  regexp: (regexp: RegExp, messages?: RegExpParserErrorMessageMap) => new RegExpParser(regexp, messages ?? REGEXP_PARSER_EMM),
-  enum: <U extends string, E extends readonly [U, ...U[]]>(_enum: E, messages?: EnumParserErrorMessageMap) => new EnumParser(_enum, messages ?? ENUM_PARSER_EMM),
-  boolean: (messages?: BooleanParserEMM) => messages === undefined ? BOOLEAN_PARSER : new BooleanParser(messages),
+  number: (messages?: NumberParserErrorMessageMap) =>
+    messages === undefined ? NUMBER_PARSER : new NumberParser(messages),
+  date: (messages?: DateParserErrorMessageMap) =>
+    messages === undefined ? DATE_PARSER : new DateParser(messages),
+  bigint: (messages?: BigIntParserErrorMessageMap) =>
+    messages === undefined ? BIGINT_PARSER : new BigIntParser(messages),
+  regexp: (regexp: RegExp, messages?: RegExpParserErrorMessageMap) =>
+    new RegExpParser(regexp, messages ?? REGEXP_PARSER_EMM),
+  enum: <U extends string, E extends readonly [U, ...U[]]>(
+    _enum: E,
+    messages?: EnumParserErrorMessageMap,
+  ) => new EnumParser(_enum, messages ?? ENUM_PARSER_EMM),
+  boolean: (messages?: BooleanParserEMM) =>
+    messages === undefined ? BOOLEAN_PARSER : new BooleanParser(messages),
 } as const;
 
-export * from './bigint';
-export * from './date';
-export * from './enum';
-export * from './number';
-export * from './string';
-export * from './value-parser';
-export * from './parser-list';
-export * from './types';
-export * from './utils';
-export * from './regexp';
+export * from "./bigint";
+export * from "./date";
+export * from "./enum";
+export * from "./number";
+export * from "./string";
+export * from "./value-parser";
+export * from "./parser-list";
+export * from "./types";
+export * from "./utils";
+export * from "./regexp";

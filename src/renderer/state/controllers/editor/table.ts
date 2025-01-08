@@ -1,8 +1,19 @@
-import { DateData, DutyData, TableData, WorkerData } from "../../../../app/api/table-reactive-edition/table";
+import { Month } from "src/lib/structs";
+import {
+  DateData,
+  DutyData,
+  TableData,
+  WorkerData,
+} from "../../../../apploader/api/table-reactive-edition/table";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "../../../utils";
 import { Searcher } from "../../../utils/searcher";
-import { TableEditorState, currentTableSelector, editorActions, tableEditorSelector } from "../../slices/table-editor";
+import {
+  TableEditorState,
+  currentTableSelector,
+  editorActions,
+  tableEditorSelector,
+} from "../../slices/table-editor";
 import { RootState } from "../../store";
 import { DutyEditorController } from "./duty";
 import { WorkerEditorController } from "./worker";
@@ -60,7 +71,10 @@ export class TableEditorController {
 
     return this.table.workers
       .filter(searcher.everyMatchesHandler())
-      .map(worker => new WorkerEditorController(worker.id, { table, dispatcher }));
+      .map(
+        (worker) =>
+          new WorkerEditorController(worker.id, { table, dispatcher }),
+      );
   }
 
   findDuty(searcher: Searcher<DutyData>): DutyEditorController | null {
@@ -77,13 +91,17 @@ export class TableEditorController {
 
     return this.table.duties
       .filter(searcher.everyMatchesHandler())
-      .map(duty => new DutyEditorController(duty.id, { table, dispatcher }));
+      .map((duty) => new DutyEditorController(duty.id, { table, dispatcher }));
+  }
+
+  getMonth(): Month {
+    const { year, month } = this.table.config;
+
+    return new Month(year, month);
   }
 
   dayOfWeekFrom(day: number) {
-    const { year, month } = this.table.config;
-
-    const firstMonday = firstMondayFromYearAndMonth(year, month);
+    const firstMonday = this.getMonth().getFirstMonday();
 
     return dayOfWeekFrom(firstMonday, day);
   }
@@ -97,11 +115,11 @@ export class TableEditorController {
   }
 
   dutyIds(): number[] {
-    return this.duties().map(duty => duty.id);
+    return this.duties().map((duty) => duty.id);
   }
 
   workerIds(): number[] {
-    return this.workers().map(worker => worker.id);
+    return this.workers().map((worker) => worker.id);
   }
 
   *iterDays(): Iterable<DateData> {
@@ -123,7 +141,7 @@ export class TableEditorController {
   canUndo() {
     return this.state.undoIndex < this.state.history.length - 1;
   }
-  
+
   canRedo() {
     return this.state.undoIndex > 0;
   }
@@ -141,17 +159,23 @@ export class TableEditorController {
   }
 
   static useOptional() {
-    const table = useAppSelector(state => currentTableSelector(state.tableEditor));
+    const table = useAppSelector((state) =>
+      currentTableSelector(state.tableEditor),
+    );
     const dispatcher = useAppDispatch();
 
-    const controller = table ? new TableEditorController({ dispatcher, table }) : null;
+    const controller = table
+      ? new TableEditorController({ dispatcher, table })
+      : null;
 
     return controller;
   }
 
   static useEditorLoader() {
     const dispatcher = useAppDispatch();
-    const isLoaded = useAppSelector(state => currentTableSelector(state.tableEditor)) !== null;
+    const isLoaded =
+      useAppSelector((state) => currentTableSelector(state.tableEditor)) !==
+      null;
 
     function load(table: TableData) {
       dispatcher(editorActions.initialize({ tableData: table }));
