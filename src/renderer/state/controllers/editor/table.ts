@@ -138,6 +138,10 @@ export class TableEditorController {
     this.dispatcher(editorActions.initialize({ tableData: data }));
   }
 
+  setState(data: TableData) {
+    this.dispatcher(editorActions.pushState({ tableData: data }));
+  }
+
   canUndo() {
     return this.state.undoIndex < this.state.history.length - 1;
   }
