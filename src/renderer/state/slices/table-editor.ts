@@ -13,6 +13,10 @@ export interface TableEditorState {
   undoIndex: number;
 }
 
+export interface PushStatePayload {
+  tableData: TableData;
+}
+
 export interface AddRelationshipPayload {
   workerId: number;
   dutyId: number;
@@ -65,6 +69,9 @@ export const tableEditorSlice = createSlice({
     initialize(state, action: PayloadAction<InitializerPayload>) {
       state.history = [action.payload.tableData];
       state.undoIndex = 0;
+    },
+    pushState(state, action: PayloadAction<PushStatePayload>) {
+      pushToHistory(state as TableEditorState, action.payload.tableData);
     },
     addRelationship(state, action: PayloadAction<AddRelationshipPayload>) {
       const current = currentTableSelector(state as TableEditorState);

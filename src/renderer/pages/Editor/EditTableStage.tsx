@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { AiOutlineSave } from "react-icons/ai";
+import { AiOutlineClockCircle, AiOutlineSave } from "react-icons/ai";
 import { BsArrowReturnLeft, BsGear } from "react-icons/bs";
 import { GoTriangleDown } from "react-icons/go";
-import { editor } from "../../api";
+import { AppError, api, editor } from "../../api";
 import { EditorTypeSelect } from "../../components/EditorTypeSelect";
 import { EditorRouterContext } from "../../components/EditorTypeSelect/context";
 import { useRulesModal } from "../../components/RulesModal";
@@ -37,6 +37,17 @@ export function EditTableStage() {
 
   function handleOpenRulesModal() {
     rulesModal.open();
+  }
+
+  async function handleGenerate() {
+    await api.editor.generate();
+
+    const newTableDataResult = await api.editor.createEditor();
+    if (!newTableDataResult.ok) {
+      return AppError.log(newTableDataResult.error);
+    }
+
+    tableController?.setState(newTableDataResult.data);
   }
 
   useEffect(() => {
@@ -94,6 +105,10 @@ export function EditTableStage() {
             <button onClick={() => changeEditor("WorkerList")}>Lista</button>
           </section>
         </StyledSelector>
+        <button onClick={handleGenerate}>
+          <AiOutlineClockCircle />
+          Gerar
+        </button>
       </StyledToolsSection>
       <section className="editor-section">
         <EditorTypeSelect />

@@ -18,6 +18,7 @@ import {
 import { WorkerRegistryRepository } from "src/lib/persistence/entities";
 import { OrdinaryDeserializer } from "src/lib/serialization/in/impl/ordinary-deserializer";
 import { MetadataNotFoundError } from "src/lib/serialization/in/metadata/reader";
+import { JQScheduleBuilder } from "src/lib/builders/jq-schedule-builder";
 
 export interface EditorHandlerFactoryData {
   table: ExtraDutyTable;
@@ -108,8 +109,6 @@ export class EditorHandler implements IpcMappingFactory {
   createEditor(): AppResponse<TableData, ErrorCode.DATA_NOT_LOADED> {
     const { data } = this;
 
-    console.log(data);
-
     if (!data) {
       return AppResponse.error(
         "Shold load data before get editor!",
@@ -119,11 +118,27 @@ export class EditorHandler implements IpcMappingFactory {
 
     const { table } = data;
 
-    console.log(table);
-
     const tableDTO = this.tableFactory.toDTO(table);
 
     return AppResponse.ok(tableDTO);
+  }
+
+  generate(): AppResponse<void, ErrorCode.DATA_NOT_LOADED> {
+    const table = this.data?.table;
+
+    if (table == null) {
+      return AppResponse.error(
+        "Shold load data before generate a table",
+        ErrorCode.DATA_NOT_LOADED,
+      );
+    }
+
+    table.clear();
+
+    const builder = new JQScheduleBuilder(2_000);
+    builder.build(table, table.getWorkerList());
+
+    return AppResponse.ok();
   }
 
   save(
@@ -184,6 +199,7 @@ export class EditorHandler implements IpcMappingFactory {
         createEditor: this.createEditor,
         loadOrdinary: this.loadOrdinary,
         serialize: this.serialize,
+        generate: this.generate,
         clear: this.clear,
         load: this.load,
         save: this.save,

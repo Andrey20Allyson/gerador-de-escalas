@@ -39,7 +39,7 @@ export function LoadOrdinaryInfoStage() {
   function parseMonthFromInput(text: string): [number, number] {
     const [yearString, monthString] = text.split("-");
 
-    return [parseInt(yearString!), parseInt(monthString!)];
+    return [parseInt(yearString!), parseInt(monthString!) - 1];
   }
 
   async function onSubmit(ev: React.FormEvent<HTMLFormElement>) {

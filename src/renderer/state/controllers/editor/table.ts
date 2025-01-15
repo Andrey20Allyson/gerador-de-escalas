@@ -17,6 +17,7 @@ import {
 import { RootState } from "../../store";
 import { DutyEditorController } from "./duty";
 import { WorkerEditorController } from "./worker";
+import { WorkerInsertionRulesState } from "src/apploader/api/table-edition";
 
 export function currentTableFromRootSelector(state: RootState) {
   return currentTableOrThrow(tableEditorSelector(state));
@@ -94,6 +95,10 @@ export class TableEditorController {
       .map((duty) => new DutyEditorController(duty.id, { table, dispatcher }));
   }
 
+  setRule(rule: keyof WorkerInsertionRulesState, value: boolean) {
+    this.dispatcher(editorActions.setRule({ rule, value }));
+  }
+
   getMonth(): Month {
     const { year, month } = this.table.config;
 
@@ -136,6 +141,10 @@ export class TableEditorController {
 
   load(data: TableData) {
     this.dispatcher(editorActions.initialize({ tableData: data }));
+  }
+
+  setState(data: TableData) {
+    this.dispatcher(editorActions.pushState({ tableData: data }));
   }
 
   canUndo() {
