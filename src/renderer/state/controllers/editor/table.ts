@@ -17,6 +17,7 @@ import {
 import { RootState } from "../../store";
 import { DutyEditorController } from "./duty";
 import { WorkerEditorController } from "./worker";
+import { WorkerInsertionRulesState } from "src/apploader/api/table-edition";
 
 export function currentTableFromRootSelector(state: RootState) {
   return currentTableOrThrow(tableEditorSelector(state));
@@ -92,6 +93,10 @@ export class TableEditorController {
     return this.table.duties
       .filter(searcher.everyMatchesHandler())
       .map((duty) => new DutyEditorController(duty.id, { table, dispatcher }));
+  }
+
+  setRule(rule: keyof WorkerInsertionRulesState, value: boolean) {
+    this.dispatcher(editorActions.setRule({ rule, value }));
   }
 
   getMonth(): Month {

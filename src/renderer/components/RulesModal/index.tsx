@@ -16,10 +16,10 @@ export function RulesModal() {
   }
 
   function handleReset() {
-    rules.ordinaryRule = true;
-    rules.timeOffRule = true;
-    rules.femaleRule = true;
-    rules.inspRule = true;
+    tableController.setRule("ordinaryRule", true);
+    tableController.setRule("timeOffRule", true);
+    tableController.setRule("femaleRule", true);
+    tableController.setRule("inspRule", true);
 
     for (const listener of setValueListeners) {
       listener(true);
@@ -39,25 +39,25 @@ export function RulesModal() {
         <ToggleButton
           actived={rules.femaleRule}
           setValueRef={assignSetValueListener}
-          onToggle={(value) => (rules.femaleRule = value)}
+          onToggle={(value) => tableController.setRule("femaleRule", value)}
           title="Regra de Genero"
         />
         <ToggleButton
           actived={rules.inspRule}
           setValueRef={assignSetValueListener}
-          onToggle={(value) => (rules.inspRule = value)}
+          onToggle={(value) => tableController.setRule("inspRule", value)}
           title="Regra dos Inspetores"
         />
         <ToggleButton
           actived={rules.ordinaryRule}
           setValueRef={assignSetValueListener}
-          onToggle={(value) => (rules.ordinaryRule = value)}
+          onToggle={(value) => tableController.setRule("ordinaryRule", value)}
           title="Regra da Ordinária"
         />
         <ToggleButton
           actived={rules.timeOffRule}
           setValueRef={assignSetValueListener}
-          onToggle={(value) => (rules.timeOffRule = value)}
+          onToggle={(value) => tableController.setRule("timeOffRule", value)}
           title="Regra dos Intervalos"
         />
       </section>
