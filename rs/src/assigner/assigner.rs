@@ -83,12 +83,13 @@ impl ScheduleAssigner {
     let mut worker_refs = table.get_worker_ref_array();
 
     let is_worker_allowed = self.step.only_worker_where;
-    let inmut_table: &ExtraScheduleTable = table;
 
-    worker_refs.remove_where(move |worker_ref| {
+    worker_refs.remove_where(|worker_ref| {
+      let worker = table.get_worker(worker_ref);
+
       !is_worker_allowed(PreAssignInfo {
-        table: inmut_table,
-        worker: inmut_table.get_worker(worker_ref),
+        table,
+        worker,
         worker_ref,
       })
     });
@@ -115,8 +116,7 @@ impl ScheduleAssigner {
     worker_refs: &mut WorkerRefArray,
   ) {
     for day_ref in day_refs.iter() {
-      let inmut_table: &ExtraScheduleTable = table;
-      worker_refs.remove_where(move |worker_ref| inmut_table.is_worker_reached_limit(worker_ref));
+      worker_refs.remove_where(|worker_ref: WorkerRef| table.is_worker_reached_limit(worker_ref));
       if worker_refs.gen_len() == 0 {
         break;
       }

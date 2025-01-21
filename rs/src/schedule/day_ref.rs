@@ -2,6 +2,7 @@ use super::{
   constants::{DAY_LIMIT, DUTY_PER_DAY, U8_NULL},
   duty_ref::{DutyRef, DutyRefOfOneDayArray, DutyRefPairs},
   randomizer,
+  ref_traits::RefArrayRemoveWhere,
 };
 
 #[derive(Debug)]
@@ -88,6 +89,20 @@ impl DayRefArray {
       array: &self,
       iter_count: 0,
     };
+  }
+}
+
+impl RefArrayRemoveWhere<DayRef> for DayRefArray {
+  fn gen_len(&self) -> usize {
+    self.len
+  }
+
+  fn set_len(&mut self, len: usize) {
+    self.len = len;
+  }
+
+  fn get_mut_array(&mut self) -> &mut [DayRef] {
+    &mut self.array
   }
 }
 
