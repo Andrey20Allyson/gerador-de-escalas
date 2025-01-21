@@ -49,7 +49,7 @@ pub struct AssignStep {
 impl Default for AssignStep {
   fn default() -> Self {
     AssignStep {
-      only_worker_where: |_| false,
+      only_worker_where: |_| true,
       pass_day_when: |_| false,
       pass_duty_pair_when: |_| false,
       duty_min_distance: 2,
@@ -81,6 +81,17 @@ impl ScheduleAssigner {
 
   pub fn assign(&mut self, table: &mut ExtraScheduleTable) {
     let mut worker_refs = table.get_worker_ref_array();
+
+    let is_worker_allowed = self.step.only_worker_where;
+    let inmut_table: &ExtraScheduleTable = table;
+
+    worker_refs.remove_where(move |worker_ref| {
+      !is_worker_allowed(PreAssignInfo {
+        table: inmut_table,
+        worker: inmut_table.get_worker(worker_ref),
+        worker_ref,
+      })
+    });
 
     let mut day_refs = table.get_day_ref_array();
 
