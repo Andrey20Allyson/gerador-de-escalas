@@ -54,11 +54,27 @@ impl DutyRef {
     self.index == U8_NULL
   }
 
+  pub fn is_last(&self) -> bool {
+    self.index as usize == DUTY_PER_DAY + 1
+  }
+
   pub fn get_duty_index(&self) -> usize {
     if self.is_null() {
       panic!("Null Reference Error")
     }
     (self.day * 4 + self.index) as usize
+  }
+
+  pub fn get_hour(&self) -> DutyHour {
+    DutyHour::from_ref(self)
+  }
+
+  pub fn timeoff_start(&self, assign_size: u8) -> i8 {
+    self.get_hour().timeoff(assign_size).start
+  }
+
+  pub fn timeoff_end(&self, assign_size: u8) -> i8 {
+    self.get_hour().timeoff(assign_size).end
   }
 
   pub fn into_iterable(self) -> IterableDutyRef {
@@ -72,6 +88,59 @@ impl Default for DutyRef {
       day: U8_NULL,
       index: U8_NULL,
     }
+  }
+}
+
+const DUTY_DURATION: i8 = 24 / DUTY_PER_DAY as i8;
+
+const fn calc_duty_hour(index: u8) -> DutyHour {
+  let start = (index as i8) * DUTY_DURATION + 1;
+  let end = start + DUTY_DURATION;
+  let is_nighttime = start >= 18 || start < 7;
+
+  DutyHour {
+    start,
+    end,
+    is_nighttime,
+  }
+}
+
+const DUTY_HOUR_MAP: [DutyHour; 4] = [
+  calc_duty_hour(0),
+  calc_duty_hour(1),
+  calc_duty_hour(2),
+  calc_duty_hour(4),
+];
+
+#[derive(Clone, Copy)]
+pub struct DutyHour {
+  pub start: i8,
+  pub end: i8,
+  pub is_nighttime: bool,
+}
+
+impl DutyHour {
+  pub fn from_ref(duty_ref: &DutyRef) -> Self {
+    DUTY_HOUR_MAP[duty_ref.index as usize]
+  }
+
+  pub fn timeoff(&self, assign_size: u8) -> DutyTimeoff {
+    DutyTimeoff::calculate(self, assign_size)
+  }
+}
+
+#[derive(Clone, Copy)]
+pub struct DutyTimeoff {
+  pub start: i8,
+  pub end: i8,
+}
+
+impl DutyTimeoff {
+  pub fn calculate(hour: &DutyHour, assign_size: u8) -> Self {
+    let start = hour.start - DUTY_DURATION * assign_size as i8;
+    let end = hour.end + DUTY_DURATION * assign_size as i8;
+
+    DutyTimeoff { start, end }
   }
 }
 
@@ -135,6 +204,10 @@ where
       end,
       index: 0,
     }
+  }
+
+  pub fn get_len(&self) -> usize {
+    self.end
   }
 }
 

@@ -119,7 +119,7 @@ pub struct Qualifier {
   pub assign_steps: Vec<AssignStep>,
   pub integrity_checkers: Vec<IntegrityChecker>,
   pub thread_cap: Option<usize>,
-  assinger: ScheduleAssigner,
+  pub assinger: ScheduleAssigner,
 }
 
 impl Qualifier {

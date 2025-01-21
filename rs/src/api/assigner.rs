@@ -1,6 +1,7 @@
 use napi_derive::napi;
 
 use crate::{
+  assigner::assign_rules::ordinary_rule,
   qualifier::{
     integrity_checkers::{correct_worker_allocation, gcm_only},
     qualifier::Qualifier,
@@ -47,6 +48,8 @@ pub fn generate_schedule(
     .set_assign_configs(assign_steps)
     .set_integrity_checkers(vec![correct_worker_allocation::check, gcm_only::check]);
 
+  qualifier.assinger.add_rule(ordinary_rule::can_assing);
+
   if config.qualifier.use_threads.unwrap_or(true) {
     qualifier.qualify_with_threads(&mut table);
   } else {
@@ -80,14 +83,14 @@ fn create_schedule_table(config: &JsExtraScheduleTableCreateConfig) -> ExtraSche
 fn create_ordinary_info(config: &JsWorkerOrdinaryInfoConfig) -> OrdinaryInfo {
   let mut ordinary_info = OrdinaryInfo::default();
 
-  ordinary_info.start = config.start;
-  ordinary_info.duration = config.duration;
+  ordinary_info.start = config.start as i8;
+  ordinary_info.duration = config.duration as i8;
   ordinary_info.is_daily_worker = config.is_daily_worker;
 
   for day in config.work_days.iter() {
     let day_ref = DayRef::from_index(*day).unwrap();
 
-    ordinary_info.set_work_day_to_true(day_ref);
+    ordinary_info.set_work_day_to_true(day_ref.get_index());
   }
 
   ordinary_info

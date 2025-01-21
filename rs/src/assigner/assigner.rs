@@ -11,13 +11,15 @@ use crate::schedule::{
 
 pub struct AssignInfo<'a> {
   pub table: &'a ExtraScheduleTable,
+  pub assign_size: u8,
+  pub day_ref: DayRef,
   pub duty_ref: DutyRef,
   pub duty: &'a ExtraDuty,
   pub worker_ref: WorkerRef,
   pub worker: &'a Worker,
 }
 
-type AssignRuleCheckFn = fn(info: AssignInfo) -> bool;
+type AssignRuleCheckFn = fn(info: &AssignInfo) -> bool;
 
 pub struct PreAssignDayInfo<'a> {
   pub table: &'a ExtraScheduleTable,
@@ -77,6 +79,12 @@ impl ScheduleAssigner {
 
   pub fn set_step(&mut self, step: &AssignStep) {
     self.step = *step;
+  }
+
+  pub fn add_rule(&mut self, rule: AssignRuleCheckFn) -> &mut Self {
+    self.assign_rules.push(rule);
+
+    self
   }
 
   pub fn assign(&mut self, table: &mut ExtraScheduleTable) {
@@ -225,6 +233,8 @@ impl ScheduleAssigner {
     duty_refs: RefIterator<DutyRef>,
     worker_ref: WorkerRef,
   ) -> bool {
+    let assign_size = duty_refs.get_len() as u8;
+
     for duty_ref in duty_refs {
       let worker = table.get_worker(worker_ref);
       let worker_assigment_info = table.get_worker_assigment_info(worker_ref);
@@ -232,22 +242,22 @@ impl ScheduleAssigner {
 
       // [rule set]
 
-      // desactived duty
+      // desactived duty rule
       if duty.actived == false {
         return false;
       }
 
-      // duty capacity
+      // duty capacity rule
       if duty.is_full() {
         return false;
       }
 
-      // duty limit
+      // duty limit rule
       if duty.workers_len >= self.current_duty_limit {
         return false;
       }
 
-      // worker limit
+      // worker limit rule
       if worker_assigment_info.assigment_count >= worker.assign_limit {
         return false;
       }
@@ -262,8 +272,25 @@ impl ScheduleAssigner {
         return false;
       }
 
+      // duty already has worker rule
       if duty.has(worker_ref) {
         return false;
+      }
+
+      let assing_info = AssignInfo {
+        table,
+        assign_size,
+        day_ref: DayRef::from_index(duty_ref.day).unwrap(),
+        duty,
+        duty_ref,
+        worker,
+        worker_ref,
+      };
+
+      for rule in self.assign_rules.iter() {
+        if rule(&assing_info) == false {
+          return false;
+        }
       }
     }
 

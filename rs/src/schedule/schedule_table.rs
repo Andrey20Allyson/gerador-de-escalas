@@ -1,6 +1,6 @@
 use super::{
   constants::{DUTY_QUANTITY, U8_NULL, WORKER_LIMIT},
-  day_ref::DayRefArray,
+  day_ref::{DayRef, DayRefArray},
   duty::ExtraDuty,
   duty_ref::{DutyRef, RefIterator},
   month::Month,
@@ -138,5 +138,30 @@ impl ExtraScheduleTable {
     let range = 0..self.month.get_num_of_days();
 
     DayRefArray::from_range(range)
+  }
+
+  pub fn get_next_day(&self, day_ref: DayRef) -> DayRef {
+    let index = day_ref.get_index();
+    let last_index = self.month.get_num_of_days() - 1;
+
+    let next_index = index + 1;
+    if next_index > last_index {
+      return DayRef::from_index(0).unwrap();
+    }
+
+    DayRef::from_index(next_index).unwrap()
+  }
+
+  pub fn get_prev_day(&self, day_ref: DayRef) -> DayRef {
+    let index = day_ref.get_index() as i8;
+
+    let prev_index = index - 1;
+    if prev_index < 0 {
+      let last_index = self.month.get_num_of_days() - 1;
+
+      return DayRef::from_index(last_index).unwrap();
+    }
+
+    DayRef::from_index(prev_index as u8).unwrap()
   }
 }
