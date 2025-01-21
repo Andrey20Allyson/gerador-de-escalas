@@ -112,6 +112,8 @@ impl ScheduleAssigner {
         self.assign_in_pairs(table, day_ref, worker_refs);
         continue;
       }
+
+      self.assign_in_day(table, day_ref, worker_refs);
     }
   }
 
