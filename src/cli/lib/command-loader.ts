@@ -37,7 +37,9 @@ export function loadCommand<S extends z.ZodObject<z.ZodRawShape>>(
 
     const aliasStr = info.alias !== undefined ? `-${info.alias}, ` : "";
 
-    command.option(`${aliasStr}--${name} ${hint}`, info.description);
+    const cliName = info.cliName ?? name;
+
+    command.option(`${aliasStr}--${cliName} ${hint}`, info.description);
   }
 
   if (config.description) command.description(config.description);

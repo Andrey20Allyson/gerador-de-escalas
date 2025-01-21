@@ -6,6 +6,8 @@ import {
   WorkerInfo,
   DEFAULT_MONTH_PARSER,
   Month,
+  Gender,
+  Graduation,
 } from "src/lib/structs";
 import { DefaultTableIntegrityAnalyser } from "src/lib/builders/integrity";
 import { FirestoreInitializer } from "src/infra/firebase";
@@ -30,6 +32,14 @@ export const generateOptionsSchema = z.object({
       required_error: `Can't run with out the date, pass -d or --date config`,
     })
     .transform((s) => DEFAULT_MONTH_PARSER.parse(s)),
+  useNative: z
+    .boolean()
+    .or(z.string().transform((str) => str === "true"))
+    .optional(),
+  useParallelism: z
+    .boolean()
+    .or(z.string().transform((str) => str === "true"))
+    .optional(),
 });
 
 export type GenerateCommandOptions = z.infer<typeof generateOptionsSchema>;
@@ -69,9 +79,66 @@ async function loadTable(
   const deserializer = new OrdinaryDeserializer({
     month,
     workerRegistryRepository: repository,
+    sheetName: "Plan1",
   });
 
   return deserializer.deserialize(inputBuffer);
+}
+
+function generateSchedule(table: ExtraDutyTable, tries: number) {
+  const builder = MultiEventScheduleBuilder.default({ tries });
+
+  builder.build(table, table.getWorkerList());
+}
+
+import rslib from "dist/native/scheduler";
+
+function generateScheduleNative(
+  table: ExtraDutyTable,
+  triesLimit: number,
+  useThreads: boolean = false,
+) {
+  const workers = table.getWorkerList();
+
+  const genderMap: Record<Gender, () => number> = {
+    male: () => 1,
+    female: () => 2,
+    "N/A": () => {
+      throw new Error("not defined gender error");
+    },
+  };
+  const gradMap: Record<Graduation, () => number> = {
+    insp: () => 1,
+    "sub-insp": () => 2,
+    gcm: () => 3,
+  };
+
+  const result = rslib.generateSchedule({
+    month: {
+      year: table.month.year,
+      index: table.month.index,
+    },
+    workers: workers.map((worker) => {
+      return {
+        id: worker.id,
+        gender: genderMap[worker.gender](),
+        grad: gradMap[worker.graduation](),
+      };
+    }),
+    qualifier: {
+      triesLimit,
+      useThreads,
+    },
+  });
+
+  for (const assign of result.assignState) {
+    let worker = table.workers.get(assign.workerId);
+    if (worker == null) {
+      throw new Error(`unknow worker id: ${assign.workerId}`);
+    }
+
+    table.getDuty(assign.dayIndex, assign.dutyIndex).add(worker);
+  }
 }
 
 export async function generate(options: GenerateCommandOptions) {
@@ -81,6 +148,8 @@ export async function generate(options: GenerateCommandOptions) {
     tries = 7000,
     output: outputFile,
     date: month,
+    useNative = false,
+    useParallelism,
   } = options;
 
   const beckmarker = new Benchmarker({ metric: "sec" });
@@ -92,9 +161,11 @@ export async function generate(options: GenerateCommandOptions) {
 
   const tableAssignBenchmark = beckmarker.start("talbe assign");
 
-  const builder = MultiEventScheduleBuilder.default({ tries });
-
-  builder.build(table, workers);
+  if (useNative) {
+    generateScheduleNative(table, tries, useParallelism);
+  } else {
+    generateSchedule(table, tries);
+  }
 
   tableAssignBenchmark.end();
 

@@ -6,6 +6,8 @@
 /public/*
 /.cache/
 /.env
+/rs/target
+/rs/Cargo.lock
 ~$*.xlsx
 
 !README.md

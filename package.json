@@ -13,6 +13,8 @@
     "build:prod": "tsx scripts/index.ts build:prod",
     "build:dev": "tsx scripts/index.ts build:dev",
     "build:scripts": "tsc -p scripts && tsc-alias -p scripts/tsconfig.json",
+    "build:native": "napi build --config rs/napi-rs.config.json --cargo-cwd rs --platform --release dist/native/scheduler",
+    "build:native:debug": "napi build --config rs/napi-rs.config.json --cargo-cwd rs --platform dist/native/scheduler",
     "type:check": "tsc --noEmit",
     "lint:check": "prettier --check .",
     "lint:fix": "prettier --write ."
@@ -52,6 +54,7 @@
     "@electron-forge/maker-rpm": "^6.1.1",
     "@electron-forge/maker-squirrel": "^6.1.1",
     "@electron-forge/maker-zip": "^6.1.1",
+    "@napi-rs/cli": "2.18.4",
     "@types/clone": "^2.1.4",
     "@types/electron": "^1.6.10",
     "@types/lodash.clonedeep": "^4.5.9",
