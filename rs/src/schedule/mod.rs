@@ -5,6 +5,7 @@ pub mod duty_ref;
 pub mod month;
 pub mod ordinary_info;
 pub mod randomizer;
+pub mod ref_traits;
 pub mod schedule_table;
 pub mod worker;
 pub mod worker_ref;

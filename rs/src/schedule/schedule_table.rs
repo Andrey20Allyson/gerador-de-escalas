@@ -113,6 +113,15 @@ impl ExtraScheduleTable {
     &self.worker_assigment_infos[worker_ref.into_index()]
   }
 
+  pub fn is_worker_reached_limit(&self, worker_ref: WorkerRef) -> bool {
+    let worker = self.get_worker(worker_ref);
+    let worker_info = self.get_worker_assigment_info(worker_ref);
+
+    let reached_limit = worker_info.assigment_count >= worker.assign_limit;
+
+    reached_limit
+  }
+
   pub fn get_worker_ref_array(&self) -> WorkerRefArray {
     let mut array: [WorkerRef; WORKER_LIMIT] = [Default::default(); WORKER_LIMIT];
     let mut len: usize = 0;

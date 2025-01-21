@@ -3,6 +3,7 @@ use crate::schedule::{
   day_ref::{DayRef, DayRefArray},
   duty::ExtraDuty,
   duty_ref::{DutyRef, RefIterable, RefIterator},
+  ref_traits::RefArrayRemoveWhere,
   schedule_table::ExtraScheduleTable,
   worker::Worker,
   worker_ref::{WorkerRef, WorkerRefArray},
@@ -103,6 +104,18 @@ impl ScheduleAssigner {
     worker_refs: &mut WorkerRefArray,
   ) {
     for day_ref in day_refs.iter() {
+      let inmut_table: &ExtraScheduleTable = table;
+      worker_refs.remove_where(move |worker_ref| inmut_table.is_worker_reached_limit(worker_ref));
+      if worker_refs.gen_len() == 0 {
+        break;
+      }
+
+      let should_pass_day = self.step.pass_day_when;
+
+      if should_pass_day(PreAssignDayInfo { day_ref, table }) {
+        continue;
+      }
+
       if self.step.full_day {
         self.assign_full_day(table, day_ref, worker_refs);
         continue;
