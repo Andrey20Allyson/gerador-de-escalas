@@ -10,11 +10,21 @@ pub struct JsMonthConfig {
 }
 
 #[derive(Clone)]
+#[napi(object)]
+pub struct JsWorkerOrdinaryInfoConfig {
+  pub work_days: Vec<u8>,
+  pub start: u8,
+  pub duration: u8,
+  pub is_daily_worker: bool,
+}
+
+#[derive(Clone)]
 #[napi(js_name = "WorkerInfoConfig", object)]
 pub struct JsWorkerInfoConfig {
   pub id: u32,
   pub gender: u8,
   pub grad: u8,
+  pub ordinary_info: JsWorkerOrdinaryInfoConfig,
 }
 
 #[derive(Clone)]

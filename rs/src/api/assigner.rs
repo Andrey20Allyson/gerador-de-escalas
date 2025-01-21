@@ -9,13 +9,15 @@ use crate::{
     day_ref::DayRef,
     duty_ref::RefIterable,
     month::Month,
+    ordinary_info::OrdinaryInfo,
     schedule_table::ExtraScheduleTable,
     worker::{Gender, Graduation, Worker},
   },
 };
 
 use super::{
-  schedule_table::JsExtraScheduleTableCreateConfig, scheduler_defaults::get_default_assign_steps,
+  schedule_table::{JsExtraScheduleTableCreateConfig, JsWorkerOrdinaryInfoConfig},
+  scheduler_defaults::get_default_assign_steps,
 };
 
 #[napi(js_name = "ScheduleAssignState", object)]
@@ -36,7 +38,7 @@ pub fn generate_schedule(
 ) -> JsExtraScheduleTableOutputConfig {
   let assign_steps = get_default_assign_steps();
 
-  let mut table = create_schedule_table(&config).unwrap();
+  let mut table = create_schedule_table(&config);
   let mut qualifier: Qualifier = Qualifier::new();
 
   qualifier
@@ -54,9 +56,7 @@ pub fn generate_schedule(
   create_output_config(&table)
 }
 
-fn create_schedule_table(
-  config: &JsExtraScheduleTableCreateConfig,
-) -> Result<ExtraScheduleTable, Box<dyn std::error::Error>> {
+fn create_schedule_table(config: &JsExtraScheduleTableCreateConfig) -> ExtraScheduleTable {
   let month = Month::new(config.month.year as u16, config.month.index as u16);
 
   let mut table = ExtraScheduleTable::new(month);
@@ -69,14 +69,28 @@ fn create_schedule_table(
       ..Default::default()
     };
 
-    let d = DayRef::from_index(2)?;
-
-    worker.ordinary_info.set_work_day_to_true(d);
+    worker.ordinary_info = create_ordinary_info(&worker_config.ordinary_info);
 
     table.add_worker(worker);
   }
 
-  Ok(table)
+  table
+}
+
+fn create_ordinary_info(config: &JsWorkerOrdinaryInfoConfig) -> OrdinaryInfo {
+  let mut ordinary_info = OrdinaryInfo::default();
+
+  ordinary_info.start = config.start;
+  ordinary_info.duration = config.duration;
+  ordinary_info.is_daily_worker = config.is_daily_worker;
+
+  for day in config.work_days.iter() {
+    let day_ref = DayRef::from_index(*day).unwrap();
+
+    ordinary_info.set_work_day_to_true(day_ref);
+  }
+
+  ordinary_info
 }
 
 fn create_output_config(table: &ExtraScheduleTable) -> JsExtraScheduleTableOutputConfig {

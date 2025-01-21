@@ -17,7 +17,7 @@ pub struct AssignInfo<'a> {
   pub worker: &'a Worker,
 }
 
-type AssignCheckFn = fn(info: AssignInfo) -> bool;
+type AssignRuleCheckFn = fn(info: AssignInfo) -> bool;
 
 pub struct PreAssignDayInfo<'a> {
   pub table: &'a ExtraScheduleTable,
@@ -38,7 +38,6 @@ type PreAssignInfoCheckFn = fn(info: PreAssignInfo) -> bool;
 pub struct AssignStep {
   pub only_worker_where: PreAssignInfoCheckFn,
   pub pass_day_when: PreAssignDayCheckFn,
-  pub pass_duty_pair_when: AssignCheckFn,
   pub in_pairs: bool,
   pub full_day: bool,
   pub min: u8,
@@ -51,7 +50,6 @@ impl Default for AssignStep {
     AssignStep {
       only_worker_where: |_| true,
       pass_day_when: |_| false,
-      pass_duty_pair_when: |_| false,
       duty_min_distance: 2,
       min: 1,
       max: 2,
@@ -64,6 +62,7 @@ impl Default for AssignStep {
 #[derive(Clone)]
 pub struct ScheduleAssigner {
   pub step: AssignStep,
+  pub assign_rules: Vec<AssignRuleCheckFn>,
   current_duty_limit: u8,
 }
 
@@ -71,6 +70,7 @@ impl ScheduleAssigner {
   pub fn new() -> Self {
     ScheduleAssigner {
       step: AssignStep::default(),
+      assign_rules: Vec::new(),
       current_duty_limit: 1,
     }
   }
@@ -116,7 +116,7 @@ impl ScheduleAssigner {
     worker_refs: &mut WorkerRefArray,
   ) {
     for day_ref in day_refs.iter() {
-      worker_refs.remove_where(|worker_ref: WorkerRef| table.is_worker_reached_limit(worker_ref));
+      worker_refs.remove_where(|worker_ref| table.is_worker_reached_limit(worker_ref));
       if worker_refs.gen_len() == 0 {
         break;
       }

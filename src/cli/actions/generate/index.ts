@@ -119,10 +119,24 @@ function generateScheduleNative(
       index: table.month.index,
     },
     workers: workers.map((worker) => {
+      const workDays: number[] = [];
+
+      for (const { work, day } of worker.daysOfWork.entries()) {
+        if (work === true) {
+          workDays.push(day);
+        }
+      }
+
       return {
         id: worker.id,
         gender: genderMap[worker.gender](),
         grad: gradMap[worker.graduation](),
+        ordinaryInfo: {
+          workDays,
+          isDailyWorker: worker.daysOfWork.isDailyWorker,
+          start: worker.workTime.start,
+          duration: worker.workTime.duration,
+        },
       };
     }),
     qualifier: {
