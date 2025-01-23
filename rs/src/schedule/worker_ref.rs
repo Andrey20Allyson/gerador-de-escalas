@@ -1,7 +1,6 @@
 use super::{
   constants::{U8_NULL, WORKER_LIMIT},
-  randomizer,
-  ref_traits::RefArrayRemoveWhere,
+  ref_traits::{RefArrayLike, RefArrayRandomize, RefArrayRemoveWhere},
 };
 
 #[derive(Clone, Copy)]
@@ -42,16 +41,12 @@ impl WorkerRefArray {
     WorkerRefArray { array, len }
   }
 
-  pub fn randomize(&mut self) {
-    randomizer::randomize_array(&mut self.array, self.len);
-  }
-
   pub fn iter(&self) -> WorkerRefIter {
     WorkerRefIter::new(&self.array, self.len)
   }
 }
 
-impl RefArrayRemoveWhere<WorkerRef> for WorkerRefArray {
+impl RefArrayLike<WorkerRef> for WorkerRefArray {
   fn gen_len(&self) -> usize {
     self.len
   }
@@ -64,6 +59,9 @@ impl RefArrayRemoveWhere<WorkerRef> for WorkerRefArray {
     &mut self.array
   }
 }
+
+impl RefArrayRemoveWhere<WorkerRef> for WorkerRefArray {}
+impl RefArrayRandomize<WorkerRef> for WorkerRefArray {}
 
 pub struct WorkerRefIter<'a> {
   array: &'a [WorkerRef],

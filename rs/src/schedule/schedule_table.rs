@@ -85,11 +85,11 @@ impl ExtraScheduleTable {
   }
 
   pub fn get_duty(&self, duty_ref: DutyRef) -> &ExtraDuty {
-    &self.duties[duty_ref.get_duty_index()]
+    &self.duties[duty_ref.get_duty_index() - 1]
   }
 
   pub fn get_duty_mut(&mut self, duty_ref: DutyRef) -> &mut ExtraDuty {
-    &mut self.duties[duty_ref.get_duty_index()]
+    &mut self.duties[duty_ref.get_duty_index() - 1]
   }
 
   pub fn add_worker(&mut self, worker: Worker) {
@@ -146,10 +146,10 @@ impl ExtraScheduleTable {
 
     let next_index = index + 1;
     if next_index > last_index {
-      return DayRef::from_index(0).unwrap();
+      return DayRef::from_index(0);
     }
 
-    DayRef::from_index(next_index).unwrap()
+    DayRef::from_index(next_index)
   }
 
   pub fn get_prev_day(&self, day_ref: DayRef) -> DayRef {
@@ -159,9 +159,9 @@ impl ExtraScheduleTable {
     if prev_index < 0 {
       let last_index = self.month.get_num_of_days() - 1;
 
-      return DayRef::from_index(last_index).unwrap();
+      return DayRef::from_index(last_index);
     }
 
-    DayRef::from_index(prev_index as u8).unwrap()
+    DayRef::from_index(prev_index as u8)
   }
 }

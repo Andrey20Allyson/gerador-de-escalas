@@ -1,6 +1,9 @@
+use super::randomizer::randomize_array;
+
 pub trait RefArrayRemoveWhere<T>
 where
   T: Copy,
+  Self: RefArrayLike<T>,
 {
   fn remove_where(&mut self, callback: impl Fn(T) -> bool) {
     let old_len = self.gen_len();
@@ -22,7 +25,24 @@ where
 
     self.set_len(new_len);
   }
+}
 
+pub trait RefArrayRandomize<T>
+where
+  T: Copy,
+  Self: RefArrayLike<T>,
+{
+  fn randomize(&mut self) {
+    let len = self.gen_len();
+
+    randomize_array(self.get_mut_array(), len);
+  }
+}
+
+pub trait RefArrayLike<T>
+where
+  T: Copy,
+{
   fn get_mut_array(&mut self) -> &mut [T];
 
   fn gen_len(&self) -> usize;

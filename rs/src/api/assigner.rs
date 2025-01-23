@@ -7,7 +7,6 @@ use crate::{
     qualifier::Qualifier,
   },
   schedule::{
-    day_ref::DayRef,
     duty_ref::RefIterable,
     month::Month,
     ordinary_info::OrdinaryInfo,
@@ -88,9 +87,7 @@ fn create_ordinary_info(config: &JsWorkerOrdinaryInfoConfig) -> OrdinaryInfo {
   ordinary_info.is_daily_worker = config.is_daily_worker;
 
   for day in config.work_days.iter() {
-    let day_ref = DayRef::from_index(*day).unwrap();
-
-    ordinary_info.set_work_day_to_true(day_ref.get_index());
+    ordinary_info.set_work_day_to_true(*day);
   }
 
   ordinary_info
@@ -100,7 +97,7 @@ fn create_output_config(table: &ExtraScheduleTable) -> JsExtraScheduleTableOutpu
   let mut vec: Vec<JsScheduleAssignState> = Vec::new();
 
   for day_ref in table.get_day_ref_array().iter() {
-    for duty_ref in day_ref.get_duty_ref_array().iter() {
+    for duty_ref in day_ref.get_duty_ref_pairs().joined().iter() {
       let duty = table.get_duty(duty_ref);
 
       for worker_ref in duty.iter_worker_refs() {

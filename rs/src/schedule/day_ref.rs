@@ -1,8 +1,8 @@
 use super::{
-  constants::{DAY_LIMIT, DUTY_PER_DAY, U8_NULL},
-  duty_ref::{DutyRef, DutyRefOfOneDayArray, DutyRefPairs},
+  constants::{DAY_LIMIT, U8_NULL},
+  duty_ref::DutyRefPairs,
   randomizer,
-  ref_traits::RefArrayRemoveWhere,
+  ref_traits::{RefArrayLike, RefArrayRemoveWhere},
 };
 
 #[derive(Debug)]
@@ -26,28 +26,12 @@ impl std::error::Error for DayRefError {}
 pub struct DayRef(u8);
 
 impl DayRef {
-  pub fn from_index(index: u8) -> Result<Self, DayRefError> {
-    if (index as usize) >= DAY_LIMIT {
-      return Err(DayRefError::IncorrectDayIndexInfo(index));
-    }
-
-    Ok(DayRef(index))
+  pub fn from_index(index: u8) -> Self {
+    DayRef(index)
   }
 
   pub fn get_index(&self) -> u8 {
     self.0
-  }
-
-  pub fn get_duty_ref_array(&self) -> DutyRefOfOneDayArray {
-    let mut array: [DutyRef; DUTY_PER_DAY] = [Default::default(); DUTY_PER_DAY];
-    let mut len: usize = 0;
-
-    for index in 0..DUTY_PER_DAY as u8 {
-      array[len] = DutyRef { day: self.0, index };
-      len += 1;
-    }
-
-    return DutyRefOfOneDayArray::new(array, len);
   }
 
   pub fn get_duty_ref_pairs(self) -> DutyRefPairs {
@@ -92,7 +76,7 @@ impl DayRefArray {
   }
 }
 
-impl RefArrayRemoveWhere<DayRef> for DayRefArray {
+impl RefArrayLike<DayRef> for DayRefArray {
   fn gen_len(&self) -> usize {
     self.len
   }
@@ -105,6 +89,8 @@ impl RefArrayRemoveWhere<DayRef> for DayRefArray {
     &mut self.array
   }
 }
+
+impl RefArrayRemoveWhere<DayRef> for DayRefArray {}
 
 pub struct DayRefIter<'a> {
   array: &'a DayRefArray,

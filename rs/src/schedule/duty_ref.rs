@@ -3,9 +3,10 @@ use rand::Rng;
 use super::{
   constants::{DUTY_PER_DAY, DUTY_PER_PAIR, U8_NULL},
   day_ref::DayRef,
+  ref_traits::{RefArrayLike, RefArrayRandomize},
 };
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct DutyRef {
   pub day: u8,
   pub index: u8,
@@ -286,6 +287,7 @@ impl DutyRefPairs {
   }
 }
 
+#[derive(Debug)]
 pub struct DutyRefJoinedPairs {
   array: [DutyRef; DUTY_PER_DAY],
 }
@@ -301,6 +303,20 @@ impl RefIterable<DutyRef> for DutyRefJoinedPairs {
     RefIterator::new(&self.array, DUTY_PER_DAY)
   }
 }
+
+impl RefArrayLike<DutyRef> for DutyRefJoinedPairs {
+  fn gen_len(&self) -> usize {
+    DUTY_PER_DAY
+  }
+
+  fn get_mut_array(&mut self) -> &mut [DutyRef] {
+    &mut self.array
+  }
+
+  fn set_len(&mut self, _: usize) {}
+}
+
+impl RefArrayRandomize<DutyRef> for DutyRefJoinedPairs {}
 
 pub struct DutyRefPair {
   array: [DutyRef; DUTY_PER_PAIR],

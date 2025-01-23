@@ -3,7 +3,7 @@ use crate::schedule::{
   day_ref::{DayRef, DayRefArray},
   duty::ExtraDuty,
   duty_ref::{DutyRef, RefIterable, RefIterator},
-  ref_traits::RefArrayRemoveWhere,
+  ref_traits::{RefArrayLike, RefArrayRandomize, RefArrayRemoveWhere},
   schedule_table::ExtraScheduleTable,
   worker::Worker,
   worker_ref::{WorkerRef, WorkerRefArray},
@@ -201,7 +201,9 @@ impl ScheduleAssigner {
     day_ref: DayRef,
     worker_refs: &mut WorkerRefArray,
   ) {
-    let duty_refs = day_ref.get_duty_ref_array();
+    let mut duty_refs = day_ref.get_duty_ref_pairs().joined();
+
+    duty_refs.randomize();
 
     for duty_ref in duty_refs.iter() {
       let iterable_duty_ref = duty_ref.into_iterable();
@@ -280,7 +282,7 @@ impl ScheduleAssigner {
       let assing_info = AssignInfo {
         table,
         assign_size,
-        day_ref: DayRef::from_index(duty_ref.day).unwrap(),
+        day_ref: DayRef::from_index(duty_ref.day),
         duty,
         duty_ref,
         worker,

@@ -12,7 +12,7 @@ pub mod correct_worker_allocation {
 
   fn every_duty_is_worker_suficient(table: &ExtraScheduleTable) -> bool {
     for day_ref in table.get_day_ref_array().iter() {
-      for duty_ref in day_ref.get_duty_ref_array().iter() {
+      for duty_ref in day_ref.get_duty_ref_pairs().joined().iter() {
         let duty = table.get_duty(duty_ref);
 
         if duty.workers_len < 2 {
@@ -60,7 +60,7 @@ pub mod gcm_only {
     let mut num_of_duties_gcm_only = 0;
 
     for day_ref in table.get_day_ref_array().iter() {
-      for duty_ref in day_ref.get_duty_ref_array().iter() {
+      for duty_ref in day_ref.get_duty_ref_pairs().joined().iter() {
         let duty = table.get_duty(duty_ref);
 
         if !duty.has_insp_or_sub() {
