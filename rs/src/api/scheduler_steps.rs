@@ -6,8 +6,32 @@ use crate::{
 pub fn get_default_assign_steps() -> Vec<AssignStep> {
   Vec::from([
     AssignStep {
+      only_worker_where: |info| info.worker.grad.is_insp(),
+      min: 1,
+      ..Default::default()
+    },
+    AssignStep {
+      only_worker_where: |info| info.worker.grad.is_sub(),
+      min: 1,
+      ..Default::default()
+    },
+    AssignStep {
       only_worker_where: |info| info.worker.ordinary_info.duration == 24,
       full_day: true,
+      max: 1,
+      ..Default::default()
+    },
+    AssignStep {
+      full_day: true,
+      max: 2,
+      ..Default::default()
+    },
+    AssignStep {
+      only_worker_where: |info| info.worker.grad.is_sub(),
+      pass_day_when: |info| {
+        info.table.month.week_day_of(info.day_ref.get_index()) == week_days::MONDAY
+      },
+      min: 1,
       max: 2,
       ..Default::default()
     },
@@ -28,20 +52,6 @@ pub fn get_default_assign_steps() -> Vec<AssignStep> {
       only_worker_where: |info| info.worker.ordinary_info.is_daily_worker,
       min: 2,
       in_pairs: false,
-      ..Default::default()
-    },
-    AssignStep {
-      only_worker_where: |info| info.worker.grad.is_insp(),
-      min: 1,
-      ..Default::default()
-    },
-    AssignStep {
-      only_worker_where: |info| info.worker.grad.is_sub(),
-      pass_day_when: |info| {
-        info.table.month.week_day_of(info.day_ref.get_index()) == week_days::MONDAY
-      },
-      min: 1,
-      max: 2,
       ..Default::default()
     },
     AssignStep {
