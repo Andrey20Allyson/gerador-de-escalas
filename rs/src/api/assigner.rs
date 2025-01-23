@@ -1,7 +1,7 @@
 use napi_derive::napi;
 
 use crate::{
-  assigner::assign_rules::ordinary_rule,
+  assigner::assign_rules::{duty_timeoff_rule, ordinary_rule},
   qualifier::{
     integrity_checkers::{correct_worker_allocation, gcm_only},
     qualifier::Qualifier,
@@ -17,7 +17,7 @@ use crate::{
 
 use super::{
   schedule_table::{JsExtraScheduleTableCreateConfig, JsWorkerOrdinaryInfoConfig},
-  scheduler_defaults::get_default_assign_steps,
+  scheduler_steps::get_default_assign_steps,
 };
 
 #[napi(js_name = "ScheduleAssignState", object)]
@@ -47,7 +47,10 @@ pub fn generate_schedule(
     .set_assign_configs(assign_steps)
     .set_integrity_checkers(vec![correct_worker_allocation::check, gcm_only::check]);
 
-  qualifier.assinger.add_rule(ordinary_rule::can_assing);
+  qualifier
+    .assinger
+    .add_rule(ordinary_rule::can_assing)
+    .add_rule(duty_timeoff_rule::can_assing);
 
   if config.qualifier.use_threads.unwrap_or(true) {
     qualifier.qualify_with_threads(&mut table);

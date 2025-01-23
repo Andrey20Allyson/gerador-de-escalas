@@ -9,7 +9,6 @@ pub struct ExtraDuty {
   pub workers_len: u8,
   pub insp_count: u8,
   pub sub_count: u8,
-  pub actived: bool,
 }
 
 impl ExtraDuty {
@@ -71,7 +70,6 @@ impl Default for ExtraDuty {
       workers_len: 0,
       insp_count: 0,
       sub_count: 0,
-      actived: true,
     }
   }
 }

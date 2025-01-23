@@ -21,6 +21,14 @@ pub struct AssignInfo<'a> {
 
 type AssignRuleCheckFn = fn(info: &AssignInfo) -> bool;
 
+pub struct PreAssignDutyInfo<'a> {
+  pub table: &'a ExtraScheduleTable,
+  pub duty_ref: DutyRef,
+  pub duty: &'a ExtraDuty,
+}
+
+type PreAssignDutyCheckFn = fn(info: PreAssignDutyInfo) -> bool;
+
 pub struct PreAssignDayInfo<'a> {
   pub table: &'a ExtraScheduleTable,
   pub day_ref: DayRef,
@@ -40,6 +48,7 @@ type PreAssignInfoCheckFn = fn(info: PreAssignInfo) -> bool;
 pub struct AssignStep {
   pub only_worker_where: PreAssignInfoCheckFn,
   pub pass_day_when: PreAssignDayCheckFn,
+  pub pass_duty_when: PreAssignDutyCheckFn,
   pub in_pairs: bool,
   pub full_day: bool,
   pub min: u8,
@@ -52,6 +61,7 @@ impl Default for AssignStep {
     AssignStep {
       only_worker_where: |_| true,
       pass_day_when: |_| false,
+      pass_duty_when: |_| false,
       duty_min_distance: 2,
       min: 1,
       max: 2,
@@ -206,6 +216,15 @@ impl ScheduleAssigner {
     duty_refs.randomize();
 
     for duty_ref in duty_refs.iter() {
+      let should_pass_duty = self.step.pass_duty_when;
+      if should_pass_duty(PreAssignDutyInfo {
+        table,
+        duty_ref,
+        duty: table.get_duty(duty_ref),
+      }) {
+        continue;
+      }
+
       let iterable_duty_ref = duty_ref.into_iterable();
 
       for worker_ref in worker_refs.iter() {
@@ -243,11 +262,6 @@ impl ScheduleAssigner {
       let duty = table.get_duty(duty_ref);
 
       // [rule set]
-
-      // desactived duty rule
-      if duty.actived == false {
-        return false;
-      }
 
       // duty capacity rule
       if duty.is_full() {

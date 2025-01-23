@@ -92,6 +92,10 @@ impl ExtraScheduleTable {
     &mut self.duties[duty_ref.get_duty_index() - 1]
   }
 
+  pub fn get_duty_by_index(&self, index: usize) -> &ExtraDuty {
+    &self.duties[index - 1]
+  }
+
   pub fn add_worker(&mut self, worker: Worker) {
     self.workers[self.workers_len as usize] = worker;
     self.worker_assigment_infos[self.workers_len as usize] = WorkerAssigmentInfo::new();
