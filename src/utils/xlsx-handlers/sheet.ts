@@ -1,4 +1,4 @@
-import { Result, ResultError, ResultType } from "../../utils/result";
+import { Result, ResultError, ResultType } from "src/utils/result";
 import { CellAddress } from "./address";
 import { CellHandler } from "./cell";
 import { LineHander } from "./line";
@@ -18,6 +18,13 @@ export class SheetHandler {
     const ref = sheet["!ref"];
     if (!ref)
       return new SheetRange(new CellAddress("a", 1), new CellAddress("a", 1));
+
+    if (ref.split(":").length === 1) {
+      return new SheetRange(
+        Result.unwrap(CellAddress.parse(ref)),
+        Result.unwrap(CellAddress.parse(ref)),
+      );
+    }
 
     return SheetRange.parse(ref);
   }
