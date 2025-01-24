@@ -274,7 +274,7 @@ impl ScheduleAssigner {
       }
 
       // worker limit rule
-      if worker_assigment_info.assigment_count >= worker.assign_limit {
+      if worker_assigment_info.assigment_count + assign_size > worker.assign_limit {
         return false;
       }
 
