@@ -136,7 +136,7 @@ export class EditorHandler implements IpcMappingFactory {
     table.clear();
 
     const builder = new JQScheduleBuilder(2_000);
-    builder.build(table, table.getWorkerList());
+    builder.build(table);
 
     return AppResponse.ok();
   }

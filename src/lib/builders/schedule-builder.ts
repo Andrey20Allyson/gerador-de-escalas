@@ -5,5 +5,5 @@ export interface ScheduleBuilder {
   /**
    * this method can mutates the `table` object
    */
-  build(table: ExtraDutyTable, workers: WorkerInfo[]): ExtraDutyTable;
+  build(table: ExtraDutyTable): ExtraDutyTable;
 }

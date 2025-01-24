@@ -8,8 +8,10 @@ export class ClassifyingScheduleBuilder implements ScheduleBuilder {
     readonly classifier: ScheduleClassifier,
   ) {}
 
-  build(table: ExtraDutyTable, workers: WorkerInfo[]): ExtraDutyTable {
+  build(table: ExtraDutyTable): ExtraDutyTable {
     table.config.currentPlace = this.extraPlace;
+
+    const workers = table.getWorkerList();
 
     const bestClone = this.classifier.classify(table, workers);
 

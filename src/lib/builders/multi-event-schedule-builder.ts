@@ -20,8 +20,8 @@ export interface DefaultMultiEventScheduleBuilderOptions {
 export class MultiEventScheduleBuilder implements ScheduleBuilder {
   constructor(readonly classifier: ScheduleClassifier) {}
 
-  build(table: ExtraDutyTable, workers: WorkerInfo[]): ExtraDutyTable {
-    const bestClone = this.classifier.classify(table, workers);
+  build(table: ExtraDutyTable): ExtraDutyTable {
+    const bestClone = this.classifier.classify(table, table.getWorkerList());
 
     table.copy(bestClone);
 

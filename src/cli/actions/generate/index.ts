@@ -88,7 +88,7 @@ async function loadTable(
 function generateSchedule(table: ExtraDutyTable, tries: number) {
   const builder = MultiEventScheduleBuilder.default({ tries });
 
-  builder.build(table, table.getWorkerList());
+  builder.build(table);
 }
 
 import rslib from "dist/native/scheduler";
