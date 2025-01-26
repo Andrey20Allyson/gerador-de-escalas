@@ -19,6 +19,7 @@ import { WorkerRegistryRepository } from "src/lib/persistence/entities";
 import { OrdinaryDeserializer } from "src/lib/serialization/in/impl/ordinary-deserializer";
 import { MetadataNotFoundError } from "src/lib/serialization/in/metadata/reader";
 import { JQScheduleBuilder } from "src/lib/builders/jq-schedule-builder";
+import { NativeScheduleBuilder } from "src/lib/builders/native-schedule-builder";
 
 export interface EditorHandlerFactoryData {
   table: ExtraDutyTable;
@@ -135,8 +136,8 @@ export class EditorHandler implements IpcMappingFactory {
 
     table.clear();
 
-    const builder = new JQScheduleBuilder(2_000);
-    builder.build(table, table.getWorkerList());
+    const builder = new NativeScheduleBuilder({ tries: 10_000 });
+    builder.build(table);
 
     return AppResponse.ok();
   }

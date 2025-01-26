@@ -31,3 +31,17 @@ export function externalsPlugin(): Plugin {
     },
   };
 }
+
+export function nativesPlugin(): Plugin {
+  return {
+    name: "natives-plugin",
+    setup(build) {
+      build.onResolve({ filter: /^dist\/native\/.*/ }, (args) => {
+        return {
+          path: args.path.replace("dist", "."),
+          external: true,
+        };
+      });
+    },
+  };
+}

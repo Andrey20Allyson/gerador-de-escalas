@@ -4,7 +4,7 @@ import { AppError } from "./error";
 import { AppResponse } from "./response";
 import _ from "lodash";
 import { cloneAndInscribeProto, resolveProto } from "src/utils/resolve-proto";
-import "./protos";
+import "../../../lib/protos";
 
 export type HandlerType = {
   [K in string]: IpcMapping.HandlerFunction | HandlerType;
@@ -31,9 +31,15 @@ export class IpcHandlerConsumer {
 
     this.recivers.add(ipc);
 
-    ipc.handle("resource", (ev, name, ...args) =>
-      this.consume(name, ev, ...args),
-    );
+    ipc.handle("resource", async (ev, name, ...args) => {
+      const response = await this.consume(name, ev, ...args);
+
+      if (response != null && response.ok === false) {
+        console.log(response.error.callstack);
+      }
+
+      return response;
+    });
   }
 
   async consume(name: unknown, ev: IpcMapping.IpcEvent, ...args: unknown[]) {

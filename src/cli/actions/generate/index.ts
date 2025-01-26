@@ -6,6 +6,8 @@ import {
   WorkerInfo,
   DEFAULT_MONTH_PARSER,
   Month,
+  Gender,
+  Graduation,
 } from "src/lib/structs";
 import { DefaultTableIntegrityAnalyser } from "src/lib/builders/integrity";
 import { FirestoreInitializer } from "src/infra/firebase";
@@ -19,6 +21,7 @@ import { z } from "zod";
 import { MultiEventScheduleBuilder } from "src/lib/builders/multi-event-schedule-builder";
 import { DivulgationSerializer } from "src/lib/serialization";
 import { OrdinaryDeserializer } from "src/lib/serialization/in/impl/ordinary-deserializer";
+import { NativeScheduleBuilder } from "src/lib/builders/native-schedule-builder";
 
 export const generateOptionsSchema = z.object({
   mode: z.enum(["input-file", "mock"]).optional(),
@@ -30,6 +33,14 @@ export const generateOptionsSchema = z.object({
       required_error: `Can't run with out the date, pass -d or --date config`,
     })
     .transform((s) => DEFAULT_MONTH_PARSER.parse(s)),
+  useNative: z
+    .boolean()
+    .or(z.string().transform((str) => str === "true"))
+    .optional(),
+  useParallelism: z
+    .boolean()
+    .or(z.string().transform((str) => str === "true"))
+    .optional(),
 });
 
 export type GenerateCommandOptions = z.infer<typeof generateOptionsSchema>;
@@ -69,9 +80,26 @@ async function loadTable(
   const deserializer = new OrdinaryDeserializer({
     month,
     workerRegistryRepository: repository,
+    sheetName: "Plan1",
   });
 
   return deserializer.deserialize(inputBuffer);
+}
+
+function generateSchedule(table: ExtraDutyTable, tries: number) {
+  const builder = MultiEventScheduleBuilder.default({ tries });
+
+  builder.build(table);
+}
+
+function generateScheduleNative(
+  table: ExtraDutyTable,
+  tries: number,
+  useThreads: boolean = false,
+) {
+  const builder = new NativeScheduleBuilder({ tries });
+
+  builder.build(table);
 }
 
 export async function generate(options: GenerateCommandOptions) {
@@ -81,6 +109,8 @@ export async function generate(options: GenerateCommandOptions) {
     tries = 7000,
     output: outputFile,
     date: month,
+    useNative = false,
+    useParallelism,
   } = options;
 
   const beckmarker = new Benchmarker({ metric: "sec" });
@@ -92,9 +122,11 @@ export async function generate(options: GenerateCommandOptions) {
 
   const tableAssignBenchmark = beckmarker.start("talbe assign");
 
-  const builder = MultiEventScheduleBuilder.default({ tries });
-
-  builder.build(table, workers);
+  if (useNative) {
+    generateScheduleNative(table, tries, useParallelism);
+  } else {
+    generateSchedule(table, tries);
+  }
 
   tableAssignBenchmark.end();
 

@@ -8,11 +8,8 @@ export class StackScheduleBuilder implements ScheduleBuilder {
     this.builders = [...builders];
   }
 
-  build(table: ExtraDutyTable, workers: WorkerInfo[]): ExtraDutyTable {
-    return this.builders.reduce(
-      (prev, builder) => builder.build(prev, workers),
-      table,
-    );
+  build(table: ExtraDutyTable): ExtraDutyTable {
+    return this.builders.reduce((prev, builder) => builder.build(prev), table);
   }
 
   use(...builders: ScheduleBuilder[]): StackScheduleBuilder {

@@ -9,6 +9,8 @@ import {
   WorkerIdentifier,
 } from "src/lib/structs";
 import { Deserializer } from "src/lib/serialization/in";
+import { resolveProto } from "src/utils/resolve-proto";
+import "src/lib/protos";
 
 export class JsonDeserializer implements Deserializer {
   async deserialize(buffer: Buffer): Promise<ExtraDutyTable> {
@@ -16,7 +18,7 @@ export class JsonDeserializer implements Deserializer {
     const json = JSON.parse(parseable);
 
     const tableConfig: ExtraDutyTableConfig = {
-      ...json.meta,
+      ...resolveProto(json.meta),
       extraEvents: {},
     };
 

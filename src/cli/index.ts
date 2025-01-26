@@ -19,10 +19,20 @@ loadCommand({
     ),
     input: OptionInfoBuilder.alias("i").describe("the input file path"),
     output: OptionInfoBuilder.alias("o").describe("the output file path"),
-    tries: OptionInfoBuilder.alias("t").describe(
-      "the number of times that the program will try generate the table",
-    ),
+    tries: OptionInfoBuilder.alias("t")
+      .describe(
+        "the number of times that the program will try generate the table",
+      )
+      .hint("int"),
     mode: OptionInfoBuilder.alias("m").describe("select the execution mode"),
+    useNative: OptionInfoBuilder.alias("n")
+      .describe("use native precompiled schedule generator module")
+      .hint("bool")
+      .cliName("use-native"),
+    useParallelism: OptionInfoBuilder.alias("p")
+      .describe("use native module with multi-thread feature")
+      .hint("bool")
+      .cliName("use-parallelism"),
   },
   action: generate,
 });

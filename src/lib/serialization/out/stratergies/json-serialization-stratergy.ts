@@ -4,6 +4,8 @@ import {
   WorkerInfo,
 } from "src/lib/structs";
 import { Serializer } from "../serializer";
+import { cloneAndInscribeProto } from "src/utils/resolve-proto";
+import "src/lib/protos";
 
 export class JsonSerializationStratergy implements Serializer {
   async serialize(table: ExtraDutyTable): Promise<Buffer> {
@@ -16,7 +18,7 @@ export class JsonSerializationStratergy implements Serializer {
     );
 
     const object = {
-      meta: table.config,
+      meta: cloneAndInscribeProto(table.config),
       workers,
       schedule,
     };

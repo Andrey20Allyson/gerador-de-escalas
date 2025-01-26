@@ -3,7 +3,7 @@ import { build } from "esbuild";
 import { ProgramInitializer } from "index";
 import path from "node:path";
 import cp from "child_process";
-import { externalsPlugin } from "../utils/esbuild-plugin";
+import { externalsPlugin, nativesPlugin } from "../utils/esbuild-plugin";
 
 type ExecResult = {
   stdout: string;
@@ -36,7 +36,6 @@ export class ProdBuildProgramInitializer implements ProgramInitializer {
             target: "es2020",
             bundle: true,
             minify: true,
-            plugins: [externalsPlugin()],
           }),
 
           build({
@@ -47,7 +46,7 @@ export class ProdBuildProgramInitializer implements ProgramInitializer {
             outdir: "dist/",
             bundle: true,
             minify: true,
-            plugins: [externalsPlugin()],
+            plugins: [nativesPlugin(), externalsPlugin()],
           }),
         ]);
 

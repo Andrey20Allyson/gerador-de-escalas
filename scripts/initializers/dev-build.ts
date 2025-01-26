@@ -3,7 +3,7 @@ import { context } from "esbuild";
 import { ProgramInitializer } from "index";
 import path from "node:path";
 import ts from "typescript";
-import { externalsPlugin } from "../utils/esbuild-plugin";
+import { externalsPlugin, nativesPlugin } from "../utils/esbuild-plugin";
 
 const tsconfig = path.join(process.cwd(), "tsconfig.json");
 
@@ -29,7 +29,7 @@ async function runDevBuildOfApploader() {
     format: "cjs",
     outdir: "dist/",
     tsconfig,
-    plugins: [externalsPlugin()],
+    plugins: [nativesPlugin(), externalsPlugin()],
   });
 
   await ctx.watch();

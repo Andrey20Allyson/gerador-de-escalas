@@ -2,6 +2,7 @@ export interface OptionInfo {
   readonly alias?: string;
   readonly description?: string;
   readonly hint?: string;
+  readonly cliName?: string;
 }
 
 export class OptionInfoBuilder {
@@ -28,6 +29,13 @@ export class OptionInfoBuilder {
     });
   }
 
+  cliName(cliName: string) {
+    return new OptionInfoBuilder({
+      ...this.optionInfo,
+      cliName,
+    });
+  }
+
   get(): OptionInfo {
     return this.optionInfo;
   }
@@ -46,5 +54,9 @@ export class OptionInfoBuilder {
 
   static hint(hint: string): OptionInfoBuilder {
     return new this({ hint });
+  }
+
+  static cliName(cliName: string) {
+    return new this({ cliName });
   }
 }

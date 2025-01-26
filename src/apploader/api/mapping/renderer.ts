@@ -3,7 +3,7 @@ import {
   IpcMappingFactory,
   separator,
 } from "./utils";
-import "./protos";
+import "../../../lib/protos";
 import { cloneAndInscribeProto, resolveProto } from "src/utils/resolve-proto";
 
 export type IpcInvokerFunction = (...args: unknown[]) => unknown;
