@@ -23,10 +23,6 @@ export function EditTableStage() {
   const changeEditor = EditorRouterContext.useNavigate();
   const tableController = TableEditorController.useOptional();
 
-  function handleSaveAs() {
-    saveModal.open();
-  }
-
   function handleOpenRulesModal() {
     rulesModal.open();
   }
@@ -74,7 +70,6 @@ export function EditTableStage() {
     <StyledEditTableStageBody>
       <EditorToolBar
         onPrev={handlePrev}
-        onSave={handleSaveAs}
         onGenerate={handleGenerate}
         onChangeEditor={changeEditor}
         onOpenRulesModal={handleOpenRulesModal}
