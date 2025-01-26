@@ -26,6 +26,7 @@ export interface EditorHandlerFactoryData {
 }
 
 export type SerializationMode = "payment" | "divugation" | "day-list";
+export type ScheduleType = "ordinary" | SerializationMode;
 
 export interface LoadOrdinaryPayload {
   path: string;
