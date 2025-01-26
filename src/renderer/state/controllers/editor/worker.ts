@@ -1,5 +1,5 @@
 import {
-  TableData,
+  ScheduleState,
   WorkerData,
   DutyData,
 } from "../../../../apploader/api/table-reactive-edition/table";
@@ -17,7 +17,7 @@ export interface WorkerEditorControllerOptions
 
 export class WorkerEditorController {
   readonly dispatcher: DispatcherType;
-  readonly table: TableData;
+  readonly table: ScheduleState;
   readonly worker: WorkerData;
 
   constructor(workerId: number);

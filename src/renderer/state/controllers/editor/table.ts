@@ -2,7 +2,7 @@ import { Month } from "src/lib/structs";
 import {
   DateData,
   DutyData,
-  TableData,
+  ScheduleState,
   WorkerData,
 } from "../../../../apploader/api/table-reactive-edition/table";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
@@ -34,7 +34,7 @@ export type DispatcherType = ReturnType<typeof useAppDispatch>;
 
 export interface EditorControllerOptions {
   dispatcher?: DispatcherType;
-  table?: TableData;
+  table?: ScheduleState;
 }
 
 export interface TableEditorControllerOptions extends EditorControllerOptions {
@@ -44,7 +44,7 @@ export interface TableEditorControllerOptions extends EditorControllerOptions {
 export class TableEditorController {
   dispatcher: DispatcherType;
   state: TableEditorState;
-  table: TableData;
+  table: ScheduleState;
 
   constructor(options: TableEditorControllerOptions = {}) {
     const {
@@ -139,11 +139,11 @@ export class TableEditorController {
     }
   }
 
-  load(data: TableData) {
+  load(data: ScheduleState) {
     this.dispatcher(editorActions.initialize({ tableData: data }));
   }
 
-  setState(data: TableData) {
+  setState(data: ScheduleState) {
     this.dispatcher(editorActions.pushState({ tableData: data }));
   }
 
@@ -186,7 +186,7 @@ export class TableEditorController {
       useAppSelector((state) => currentTableSelector(state.tableEditor)) !==
       null;
 
-    function load(table: TableData) {
+    function load(table: ScheduleState) {
       dispatcher(editorActions.initialize({ tableData: table }));
     }
 

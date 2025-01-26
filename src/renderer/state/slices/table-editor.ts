@@ -1,7 +1,7 @@
 import {
   DutyAndWorkerRelationship,
   IdGenerator,
-  TableData,
+  ScheduleState,
   TableFactory,
 } from "../../../apploader/api/table-reactive-edition/table";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -9,12 +9,12 @@ import type { RootState } from "../store";
 import { WorkerInsertionRulesState } from "../../../apploader/api/table-edition";
 
 export interface TableEditorState {
-  history: TableData[];
+  history: ScheduleState[];
   undoIndex: number;
 }
 
 export interface PushStatePayload {
-  tableData: TableData;
+  tableData: ScheduleState;
 }
 
 export interface AddRelationshipPayload {
@@ -36,7 +36,7 @@ export interface SetRulePayload {
 }
 
 export interface InitializerPayload {
-  tableData: TableData;
+  tableData: ScheduleState;
 }
 
 const initialState: TableEditorState = {
@@ -46,7 +46,7 @@ const initialState: TableEditorState = {
 
 const HISTORY_CAPACITY = 256;
 
-export function pushToHistory(state: TableEditorState, newData: TableData) {
+export function pushToHistory(state: TableEditorState, newData: ScheduleState) {
   state.history = [
     newData,
     ...(state.undoIndex === 0
@@ -85,7 +85,7 @@ export const tableEditorSlice = createSlice({
         action.payload.dutyId,
       );
 
-      const newData: TableData = {
+      const newData: ScheduleState = {
         ...current,
         dutyAndWorkerRelationships: [
           ...current.dutyAndWorkerRelationships,
@@ -102,7 +102,7 @@ export const tableEditorSlice = createSlice({
       const current = currentTableSelector(state as TableEditorState);
       if (current === null) return;
 
-      const newData: TableData = {
+      const newData: ScheduleState = {
         ...current,
         dutyAndWorkerRelationships: current.dutyAndWorkerRelationships.filter(
           (relationship) => relationship.id !== action.payload.id,
@@ -120,7 +120,7 @@ export const tableEditorSlice = createSlice({
 
       const ids = Array.from(action.payload.ids);
 
-      const newData: TableData = {
+      const newData: ScheduleState = {
         ...current,
         dutyAndWorkerRelationships: current.dutyAndWorkerRelationships.filter(
           (relationship) => !ids.includes(relationship.id),
@@ -171,7 +171,7 @@ export function tableEditorSelector(state: RootState): TableEditorState {
 
 export function currentTableSelector(
   state: TableEditorState,
-): TableData | null {
+): ScheduleState | null {
   return state.history.at(state.undoIndex) ?? null;
 }
 

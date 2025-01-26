@@ -28,14 +28,21 @@ export function EditTableStage() {
   }
 
   async function handleGenerate() {
-    await api.editor.generate();
-
-    const newTableDataResult = await api.editor.createEditor();
-    if (!newTableDataResult.ok) {
-      return AppError.log(newTableDataResult.error);
+    if (tableController == null) {
+      throw new Error("table state not loaded");
     }
 
-    tableController?.setState(newTableDataResult.data);
+    const oldState = tableController.table;
+
+    const generationResult = await api.editor.generate(oldState);
+
+    if (generationResult.ok === false) {
+      return AppError.log(generationResult.error);
+    }
+
+    const newState = generationResult.data;
+
+    tableController.setState(newState);
   }
 
   useEffect(() => {
@@ -60,7 +67,6 @@ export function EditTableStage() {
   async function handlePrev() {
     if (tableController === null) return;
 
-    await editor.clear();
     tableController.clear();
 
     prev();

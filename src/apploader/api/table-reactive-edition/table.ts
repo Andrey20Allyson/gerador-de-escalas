@@ -1,4 +1,4 @@
-import type {
+import {
   DayRestriction,
   ExtraDuty,
   ExtraDutyTable,
@@ -6,6 +6,11 @@ import type {
   Graduation,
   WorkerInfo,
   DayOfExtraDuty,
+  DaysOfWork,
+  Month,
+  WorkerIdentifier,
+  WorkTime,
+  WorkLimit,
 } from "src/lib/structs";
 import { WorkerInsertionRulesState } from "../table-edition";
 
@@ -20,12 +25,15 @@ export interface OrdinaryInfo {
 export interface WorkerData {
   readonly id: number;
   readonly workerId: number;
+  readonly workerPreId: number;
+  readonly workerPostId: number;
   readonly individualId: number;
   readonly name: string;
   readonly graduation: Graduation;
   readonly gender: Gender;
   readonly restrictions: DayRestriction[];
   readonly ordinary: OrdinaryInfo;
+  readonly workLimit: number;
 }
 
 export interface DateData {
@@ -46,7 +54,7 @@ export interface DutyData {
   readonly end: number;
 }
 
-export interface TableConfig {
+export interface TableStateConfig {
   readonly numOfDays: number;
   readonly dutiesPerDay: number;
   readonly workerCapacity: number;
@@ -67,14 +75,14 @@ export interface DutyAndWorkerRelationship {
   readonly dutyId: number;
 }
 
-export interface TableData {
+export interface ScheduleState {
   idCounters: Record<string, number>;
   workers: WorkerData[];
   duties: DutyData[];
   days: DateData[];
   rules: WorkerInsertionRulesState;
   dutyAndWorkerRelationships: DutyAndWorkerRelationship[];
-  readonly config: TableConfig;
+  readonly config: TableStateConfig;
 }
 
 export class TableFactory {
@@ -82,7 +90,7 @@ export class TableFactory {
 
   constructor(readonly idGenerator: IdGenerator = new IdGenerator()) {}
 
-  createTableData(table: ExtraDutyTable): TableData {
+  createTableData(table: ExtraDutyTable): ScheduleState {
     return {
       idCounters: this.idGenerator.counters,
       duties: [],
@@ -166,6 +174,9 @@ export class TableFactory {
       id: this.idGenerator.next("worker"),
       individualId: worker.config.individualId,
       name: worker.name,
+      workerPostId: worker.identifier.postId,
+      workerPreId: worker.identifier.preId,
+      workLimit: worker.limit.of("unknow"),
     };
   }
 
@@ -180,7 +191,7 @@ export class TableFactory {
     };
   }
 
-  toDTO(table: ExtraDutyTable): TableData {
+  intoState(table: ExtraDutyTable): ScheduleState {
     const tableData = this.createTableData(table);
 
     const workers = table.getWorkerList();
@@ -218,19 +229,25 @@ export class TableFactory {
     return tableData;
   }
 
-  fromDTO(tableData: TableData, table: ExtraDutyTable): ExtraDutyTable {
-    const workers = table.getWorkerList();
-    table.clear();
+  fromState(state: ScheduleState): ExtraDutyTable {
+    const month = new Month(state.config.year, state.config.month);
 
-    const dutyDataMap = new Map(
-      tableData.duties.map((duty) => [duty.id, duty]),
+    const table = new ExtraDutyTable({
+      ...state.config,
+      month,
+    });
+
+    const workers = state.workers.map((workerState) =>
+      this.workerFromState(month, workerState),
     );
+
+    const dutyDataMap = new Map(state.duties.map((duty) => [duty.id, duty]));
     const workerDataMap = new Map(
-      tableData.workers.map((worker) => [worker.id, worker]),
+      state.workers.map((worker) => [worker.id, worker]),
     );
     const workerInfoMap = new Map(workers.map((worker) => [worker.id, worker]));
 
-    for (const relationship of tableData.dutyAndWorkerRelationships) {
+    for (const relationship of state.dutyAndWorkerRelationships) {
       const dutyData = dutyDataMap.get(relationship.dutyId);
       const workerData = workerDataMap.get(relationship.workerId);
       if (dutyData === undefined || workerData === undefined) continue;
@@ -242,6 +259,32 @@ export class TableFactory {
     }
 
     return table;
+  }
+
+  workerFromState(month: Month, state: WorkerData): WorkerInfo {
+    let daysOfWork;
+    if (state.ordinary.isDailyWorker) {
+      daysOfWork = DaysOfWork.fromDailyWorker(month);
+    } else {
+      daysOfWork = DaysOfWork.fromRestrictionArray(state.restrictions, month);
+    }
+
+    const workTime = new WorkTime(
+      state.ordinary.startsAt,
+      state.ordinary.duration,
+    );
+
+    return new WorkerInfo({
+      name: state.name,
+      daysOfWork,
+      post: state.graduation,
+      gender: state.gender,
+      graduation: state.graduation,
+      identifier: new WorkerIdentifier(state.workerPreId, state.workerPreId),
+      individualId: state.individualId,
+      workTime,
+      limit: new WorkLimit([], state.workLimit),
+    });
   }
 }
 

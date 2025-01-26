@@ -1,6 +1,6 @@
 import {
   DutyData,
-  TableData,
+  ScheduleState,
 } from "src/apploader/api/table-reactive-edition/table";
 import { ExtraEventName } from "src/lib/structs";
 import { DutySearcher } from "src/renderer/state/controllers/editor/searchers/duty";
@@ -37,7 +37,7 @@ function mockDuties(numOfDays: number, dutiesPerDay: number): DutyData[] {
   return duties;
 }
 
-function mockTable(): TableData {
+function mockTable(): ScheduleState {
   const dutiesPerDay = 2;
   const numOfDays = 30;
 
@@ -75,7 +75,7 @@ function mockTable(): TableData {
 const dispatcherMock: DispatcherType = () => ({}) as any;
 
 test("#next method shild return next duty", () => {
-  const table: TableData = mockTable();
+  const table: ScheduleState = mockTable();
 
   const tableController = new TableEditorController({
     state: { history: [table], undoIndex: 1 },

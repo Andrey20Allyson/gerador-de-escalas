@@ -1,5 +1,5 @@
 import { WorkerInsertionRulesState } from "../../../../../apploader/api/table-edition";
-import { TableData } from "../../../../../apploader/api/table-reactive-edition/table";
+import { ScheduleState } from "../../../../../apploader/api/table-reactive-edition/table";
 import { useAppDispatch, useAppSelector } from "../../../../hooks";
 import { editorActions } from "../../../slices/table-editor";
 import { DutyEditorController } from "../duty";
@@ -21,7 +21,7 @@ export interface EditorRulesServiceOpitons extends EditorControllerOptions {}
 
 export class EditorRulesService {
   dispatcher: DispatcherType;
-  table: TableData;
+  table: ScheduleState;
   rules: EditorRule[] = [];
 
   constructor();

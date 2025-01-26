@@ -1,11 +1,11 @@
 import {
   DateData,
-  TableData,
+  ScheduleState,
 } from "src/apploader/api/table-reactive-edition/table";
 
 export class DateFormatter {
   constructor(
-    private readonly table: TableData,
+    private readonly table: ScheduleState,
     private readonly date: DateData,
   ) {}
 

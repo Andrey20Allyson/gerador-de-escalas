@@ -2,7 +2,7 @@ import { firstMondayFromYearAndMonth, dayOfWeekFrom } from "../../../utils";
 import {
   DutyAndWorkerRelationship,
   DutyData,
-  TableData,
+  ScheduleState,
   WorkerData,
 } from "../../../../apploader/api/table-reactive-edition/table";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
@@ -27,7 +27,7 @@ export interface DutyEditorControllerOptions extends EditorControllerOptions {}
 
 export class DutyEditorController implements IDutyEditor {
   readonly dispatcher: DispatcherType;
-  readonly table: TableData;
+  readonly table: ScheduleState;
   readonly duty: DutyData;
   readonly format: DutyFormatter;
 

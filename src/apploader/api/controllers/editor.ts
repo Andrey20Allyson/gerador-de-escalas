@@ -1,7 +1,7 @@
 import { ExtraDutyTable, Month } from "src/lib/structs";
 import fs from "node:fs/promises";
 import { AppAssets } from "../assets";
-import { TableData, TableFactory } from "../table-reactive-edition/table";
+import { ScheduleState, TableFactory } from "../table-reactive-edition/table";
 import {
   ErrorCode,
   AppError,
@@ -18,7 +18,6 @@ import {
 import { WorkerRegistryRepository } from "src/lib/persistence/entities";
 import { OrdinaryDeserializer } from "src/lib/serialization/in/impl/ordinary-deserializer";
 import { MetadataNotFoundError } from "src/lib/serialization/in/metadata/reader";
-import { JQScheduleBuilder } from "src/lib/builders/jq-schedule-builder";
 import { NativeScheduleBuilder } from "src/lib/builders/native-schedule-builder";
 
 export interface EditorHandlerFactoryData {
@@ -38,17 +37,10 @@ export interface LoadOrdinaryPayload {
 export class EditorHandler implements IpcMappingFactory {
   readonly tableFactory = new TableFactory();
 
-  constructor(
-    readonly assets: AppAssets,
-    public data?: EditorHandlerFactoryData,
-  ) {}
+  constructor(readonly assets: AppAssets) {}
 
   getWorkerRegistryRepository(): WorkerRegistryRepository {
     return this.assets.services.workerRegistry.repository;
-  }
-
-  clear() {
-    delete this.data;
   }
 
   async load(
@@ -56,7 +48,7 @@ export class EditorHandler implements IpcMappingFactory {
     path: string,
   ): Promise<
     AppResponse<
-      void,
+      ScheduleState,
       ErrorCode.INVALID_INPUT | DeserializationErrorCode.INEXISTENT_METADATA
     >
   > {
@@ -67,9 +59,9 @@ export class EditorHandler implements IpcMappingFactory {
 
       const table = await deserializer.deserialize(buffer);
 
-      this.data = { table };
+      const tableData = this.tableFactory.intoState(table);
 
-      return AppResponse.ok();
+      return AppResponse.ok(tableData);
     } catch (error) {
       if (error instanceof MetadataNotFoundError) {
         return AppResponse.error(
@@ -92,7 +84,7 @@ export class EditorHandler implements IpcMappingFactory {
   async loadOrdinary(
     _: IpcMapping.IpcEvent,
     payload: LoadOrdinaryPayload,
-  ): Promise<AppResponse<void, ErrorCode.UNKNOW>> {
+  ): Promise<AppResponse<ScheduleState, ErrorCode.UNKNOW>> {
     const buffer = await fs.readFile(payload.path);
 
     const deserializer = new OrdinaryDeserializer({
@@ -103,62 +95,25 @@ export class EditorHandler implements IpcMappingFactory {
 
     const table = await deserializer.deserialize(buffer);
 
-    this.data = { table };
-
-    return AppResponse.ok();
-  }
-
-  createEditor(): AppResponse<TableData, ErrorCode.DATA_NOT_LOADED> {
-    const { data } = this;
-
-    if (!data) {
-      return AppResponse.error(
-        "Shold load data before get editor!",
-        ErrorCode.DATA_NOT_LOADED,
-      );
-    }
-
-    const { table } = data;
-
-    const tableDTO = this.tableFactory.toDTO(table);
+    const tableDTO = this.tableFactory.intoState(table);
 
     return AppResponse.ok(tableDTO);
   }
 
-  generate(): AppResponse<void, ErrorCode.DATA_NOT_LOADED> {
-    const table = this.data?.table;
-
-    if (table == null) {
-      return AppResponse.error(
-        "Shold load data before generate a table",
-        ErrorCode.DATA_NOT_LOADED,
-      );
-    }
+  generate(
+    _: IpcMapping.IpcEvent,
+    state: ScheduleState,
+  ): AppResponse<ScheduleState, ErrorCode.DATA_NOT_LOADED> {
+    const table = this.tableFactory.fromState(state);
 
     table.clear();
 
     const builder = new NativeScheduleBuilder({ tries: 10_000 });
     builder.build(table);
 
-    return AppResponse.ok();
-  }
+    const newState = this.tableFactory.intoState(table);
 
-  save(
-    _: IpcMapping.IpcEvent,
-    data: TableData,
-  ): AppResponse<void, ErrorCode.DATA_NOT_LOADED> {
-    const { data: thisData } = this;
-    if (!thisData)
-      return AppResponse.error(
-        "Shold load data before save!",
-        ErrorCode.DATA_NOT_LOADED,
-      );
-
-    const { table } = thisData;
-
-    this.tableFactory.fromDTO(data, table);
-
-    return AppResponse.ok();
+    return AppResponse.ok(newState);
   }
 
   getSerializationStratergy(mode: SerializationMode): Serializer {
@@ -179,14 +134,10 @@ export class EditorHandler implements IpcMappingFactory {
 
   async serialize(
     _: IpcMapping.IpcEvent,
+    state: ScheduleState,
     mode: SerializationMode,
   ): Promise<AppResponse<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
-    const table = this.data?.table;
-    if (!table)
-      return AppResponse.error(
-        "Shold load data before serialize!",
-        ErrorCode.DATA_NOT_LOADED,
-      );
+    const table = this.tableFactory.fromState(state);
 
     const serializer = this.getSerializationStratergy(mode);
 
@@ -198,13 +149,10 @@ export class EditorHandler implements IpcMappingFactory {
   handler() {
     return IpcMapping.create(
       {
-        createEditor: this.createEditor,
         loadOrdinary: this.loadOrdinary,
         serialize: this.serialize,
         generate: this.generate,
-        clear: this.clear,
         load: this.load,
-        save: this.save,
       },
       this,
     );

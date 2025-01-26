@@ -1,4 +1,4 @@
-import { TableData } from "../../apploader/api/table-reactive-edition/table";
+import { ScheduleState } from "../../apploader/api/table-reactive-edition/table";
 import { useEffect, useState } from "react";
 import { AppError, AppResponse, ErrorCode, api } from "../api";
 
@@ -12,7 +12,7 @@ export type TableDataResponse =
     }
   | {
       status: "success";
-      data: TableData;
+      data: ScheduleState;
     };
 
 export function useTableData() {
