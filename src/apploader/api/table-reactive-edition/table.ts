@@ -89,7 +89,7 @@ export interface ScheduleState {
   days: DateData[];
   rules: WorkerInsertionRulesState;
   dutyAndWorkerRelationships: DutyAndWorkerRelationship[];
-  readonly fileSaveConfig: ScheduleFileSaveConfig;
+  fileSaveConfig: ScheduleFileSaveConfig;
   readonly config: TableStateConfig;
 }
 

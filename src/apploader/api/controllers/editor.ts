@@ -15,7 +15,9 @@ import { AppResponse } from "../mapping/response";
 import { IpcMappingFactory, IpcMapping } from "../mapping/utils";
 import {
   DivulgationSerializer,
+  JsonSerializer,
   PaymentSerializer,
+  ScheduleFileType,
   Serializer,
   XLSXMetadataDeserializer,
 } from "src/lib/serialization";
@@ -23,6 +25,7 @@ import { WorkerRegistryRepository } from "src/lib/persistence/entities";
 import { OrdinaryDeserializer } from "src/lib/serialization/in/impl/ordinary-deserializer";
 import { MetadataNotFoundError } from "src/lib/serialization/in/metadata/reader";
 import { NativeScheduleBuilder } from "src/lib/builders/native-schedule-builder";
+import { OrdinarySerializer } from "src/lib/serialization/out/stratergies/ordinary-serializer";
 
 export interface EditorHandlerFactoryData {
   table: ExtraDutyTable;
@@ -130,31 +133,61 @@ export class EditorHandler implements IpcMappingFactory {
     return AppResponse.ok(newState);
   }
 
-  getSerializationStratergy(mode: SerializationMode): Serializer {
-    switch (mode) {
+  getSerializer(fileType: ScheduleFileType): Serializer {
+    switch (fileType) {
       case "payment":
         return new PaymentSerializer(this.assets.paymentPatternBuffer, "DADOS");
-      case "divugation":
+      case "divulgation":
         return new DivulgationSerializer("DADOS");
-      case "day-list":
-        throw new Error(`Serialization mode '${mode}' not mapped!`);
+      case "json":
+        return new JsonSerializer();
       default:
-        throw new Error(`Serialization mode '${mode}' not mapped!`);
+        throw new Error(`Serialization for '${fileType}' isn't mapped!`);
+    }
+  }
+
+  getSerializerForSaveInFile(
+    fileSaveConfig: ScheduleFileSaveConfig,
+  ): Serializer {
+    const { path, fileInfo } = fileSaveConfig;
+
+    switch (fileInfo.type) {
+      case "ordinary":
+        return new OrdinarySerializer(path);
+      default:
+        return this.getSerializer(fileInfo.type);
     }
   }
 
   async serialize(
     _: IpcMapping.IpcEvent,
     state: ScheduleState,
-    mode: SerializationMode,
+    fileType: ScheduleFileType,
   ): Promise<AppResponse<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
     const table = this.tableFactory.fromState(state);
 
-    const serializer = this.getSerializationStratergy(mode);
+    const serializer = this.getSerializer(fileType);
 
     const buffer = await serializer.serialize(table);
 
     return AppResponse.ok(buffer.buffer);
+  }
+
+  async saveInFile(
+    _: IpcMapping.IpcEvent,
+    state: ScheduleState,
+  ): Promise<AppResponse<void, ErrorCode.UNKNOW>> {
+    const schedule = this.tableFactory.fromState(state);
+
+    const { path } = state.fileSaveConfig;
+
+    const serializer = this.getSerializerForSaveInFile(state.fileSaveConfig);
+
+    const buffer = await serializer.serialize(schedule);
+
+    await fs.writeFile(path, buffer);
+
+    return AppResponse.ok();
   }
 
   handler() {

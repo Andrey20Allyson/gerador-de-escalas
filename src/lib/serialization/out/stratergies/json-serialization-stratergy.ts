@@ -8,7 +8,7 @@ import { cloneAndInscribeProto } from "src/utils/resolve-proto";
 import "src/lib/protos";
 import { ScheduleFileInfo } from "../..";
 
-export class JsonSerializationStratergy implements Serializer {
+export class JsonSerializer implements Serializer {
   constructor(readonly fileInfoOverwrite?: Partial<ScheduleFileInfo>) {}
 
   async serialize(table: ExtraDutyTable): Promise<Buffer> {

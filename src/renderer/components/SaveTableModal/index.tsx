@@ -7,6 +7,7 @@ import { saveFile } from "../../utils";
 import React from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import styled from "styled-components";
+import { ScheduleFileType } from "src/lib/serialization";
 
 export interface SaveTableModalProps {}
 
@@ -15,12 +16,12 @@ export function SaveTableModal(props: SaveTableModalProps) {
 
   const handler = useSaveTableModal();
 
-  async function serialize(mode: SerializationMode) {
-    return editor.serialize(tableController.table, mode);
+  async function serialize(fileType: ScheduleFileType) {
+    return editor.serialize(tableController.table, fileType);
   }
 
   async function handleSaveToDivugation() {
-    const result = await serialize("divugation");
+    const result = await serialize("divulgation");
     if (!result.ok) return AppError.log(result.error);
 
     saveFile("Escala de Divultação.xlsx", result.data);
@@ -34,7 +35,7 @@ export function SaveTableModal(props: SaveTableModalProps) {
   }
 
   async function handleSaveToDayList() {
-    const result = await serialize("day-list");
+    const result = await serialize("json");
     if (!result.ok) return AppError.log(result.error);
 
     saveFile("Listagem de Dias.xlsx", result.data);

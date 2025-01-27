@@ -1,6 +1,6 @@
 import { ExtraDutyTable } from "src/lib/structs";
 import ExcelJS from "exceljs";
-import { JsonSerializationStratergy } from "src/lib/serialization/out";
+import { JsonSerializer } from "src/lib/serialization/out";
 import { ScheduleFileInfo } from "../..";
 
 export class ScheduleMetadataWriter {
@@ -11,9 +11,7 @@ export class ScheduleMetadataWriter {
       state: "veryHidden",
     });
 
-    const buffer = await new JsonSerializationStratergy(fileInfo).serialize(
-      table,
-    );
+    const buffer = await new JsonSerializer(fileInfo).serialize(table);
     metadataSheet.getCell(1, 1).value = buffer.toString("utf-8");
   }
 
