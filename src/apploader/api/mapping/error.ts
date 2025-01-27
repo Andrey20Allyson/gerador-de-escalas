@@ -13,6 +13,10 @@ export enum DeserializationErrorCode {
   INEXISTENT_METADATA = "deserialization:inexistent-metadata",
 }
 
+export enum ScheduleSaveErrorCode {
+  SAVE_CANCELED = "schedule-save:save-canceled",
+}
+
 export type AppError<TCode = ErrorCode.UNKNOW> = {
   code: TCode | ErrorCode.UNKNOW;
   callstack?: string;

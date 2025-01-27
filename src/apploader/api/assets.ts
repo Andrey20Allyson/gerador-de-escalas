@@ -14,6 +14,7 @@ import { Serializer } from "src/lib/serialization/out/serializer";
 import { DivulgationSerializer } from "src/lib/serialization/out";
 import { env } from "src/utils/env";
 import { AppError } from "./mapping/error";
+import { BrowserWindow } from "electron";
 
 export type AppAssetsServices = {
   readonly workerRegistry: WorkerRegistryServices;
@@ -46,7 +47,7 @@ export class AppAssets {
   private _data: AppAssetsData | null = null;
   private _services: AppAssetsServices | null = null;
 
-  constructor() {}
+  constructor(readonly mainWindow: BrowserWindow) {}
 
   async unlockWithEnv(): Promise<void> {
     const password = env.optional("KEY_DECRYPT_PASSWORD");

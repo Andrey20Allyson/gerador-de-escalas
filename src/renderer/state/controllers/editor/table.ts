@@ -2,6 +2,7 @@ import { Month } from "src/lib/structs";
 import {
   DateData,
   DutyData,
+  ScheduleFileSaveConfig,
   ScheduleState,
   WorkerData,
 } from "../../../../apploader/api/table-reactive-edition/table";
@@ -165,6 +166,10 @@ export class TableEditorController {
 
   clear() {
     this.dispatcher(editorActions.clear());
+  }
+
+  setFileSaveConfig(config: ScheduleFileSaveConfig) {
+    this.dispatcher(editorActions.setSaveFileConfig(config));
   }
 
   static useOptional() {

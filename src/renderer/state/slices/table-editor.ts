@@ -1,6 +1,7 @@
 import {
   DutyAndWorkerRelationship,
   IdGenerator,
+  ScheduleFileSaveConfig,
   ScheduleState,
   TableFactory,
 } from "../../../apploader/api/table-reactive-edition/table";
@@ -157,6 +158,12 @@ export const tableEditorSlice = createSlice({
       }
 
       state.undoIndex--;
+    },
+    setSaveFileConfig(state, action: PayloadAction<ScheduleFileSaveConfig>) {
+      state.history = state.history.map((historyState) => ({
+        ...historyState,
+        fileSaveConfig: action.payload,
+      }));
     },
   },
 });

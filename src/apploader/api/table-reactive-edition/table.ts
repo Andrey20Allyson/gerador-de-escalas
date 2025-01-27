@@ -256,6 +256,10 @@ export class TableFactory {
       this.workerFromState(month, workerState),
     );
 
+    table.addWorkers(workers);
+
+    console.log(workers.length);
+
     const dutyDataMap = new Map(state.duties.map((duty) => [duty.id, duty]));
     const workerDataMap = new Map(
       state.workers.map((worker) => [worker.id, worker]),
@@ -289,17 +293,19 @@ export class TableFactory {
       state.ordinary.duration,
     );
 
-    return new WorkerInfo({
+    const worker = new WorkerInfo({
       name: state.name,
       daysOfWork,
       post: state.graduation,
       gender: state.gender,
       graduation: state.graduation,
-      identifier: new WorkerIdentifier(state.workerPreId, state.workerPreId),
+      identifier: new WorkerIdentifier(state.workerPreId, state.workerPostId),
       individualId: state.individualId,
       workTime,
       limit: new WorkLimit([], state.workLimit),
     });
+
+    return worker;
   }
 }
 

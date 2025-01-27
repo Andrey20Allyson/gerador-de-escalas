@@ -10,6 +10,7 @@ import {
   ErrorCode,
   AppError,
   DeserializationErrorCode,
+  ScheduleSaveErrorCode,
 } from "../mapping/error";
 import { AppResponse } from "../mapping/response";
 import { IpcMappingFactory, IpcMapping } from "../mapping/utils";
@@ -26,6 +27,7 @@ import { OrdinaryDeserializer } from "src/lib/serialization/in/impl/ordinary-des
 import { MetadataNotFoundError } from "src/lib/serialization/in/metadata/reader";
 import { NativeScheduleBuilder } from "src/lib/builders/native-schedule-builder";
 import { OrdinarySerializer } from "src/lib/serialization/out/stratergies/ordinary-serializer";
+import { dialog } from "electron";
 
 export interface EditorHandlerFactoryData {
   table: ExtraDutyTable;
@@ -133,8 +135,12 @@ export class EditorHandler implements IpcMappingFactory {
     return AppResponse.ok(newState);
   }
 
-  getSerializer(fileType: ScheduleFileType): Serializer {
-    switch (fileType) {
+  getSerializer(fileSaveConfig: ScheduleFileSaveConfig): Serializer {
+    const { path, fileInfo } = fileSaveConfig;
+
+    switch (fileInfo.type) {
+      case "ordinary":
+        return new OrdinarySerializer(path);
       case "payment":
         return new PaymentSerializer(this.assets.paymentPatternBuffer, "DADOS");
       case "divulgation":
@@ -142,38 +148,53 @@ export class EditorHandler implements IpcMappingFactory {
       case "json":
         return new JsonSerializer();
       default:
-        throw new Error(`Serialization for '${fileType}' isn't mapped!`);
+        throw new Error(`Serialization for '${fileInfo.type}' isn't mapped!`);
     }
   }
 
-  getSerializerForSaveInFile(
-    fileSaveConfig: ScheduleFileSaveConfig,
-  ): Serializer {
-    const { path, fileInfo } = fileSaveConfig;
-
-    switch (fileInfo.type) {
-      case "ordinary":
-        return new OrdinarySerializer(path);
-      default:
-        return this.getSerializer(fileInfo.type);
-    }
-  }
-
-  async serialize(
+  async saveAs(
     _: IpcMapping.IpcEvent,
     state: ScheduleState,
     fileType: ScheduleFileType,
-  ): Promise<AppResponse<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
-    const table = this.tableFactory.fromState(state);
+  ): Promise<
+    AppResponse<
+      ScheduleFileSaveConfig,
+      ScheduleSaveErrorCode.SAVE_CANCELED | ErrorCode.UNKNOW
+    >
+  > {
+    const { canceled, filePath: path } = await dialog.showSaveDialog(
+      this.assets.mainWindow,
+      {
+        title: "Salvar Como",
+        defaultPath: "Escala Extra.xlsx",
+        buttonLabel: "Salvar",
+        filters: [{ name: "Excel Files", extensions: ["xlsx"] }],
+      },
+    );
 
-    const serializer = this.getSerializer(fileType);
+    if (canceled || path == null) {
+      return AppResponse.error(
+        "Save has canceled",
+        ScheduleSaveErrorCode.SAVE_CANCELED,
+      );
+    }
 
-    const buffer = await serializer.serialize(table);
+    const saveConfig: ScheduleFileSaveConfig = {
+      fileInfo: { type: fileType },
+      path,
+    };
 
-    return AppResponse.ok(buffer.buffer);
+    state.fileSaveConfig = saveConfig;
+
+    const result = await this.save(_, state);
+    if (result.ok === false) {
+      return AppResponse.error(result.error);
+    }
+
+    return AppResponse.ok(saveConfig);
   }
 
-  async saveInFile(
+  async save(
     _: IpcMapping.IpcEvent,
     state: ScheduleState,
   ): Promise<AppResponse<void, ErrorCode.UNKNOW>> {
@@ -181,7 +202,7 @@ export class EditorHandler implements IpcMappingFactory {
 
     const { path } = state.fileSaveConfig;
 
-    const serializer = this.getSerializerForSaveInFile(state.fileSaveConfig);
+    const serializer = this.getSerializer(state.fileSaveConfig);
 
     const buffer = await serializer.serialize(schedule);
 
@@ -196,7 +217,8 @@ export class EditorHandler implements IpcMappingFactory {
         load: this.load,
         loadOrdinary: this.loadOrdinary,
         generate: this.generate,
-        serialize: this.serialize,
+        save: this.save,
+        saveAs: this.saveAs,
       },
       this,
     );

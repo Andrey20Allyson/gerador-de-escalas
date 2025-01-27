@@ -1,4 +1,4 @@
-export function saveFile(fileName: string, data: ArrayBuffer) {
+export async function saveFile(fileName: string, data: ArrayBuffer) {
   const blob = new Blob([data], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
 
