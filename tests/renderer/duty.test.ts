@@ -66,6 +66,10 @@ function mockTable(): ScheduleState {
       dutyPositionSize: 2,
       firstDutyTime: 7,
     },
+    fileSaveConfig: {
+      fileInfo: { type: "unknown" },
+      path: "",
+    },
     dutyAndWorkerRelationships: [],
     idCounters: {},
     workers: [],

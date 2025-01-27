@@ -7,7 +7,7 @@ import { WorkerInfoParser } from "src/lib/structs/worker-info/parser";
 import { Result, ResultError, ResultType } from "src/utils";
 import { BookHandler, CellHandler, LineHander } from "src/utils/xlsx-handlers";
 import * as XLSX from "xlsx";
-import { Deserializer } from "../deserializer";
+import { DeserializationResult, Deserializer } from "../deserializer";
 import { ScheduleMetadataReader } from "../metadata/reader";
 
 interface OrdinaryDeserializerConfig {
@@ -19,7 +19,7 @@ interface OrdinaryDeserializerConfig {
 export class OrdinaryDeserializer implements Deserializer {
   constructor(readonly config: OrdinaryDeserializerConfig) {}
 
-  async deserialize(buffer: Buffer): Promise<ExtraDutyTable> {
+  async deserialize(buffer: Buffer): Promise<DeserializationResult> {
     const workBook = XLSX.read(buffer);
 
     const { month, workerRegistryRepository, sheetName } = this.config;
@@ -36,7 +36,10 @@ export class OrdinaryDeserializer implements Deserializer {
 
     table.addWorkers(workers);
 
-    return table;
+    return {
+      schedule: table,
+      fileInfo: { type: "ordinary" },
+    };
   }
 }
 

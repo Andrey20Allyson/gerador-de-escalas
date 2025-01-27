@@ -16,10 +16,7 @@ export function SaveTableModal(props: SaveTableModalProps) {
   const handler = useSaveTableModal();
 
   async function serialize(mode: SerializationMode) {
-    const saveResponse = await editor.save(tableController.table);
-    if (!saveResponse.ok) return saveResponse;
-
-    return editor.serialize(mode);
+    return editor.serialize(tableController.table, mode);
   }
 
   async function handleSaveToDivugation() {

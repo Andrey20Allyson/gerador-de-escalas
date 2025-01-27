@@ -1,7 +1,11 @@
 import { ExtraDutyTable, Month } from "src/lib/structs";
 import fs from "node:fs/promises";
 import { AppAssets } from "../assets";
-import { ScheduleState, TableFactory } from "../table-reactive-edition/table";
+import {
+  ScheduleFileSaveConfig,
+  ScheduleState,
+  TableFactory,
+} from "../table-reactive-edition/table";
 import {
   ErrorCode,
   AppError,
@@ -11,7 +15,7 @@ import { AppResponse } from "../mapping/response";
 import { IpcMappingFactory, IpcMapping } from "../mapping/utils";
 import {
   DivulgationSerializer,
-  PaymentSerializationStratergy,
+  PaymentSerializer,
   Serializer,
   XLSXMetadataDeserializer,
 } from "src/lib/serialization";
@@ -57,11 +61,16 @@ export class EditorHandler implements IpcMappingFactory {
 
       const deserializer = new XLSXMetadataDeserializer();
 
-      const table = await deserializer.deserialize(buffer);
+      const { schedule, fileInfo } = await deserializer.deserialize(buffer);
 
-      const tableData = this.tableFactory.intoState(table);
+      const fileSaveConfig: ScheduleFileSaveConfig = {
+        path,
+        fileInfo,
+      };
 
-      return AppResponse.ok(tableData);
+      const state = this.tableFactory.intoState(schedule, fileSaveConfig);
+
+      return AppResponse.ok(state);
     } catch (error) {
       if (error instanceof MetadataNotFoundError) {
         return AppResponse.error(
@@ -93,11 +102,16 @@ export class EditorHandler implements IpcMappingFactory {
       workerRegistryRepository: this.getWorkerRegistryRepository(),
     });
 
-    const table = await deserializer.deserialize(buffer);
+    const { schedule, fileInfo } = await deserializer.deserialize(buffer);
 
-    const tableDTO = this.tableFactory.intoState(table);
+    const fileSaveConfig: ScheduleFileSaveConfig = {
+      path: payload.path,
+      fileInfo,
+    };
 
-    return AppResponse.ok(tableDTO);
+    const state = this.tableFactory.intoState(schedule, fileSaveConfig);
+
+    return AppResponse.ok(state);
   }
 
   generate(
@@ -111,7 +125,7 @@ export class EditorHandler implements IpcMappingFactory {
     const builder = new NativeScheduleBuilder({ tries: 10_000 });
     builder.build(table);
 
-    const newState = this.tableFactory.intoState(table);
+    const newState = this.tableFactory.intoState(table, state.fileSaveConfig);
 
     return AppResponse.ok(newState);
   }
@@ -119,10 +133,7 @@ export class EditorHandler implements IpcMappingFactory {
   getSerializationStratergy(mode: SerializationMode): Serializer {
     switch (mode) {
       case "payment":
-        return new PaymentSerializationStratergy(
-          this.assets.paymentPatternBuffer,
-          "DADOS",
-        );
+        return new PaymentSerializer(this.assets.paymentPatternBuffer, "DADOS");
       case "divugation":
         return new DivulgationSerializer("DADOS");
       case "day-list":
@@ -149,10 +160,10 @@ export class EditorHandler implements IpcMappingFactory {
   handler() {
     return IpcMapping.create(
       {
-        loadOrdinary: this.loadOrdinary,
-        serialize: this.serialize,
-        generate: this.generate,
         load: this.load,
+        loadOrdinary: this.loadOrdinary,
+        generate: this.generate,
+        serialize: this.serialize,
       },
       this,
     );

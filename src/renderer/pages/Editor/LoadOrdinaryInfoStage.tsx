@@ -52,26 +52,19 @@ export function LoadOrdinaryInfoStage() {
 
     const [year, month] = parseMonthFromInput(monthString);
 
-    const result = await api.editor.loadOrdinary({
+    const loadResult = await api.editor.loadOrdinary({
       path,
       year,
       month,
       sheetName,
     });
 
-    if (result.ok === false) {
-      AppError.log(result.error);
+    if (loadResult.ok === false) {
+      AppError.log(loadResult.error);
       return;
     }
 
-    const tableEditorResult = await api.editor.createEditor();
-
-    if (tableEditorResult.ok === false) {
-      AppError.log(tableEditorResult.error);
-      return;
-    }
-
-    editorLoader.load(tableEditorResult.data);
+    editorLoader.load(loadResult.data);
 
     stage.next();
   }

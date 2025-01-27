@@ -83,7 +83,9 @@ async function loadTable(
     sheetName: "Plan1",
   });
 
-  return deserializer.deserialize(inputBuffer);
+  const { schedule } = await deserializer.deserialize(inputBuffer);
+
+  return schedule;
 }
 
 function generateSchedule(table: ExtraDutyTable, tries: number) {

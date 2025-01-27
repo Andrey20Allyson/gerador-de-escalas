@@ -1,7 +1,7 @@
 import { ExtraDutyTable } from "src/lib/structs";
 import { JsonDeserializer } from "../impl/json-deserializer";
 import { BookHandler } from "src/utils/xlsx-handlers";
-import { Deserializer } from "../deserializer";
+import { DeserializationResult, Deserializer } from "../deserializer";
 import { Result } from "src/utils";
 
 export class MetadataNotFoundError extends Error {
@@ -19,7 +19,7 @@ export class ScheduleMetadataReader {
     this.deserializer = new JsonDeserializer();
   }
 
-  async read(): Promise<ExtraDutyTable> {
+  async read(): Promise<DeserializationResult> {
     const sheet = this.getMetadataSheet();
     if (sheet == null) {
       throw new MetadataNotFoundError();

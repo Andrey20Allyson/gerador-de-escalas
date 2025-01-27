@@ -13,6 +13,8 @@ import {
   WorkLimit,
 } from "src/lib/structs";
 import { WorkerInsertionRulesState } from "../table-edition";
+import { ScheduleType } from "../controllers";
+import { ScheduleFileInfo } from "src/lib/serialization";
 
 export interface OrdinaryInfo {
   readonly isDailyWorker: boolean;
@@ -75,6 +77,11 @@ export interface DutyAndWorkerRelationship {
   readonly dutyId: number;
 }
 
+export interface ScheduleFileSaveConfig {
+  fileInfo: ScheduleFileInfo;
+  path: string;
+}
+
 export interface ScheduleState {
   idCounters: Record<string, number>;
   workers: WorkerData[];
@@ -82,6 +89,7 @@ export interface ScheduleState {
   days: DateData[];
   rules: WorkerInsertionRulesState;
   dutyAndWorkerRelationships: DutyAndWorkerRelationship[];
+  readonly fileSaveConfig: ScheduleFileSaveConfig;
   readonly config: TableStateConfig;
 }
 
@@ -90,7 +98,10 @@ export class TableFactory {
 
   constructor(readonly idGenerator: IdGenerator = new IdGenerator()) {}
 
-  createTableData(table: ExtraDutyTable): ScheduleState {
+  createTableData(
+    table: ExtraDutyTable,
+    fileSaveConfig: ScheduleFileSaveConfig,
+  ): ScheduleState {
     return {
       idCounters: this.idGenerator.counters,
       duties: [],
@@ -102,6 +113,7 @@ export class TableFactory {
         ordinaryRule: true,
         timeOffRule: true,
       },
+      fileSaveConfig,
       config: {
         dutyCapacity: 3,
         dutiesPerDay: Math.floor(24 / table.config.dutyDuration),
@@ -191,8 +203,11 @@ export class TableFactory {
     };
   }
 
-  intoState(table: ExtraDutyTable): ScheduleState {
-    const tableData = this.createTableData(table);
+  intoState(
+    table: ExtraDutyTable,
+    fileSaveConfig: ScheduleFileSaveConfig,
+  ): ScheduleState {
+    const tableData = this.createTableData(table, fileSaveConfig);
 
     const workers = table.getWorkerList();
     const workerDataMap: Map<number, WorkerData> = new Map();
