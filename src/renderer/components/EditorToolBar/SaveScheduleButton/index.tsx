@@ -6,19 +6,14 @@ import { TableEditorController } from "src/renderer/state/controllers/editor/tab
 export function SaveScheduleButton() {
   const tableController = new TableEditorController();
 
-  // async function serialize() {
-  //   const saveResponse = await api.editor.save(tableController.table);
-  //   if (!saveResponse.ok) return saveResponse;
-
-  //   return api.editor.serialize('');
-  // }
-
-  function handleSave() {}
+  async function save() {
+    await api.editor.save(tableController.table);
+  }
 
   return (
-    <button onClick={handleSave}>
+    <button onClick={save}>
       <AiOutlineSave />
-      Salvar Como
+      Salvar
     </button>
   );
 }

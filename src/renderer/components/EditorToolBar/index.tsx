@@ -11,6 +11,7 @@ import {
 } from "src/renderer/pages/Editor/EditTableStage.styles";
 import { EditorRouterContext } from "../EditorTypeSelect/context";
 import { SaveScheduleAsButton } from "./SaveScheduleAsButton";
+import { SaveScheduleButton } from "./SaveScheduleButton";
 
 type EditorRouterKey =
   typeof EditorRouterContext extends RouterContext<infer TRoutes>
@@ -33,6 +34,7 @@ export function EditorToolBar(props: EditorToolBarProps) {
         <BsArrowReturnLeft />
         Voltar
       </button>
+      <SaveScheduleButton />
       <SaveScheduleAsButton />
       <button onClick={props.onOpenRulesModal}>
         <BsGear />
