@@ -1,7 +1,7 @@
 import {
   DateData,
   ScheduleState,
-} from "src/apploader/api/table-reactive-edition/table";
+} from "src/apploader/api/table-reactive-edition";
 
 export class DateFormatter {
   constructor(

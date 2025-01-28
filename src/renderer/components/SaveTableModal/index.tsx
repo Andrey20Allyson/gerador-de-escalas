@@ -1,9 +1,6 @@
 import { TableEditorController } from "../../state/controllers/editor/table";
-import { SerializationMode } from "../../../apploader/api/controllers";
-import { TableEditor } from "../../../apploader/api/table-edition";
-import { AppError, api, editor } from "../../api";
+import { AppError, api } from "../../api";
 import { createModalContext } from "../../contexts/modal";
-import { saveFile } from "../../utils";
 import React from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import styled from "styled-components";

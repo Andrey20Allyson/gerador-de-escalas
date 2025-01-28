@@ -5,7 +5,7 @@ import {
   ScheduleFileSaveConfig,
   ScheduleState,
   TableFactory,
-} from "../table-reactive-edition/table";
+} from "../table-reactive-edition";
 import {
   ErrorCode,
   AppError,

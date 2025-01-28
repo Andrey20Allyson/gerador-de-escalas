@@ -6,7 +6,6 @@ import { DutyEditorController } from "../../state/controllers/editor/duty";
 import { TableEditorController } from "../../state/controllers/editor/table";
 import { WorkerEditorController } from "../../state/controllers/editor/worker";
 import styled from "styled-components";
-import { DutyEditor, WorkerEditor } from "../../../apploader/api/table-edition";
 import {
   genderComponentMap,
   graduationTextColorMap,
@@ -145,17 +144,3 @@ export const StyledAvaliableWorker = styled.span`
     }
   }
 `;
-
-export function* iterFilteredWorkers(
-  duty: DutyEditor,
-  workers: Iterable<WorkerEditor>,
-  search: string | undefined,
-): Iterable<WorkerEditor> {
-  for (const worker of workers) {
-    if (!duty.canAddWorker(worker)) continue;
-    if (search && !worker.name().toLowerCase().includes(search.toLowerCase()))
-      continue;
-
-    yield worker;
-  }
-}

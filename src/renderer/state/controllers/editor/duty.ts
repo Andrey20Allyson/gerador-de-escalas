@@ -4,7 +4,7 @@ import {
   DutyData,
   ScheduleState,
   WorkerData,
-} from "../../../../apploader/api/table-reactive-edition/table";
+} from "../../../../apploader/api/table-reactive-edition";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { editorActions } from "../../slices/table-editor";
 import {

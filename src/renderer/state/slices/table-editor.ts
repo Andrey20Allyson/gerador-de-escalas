@@ -4,10 +4,10 @@ import {
   ScheduleFileSaveConfig,
   ScheduleState,
   TableFactory,
-} from "../../../apploader/api/table-reactive-edition/table";
+} from "../../../apploader/api/table-reactive-edition";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
-import { WorkerInsertionRulesState } from "../../../apploader/api/table-edition";
+import { WorkerInsertionRulesState } from "src/apploader/api/table-reactive-edition";
 
 export interface TableEditorState {
   history: ScheduleState[];

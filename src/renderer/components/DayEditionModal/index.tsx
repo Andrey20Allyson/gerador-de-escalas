@@ -32,7 +32,7 @@ import {
   StyledWorkerViewBody,
 } from "./styles";
 import { genderComponentMap, graduationTextColorMap } from "./utils";
-import { DateData } from "../../../apploader/api/table-reactive-edition/table";
+import { DateData } from "../../../apploader/api/table-reactive-edition";
 
 export interface DutyViewModalProps {
   dutyId: number;

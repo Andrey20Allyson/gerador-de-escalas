@@ -5,7 +5,7 @@ import {
   ScheduleFileSaveConfig,
   ScheduleState,
   WorkerData,
-} from "../../../../apploader/api/table-reactive-edition/table";
+} from "../../../../apploader/api/table-reactive-edition";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "../../../utils";
 import { Searcher } from "../../../utils/searcher";
@@ -18,7 +18,7 @@ import {
 import { RootState } from "../../store";
 import { DutyEditorController } from "./duty";
 import { WorkerEditorController } from "./worker";
-import { WorkerInsertionRulesState } from "src/apploader/api/table-edition";
+import { WorkerInsertionRulesState } from "src/apploader/api/table-reactive-edition";
 
 export function currentTableFromRootSelector(state: RootState) {
   return currentTableOrThrow(tableEditorSelector(state));

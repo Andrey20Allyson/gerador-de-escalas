@@ -1,4 +1,4 @@
-import { WorkerData } from "src/apploader/api/table-reactive-edition/table";
+import { WorkerData } from "src/apploader/api/table-reactive-edition";
 import { Gender } from "src/lib/structs";
 import { Searcher } from "src/renderer/utils";
 

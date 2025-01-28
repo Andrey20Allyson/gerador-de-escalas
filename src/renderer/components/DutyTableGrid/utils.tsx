@@ -14,7 +14,7 @@ import {
   StyledDutyTitle,
   StyledEmpityDutySlot,
 } from "./styles";
-import { DateData } from "../../../apploader/api/table-reactive-edition/table";
+import { DateData } from "../../../apploader/api/table-reactive-edition";
 import { DateFormatter } from "../../state/formatters/editor/day";
 
 export function EmpityDutySlot() {

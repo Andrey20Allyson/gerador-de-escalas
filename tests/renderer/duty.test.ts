@@ -1,7 +1,7 @@
 import {
   DutyData,
   ScheduleState,
-} from "src/apploader/api/table-reactive-edition/table";
+} from "src/apploader/api/table-reactive-edition";
 import { ExtraEventName } from "src/lib/structs";
 import { DutySearcher } from "src/renderer/state/controllers/editor/searchers/duty";
 import {

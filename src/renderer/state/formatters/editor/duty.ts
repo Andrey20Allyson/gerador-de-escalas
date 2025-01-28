@@ -1,7 +1,7 @@
 import {
   DutyData,
   ScheduleState,
-} from "../../../../apploader/api/table-reactive-edition/table";
+} from "../../../../apploader/api/table-reactive-edition";
 import { DateFormatter } from "./day";
 
 export class DutyFormatter {

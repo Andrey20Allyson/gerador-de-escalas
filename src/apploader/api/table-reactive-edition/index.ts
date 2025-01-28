@@ -1,20 +1,25 @@
+import { ScheduleFileInfo } from "src/lib/serialization";
 import {
+  DayOfExtraDuty,
   DayRestriction,
+  DaysOfWork,
   ExtraDuty,
   ExtraDutyTable,
   Gender,
   Graduation,
-  WorkerInfo,
-  DayOfExtraDuty,
-  DaysOfWork,
   Month,
-  WorkerIdentifier,
-  WorkTime,
   WorkLimit,
+  WorkTime,
+  WorkerIdentifier,
+  WorkerInfo,
 } from "src/lib/structs";
-import { WorkerInsertionRulesState } from "../table-edition";
-import { ScheduleType } from "../controllers";
-import { ScheduleFileInfo } from "src/lib/serialization";
+
+export interface WorkerInsertionRulesState {
+  ordinaryRule: boolean;
+  timeOffRule: boolean;
+  femaleRule: boolean;
+  inspRule: boolean;
+}
 
 export interface OrdinaryInfo {
   readonly isDailyWorker: boolean;
@@ -257,8 +262,6 @@ export class TableFactory {
     );
 
     table.addWorkers(workers);
-
-    console.log(workers.length);
 
     const dutyDataMap = new Map(state.duties.map((duty) => [duty.id, duty]));
     const workerDataMap = new Map(
