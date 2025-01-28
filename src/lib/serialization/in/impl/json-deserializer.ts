@@ -8,12 +8,13 @@ import {
   Month,
   WorkerIdentifier,
 } from "src/lib/structs";
-import { Deserializer } from "src/lib/serialization/in";
+import { DeserializationResult, Deserializer } from "src/lib/serialization/in";
 import { resolveProto } from "src/utils/resolve-proto";
 import "src/lib/protos";
+import { ScheduleFileInfo } from "../..";
 
 export class JsonDeserializer implements Deserializer {
-  async deserialize(buffer: Buffer): Promise<ExtraDutyTable> {
+  async deserialize(buffer: Buffer): Promise<DeserializationResult> {
     const parseable = buffer.toString("utf-8");
     const json = JSON.parse(parseable);
 
@@ -32,7 +33,9 @@ export class JsonDeserializer implements Deserializer {
 
     this._applyScheduleObject(json.schedule, table, workers);
 
-    return table;
+    const fileInfo = json.fileInfo as ScheduleFileInfo;
+
+    return { schedule: table, fileInfo };
   }
 
   protected _objectIntoWorker(object: any, month: Month): WorkerInfo {

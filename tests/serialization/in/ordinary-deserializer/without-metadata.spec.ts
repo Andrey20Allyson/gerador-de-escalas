@@ -66,7 +66,8 @@ describe(OrdinaryDeserializer, () => {
       ]),
     });
 
-    const table = await deserializer.deserialize(buff);
+    const result = await deserializer.deserialize(buff);
+    const table = result.schedule;
 
     expect(table).toBeInstanceOf(ExtraDutyTable);
 

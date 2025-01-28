@@ -1,22 +1,14 @@
 import React, { useEffect } from "react";
-import { AiOutlineClockCircle, AiOutlineSave } from "react-icons/ai";
-import { BsArrowReturnLeft, BsGear } from "react-icons/bs";
-import { GoTriangleDown } from "react-icons/go";
+import { EditorToolBar } from "src/renderer/components/EditorToolBar";
 import { AppError, api, editor } from "../../api";
 import { EditorTypeSelect } from "../../components/EditorTypeSelect";
 import { EditorRouterContext } from "../../components/EditorTypeSelect/context";
 import { useRulesModal } from "../../components/RulesModal";
 import { useSaveTableModal } from "../../components/SaveTableModal";
 import { useStage } from "../../contexts/stages";
-import { TableEditorController } from "../../state/controllers/editor/table";
-import {
-  StyledEditTableStageBody,
-  StyledSelector,
-  StyledToolsSection,
-} from "./EditTableStage.styles";
-import { UndoButton } from "../../components/RedoNUndoButtons/Undo";
-import { RedoButton } from "../../components/RedoNUndoButtons/Redo";
 import { useKeyDownEvent } from "../../hooks";
+import { TableEditorController } from "../../state/controllers/editor/table";
+import { StyledEditTableStageBody } from "./EditTableStage.styles";
 
 export const HISTORY_TRAVEL_CODE = "KeyZ";
 
@@ -25,29 +17,31 @@ export function isHistoryTravel(ev: KeyboardEvent) {
 }
 
 export function EditTableStage() {
-  const { prev } = useStage();
-  const saveModal = useSaveTableModal();
+  const stage = useStage();
   const rulesModal = useRulesModal();
   const changeEditor = EditorRouterContext.useNavigate();
   const tableController = TableEditorController.useOptional();
-
-  function handleSaveAs() {
-    saveModal.open();
-  }
 
   function handleOpenRulesModal() {
     rulesModal.open();
   }
 
   async function handleGenerate() {
-    await api.editor.generate();
-
-    const newTableDataResult = await api.editor.createEditor();
-    if (!newTableDataResult.ok) {
-      return AppError.log(newTableDataResult.error);
+    if (tableController == null) {
+      throw new Error("table state not loaded");
     }
 
-    tableController?.setState(newTableDataResult.data);
+    const oldState = tableController.table;
+
+    const generationResult = await api.editor.generate(oldState);
+
+    if (generationResult.ok === false) {
+      return AppError.log(generationResult.error);
+    }
+
+    const newState = generationResult.data;
+
+    tableController.setState(newState);
   }
 
   useEffect(() => {
@@ -69,47 +63,22 @@ export function EditTableStage() {
     }
   });
 
-  async function handlePrev() {
+  async function handleExit() {
     if (tableController === null) return;
 
-    await editor.clear();
     tableController.clear();
 
-    prev();
+    stage.navigate(0);
   }
 
   return (
     <StyledEditTableStageBody>
-      <StyledToolsSection>
-        <UndoButton />
-        <RedoButton />
-        <button onClick={handlePrev}>
-          <BsArrowReturnLeft />
-          Voltar
-        </button>
-        <button onClick={handleSaveAs}>
-          <AiOutlineSave />
-          Salvar
-        </button>
-        <button onClick={handleOpenRulesModal}>
-          <BsGear />
-          Regras
-        </button>
-        <StyledSelector>
-          Editores
-          <GoTriangleDown />
-          <section className="selection-section">
-            <button onClick={() => changeEditor("DutyTableGrid")}>
-              Calendário
-            </button>
-            <button onClick={() => changeEditor("WorkerList")}>Lista</button>
-          </section>
-        </StyledSelector>
-        <button onClick={handleGenerate}>
-          <AiOutlineClockCircle />
-          Gerar
-        </button>
-      </StyledToolsSection>
+      <EditorToolBar
+        onExit={handleExit}
+        onGenerate={handleGenerate}
+        onChangeEditor={changeEditor}
+        onOpenRulesModal={handleOpenRulesModal}
+      />
       <section className="editor-section">
         <EditorTypeSelect />
       </section>

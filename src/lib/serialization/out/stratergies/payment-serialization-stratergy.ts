@@ -9,9 +9,11 @@ import { enumerate } from "src/utils";
 import { ScheduleMetadataWriter } from "src/lib/serialization/out/metadata/writer";
 import { Serializer } from "../serializer";
 import ExcelJS from "exceljs";
+import { ScheduleFileInfo } from "../..";
 
-export class PaymentSerializationStratergy implements Serializer {
+export class PaymentSerializer implements Serializer {
   private cachedBook?: Promise<ExcelJS.Workbook>;
+  static readonly fileInfo: ScheduleFileInfo = { type: "payment" };
 
   constructor(
     readonly buffer: Buffer | ArrayBuffer,
@@ -91,7 +93,10 @@ export class PaymentSerializationStratergy implements Serializer {
       IRCell.value = rowData.individualRegistry;
     }
 
-    await ScheduleMetadataWriter.into(book).write(table);
+    await ScheduleMetadataWriter.into(book).write(
+      table,
+      PaymentSerializer.fileInfo,
+    );
 
     return Buffer.from(await book.xlsx.writeBuffer());
   }

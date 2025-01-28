@@ -22,28 +22,23 @@ export function LoadTableEditorStage() {
       return AppError.log(AppError.create("File is required"));
     }
 
-    const result = await api.editor.load(file.path);
+    const loadResult = await api.editor.load(file.path);
 
     dispatch(editorLoaderActions.setPath(file.path));
 
-    if (result.ok === false) {
-      if (result.error.code === DeserializationErrorCode.INEXISTENT_METADATA) {
+    if (loadResult.ok === false) {
+      if (
+        loadResult.error.code === DeserializationErrorCode.INEXISTENT_METADATA
+      ) {
         stage.next();
         return;
       }
 
-      AppError.log(result.error);
+      AppError.log(loadResult.error);
       return;
     }
 
-    const tableEditorResult = await api.editor.createEditor();
-
-    if (tableEditorResult.ok === false) {
-      AppError.log(tableEditorResult.error);
-      return;
-    }
-
-    editorLoader.load(tableEditorResult.data);
+    editorLoader.load(loadResult.data);
 
     stage.navigate(2);
   }
@@ -51,7 +46,7 @@ export function LoadTableEditorStage() {
   return (
     <StyledLinedBorder>
       <StyledLoaderForm onSubmit={onSubmit}>
-        <label>Arquivo</label>
+        <label>Abrir Arquivo</label>
         <input type="file" name="input-path" />
         <input type="submit" value="Carregar"></input>
       </StyledLoaderForm>

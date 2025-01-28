@@ -6,8 +6,11 @@ import {
 import { Serializer } from "../serializer";
 import { cloneAndInscribeProto } from "src/utils/resolve-proto";
 import "src/lib/protos";
+import { ScheduleFileInfo } from "../..";
 
-export class JsonSerializationStratergy implements Serializer {
+export class JsonSerializer implements Serializer {
+  constructor(readonly fileInfoOverwrite?: Partial<ScheduleFileInfo>) {}
+
   async serialize(table: ExtraDutyTable): Promise<Buffer> {
     const workers = Array.from(table.workers.values(), (worker) => {
       return this._workerIntoObject(worker);
@@ -21,6 +24,10 @@ export class JsonSerializationStratergy implements Serializer {
       meta: cloneAndInscribeProto(table.config),
       workers,
       schedule,
+      fileInfo: {
+        type: "json",
+        ...this.fileInfoOverwrite,
+      } satisfies ScheduleFileInfo,
     };
 
     const json = JSON.stringify(object);

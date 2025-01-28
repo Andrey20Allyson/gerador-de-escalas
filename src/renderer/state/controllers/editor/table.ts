@@ -2,9 +2,10 @@ import { Month } from "src/lib/structs";
 import {
   DateData,
   DutyData,
-  TableData,
+  ScheduleFileSaveConfig,
+  ScheduleState,
   WorkerData,
-} from "../../../../apploader/api/table-reactive-edition/table";
+} from "../../../../apploader/api/table-reactive-edition";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { dayOfWeekFrom, firstMondayFromYearAndMonth } from "../../../utils";
 import { Searcher } from "../../../utils/searcher";
@@ -17,7 +18,7 @@ import {
 import { RootState } from "../../store";
 import { DutyEditorController } from "./duty";
 import { WorkerEditorController } from "./worker";
-import { WorkerInsertionRulesState } from "src/apploader/api/table-edition";
+import { WorkerInsertionRulesState } from "src/apploader/api/table-reactive-edition";
 
 export function currentTableFromRootSelector(state: RootState) {
   return currentTableOrThrow(tableEditorSelector(state));
@@ -34,7 +35,7 @@ export type DispatcherType = ReturnType<typeof useAppDispatch>;
 
 export interface EditorControllerOptions {
   dispatcher?: DispatcherType;
-  table?: TableData;
+  table?: ScheduleState;
 }
 
 export interface TableEditorControllerOptions extends EditorControllerOptions {
@@ -44,7 +45,7 @@ export interface TableEditorControllerOptions extends EditorControllerOptions {
 export class TableEditorController {
   dispatcher: DispatcherType;
   state: TableEditorState;
-  table: TableData;
+  table: ScheduleState;
 
   constructor(options: TableEditorControllerOptions = {}) {
     const {
@@ -139,11 +140,11 @@ export class TableEditorController {
     }
   }
 
-  load(data: TableData) {
+  load(data: ScheduleState) {
     this.dispatcher(editorActions.initialize({ tableData: data }));
   }
 
-  setState(data: TableData) {
+  setState(data: ScheduleState) {
     this.dispatcher(editorActions.pushState({ tableData: data }));
   }
 
@@ -167,6 +168,10 @@ export class TableEditorController {
     this.dispatcher(editorActions.clear());
   }
 
+  setFileSaveConfig(config: ScheduleFileSaveConfig) {
+    this.dispatcher(editorActions.setSaveFileConfig(config));
+  }
+
   static useOptional() {
     const table = useAppSelector((state) =>
       currentTableSelector(state.tableEditor),
@@ -186,7 +191,7 @@ export class TableEditorController {
       useAppSelector((state) => currentTableSelector(state.tableEditor)) !==
       null;
 
-    function load(table: TableData) {
+    function load(table: ScheduleState) {
       dispatcher(editorActions.initialize({ tableData: table }));
     }
 

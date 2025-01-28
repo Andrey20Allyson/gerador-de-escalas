@@ -1,14 +1,14 @@
 import {
   DutyData,
-  TableData,
-} from "../../../../apploader/api/table-reactive-edition/table";
+  ScheduleState,
+} from "../../../../apploader/api/table-reactive-edition";
 import { DateFormatter } from "./day";
 
 export class DutyFormatter {
   private readonly _dutyHours = ["01:00", "07:00", "13:00", "19:00"];
 
   constructor(
-    private readonly table: TableData,
+    private readonly table: ScheduleState,
     private readonly duty: DutyData,
   ) {}
 

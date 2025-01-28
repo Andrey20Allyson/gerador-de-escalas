@@ -1,31 +1,40 @@
 import { ExtraDutyTable, Month } from "src/lib/structs";
 import fs from "node:fs/promises";
 import { AppAssets } from "../assets";
-import { TableData, TableFactory } from "../table-reactive-edition/table";
+import {
+  ScheduleFileSaveConfig,
+  ScheduleState,
+  TableFactory,
+} from "../table-reactive-edition";
 import {
   ErrorCode,
   AppError,
   DeserializationErrorCode,
+  ScheduleSaveErrorCode,
 } from "../mapping/error";
 import { AppResponse } from "../mapping/response";
 import { IpcMappingFactory, IpcMapping } from "../mapping/utils";
 import {
   DivulgationSerializer,
-  PaymentSerializationStratergy,
+  JsonSerializer,
+  PaymentSerializer,
+  ScheduleFileType,
   Serializer,
   XLSXMetadataDeserializer,
 } from "src/lib/serialization";
 import { WorkerRegistryRepository } from "src/lib/persistence/entities";
 import { OrdinaryDeserializer } from "src/lib/serialization/in/impl/ordinary-deserializer";
 import { MetadataNotFoundError } from "src/lib/serialization/in/metadata/reader";
-import { JQScheduleBuilder } from "src/lib/builders/jq-schedule-builder";
 import { NativeScheduleBuilder } from "src/lib/builders/native-schedule-builder";
+import { OrdinarySerializer } from "src/lib/serialization/out/stratergies/ordinary-serializer";
+import { dialog } from "electron";
 
 export interface EditorHandlerFactoryData {
   table: ExtraDutyTable;
 }
 
 export type SerializationMode = "payment" | "divugation" | "day-list";
+export type ScheduleType = "ordinary" | SerializationMode;
 
 export interface LoadOrdinaryPayload {
   path: string;
@@ -37,17 +46,10 @@ export interface LoadOrdinaryPayload {
 export class EditorHandler implements IpcMappingFactory {
   readonly tableFactory = new TableFactory();
 
-  constructor(
-    readonly assets: AppAssets,
-    public data?: EditorHandlerFactoryData,
-  ) {}
+  constructor(readonly assets: AppAssets) {}
 
   getWorkerRegistryRepository(): WorkerRegistryRepository {
     return this.assets.services.workerRegistry.repository;
-  }
-
-  clear() {
-    delete this.data;
   }
 
   async load(
@@ -55,7 +57,7 @@ export class EditorHandler implements IpcMappingFactory {
     path: string,
   ): Promise<
     AppResponse<
-      void,
+      ScheduleState,
       ErrorCode.INVALID_INPUT | DeserializationErrorCode.INEXISTENT_METADATA
     >
   > {
@@ -64,11 +66,16 @@ export class EditorHandler implements IpcMappingFactory {
 
       const deserializer = new XLSXMetadataDeserializer();
 
-      const table = await deserializer.deserialize(buffer);
+      const { schedule, fileInfo } = await deserializer.deserialize(buffer);
 
-      this.data = { table };
+      const fileSaveConfig: ScheduleFileSaveConfig = {
+        path,
+        fileInfo,
+      };
 
-      return AppResponse.ok();
+      const state = this.tableFactory.intoState(schedule, fileSaveConfig);
+
+      return AppResponse.ok(state);
     } catch (error) {
       if (error instanceof MetadataNotFoundError) {
         return AppResponse.error(
@@ -91,7 +98,7 @@ export class EditorHandler implements IpcMappingFactory {
   async loadOrdinary(
     _: IpcMapping.IpcEvent,
     payload: LoadOrdinaryPayload,
-  ): Promise<AppResponse<void, ErrorCode.UNKNOW>> {
+  ): Promise<AppResponse<ScheduleState, ErrorCode.UNKNOW>> {
     const buffer = await fs.readFile(payload.path);
 
     const deserializer = new OrdinaryDeserializer({
@@ -100,110 +107,118 @@ export class EditorHandler implements IpcMappingFactory {
       workerRegistryRepository: this.getWorkerRegistryRepository(),
     });
 
-    const table = await deserializer.deserialize(buffer);
+    const { schedule, fileInfo } = await deserializer.deserialize(buffer);
 
-    this.data = { table };
+    const fileSaveConfig: ScheduleFileSaveConfig = {
+      path: payload.path,
+      fileInfo,
+    };
 
-    return AppResponse.ok();
+    const state = this.tableFactory.intoState(schedule, fileSaveConfig);
+
+    return AppResponse.ok(state);
   }
 
-  createEditor(): AppResponse<TableData, ErrorCode.DATA_NOT_LOADED> {
-    const { data } = this;
-
-    if (!data) {
-      return AppResponse.error(
-        "Shold load data before get editor!",
-        ErrorCode.DATA_NOT_LOADED,
-      );
-    }
-
-    const { table } = data;
-
-    const tableDTO = this.tableFactory.toDTO(table);
-
-    return AppResponse.ok(tableDTO);
-  }
-
-  generate(): AppResponse<void, ErrorCode.DATA_NOT_LOADED> {
-    const table = this.data?.table;
-
-    if (table == null) {
-      return AppResponse.error(
-        "Shold load data before generate a table",
-        ErrorCode.DATA_NOT_LOADED,
-      );
-    }
+  generate(
+    _: IpcMapping.IpcEvent,
+    state: ScheduleState,
+  ): AppResponse<ScheduleState, ErrorCode.DATA_NOT_LOADED> {
+    const table = this.tableFactory.fromState(state);
 
     table.clear();
 
     const builder = new NativeScheduleBuilder({ tries: 10_000 });
     builder.build(table);
 
-    return AppResponse.ok();
+    const newState = this.tableFactory.intoState(table, state.fileSaveConfig);
+
+    return AppResponse.ok(newState);
   }
 
-  save(
-    _: IpcMapping.IpcEvent,
-    data: TableData,
-  ): AppResponse<void, ErrorCode.DATA_NOT_LOADED> {
-    const { data: thisData } = this;
-    if (!thisData)
-      return AppResponse.error(
-        "Shold load data before save!",
-        ErrorCode.DATA_NOT_LOADED,
-      );
+  getSerializer(fileSaveConfig: ScheduleFileSaveConfig): Serializer {
+    const { path, fileInfo } = fileSaveConfig;
 
-    const { table } = thisData;
-
-    this.tableFactory.fromDTO(data, table);
-
-    return AppResponse.ok();
-  }
-
-  getSerializationStratergy(mode: SerializationMode): Serializer {
-    switch (mode) {
+    switch (fileInfo.type) {
+      case "ordinary":
+        return new OrdinarySerializer(path);
       case "payment":
-        return new PaymentSerializationStratergy(
-          this.assets.paymentPatternBuffer,
-          "DADOS",
-        );
-      case "divugation":
+        return new PaymentSerializer(this.assets.paymentPatternBuffer, "DADOS");
+      case "divulgation":
         return new DivulgationSerializer("DADOS");
-      case "day-list":
-        throw new Error(`Serialization mode '${mode}' not mapped!`);
+      case "json":
+        return new JsonSerializer();
       default:
-        throw new Error(`Serialization mode '${mode}' not mapped!`);
+        throw new Error(`Serialization for '${fileInfo.type}' isn't mapped!`);
     }
   }
 
-  async serialize(
+  async saveAs(
     _: IpcMapping.IpcEvent,
-    mode: SerializationMode,
-  ): Promise<AppResponse<ArrayBuffer, ErrorCode.DATA_NOT_LOADED>> {
-    const table = this.data?.table;
-    if (!table)
+    state: ScheduleState,
+    fileType: ScheduleFileType,
+  ): Promise<
+    AppResponse<
+      ScheduleFileSaveConfig,
+      ScheduleSaveErrorCode.SAVE_CANCELED | ErrorCode.UNKNOW
+    >
+  > {
+    const { canceled, filePath: path } = await dialog.showSaveDialog(
+      this.assets.mainWindow,
+      {
+        title: "Salvar Como",
+        defaultPath: "Escala Extra.xlsx",
+        buttonLabel: "Salvar",
+        filters: [{ name: "Excel Files", extensions: ["xlsx"] }],
+      },
+    );
+
+    if (canceled || path == null) {
       return AppResponse.error(
-        "Shold load data before serialize!",
-        ErrorCode.DATA_NOT_LOADED,
+        "Save has canceled",
+        ScheduleSaveErrorCode.SAVE_CANCELED,
       );
+    }
 
-    const serializer = this.getSerializationStratergy(mode);
+    const saveConfig: ScheduleFileSaveConfig = {
+      fileInfo: { type: fileType },
+      path,
+    };
 
-    const buffer = await serializer.serialize(table);
+    state.fileSaveConfig = saveConfig;
 
-    return AppResponse.ok(buffer.buffer);
+    const result = await this.save(_, state);
+    if (result.ok === false) {
+      return AppResponse.error(result.error);
+    }
+
+    return AppResponse.ok(saveConfig);
+  }
+
+  async save(
+    _: IpcMapping.IpcEvent,
+    state: ScheduleState,
+  ): Promise<AppResponse<void, ErrorCode.UNKNOW>> {
+    const schedule = this.tableFactory.fromState(state);
+
+    const { path } = state.fileSaveConfig;
+
+    const serializer = this.getSerializer(state.fileSaveConfig);
+
+    const buffer = await serializer.serialize(schedule);
+
+    await fs.writeFile(path, buffer);
+
+    return AppResponse.ok();
   }
 
   handler() {
     return IpcMapping.create(
       {
-        createEditor: this.createEditor,
-        loadOrdinary: this.loadOrdinary,
-        serialize: this.serialize,
-        generate: this.generate,
-        clear: this.clear,
         load: this.load,
+        loadOrdinary: this.loadOrdinary,
+        generate: this.generate,
         save: this.save,
+        saveAs: this.saveAs,
       },
       this,
     );

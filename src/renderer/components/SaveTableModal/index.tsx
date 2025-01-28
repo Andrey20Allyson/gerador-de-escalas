@@ -1,12 +1,10 @@
 import { TableEditorController } from "../../state/controllers/editor/table";
-import { SerializationMode } from "../../../apploader/api/controllers";
-import { TableEditor } from "../../../apploader/api/table-edition";
-import { AppError, editor } from "../../api";
+import { AppError, api } from "../../api";
 import { createModalContext } from "../../contexts/modal";
-import { saveFile } from "../../utils";
 import React from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import styled from "styled-components";
+import { ScheduleFileType } from "src/lib/serialization";
 
 export interface SaveTableModalProps {}
 
@@ -15,32 +13,21 @@ export function SaveTableModal(props: SaveTableModalProps) {
 
   const handler = useSaveTableModal();
 
-  async function serialize(mode: SerializationMode) {
-    const saveResponse = await editor.save(tableController.table);
-    if (!saveResponse.ok) return saveResponse;
+  async function saveAs(fileType: ScheduleFileType) {
+    const state = tableController.table;
 
-    return editor.serialize(mode);
+    const saveAsResult = await api.editor.saveAs(state, fileType);
+    if (saveAsResult.ok === false) {
+      return AppError.log(saveAsResult.error);
+    }
+
+    const newSaveConfig = saveAsResult.data;
+
+    tableController.setFileSaveConfig(newSaveConfig);
   }
 
-  async function handleSaveToDivugation() {
-    const result = await serialize("divugation");
-    if (!result.ok) return AppError.log(result.error);
-
-    saveFile("Escala de Divultação.xlsx", result.data);
-  }
-
-  async function handleSaveToPayment() {
-    const result = await serialize("payment");
-    if (!result.ok) return AppError.log(result.error);
-
-    saveFile("Escala da Extra.xlsx", result.data);
-  }
-
-  async function handleSaveToDayList() {
-    const result = await serialize("day-list");
-    if (!result.ok) return AppError.log(result.error);
-
-    saveFile("Listagem de Dias.xlsx", result.data);
+  function saveAsFor(fileType: ScheduleFileType) {
+    return () => saveAs(fileType);
   }
 
   function handleClose() {
@@ -54,9 +41,11 @@ export function SaveTableModal(props: SaveTableModalProps) {
       </section>
       <section className="body">
         <h1>Escolha um formato para salvar</h1>
-        <button onClick={handleSaveToPayment}>Salvar para pagamento</button>
-        <button onClick={handleSaveToDivugation}>Salvar para divulgação</button>
-        <button onClick={handleSaveToDayList}>Salvar Listagem de dias</button>
+        <button onClick={saveAsFor("payment")}>Salvar para pagamento</button>
+        <button onClick={saveAsFor("divulgation")}>
+          Salvar para divulgação
+        </button>
+        <button onClick={saveAsFor("json")}>Salvar Listagem de dias</button>
       </section>
     </StyledSaveTableModal>
   );

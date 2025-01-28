@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, dialog } from "electron";
 import { loadAPI } from "./api";
 import { fromRoot } from "src/utils/fromRoot";
 
@@ -29,8 +29,8 @@ async function main() {
     }
   });
 
-  await loadAPI();
-  await createWindow();
+  const window = await createWindow();
+  await loadAPI(window);
 }
 
 function quit() {

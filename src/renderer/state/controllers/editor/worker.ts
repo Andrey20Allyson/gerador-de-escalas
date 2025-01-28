@@ -1,8 +1,8 @@
 import {
-  TableData,
+  ScheduleState,
   WorkerData,
   DutyData,
-} from "../../../../apploader/api/table-reactive-edition/table";
+} from "../../../../apploader/api/table-reactive-edition";
 import { DayRestriction } from "src/lib/structs";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { editorActions } from "../../slices/table-editor";
@@ -17,7 +17,7 @@ export interface WorkerEditorControllerOptions
 
 export class WorkerEditorController {
   readonly dispatcher: DispatcherType;
-  readonly table: TableData;
+  readonly table: ScheduleState;
   readonly worker: WorkerData;
 
   constructor(workerId: number);

@@ -5,8 +5,10 @@ import { Serializer } from "../serializer";
 import { DayGrid, DayGridFromatter } from "./utils/day-grid-formatter";
 import { WorkerDutiesBuilder } from "./utils/worker-duties-builder";
 import { ScheduleMetadataWriter } from "../metadata/writer";
+import { ScheduleFileInfo } from "../..";
 
 export class DivulgationSerializer implements Serializer {
+  static readonly fileInfo: ScheduleFileInfo = { type: "divulgation" };
   readonly label = ["TURNO", "NOME", "MATRÍCULA"];
   readonly titleFill: ExcelJS.Fill = {
     type: "pattern",
@@ -129,7 +131,10 @@ export class DivulgationSerializer implements Serializer {
     const idCollumn = sheet.getColumn(3);
     idCollumn.width = fromExcelDim(14);
 
-    await ScheduleMetadataWriter.into(book).write(table);
+    await ScheduleMetadataWriter.into(book).write(
+      table,
+      DivulgationSerializer.fileInfo,
+    );
 
     const arrayBuffer = await book.xlsx.writeBuffer();
 
