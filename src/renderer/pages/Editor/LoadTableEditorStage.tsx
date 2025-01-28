@@ -46,7 +46,7 @@ export function LoadTableEditorStage() {
   return (
     <StyledLinedBorder>
       <StyledLoaderForm onSubmit={onSubmit}>
-        <label>Arquivo</label>
+        <label>Abrir Arquivo</label>
         <input type="file" name="input-path" />
         <input type="submit" value="Carregar"></input>
       </StyledLoaderForm>

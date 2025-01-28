@@ -17,8 +17,7 @@ export function isHistoryTravel(ev: KeyboardEvent) {
 }
 
 export function EditTableStage() {
-  const { prev } = useStage();
-  const saveModal = useSaveTableModal();
+  const stage = useStage();
   const rulesModal = useRulesModal();
   const changeEditor = EditorRouterContext.useNavigate();
   const tableController = TableEditorController.useOptional();
@@ -64,18 +63,18 @@ export function EditTableStage() {
     }
   });
 
-  async function handlePrev() {
+  async function handleExit() {
     if (tableController === null) return;
 
     tableController.clear();
 
-    prev();
+    stage.navigate(0);
   }
 
   return (
     <StyledEditTableStageBody>
       <EditorToolBar
-        onPrev={handlePrev}
+        onExit={handleExit}
         onGenerate={handleGenerate}
         onChangeEditor={changeEditor}
         onOpenRulesModal={handleOpenRulesModal}

@@ -18,7 +18,7 @@ type EditorRouterKey =
     : never;
 
 export interface EditorToolBarProps {
-  onPrev?: () => void;
+  onExit?: () => void;
   onOpenRulesModal?: () => void;
   onChangeEditor?: (key: EditorRouterKey) => void;
   onGenerate?: () => void;
@@ -29,7 +29,7 @@ export function EditorToolBar(props: EditorToolBarProps) {
     <StyledToolsSection>
       <UndoButton />
       <RedoButton />
-      <button onClick={props.onPrev}>
+      <button onClick={props.onExit}>
         <BsArrowReturnLeft />
         Voltar
       </button>
