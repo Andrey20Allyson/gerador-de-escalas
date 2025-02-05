@@ -115,19 +115,23 @@ export function DutySelectButton(
     .some((workerDuty) => workerDuty.id === duty.id);
 
   const ruleService = new EditorRuleService();
-  const canSelect = ruleService.check(workerId, duty.id);
+  const { invalidations, isValid } = ruleService.checkAssignment(
+    workerId,
+    duty.id,
+  );
 
   const isAtOrdinary = workerController.hasOrdinaryAt(duty);
 
   function handleSelectDuty() {
-    if (selected || canSelect) {
+    console.log(invalidations);
+    if (selected || isValid) {
       onDutySelected?.(duty.id);
     }
   }
 
   return (
     <StyledDutySelectButton
-      className={`${canSelect ? " selectable" : ""}${selected ? " selected" : ""}${isAtOrdinary ? " ordinary" : ""}`}
+      className={`${isValid ? " selectable" : ""}${selected ? " selected" : ""}${isAtOrdinary ? " ordinary" : ""}`}
       onClick={handleSelectDuty}
     >
       {title}

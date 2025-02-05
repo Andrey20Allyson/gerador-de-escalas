@@ -1,7 +1,7 @@
 import { DayOfWeek } from "../../../../../utils";
 import { DutyEditorController } from "../../duty";
 import { WorkerEditorController } from "../../worker";
-import { EditorRule } from "../rule";
+import { AssignmentInvalidation, EditorRule } from "../rule";
 
 enum DayRestriction {
   NONE = 1,
@@ -101,20 +101,28 @@ export class DayRestrictionRule extends EditorRule {
     return true;
   }
 
-  protected onTest(
+  protected onCheckForInvalidations(
     workerController: WorkerEditorController,
     dutyController: DutyEditorController,
-  ): boolean {
-    if (this.dutyCollidesWithNextDayLicence(workerController, dutyController))
-      return false;
+  ): AssignmentInvalidation | null {
+    if (this.dutyCollidesWithNextDayLicence(workerController, dutyController)) {
+      return new AssignmentInvalidation("Turno colide com licença");
+    }
 
-    if (this.isDailyWorkerAtFridayNight(workerController, dutyController))
-      return true;
+    // if (this.isDailyWorkerAtFridayNight(workerController, dutyController))
+    //   return true;
 
-    return (
+    const dontCollidesWithRestriction =
       this.testThisDayRestriction(workerController, dutyController) &&
       this.testNextDayRestriction(workerController, dutyController) &&
-      this.testPrevDayRestriction(workerController, dutyController)
+      this.testPrevDayRestriction(workerController, dutyController);
+
+    if (dontCollidesWithRestriction) {
+      return null;
+    }
+
+    return new AssignmentInvalidation(
+      "Turno colide com ordinária ou com licença",
     );
   }
 }

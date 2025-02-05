@@ -1,19 +1,23 @@
 import { DutyEditorController } from "../../duty";
 import { WorkerEditorController } from "../../worker";
-import { EditorRule } from "../rule";
+import { AssignmentInvalidation, EditorRule } from "../rule";
 
 export class WorkerCapacityRule extends EditorRule {
   constructor() {
     super("worker-capacity-rule");
   }
 
-  protected onTest(
+  protected onCheckForInvalidations(
     workerController: WorkerEditorController,
     _: DutyEditorController,
-  ): boolean {
-    return (
+  ): AssignmentInvalidation | null {
+    if (
       workerController.dutyQuantity() <
       workerController.table.config.workerCapacity
-    );
+    ) {
+      return null;
+    }
+
+    return new AssignmentInvalidation(`Agente chegou no limite de turnos`);
   }
 }

@@ -15,9 +15,14 @@ import { DutyMinDistanceRule } from "./impl/duty-min-distance-rule";
 import { GenderRule } from "./impl/gender-rule";
 import { InspRule } from "./impl/insp-rule";
 import { WorkerCapacityRule } from "./impl/worker-capacity-rule";
-import { EditorRule } from "./rule";
+import { AssignmentInvalidation, EditorRule } from "./rule";
 
 export interface EditorRulesServiceOpitons extends EditorControllerOptions {}
+
+export interface AssignmentCheckResult {
+  readonly invalidations: AssignmentInvalidation[];
+  readonly isValid: boolean;
+}
 
 export class EditorRulesService {
   dispatcher: DispatcherType;
@@ -67,17 +72,29 @@ export class EditorRulesService {
     return { workerController, dutyController };
   }
 
-  check(workerId: number, dutyId: number) {
+  checkAssignment(workerId: number, dutyId: number): AssignmentCheckResult {
     const { dutyController, workerController } = this.getWorkerAndDuty(
       workerId,
       dutyId,
     );
 
+    const invalidations: AssignmentInvalidation[] = [];
+
     for (const rule of this.rules) {
-      if (rule.test(workerController, dutyController) === false) return false;
+      const invalidation = rule.checkForInvalidations(
+        workerController,
+        dutyController,
+      );
+
+      if (invalidation != null) {
+        invalidations.push(invalidation);
+      }
     }
 
-    return true;
+    return {
+      invalidations,
+      isValid: invalidations.length === 0,
+    };
   }
 
   disableRule(rule: keyof WorkerInsertionRulesState) {
