@@ -106,7 +106,7 @@ export class DayRestrictionRule extends EditorRule {
     dutyController: DutyEditorController,
   ): AssignmentInvalidation | null {
     if (this.dutyCollidesWithNextDayLicence(workerController, dutyController)) {
-      return new AssignmentInvalidation("Turno colide com licença");
+      return new AssignmentInvalidation("Turno colide com dia de licença");
     }
 
     // if (this.isDailyWorkerAtFridayNight(workerController, dutyController))

@@ -9,6 +9,8 @@ import { getWeekDayLabel } from "../../../utils";
 import { ElementList, IterProps } from "../../../utils/react-iteration";
 import { EditorRulesService as EditorRuleService } from "../../../state/controllers/editor/rules";
 import { DateData } from "../../../../apploader/api/table-reactive-edition";
+import { InfoCard } from "../../InfoCard";
+import { useInfoCard } from "src/renderer/hooks/useInfoCard";
 
 export interface DutySelectionGridProps {
   workerId: number;
@@ -95,6 +97,7 @@ export function DutySelectButton(
   props: IterProps<number, DutySelectButtonProps>,
 ) {
   const { onDutySelected, workerId, date, entry: index } = props;
+  const infoCard = useInfoCard();
 
   const tableController = new TableEditorController();
 
@@ -129,10 +132,15 @@ export function DutySelectButton(
     }
   }
 
+  infoCard.whenVisible(() => {
+    return <InfoCard description="a" />;
+  });
+
   return (
     <StyledDutySelectButton
       className={`${isValid ? " selectable" : ""}${selected ? " selected" : ""}${isAtOrdinary ? " ordinary" : ""}`}
       onClick={handleSelectDuty}
+      ref={infoCard.parent}
     >
       {title}
       <span
@@ -141,6 +149,7 @@ export function DutySelectButton(
         {dutySize}
         <BsPeopleFill />
       </span>
+      {infoCard.intoNode()}
     </StyledDutySelectButton>
   );
 }
