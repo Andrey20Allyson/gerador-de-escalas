@@ -126,7 +126,6 @@ export function DutySelectButton(
   const isAtOrdinary = workerController.hasOrdinaryAt(duty);
 
   function handleSelectDuty() {
-    console.log(invalidations);
     if (selected || isValid) {
       onDutySelected?.(duty.id);
     }
@@ -136,11 +135,14 @@ export function DutySelectButton(
     return <InfoCard description="a" />;
   });
 
+  infoCard.onlyIf(() => !isValid && !selected);
+
   return (
     <StyledDutySelectButton
       className={`${isValid ? " selectable" : ""}${selected ? " selected" : ""}${isAtOrdinary ? " ordinary" : ""}`}
       onClick={handleSelectDuty}
-      ref={infoCard.parent}
+      onMouseEnter={infoCard.show}
+      onMouseLeave={infoCard.hide}
     >
       {title}
       <span
@@ -155,6 +157,7 @@ export function DutySelectButton(
 }
 
 const StyledDutySelectButton = styled.button`
+  position: relative;
   border-radius: 0.3rem;
   font-size: 0.6rem;
   padding: 0.15rem;
