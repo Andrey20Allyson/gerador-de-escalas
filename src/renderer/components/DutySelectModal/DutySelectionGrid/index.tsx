@@ -11,6 +11,8 @@ import { EditorRulesService as EditorRuleService } from "../../../state/controll
 import { DateData } from "../../../../apploader/api/table-reactive-edition";
 import { InfoCard } from "../../InfoCard";
 import { useInfoCard } from "src/renderer/hooks/useInfoCard";
+import { AssignInvalidationInfo } from "../../AssignInvalidationInfo";
+import { InvalidationAlignBox } from "../../AssignInvalidationInfo/styles";
 
 export interface DutySelectionGridProps {
   workerId: number;
@@ -132,7 +134,15 @@ export function DutySelectButton(
   }
 
   infoCard.whenVisible(() => {
-    return <InfoCard description="a" />;
+    return (
+      <InfoCard>
+        <InvalidationAlignBox>
+          {invalidations.map((invalidation, index) => (
+            <AssignInvalidationInfo invalidation={invalidation} key={index} />
+          ))}
+        </InvalidationAlignBox>
+      </InfoCard>
+    );
   });
 
   infoCard.onlyIf(() => !isValid && !selected);
