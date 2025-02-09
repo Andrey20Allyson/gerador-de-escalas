@@ -9,6 +9,7 @@ export const InfoCardDiv = styled.div`
   animation-duration: 500ms;
   animation-name: info-card-in;
   pointer-events: none;
+  user-select: none;
 
   @keyframes info-card-in {
     0% {

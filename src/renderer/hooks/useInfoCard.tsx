@@ -10,21 +10,16 @@ export interface InfoCardState {
   isVisible(): boolean;
   exibitionRequested: boolean;
   actived: boolean;
-  hiding: boolean;
 }
 
 export function useInfoCard(): InfoCardState {
   const [exibitionRequested, setExibitionRequested] = useState(false);
   const [actived, setActived] = useState(false);
-  const [hiding, setHiding] = useState(false);
   const tests: CanShowCardTest[] = [];
 
   useEffect(() => {
     if (!exibitionRequested) {
-      setHiding(true);
-
       const timeout = setTimeout(() => {
-        setHiding(false);
         setActived(false);
       }, 500);
 
@@ -34,7 +29,6 @@ export function useInfoCard(): InfoCardState {
     }
 
     const timeout = setTimeout(() => {
-      setHiding(false);
       setActived(true);
     }, 500);
 
@@ -76,6 +70,5 @@ export function useInfoCard(): InfoCardState {
     isVisible,
     exibitionRequested,
     actived,
-    hiding,
   };
 }

@@ -7,9 +7,11 @@ export interface InfoCardProps extends PropsWithChildren {
 }
 
 export function InfoCard({ state, children }: InfoCardProps) {
-  const { hiding, isVisible } = state;
+  const { exibitionRequested, isVisible } = state;
 
   return isVisible() ? (
-    <InfoCardDiv className={hiding ? "hiding" : ""}>{children}</InfoCardDiv>
+    <InfoCardDiv className={!exibitionRequested ? "hiding" : ""}>
+      {children}
+    </InfoCardDiv>
   ) : null;
 }
