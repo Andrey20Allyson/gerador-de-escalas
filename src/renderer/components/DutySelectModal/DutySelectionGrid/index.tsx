@@ -133,18 +133,6 @@ export function DutySelectButton(
     }
   }
 
-  infoCard.whenVisible(() => {
-    return (
-      <InfoCard>
-        <InvalidationAlignBox>
-          {invalidations.map((invalidation, index) => (
-            <AssignInvalidationInfo invalidation={invalidation} key={index} />
-          ))}
-        </InvalidationAlignBox>
-      </InfoCard>
-    );
-  });
-
   infoCard.onlyIf(() => !isValid && !selected);
 
   return (
@@ -161,7 +149,14 @@ export function DutySelectButton(
         {dutySize}
         <BsPeopleFill />
       </span>
-      {infoCard.intoNode()}
+
+      <InfoCard state={infoCard}>
+        <InvalidationAlignBox>
+          {invalidations.map((invalidation, index) => (
+            <AssignInvalidationInfo invalidation={invalidation} key={index} />
+          ))}
+        </InvalidationAlignBox>
+      </InfoCard>
     </StyledDutySelectButton>
   );
 }

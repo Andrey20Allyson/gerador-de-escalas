@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export type CardFactory = () => React.ReactNode;
 export type CanShowCardTest = () => boolean;
@@ -6,15 +6,42 @@ export type CanShowCardTest = () => boolean;
 export interface InfoCardState {
   show(): void;
   hide(): void;
-  whenVisible(factory: CardFactory): void;
   onlyIf(test: CanShowCardTest): void;
-  intoNode(): React.ReactNode;
+  isVisible(): boolean;
+  exibitionRequested: boolean;
+  actived: boolean;
+  hiding: boolean;
 }
 
 export function useInfoCard(): InfoCardState {
   const [exibitionRequested, setExibitionRequested] = useState(false);
-  let factory: CardFactory | null = null;
+  const [actived, setActived] = useState(false);
+  const [hiding, setHiding] = useState(false);
   const tests: CanShowCardTest[] = [];
+
+  useEffect(() => {
+    if (!exibitionRequested) {
+      setHiding(true);
+
+      const timeout = setTimeout(() => {
+        setHiding(false);
+        setActived(false);
+      }, 500);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+
+    const timeout = setTimeout(() => {
+      setHiding(false);
+      setActived(true);
+    }, 500);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [exibitionRequested]);
 
   function show() {
     setExibitionRequested(true);
@@ -24,19 +51,11 @@ export function useInfoCard(): InfoCardState {
     setExibitionRequested(false);
   }
 
-  function whenVisible(newFactory: () => React.ReactNode) {
-    factory = newFactory;
-  }
-
-  function intoNode(): React.ReactNode {
-    return isVisible() && factory != null ? factory() : null;
-  }
-
   function onlyIf(test: CanShowCardTest) {
     tests.push(test);
   }
 
-  onlyIf(() => exibitionRequested);
+  onlyIf(() => actived);
 
   function isVisible(): boolean {
     for (const test of tests) {
@@ -53,8 +72,10 @@ export function useInfoCard(): InfoCardState {
   return {
     hide,
     show,
-    whenVisible,
-    intoNode,
     onlyIf,
+    isVisible,
+    exibitionRequested,
+    actived,
+    hiding,
   };
 }
