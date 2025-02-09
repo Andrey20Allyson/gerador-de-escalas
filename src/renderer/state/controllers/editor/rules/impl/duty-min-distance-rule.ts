@@ -1,22 +1,39 @@
 import { DutyEditorController } from "../../duty";
 import { WorkerEditorController } from "../../worker";
-import { EditorRule } from "../rule";
+import { AssignmentInvalidation, EditorRule } from "../rule";
 
 export class DutyMinDistanceRule extends EditorRule {
   constructor() {
     super("duty-min-distance-rule");
   }
 
-  protected onTest(
+  protected onCheckForInvalidations(
     workerController: WorkerEditorController,
     dutyController: DutyEditorController,
-  ): boolean {
+  ): AssignmentInvalidation | null {
     const minDistance = workerController.dutyMinDistance();
 
-    return workerController
-      .duties()
-      .every(
-        (workerDuty) => dutyController.distanceTo(workerDuty) > minDistance,
+    const duties = workerController.duties();
+    const invalidation = new AssignmentInvalidation(
+      "Turno não respeita o intervalo mínimo de outros turnos",
+    );
+
+    for (const duty of duties) {
+      if (dutyController.distanceTo(duty) >= minDistance) {
+        continue;
+      }
+
+      invalidation.addCause(
+        new AssignmentInvalidation(
+          `Turno ${dutyController.duty.key} não respeita o intervalo mínimo do turno ${duty.key}`,
+        ),
       );
+    }
+
+    if (!invalidation.hasAnyCause()) {
+      return null;
+    }
+
+    return invalidation;
   }
 }

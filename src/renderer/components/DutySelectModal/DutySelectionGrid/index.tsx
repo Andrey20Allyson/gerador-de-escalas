@@ -9,6 +9,10 @@ import { getWeekDayLabel } from "../../../utils";
 import { ElementList, IterProps } from "../../../utils/react-iteration";
 import { EditorRulesService as EditorRuleService } from "../../../state/controllers/editor/rules";
 import { DateData } from "../../../../apploader/api/table-reactive-edition";
+import { InfoCard } from "../../InfoCard";
+import { useInfoCard } from "src/renderer/hooks/useInfoCard";
+import { AssignInvalidationInfo } from "../../AssignInvalidationInfo";
+import { InvalidationAlignBox } from "../../AssignInvalidationInfo/styles";
 
 export interface DutySelectionGridProps {
   workerId: number;
@@ -95,6 +99,7 @@ export function DutySelectButton(
   props: IterProps<number, DutySelectButtonProps>,
 ) {
   const { onDutySelected, workerId, date, entry: index } = props;
+  const infoCard = useInfoCard();
 
   const tableController = new TableEditorController();
 
@@ -115,20 +120,27 @@ export function DutySelectButton(
     .some((workerDuty) => workerDuty.id === duty.id);
 
   const ruleService = new EditorRuleService();
-  const canSelect = ruleService.check(workerId, duty.id);
+  const { invalidations, isValid } = ruleService.checkAssignment(
+    workerId,
+    duty.id,
+  );
 
   const isAtOrdinary = workerController.hasOrdinaryAt(duty);
 
   function handleSelectDuty() {
-    if (selected || canSelect) {
+    if (selected || isValid) {
       onDutySelected?.(duty.id);
     }
   }
 
+  infoCard.onlyIf(() => !isValid && !selected);
+
   return (
     <StyledDutySelectButton
-      className={`${canSelect ? " selectable" : ""}${selected ? " selected" : ""}${isAtOrdinary ? " ordinary" : ""}`}
+      className={`${isValid ? " selectable" : ""}${selected ? " selected" : ""}${isAtOrdinary ? " ordinary" : ""}`}
       onClick={handleSelectDuty}
+      onMouseEnter={infoCard.show}
+      onMouseLeave={infoCard.hide}
     >
       {title}
       <span
@@ -137,11 +149,20 @@ export function DutySelectButton(
         {dutySize}
         <BsPeopleFill />
       </span>
+
+      <InfoCard state={infoCard}>
+        <InvalidationAlignBox>
+          {invalidations.map((invalidation, index) => (
+            <AssignInvalidationInfo invalidation={invalidation} key={index} />
+          ))}
+        </InvalidationAlignBox>
+      </InfoCard>
     </StyledDutySelectButton>
   );
 }
 
 const StyledDutySelectButton = styled.button`
+  position: relative;
   border-radius: 0.3rem;
   font-size: 0.6rem;
   padding: 0.15rem;

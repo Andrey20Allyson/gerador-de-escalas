@@ -1,24 +1,32 @@
 import { DutyEditorController } from "../../duty";
 import { WorkerEditorController } from "../../worker";
-import { EditorRule } from "../rule";
+import { AssignmentInvalidation, EditorRule } from "../rule";
 
 export class InspRule extends EditorRule {
   constructor() {
     super("insp-rule");
   }
 
-  protected onTest(
+  protected onCheckForInvalidations(
     workerController: WorkerEditorController,
     dutyController: DutyEditorController,
-  ): boolean {
+  ): AssignmentInvalidation | null {
     const { worker } = workerController;
 
-    if (worker.graduation !== "insp") return true;
+    if (worker.graduation !== "insp") {
+      return null;
+    }
 
     const dutyHasAInsp = dutyController
       .workers()
       .some((worker) => worker.graduation === "insp");
 
-    return dutyHasAInsp === false;
+    if (!dutyHasAInsp) {
+      return null;
+    }
+
+    return new AssignmentInvalidation(
+      "Turnos não podem possuir mais de 1 inspetor",
+    );
   }
 }

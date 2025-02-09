@@ -1,16 +1,22 @@
 import { DutyEditorController } from "../../duty";
 import { WorkerEditorController } from "../../worker";
-import { EditorRule } from "../rule";
+import { AssignmentInvalidation, EditorRule } from "../rule";
 
 export class DutyCapacityRule extends EditorRule {
   constructor() {
     super("duty-capacity-rule");
   }
 
-  protected onTest(
+  protected onCheckForInvalidations(
     _: WorkerEditorController,
     dutyController: DutyEditorController,
-  ): boolean {
-    return dutyController.size() < dutyController.table.config.dutyCapacity;
+  ): AssignmentInvalidation | null {
+    if (dutyController.size() < dutyController.table.config.dutyCapacity) {
+      return null;
+    }
+
+    return new AssignmentInvalidation(
+      "Turno já possui o número máximo de agentes",
+    );
   }
 }

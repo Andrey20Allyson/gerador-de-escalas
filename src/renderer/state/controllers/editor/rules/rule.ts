@@ -1,24 +1,39 @@
 import { DutyEditorController } from "../duty";
 import { WorkerEditorController } from "../worker";
 
+export class AssignmentInvalidation {
+  constructor(
+    readonly message: string,
+    readonly causes: AssignmentInvalidation[] = [],
+  ) {}
+
+  addCause(cause: AssignmentInvalidation) {
+    this.causes.push(cause);
+  }
+
+  hasAnyCause(): boolean {
+    return this.causes.length > 0;
+  }
+}
+
 export abstract class EditorRule {
   private enabled = true;
 
   constructor(private name: string) {}
 
-  test(
+  checkForInvalidations(
     workerController: WorkerEditorController,
     dutyController: DutyEditorController,
-  ): boolean {
-    if (!this.isEnabled()) return true;
+  ): AssignmentInvalidation | null {
+    if (!this.isEnabled()) return null;
 
-    return this.onTest(workerController, dutyController);
+    return this.onCheckForInvalidations(workerController, dutyController);
   }
 
-  protected abstract onTest(
+  protected abstract onCheckForInvalidations(
     workerController: WorkerEditorController,
     dutyController: DutyEditorController,
-  ): boolean;
+  ): AssignmentInvalidation | null;
 
   enable(): void {
     this.enabled = true;

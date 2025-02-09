@@ -1,22 +1,30 @@
 import { DutyEditorController } from "../../duty";
 import { WorkerEditorController } from "../../worker";
-import { EditorRule } from "../rule";
+import { AssignmentInvalidation, EditorRule } from "../rule";
 
 export class GenderRule extends EditorRule {
   constructor() {
     super("gender-rule");
   }
 
-  protected onTest(
+  protected onCheckForInvalidations(
     workerController: WorkerEditorController,
     dutyController: DutyEditorController,
-  ): boolean {
-    if (workerController.worker.gender === "male") return true;
+  ): AssignmentInvalidation | null {
+    if (workerController.worker.gender === "male") {
+      return null;
+    }
 
     const dutyHasSomeMale = dutyController
       .workers()
       .some((worker) => worker.gender === "male");
 
-    return dutyHasSomeMale;
+    if (dutyHasSomeMale) {
+      return null;
+    }
+
+    return new AssignmentInvalidation(
+      "Turno necessita de pelomenos 1 agente homem para inserir agentes mulheres",
+    );
   }
 }
