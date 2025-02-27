@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import chalk, { ChalkInstance } from "chalk";
 
 export type ValuePerTimeScala = "min" | "sec" | "milli";
 export type ValuesPerTimeAvg = "higher" | "lower" | "mid";
@@ -12,7 +12,7 @@ export class ValuesPerTimeEntry {
     readonly avg: ValuesPerTimeAvg = "mid",
   ) {}
 
-  private _avgColor(): chalk.Chalk {
+  private _avgColor(): ChalkInstance {
     switch (this.avg) {
       case "higher":
         return chalk.greenBright;
@@ -23,7 +23,7 @@ export class ValuesPerTimeEntry {
     }
   }
 
-  private _difToPrevColor(): chalk.Chalk {
+  private _difToPrevColor(): ChalkInstance {
     const dif = this.difToPrev;
 
     if (dif < 0) {
