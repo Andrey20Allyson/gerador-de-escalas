@@ -40,4 +40,14 @@ export module random {
   export function int(min: number, max: number): number {
     return randomIntFromInterval(min, max);
   }
+
+  export function fourBytesHex() {
+    const U32_LIMIT = 0x100000000; // 2^32
+    const n = (Math.random() * U32_LIMIT) >>> 0;
+    return n.toString(16).padStart(8, "0");
+  }
+
+  export function id() {
+    return `${random.fourBytesHex()}-${random.fourBytesHex()}` as const;
+  }
 }
