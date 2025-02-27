@@ -1,6 +1,7 @@
 import { app, BrowserWindow, dialog } from "electron";
 import { loadAPI } from "./api";
 import { fromRoot } from "src/utils/fromRoot";
+import { startServer } from "src/utils/ui-testing/server";
 
 async function createWindow() {
   const window = new BrowserWindow({
@@ -16,6 +17,8 @@ async function createWindow() {
       preload: fromRoot("./dist/preload.js"),
     },
   });
+
+  startServer();
 
   await window.loadFile(fromRoot("./public/index.html"));
 

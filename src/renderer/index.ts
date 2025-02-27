@@ -5,6 +5,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import App from "./App";
 import "src/renderer/styles/Anchor.css";
 import "./index.css";
+import { setupTestWebSocket } from "src/utils/ui-testing/renderer-setup";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error(`Can't find element with id #root`);
@@ -12,3 +13,5 @@ if (!rootElement) throw new Error(`Can't find element with id #root`);
 const root = createRoot(rootElement);
 
 root.render(React.createElement(App));
+
+setupTestWebSocket();
