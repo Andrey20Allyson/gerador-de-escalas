@@ -8,10 +8,7 @@ export function setupTester() {
 
   actions.ready(async () => {
     try {
-      const result = await actions.call<string>(
-        "say:hi",
-        "hello world from tester",
-      );
+      const result = await actions.call("tag:list", { tag: "ui" });
 
       console.log({ result });
     } catch (error) {

@@ -1,11 +1,17 @@
 import { Plugin } from "esbuild";
 
-export function externalsPlugin(): Plugin {
+export interface ExternalsOptions {
+  include?: string[];
+}
+
+export function externalsPlugin(options?: ExternalsOptions): Plugin {
   return {
     name: "externals-plugin",
     setup(build) {
       const isRelativeRegexp = /^\./;
       const isInternalRegexp = /^src\/.*/;
+
+      const includeModules = options?.include;
 
       build.onResolve({ filter: /.*/ }, (args) => {
         const isRelative = isRelativeRegexp.test(args.path);
@@ -19,6 +25,12 @@ export function externalsPlugin(): Plugin {
         const isInternal = isInternalRegexp.test(args.path);
 
         if (isInternal) {
+          return {
+            external: false,
+          };
+        }
+
+        if (includeModules != null && includeModules.includes(args.path)) {
           return {
             external: false,
           };

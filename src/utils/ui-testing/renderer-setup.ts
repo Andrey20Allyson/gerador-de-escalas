@@ -5,9 +5,9 @@ export function setupTestWebSocket() {
 
   const actions = RemoteActionIO.from(ws);
 
-  actions.ready(() => {
-    actions.addTag("renderer");
+  actions.ready(async () => {
+    await actions.addTag("ui");
 
-    actions.call("say:hi", "hello world");
+    await actions.call("say:hi", "hello world");
   });
 }

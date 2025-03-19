@@ -23,18 +23,19 @@ export type ActionHandler<T = any> = (
   action: ActionController<T>,
 ) => void | Promise<void>;
 export type ReadyListener = () => Promise<void> | void;
+export type ClosedListener = () => Promise<void> | void;
 
-export class ActionController<T = any> {
+export class ActionController<P = any, R = any> {
   ended: boolean = false;
-  replyPayload: T | null = null;
+  replyPayload: R | null = null;
 
   constructor(
     readonly name: string,
-    readonly payload: T,
+    readonly payload: P,
     readonly meta: ActionMeta,
   ) {}
 
-  reply(payload: T) {
+  reply(payload: R) {
     this.replyPayload = payload;
 
     this.end();
@@ -251,6 +252,10 @@ export class RemoteActionIO {
         throw error;
       }
     });
+  }
+
+  closed(listener: ClosedListener) {
+    this.io.closed(listener);
   }
 
   close() {

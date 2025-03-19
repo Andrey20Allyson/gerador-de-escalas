@@ -1,6 +1,11 @@
 import WebSocket from "ws";
-import { RemoteActionIO } from "../infra/remote-actions";
+import {
+  Action,
+  ActionController,
+  RemoteActionIO,
+} from "../infra/remote-actions";
 import chalk from "chalk";
+import { ProxyCallPayload } from "../infra/remote-actions-proxy";
 
 const clients = new Map<string, RemoteActionIO>();
 const taggedClients = new Map<string, Set<string>>();
@@ -28,6 +33,7 @@ async function handleSocketConnection(ws: WebSocket) {
   });
 
   ws.on("close", () => {
+    console.log("client disconnected");
     clients.delete(actions.id);
   });
 
@@ -36,6 +42,14 @@ async function handleSocketConnection(ws: WebSocket) {
   await handleClientConnection(actions);
 
   function deleteFromTagged(actions: RemoteActionIO, tag: string) {}
+}
+
+interface TagListPayload {
+  tag: string;
+}
+
+interface TagListReply {
+  actionIds: string[] | null;
 }
 
 async function handleClientConnection(actions: RemoteActionIO) {
@@ -58,14 +72,40 @@ async function handleClientConnection(actions: RemoteActionIO) {
   });
 
   actions.handle("say:hi", async (action) => {
-    await new Promise(() => {});
-
     action.reply({ abc: "hello" });
   });
 
+  actions.handle(
+    "tag:list",
+    async (action: ActionController<TagListPayload, TagListReply>) => {
+      const tag = action.payload.tag;
+
+      const tagSet = taggedClients.get(tag);
+      if (tagSet == null || tagSet.size == 0) {
+        return action.reply({ actionIds: null });
+      }
+
+      const actionIds = Array.from(tagSet.values());
+
+      action.reply({ actionIds });
+    },
+  );
+
+  actions.handle(
+    "proxy:call",
+    async (action: ActionController<ProxyCallPayload>) => {
+      const { proxyId, proxyAction } = action.payload;
+
+      const target = clients.get(proxyId);
+      if (target == null) {
+        return action.reply(null);
+      }
+
+      const response = await target.call(proxyAction.name, proxyAction.payload);
+
+      action.reply(response);
+    },
+  );
+
   clients.set(actions.id, actions);
 }
-
-startServer(() => {
-  console.log("websocket server started on port 7575");
-});

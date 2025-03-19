@@ -18,7 +18,9 @@ async function createWindow() {
     },
   });
 
-  startServer();
+  startServer(() => {
+    console.log("test websocket server started on port 7575");
+  });
 
   await window.loadFile(fromRoot("./public/index.html"));
 
