@@ -1,4 +1,4 @@
-import { RemoteActionIO } from "./remote-actions";
+import { ClosedListener, RemoteActionIO } from "./remote-actions";
 
 export interface ProxyCallPayload {
   proxyId: string;
@@ -24,5 +24,23 @@ export class RemoteActionIOProxy {
         payload,
       },
     });
+  }
+
+  closed(listener: ClosedListener) {
+    this.actions.closed(listener);
+  }
+
+  static async fromTag(
+    actions: RemoteActionIO,
+    tag: string,
+  ): Promise<RemoteActionIOProxy> {
+    const result = await actions.call("tag:list", { tag: "ui" });
+    const id: string | undefined = result.actionIds[0];
+
+    if (id == null) {
+      throw new Error(`tag '${tag}' don't have correspondents`);
+    }
+
+    return new RemoteActionIOProxy(actions, id);
   }
 }

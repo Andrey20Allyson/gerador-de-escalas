@@ -1,5 +1,6 @@
 import NodeWebSocket from "ws";
 import { RemoteActionIO } from "./infra/remote-actions";
+import { RemoteActionIOProxy } from "./infra/remote-actions-proxy";
 
 export function setupTester() {
   const ws = new NodeWebSocket("ws://localhost:7575");
@@ -8,9 +9,9 @@ export function setupTester() {
 
   actions.ready(async () => {
     try {
-      const result = await actions.call("tag:list", { tag: "ui" });
+      const proxy = await RemoteActionIOProxy.fromTag(actions, "ui");
 
-      console.log({ result });
+      console.log(proxy);
     } catch (error) {
       console.log(error);
     }

@@ -92,16 +92,14 @@ export class HandlerMap {
 export class RemoteActionIO {
   private handlers = new Map<string, HandlerMap>();
   private tags: Set<string> = new Set();
+  private isDebug: boolean = false;
   id: string = "";
 
   constructor(private readonly io: JsonIO<Action>) {
     this.io.listen((data) => {
       const action = new ActionController(data.action, data.payload, data.meta);
 
-      console.log(
-        chalk.redBright(`action reviced by ${this.id}:`),
-        action.name,
-      );
+      this.log(chalk.redBright(`action reviced by ${this.id}:`), action.name);
 
       this._receive(action);
     });
@@ -123,6 +121,16 @@ export class RemoteActionIO {
     });
   }
 
+  setDebug(active: boolean) {
+    this.isDebug = active;
+  }
+
+  private log(...args: any[]) {
+    if (this.isDebug) {
+      this.log(...args);
+    }
+  }
+
   private async _receive(action: ActionController) {
     const handlerMap = this.handlers.get(action.name);
 
@@ -131,7 +139,7 @@ export class RemoteActionIO {
     }
 
     if (action.meta.expectsReply) {
-      console.log(chalk.blueBright(`sending reply to ${action.name}`));
+      this.log(chalk.blueBright(`sending reply to ${action.name}`));
       this._returnAction(action);
     }
   }
@@ -193,7 +201,7 @@ export class RemoteActionIO {
 
     return new CancellablePromise<R>((res) => {
       const unsub = this.once(actionReply.name, (action) => {
-        console.log("reply:", action.name, action.payload);
+        this.log("reply:", action.name, action.payload);
         res(action.payload);
       });
 
