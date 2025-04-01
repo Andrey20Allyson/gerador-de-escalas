@@ -1,23 +1,11 @@
-import NodeWebSocket from "ws";
-import { RemoteActionIO } from "./infra/remote-actions";
-import { RemoteActionIOProxy } from "./infra/remote-actions-proxy";
+import uitester from "./test-development-kit/uitester";
 
-export function setupTester() {
-  const ws = new NodeWebSocket("ws://localhost:7575");
+export async function setupTester() {
+  const body = await uitester.get("body");
 
-  const actions = RemoteActionIO.from(ws);
+  await body.click();
 
-  actions.ready(async () => {
-    try {
-      const proxy = await RemoteActionIOProxy.fromTag(actions, "ui");
-
-      console.log(proxy);
-    } catch (error) {
-      console.log(error);
-    }
-
-    actions.close();
-  });
+  uitester.close();
 }
 
 setupTester();

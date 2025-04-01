@@ -1,4 +1,8 @@
-import { ClosedListener, RemoteActionIO } from "./remote-actions";
+import {
+  ClosedListener,
+  RemoteActionCaller,
+  RemoteActionIO,
+} from "./remote-actions";
 
 export interface ProxyCallPayload {
   proxyId: string;
@@ -10,7 +14,7 @@ export interface ProxyCallAction {
   payload: any;
 }
 
-export class RemoteActionIOProxy {
+export class RemoteActionIOProxy implements RemoteActionCaller {
   constructor(
     private readonly actions: RemoteActionIO,
     readonly id: string,
@@ -42,5 +46,9 @@ export class RemoteActionIOProxy {
     }
 
     return new RemoteActionIOProxy(actions, id);
+  }
+
+  close(): void {
+    this.actions.close();
   }
 }

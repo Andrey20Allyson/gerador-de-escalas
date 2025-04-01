@@ -19,8 +19,8 @@ export interface ActionMeta {
   expectsReply: boolean;
 }
 
-export type ActionHandler<T = any> = (
-  action: ActionController<T>,
+export type ActionHandler<P = any, R = any> = (
+  action: ActionController<P, R>,
 ) => void | Promise<void>;
 export type ReadyListener = () => Promise<void> | void;
 export type ClosedListener = () => Promise<void> | void;
@@ -89,7 +89,12 @@ export class HandlerMap {
   }
 }
 
-export class RemoteActionIO {
+export interface RemoteActionCaller {
+  call<P = any, R = any>(name: string, payload: P): Promise<R>;
+  close(): void;
+}
+
+export class RemoteActionIO implements RemoteActionCaller {
   private handlers = new Map<string, HandlerMap>();
   private tags: Set<string> = new Set();
   private isDebug: boolean = false;
@@ -224,7 +229,7 @@ export class RemoteActionIO {
     this.io.send(action.asReply().toDTO());
   }
 
-  handle(action: string, handler: ActionHandler) {
+  handle<P = any, R = any>(action: string, handler: ActionHandler<P, R>) {
     let handlerMap = this.handlers.get(action);
 
     if (handlerMap == null) {
@@ -268,6 +273,16 @@ export class RemoteActionIO {
 
   close() {
     this.io.close();
+  }
+
+  asReady(): Promise<RemoteActionIO> {
+    return new Promise((res) => {
+      if (this.id !== "") {
+        return res(this);
+      }
+
+      this.once("ready", () => res(this));
+    });
   }
 
   static from(ws: NodeWebSocket | WebSocket) {
